@@ -1,0 +1,31 @@
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.fade {
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Directions */
+.fade-up {
+    transform: translateY(30px);
+}
+
+.fade-left {
+    transform: translateX(-30px);
+}
+
+.fade-right {
+    transform: translateX(30px);
+}
+
+/* When visible */
+.fade.show {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.fade-zoom {
+    transform: scale(0.85);
+}

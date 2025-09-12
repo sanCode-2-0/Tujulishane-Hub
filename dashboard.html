@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailwind + Alpine Boilerplate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',   // Custom Blue
+                        secondary: '#f59e0b', // Custom Amber
+                        accent: '#10b981',    // Custom Green
+                        dark: '#1f2937',      // Gray-800
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+
+    <!-- Optional: Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        .fade-slide-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-slide-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s ease;
+        }
+
+        .fade-slide-leave {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-slide-leave-active {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+    </style>
+
+</head>
+
+<body class="text-gray-800 ">
+    <nav x-data="{ open: false }"
+        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+        <div class="flex items-center justify-between px-6 py-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
+                <img src="/resources/gov.png" class="object-contain h-12" alt="Site Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+                <i class="fas fa-bars" x-show="!open"></i>
+                <i class="fas fa-times" x-show="open" x-cloak></i>
+            </button>
+
+            <!-- Nav Links - Desktop -->
+            <ul class="hidden lg:flex items-center space-x-8 font-medium text-sm text-gray-700">
+                <li>
+                    <a href="/" class="uppercase transition hover:text-blue-600">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="/about" class="uppercase transition hover:text-blue-600">
+                        Programs
+                    </a>
+                </li>
+
+                <!-- Pages Dropdown Trigger -->
+                <li class="relative" x-data="{ showDropdown: false }">
+                    <button @click="showDropdown = !showDropdown"
+                        class="uppercase font-medium inline-flex items-center transition focus:outline-none">
+                        Pages <i class="fal fa-chevron-down ml-2"></i>
+                    </button>
+
+                    <!-- Dropdown Content -->
+                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+                        class="absolute z-50 mt-2 bg-white rounded-xl shadow-md w-56 md:w-96 divide-y divide-gray-100"
+                        style="display: none;">
+                        <ul class="py-2 text-sm text-left text-blue-800">
+                            <li class="hover:bg-blue-100 px-4 py-2 transition">
+                                <a href="index.html">Index</a>
+                            </li>
+                            <li class="hover:bg-blue-100 px-4 py-2 transition">
+                                <a href="registration.html">Login / Registration</a>
+                            </li>
+                            <li class="hover:bg-blue-100 px-4 py-2 transition">
+                                <a href="dashboard.html">Dashboard</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li>
+                    <a href="/blog" class="uppercase transition hover:text-blue-600">
+                        Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="/contact" class="uppercase font-bold text-blue-700 hover:text-pink-500">
+                        Partner
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nav Links - Mobile -->
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform -translate-y-2"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+
+            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
+                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
+                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
+                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
+            </ul>
+
+            <!-- CTA Button -->
+            <div class="mt-6">
+                <a href="/contact"
+                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white rounded-full bg-pink-600 group">
+                    <span
+                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
+                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="min-h-screen bg-gray-100">
+        <div class="max-w-6xl mx-auto p-8">
+            <h3 class="text-lg font-medium text-gray-700 mt-20 mb-3 uppercase font-bold">Quick Admin Actions</h3>
+            <div class="grid fade fade-up sm:grid-cols-4 gap-4">
+                <button
+                    class="bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-user-plus mr-2"></i> Create User & Role
+                </button>
+                <button
+                    class="bg-teal-600 text-white py-3 rounded-md hover:bg-teal-700 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-clipboard-check mr-2"></i> Whitelisted Organizations.
+                </button>
+                <button
+                    class="bg-gray-700 text-white py-3 rounded-md hover:bg-gray-800 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-magnifying-glass-chart mr-2"></i> System Reports
+                </button>
+                <button
+                    class="bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-bell mr-2"></i> View Alerts
+                </button>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto p-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center border-b-2 border-indigo-300 pb-3">
+                Operational Dashboard</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
+                    <i class="fas fa-layer-group text-blue-500 text-3xl mb-2"></i>
+                    <p class="text-4xl font-bold text-gray-900">1250</p>
+                    <p class="text-lg text-gray-600">Total Projects</p>
+                </div>
+                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
+                    <i class="fas fa-users text-green-500 text-3xl mb-2"></i>
+                    <p class="text-4xl font-bold text-gray-900">480</p>
+                    <p class="text-lg text-gray-600">Active Members</p>
+                </div>
+                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
+                    <i class="fas fa-building text-purple-500 text-3xl mb-2"></i>
+                    <p class="text-4xl font-bold text-gray-900">120</p>
+                    <p class="text-lg text-gray-600">Organizations</p>
+                </div>
+                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
+                    <i class="fas fa-handshake text-orange-500 text-3xl mb-2"></i>
+                    <p class="text-4xl font-bold text-gray-900">35</p>
+                    <p class="text-lg text-gray-600">Partners</p>
+                </div>
+            </div>
+        </div>
+        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
+        </div>
+        <div class="max-w-6xl mx-auto p-8">
+            <div class="bg-white fade fade-up rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-2xl fade fade-left font-semibold text-gray-900 mb-5 flex items-center">
+                    <i class="fas fa-folder text-indigo-600 mr-3"></i> Projects Management
+                </h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6">
+                    <div class="fade fade-up bg-green-50 p-4 rounded-md">
+                        <p class="text-3xl font-bold text-green-700">800</p>
+                        <p class="text-sm text-green-600">Approved</p>
+                    </div>
+                    <div class="fade fade-up bg-yellow-50 p-4 rounded-md">
+                        <p class="text-3xl font-bold text-yellow-700">200</p>
+                        <p class="text-sm text-yellow-600">Pending</p>
+                    </div>
+                    <div class="fade fade-up bg-red-50 p-4 rounded-md">
+                        <p class="text-3xl font-bold text-red-700">150</p>
+                        <p class="text-sm text-red-600">Stalled</p>
+                    </div>
+                    <div class="fade fade-up bg-gray-50 p-4 rounded-md">
+                        <p class="text-3xl font-bold text-gray-700">100</p>
+                        <p class="text-sm text-gray-600">Abandoned</p>
+                    </div>
+                </div>
+                <ul class="text-gray-700 fade fade-left space-y-2 text-base">
+                    <li><span class="font-medium">Avg. Cost:</span> <span class="text-blue-600">$250,000</span></li>
+                    <li><span class="font-medium">Top Sponsor:</span> Global Development Fund</li>
+                    <li><span class="font-medium">Region Focus:</span> East Africa & Southeast Asia</li>
+                    <li><span class="font-medium">Latest Start:</span> June 2025</li>
+                </ul>
+                <div class="fade fade-up">
+                    <button
+                        class="w-full bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5">
+                        <i class="fas fa-arrow-alt-circle-right mr-2"></i> Go to Project Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white fade fade-left rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl fade fade-up font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-users-line text-blue-600 mr-3"></i> Member Status
+                    </h2>
+                    <div class="grid fade fade-up grid-cols-2 gap-4 text-center mb-6">
+                        <div class="bg-blue-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-blue-700">350</p>
+                            <p class="text-sm text-blue-600">Active</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-yellow-700">50</p>
+                            <p class="text-sm text-yellow-600">Pending</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-red-700">40</p>
+                            <p class="text-sm text-red-600">Suspended</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-purple-700">40</p>
+                            <p class="text-sm text-purple-600">Onboarding</p>
+                        </div>
+                    </div>
+                    <div class="fade fade-up">
+                        <button
+                            class="w-full bg-blue-600 text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-address-book mr-2"></i> Manage Members
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white fade fade-right rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-building-flag text-purple-600 mr-3"></i> Organization Status
+                    </h2>
+                    <div class="grid fade fade-up grid-cols-2 gap-4 text-center mb-6">
+                        <div class="bg-green-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-green-700">80</p>
+                            <p class="text-sm text-green-600">Approved</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-blue-700">20</p>
+                            <p class="text-sm text-blue-600">Whitelisted</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-yellow-700">10</p>
+                            <p class="text-sm text-yellow-600">Applications</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-md">
+                            <p class="text-3xl font-bold text-red-700">10</p>
+                            <p class="text-sm text-red-600">Restricted</p>
+                        </div>
+                    </div>
+                    <div class="fade fade-up">
+                        <button
+                            class="w-full bg-purple-600 text-white py-2.5 rounded-md hover:bg-purple-700 transition duration-200">
+                            <i class="fas fa-sitemap mr-2"></i> Organization Directory
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg fade fade-up shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-gem text-teal-600 mr-3"></i> Partners Tools
+                </h2>
+                <div class="fade fade-up">
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Partner Status</h3>
+                    <div class="space-y-3 fade fade-up">
+                        <div class="flex items-center justify-between text-base">
+                            <span class="text-gray-700">Pending:</span>
+                            <span class="font-bold text-yellow-700">15</span>
+                        </div>
+                        <div class="flex items-center justify-between text-base">
+                            <span class="text-gray-700">Approved:</span>
+                            <span class="font-bold text-green-700">18</span>
+                        </div>
+                        <div class="flex items-center justify-between text-base">
+                            <span class="text-gray-700">New Applications:</span>
+                            <span class="font-bold text-blue-700">2</span>
+                        </div>
+                    </div>
+                    <div class="fade fade-up">
+                        <button
+                            class="w-full bg-orange-600 text-white py-2 rounded-md hover:bg-orange-700 transition duration-200 mt-5">
+                            <i class="fas fa-handshake-angle mr-2"></i> View All Partners
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="styles/effects.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, selectedMarker = null;
+        const markers = [];
+        const icons = {
+            default: (tag) => L.icon({ iconUrl: `/resources/${tag}.png`, iconSize: [20, 20] }),
+            selected: (tag) => L.icon({ iconUrl: `/resources/${tag}.png`, iconSize: [40, 40] })
+        };
+
+        const bgColors = {
+            active: 'bg-green-50',
+            pending: 'bg-yellow-50',
+            stalled: 'bg-red-50',
+            abandoned: 'bg-gray-100',
+            default: 'bg-white'
+        };
+
+        const statusBadge = (tag) => {
+            return {
+                active: 'bg-green-200 text-green-800',
+                pending: 'bg-yellow-200 text-yellow-800',
+                stalled: 'bg-red-200 text-red-800',
+                abandoned: 'bg-gray-300 text-gray-800',
+            }[tag] || 'bg-gray-200 text-gray-800';
+        };
+
+        let sortBy = 'name';
+        let sortOrder = 'asc';
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let currentFilter = 'all';
+
+        let searchQuery = '';
+        let dateRangeFrom = null;
+        let dateRangeTo = null;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            map = L.map('kenyaMap', {
+                center: [-0.0236, 37.9062],
+                zoom: 6.3,
+                scrollWheelZoom: false,
+                dragging: true,
+                touchZoom: false,
+                doubleClickZoom: true,
+                boxZoom: false,
+                keyboard: false,
+                zoomControl: true // keeps the + / – buttons visible
+            });
+
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20,
+                attribution: '&copy; Stadia Maps & OpenMapTiles & OpenStreetMap'
+            }).addTo(map);
+
+
+            const markerData = [
+                { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
+                { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
+                { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
+                { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "abandoned" },
+                { lat: 0.5673, lng: 35.2489, name: "Project 5", tag: "active" },
+                { lat: -0.7584, lng: 36.9684, name: "Project 6", tag: "pending" },
+                { lat: 1.0321, lng: 37.7456, name: "Project 7", tag: "stalled" },
+                { lat: -0.5648, lng: 35.6892, name: "Project 8", tag: "abandoned" },
+                { lat: -1.3201, lng: 36.9021, name: "Project 9", tag: "active" },
+                { lat: 0.8231, lng: 36.4562, name: "Project 10", tag: "pending" },
+                { lat: -0.8723, lng: 35.9231, name: "Project 11", tag: "stalled" },
+                { lat: 0.2974, lng: 36.8762, name: "Project 12", tag: "abandoned" },
+                { lat: 0.1492, lng: 37.5312, name: "Project 13", tag: "active" },
+                { lat: -1.6754, lng: 36.1212, name: "Project 14", tag: "pending" },
+                { lat: 0.9273, lng: 35.1342, name: "Project 15", tag: "stalled" },
+                { lat: 0.6284, lng: 36.3173, name: "Project 16", tag: "abandoned" },
+                { lat: -1.3627, lng: 36.5431, name: "Project 17", tag: "active" },
+                { lat: 0.7542, lng: 35.9751, name: "Project 18", tag: "pending" },
+                { lat: -0.8921, lng: 36.6519, name: "Project 19", tag: "stalled" },
+                { lat: -1.0234, lng: 37.0917, name: "Project 20", tag: "abandoned" },
+                { lat: 1.1023, lng: 36.8342, name: "Project 21", tag: "active" },
+                { lat: 0.4132, lng: 35.8423, name: "Project 22", tag: "pending" },
+                { lat: -0.5273, lng: 36.4398, name: "Project 23", tag: "stalled" },
+                { lat: -1.2573, lng: 37.2812, name: "Project 24", tag: "abandoned" },
+                { lat: 0.7632, lng: 35.1231, name: "Project 25", tag: "active" },
+                { lat: -0.2734, lng: 36.9781, name: "Project 26", tag: "pending" },
+                { lat: 1.0213, lng: 36.5341, name: "Project 27", tag: "stalled" },
+                { lat: 0.6842, lng: 36.8345, name: "Project 28", tag: "abandoned" },
+                { lat: -1.0214, lng: 37.2134, name: "Project 29", tag: "active" },
+                { lat: 0.8123, lng: 35.7481, name: "Project 30", tag: "pending" },
+                { lat: 0.9431, lng: 36.1934, name: "Project 31", tag: "stalled" },
+                { lat: -0.7421, lng: 36.0298, name: "Project 32", tag: "abandoned" },
+                { lat: -1.2419, lng: 36.7492, name: "Project 33", tag: "active" },
+                { lat: 0.4561, lng: 35.9021, name: "Project 34", tag: "pending" },
+                { lat: -0.6872, lng: 36.4983, name: "Project 35", tag: "stalled" },
+                { lat: 0.9812, lng: 37.3847, name: "Project 36", tag: "abandoned" },
+                { lat: -1.1023, lng: 36.9821, name: "Project 37", tag: "active" },
+                { lat: 0.7421, lng: 36.4213, name: "Project 38", tag: "pending" },
+                { lat: -0.3421, lng: 35.8741, name: "Project 39", tag: "stalled" },
+                { lat: 0.9843, lng: 36.1321, name: "Project 40", tag: "abandoned" },
+                { lat: 0.2142, lng: 37.8234, name: "Project 41", tag: "active" },
+                { lat: -0.9432, lng: 36.9431, name: "Project 42", tag: "pending" },
+                { lat: 1.1543, lng: 35.6212, name: "Project 43", tag: "stalled" },
+                { lat: 0.5324, lng: 36.0932, name: "Project 44", tag: "abandoned" },
+                { lat: -1.1932, lng: 36.8371, name: "Project 45", tag: "active" },
+                { lat: 0.8934, lng: 35.8232, name: "Project 46", tag: "pending" },
+                { lat: -0.4721, lng: 36.4731, name: "Project 47", tag: "stalled" },
+                { lat: 0.6231, lng: 36.9512, name: "Project 48", tag: "abandoned" },
+                { lat: -1.0132, lng: 36.3421, name: "Project 49", tag: "active" },
+                { lat: 0.3782, lng: 35.6491, name: "Project 50", tag: "pending" }
+            ];
+
+            markerData.forEach((data) => {
+                data.description = `This is a description for ${data.name}`;
+                data.region = `Region ${Math.ceil(Math.random() * 10)}`;
+                data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
+                data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
+                data.sponsor = `Sponsor for ${data.name}`;
+                data.participants = Math.ceil(Math.random() * 100);
+                data.start_date = new Date(Date.now() - Math.random() * 10000000000).toISOString();
+                data.status = data.tag;
+
+                const marker = L.marker([data.lat, data.lng], { icon: icons.default(data.tag) })
+                    .addTo(map)
+                    .bindTooltip(data.name)
+                    .on("click", function () {
+                        if (selectedMarker && selectedMarker !== this) {
+                            selectedMarker.setIcon(icons.default(selectedMarker.tag));
+                        }
+                        this.setIcon(icons.selected(data.tag));
+                        selectedMarker = this;
+                        showProjectInfo(data);
+                    });
+
+                marker.data = data;
+                marker.tag = data.tag;
+                markers.push(marker);
+            });
+
+            highlightMarkers('all');
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('dateFrom').addEventListener('change', (e) => {
+                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('dateTo').addEventListener('change', (e) => {
+                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                sortProjects(e.target.value);
+            });
+        });
+
+        function showProjectInfo(project) {
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.remove("hidden");
+            infoBox.innerHTML = `
+            <h3 class="text-xl font-bold text-gray-800 mb-4">${project.name}</h3>
+            <p><strong>Description:</strong> ${project.description}</p>
+            <p><strong>Region:</strong> ${project.region}</p>
+            <p><strong>Budget:</strong> ${project.budget}</p>
+            <p><strong>Team:</strong> ${project.team}</p>
+            <p><strong>Participants:</strong> ${project.participants}</p>
+            <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+            <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
+            <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+        `;
+        }
+
+        function focusMarker(index) {
+            const marker = markers[index];
+            map.setView(marker.getLatLng(), 9);
+            marker.fire('click');
+            document.getElementById('kenyaMap').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function sortProjects(field) {
+            if (sortBy === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortBy = field;
+                sortOrder = 'asc';
+            }
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+        }
+
+        function highlightMarkers(tag) {
+            currentFilter = tag;
+            const accordion = document.getElementById("projectAccordion");
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.add("hidden");
+            accordion.innerHTML = '';
+            accordion.classList.remove("hidden");
+            accordion.classList.add("opacity-0", "translate-y-4");
+
+            let filteredMarkers = markers.filter(marker => {
+                const p = marker.data;
+                if (tag !== 'all' && marker.tag !== tag) return false;
+                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+                const pDate = new Date(p.start_date);
+                if (dateRangeFrom && pDate < dateRangeFrom) return false;
+                if (dateRangeTo && pDate > dateRangeTo) return false;
+                return true;
+            });
+
+            filteredMarkers.sort((a, b) => {
+                const aVal = sortBy === 'name' ? a.data.name : new Date(a.data.start_date);
+                const bVal = sortBy === 'name' ? b.data.name : new Date(b.data.start_date);
+                return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+            });
+
+            const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
+            const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+            updatePaginationControls(totalPages);
+
+            markers.forEach(marker => {
+                marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+            });
+
+            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
+
+            paginated.forEach((marker, idx) => {
+                const i = markers.indexOf(marker);
+                const project = marker.data;
+                const bg = bgColors[project.status] || bgColors.default;
+
+                const item = document.createElement("div");
+                item.className = `rounded shadow-sm ${bg}`;
+
+                item.innerHTML = `
+                <button class="w-full text-left px-6 py-4 border-b focus:outline-none" data-toggle="collapse-${i}">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
+                            <p class="text-sm text-gray-600">${project.description}</p>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-2 sm:mt-0">${new Date(project.start_date).toLocaleDateString()}</div>
+                    </div>
+                </button>
+                <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
+                    <p><strong>Region:</strong> ${project.region}</p>
+                    <p><strong>Budget:</strong> ${project.budget}</p>
+                    <p><strong>Team:</strong> ${project.team}</p>
+                    <p><strong>Participants:</strong> ${project.participants}</p>
+                    <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+                    <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+                    <button onclick="focusMarker(${i})" class="mt-3 px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded transition hover:scale-105">
+                        Show on Map
+                    </button>
+                </div>
+            `;
+
+                accordion.appendChild(item);
+
+                item.querySelector(`[data-toggle="collapse-${i}"]`).addEventListener("click", () => {
+                    document.getElementById(`collapse-${i}`).classList.toggle("hidden");
+                });
+            });
+        }
+
+        function updatePaginationControls(totalPages) {
+            const container = document.getElementById("paginationControls");
+            container.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.textContent = i;
+                btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    highlightMarkers(currentFilter);
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function exportCSV() {
+            const headers = ['Name', 'Description', 'Region', 'Budget', 'Team', 'Participants', 'Sponsor', 'Start Date', 'Status'];
+            const rows = markers
+                .map(m => m.data)
+                .filter(p => {
+                    if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+                    const date = new Date(p.start_date);
+                    if (dateRangeFrom && date < dateRangeFrom) return false;
+                    if (dateRangeTo && date > dateRangeTo) return false;
+                    if (currentFilter !== 'all' && p.status !== currentFilter) return false;
+                    return true;
+                })
+                .map(p => [
+                    p.name, p.description, p.region, p.budget, p.team, p.participants,
+                    p.sponsor, new Date(p.start_date).toLocaleDateString(), p.status
+                ]);
+
+            let csvContent = [headers.join(',')];
+            rows.forEach(r => csvContent.push(r.map(field => `"${field}"`).join(',')));
+
+            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `projects_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <!-- Leaflet JS -->
+
+
+</body>
+
+</html>
