@@ -2,10 +2,8 @@
 # Build stage
 FROM gradle:7.6-jdk17 AS builder
 WORKDIR /home/gradle/project
-# Copy only necessary files first for better caching
-COPY build.gradle settings.gradle gradlew gradlew.bat ./
-COPY gradle ./gradle
-COPY src ./src
+# Copy the full project context (avoids missing gradle/gradlew copy issues)
+COPY . .
 
 # Run the Gradle build (skip tests for faster builds in CI)
 RUN gradle bootJar -x test --no-daemon
@@ -18,4 +16,3 @@ COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 EXPOSE 8080
 # Use server.port from environment (Render provides $PORT)
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
-

@@ -1,0 +1,26 @@
+.gradle
+build
+.gradle
+.gradle/
+.gradle/**
+.gradle-cache/
+**/build
+**/out
+.git
+.gitignore
+.idea
+.vscode
+*.iml
+**/*.log
+.DS_Store
+*.zip
+gradlew
+gradlew.bat
+node_modules
+.env
+
+# keep src and gradle wrapper
+!gradle/wrapper/**
+!gradlew
+!gradlew.bat
+
