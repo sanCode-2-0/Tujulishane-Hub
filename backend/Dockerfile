@@ -6,7 +6,9 @@ WORKDIR /home/gradle/project
 COPY . .
 
 # Run the Gradle build (skip tests for faster builds in CI)
-RUN gradle bootJar -x test --no-daemon
+# Use the project's Gradle wrapper for reproducible builds and to avoid relying on the builder image's gradle binary
+RUN chmod +x ./gradlew || true
+RUN ./gradlew bootJar -x test --no-daemon
 
 # Run stage
 FROM eclipse-temurin:17-jre
