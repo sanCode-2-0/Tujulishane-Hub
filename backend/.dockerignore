@@ -24,3 +24,5 @@ node_modules
 !gradlew
 !gradlew.bat
 
+# Allow the built jar to be copied into runtime-only image when present
+!build/libs/*.jar

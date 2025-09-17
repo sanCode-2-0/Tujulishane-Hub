@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -42,6 +46,8 @@ public class UserController {
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Registration received. Check your email for the verification OTP.", null);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            // Log full stacktrace for diagnostics (EmailService will also log)
+            logger.error("Error during registration for {}: {}", payload.get("email"), e.getMessage(), e);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -81,9 +87,15 @@ public class UserController {
         }
 
         // Send a fresh login OTP
-        userService.sendLoginOtp(email);
-        ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
-        return ResponseEntity.ok(response);
+        try {
+            userService.sendLoginOtp(email);
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to send email", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @PostMapping("/verify/login")
@@ -142,8 +154,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
 
-        userService.sendLoginOtp(email);
-        ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
-        return ResponseEntity.ok(response);
+        try {
+            userService.sendLoginOtp(email);
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to send email", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

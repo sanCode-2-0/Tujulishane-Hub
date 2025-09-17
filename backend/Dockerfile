@@ -1,20 +1,20 @@
-# Multi-stage Dockerfile for building and running the Spring Boot app
-# Build stage
-FROM gradle:7.6-jdk17 AS builder
-WORKDIR /home/gradle/project
-# Copy the full project context (avoids missing gradle/gradlew copy issues)
-COPY . .
+# Use a lightweight base image for the runtime
+FROM openjdk:20-slim
 
-# Run the Gradle build (skip tests for faster builds in CI)
-# Use the project's Gradle wrapper for reproducible builds and to avoid relying on the builder image's gradle binary
-RUN chmod +x ./gradlew || true
-RUN ./gradlew bootJar -x test --no-daemon
-
-# Run stage
-FROM eclipse-temurin:17-jre
+# Working directory
 WORKDIR /app
-# Copy the fat jar produced by spring boot
-COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
+
+# Add metadata
+LABEL maintainer="Briane Lomoni <kapolonbraine@gmail.com>"
+LABEL version="1.0.0"
+LABEL description="Backend for Tujulishane-Hub (Spring Boot)"
+
+# Copy the built jar into the container (expect build/libs/*.jar to exist)
+# Build the jar locally first: gradlew bootJar -x test
+COPY build/libs/*.jar app.jar
+
+# Expose port and use Render's provided PORT at runtime
 EXPOSE 8080
-# Use server.port from environment (Render provides $PORT)
+
+# Run the application binding to the provided PORT (Render sets $PORT)
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
