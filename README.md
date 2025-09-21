@@ -4,7 +4,7 @@
 https://api-tujulishane-hub.onrender.com
 ```
 
-## 📋 Project Endpoints
+## Project Endpoints
 
 ### Get Projects
 ```bash
