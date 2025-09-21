@@ -1,8 +1,5 @@
 # Tujulishane Hub API
 
-Backend API for managing development projects in Kenya with automatic geocoding.
-
-## 🚀 Live API
 ```
 https://api-tujulishane-hub.onrender.com
 ```
@@ -36,7 +33,7 @@ PUT /api/projects/{id}
 DELETE /api/projects/{id}
 ```
 
-## 🌍 Geographic Endpoints
+## Map Endpoints
 
 ```bash
 GET /api/projects/with-coordinates
@@ -45,7 +42,7 @@ GET /api/projects/coordinates?minLat=-1.5&maxLat=-1.0&minLng=36.5&maxLng=37.0
 POST /api/projects/batch-geocode
 ```
 
-## 📊 Statistics
+## Statistics
 
 ```bash
 GET /api/projects/statistics
@@ -61,7 +58,7 @@ Response:
 }
 ```
 
-## 👤 Authentication
+## Email Authentication
 
 ```bash
 # Register
@@ -77,14 +74,14 @@ POST /api/auth/login
 {"email": "john@example.com"}
 ```
 
-## 🔧 Project Status Values
+## Project Status Codes
 - `pending` - Awaiting approval
 - `active` - Currently running  
 - `completed` - Finished
 - `stalled` - Temporarily halted
 - `abandoned` - Cancelled
 
-## 🧪 Quick Test
+## Just run the curl requests below to quickly test the API
 
 ```bash
 # Get all projects
@@ -94,20 +91,4 @@ curl "https://api-tujulishane-hub.onrender.com/api/projects"
 curl -X POST "https://api-tujulishane-hub.onrender.com/api/projects" \
   -H "Content-Type: application/json" \
   -d '{"partner": "Test Org", "title": "Test Project"}'
-```
-
-## 🛠️ Tech Stack
-- Java 21 + Spring Boot 3.2.0
-- PostgreSQL (Production) / H2 (Development)  
-- JWT Authentication
-- Automatic Geocoding
-- Docker Ready
-
-## 📝 Response Format
-```json
-{
-  "status": 200,
-  "message": "Success message", 
-  "data": { ... }
-}
 ```
