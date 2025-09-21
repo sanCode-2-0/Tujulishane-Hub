@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  tujulishane-backend:
+    build: .
+    container_name: tujulishane-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-MyVeryLongSecretKeyThatIsAtLeast512BitsForHS512AlgorithmChangeThis}
+      - MAIL_USERNAME=${MAIL_USERNAME:-}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/projects"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

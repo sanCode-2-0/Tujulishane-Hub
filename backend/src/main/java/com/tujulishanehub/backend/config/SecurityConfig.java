@@ -36,6 +36,7 @@ public class SecurityConfig {
                         // Avoid path patterns that PathPatternParser rejects (like /**/*.html). Permit common static locations instead.
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/projects/**").permitAll()  // Allow public access to projects API
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )

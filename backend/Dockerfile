@@ -1,5 +1,5 @@
 # Use a lightweight base image for the runtime
-FROM openjdk:20-slim
+FROM openjdk:21-slim
 
 # Working directory
 WORKDIR /app

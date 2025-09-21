@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: tujulishane-hub-backend
+    runtime: java
+    buildCommand: cd backend && ./gradlew clean bootJar -x test
+    startCommand: cd backend && java -Dserver.port=$PORT -jar build/libs/*.jar
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: /
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: GEOCODING_API_KEY
+        sync: false
+        value: ""
+    healthCheckPath: /api/projects
+    previewsEnabled: false
