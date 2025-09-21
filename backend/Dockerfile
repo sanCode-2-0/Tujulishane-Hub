@@ -17,4 +17,5 @@ COPY build/libs/*.jar app.jar
 EXPOSE 8080
 
 # Run the application binding to the provided PORT (Render sets $PORT)
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+# Use production profile by default in Docker (can be overridden with SPRING_PROFILES_ACTIVE env var)
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod} -jar /app/app.jar"]

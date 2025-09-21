@@ -9,6 +9,8 @@ services:
     branch: main
     rootDir: /
     envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
       - key: JWT_SECRET
         generateValue: true
       - key: MAIL_USERNAME
@@ -20,3 +22,8 @@ services:
         value: ""
     healthCheckPath: /api/projects
     previewsEnabled: false
+
+  - type: pserv
+    name: tujulishane-hub-db
+    plan: free
+    region: oregon
