@@ -1584,7 +1584,3 @@ The API behavior can be configured through environment variables:
 - `FRONTEND_ORIGIN` - Allowed CORS origins (comma-separated)
 - `JWT_EXPIRATION` - JWT token expiration time in seconds (default: 3600)
 - `EMAIL_SERVICE_*` - Email service configuration for OTP delivery
-
----
-
-This documentation covers all available endpoints in the Tujulishane Hub API. For additional support or questions about specific endpoints, please contact the development team.
