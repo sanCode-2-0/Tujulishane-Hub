@@ -236,4 +236,18 @@ public class UserService {
         User user = getUserByEmail(email);
         return user != null && user.canCreateProjects();
     }
+    
+    /**
+     * Get users by role
+     */
+    public java.util.List<User> getUsersByRole(User.Role role) {
+        return userRepository.findByRole(role);
+    }
+    
+    /**
+     * Save user (for direct database operations)
+     */
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 }
