@@ -88,7 +88,32 @@
             RMNCAH Coordination Hub
         </p>
     </main>
+    <script>
+        async function verifyOtp() {
+            const email = localStorage.getItem("pendingEmail");
+            const code = otpHelpers.getCode(); // from your OTP script
 
+            try {
+                const res = await fetch("https://api.tujulishanehub.org/auth/verify-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, otp: code })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Invalid code");
+
+                // Save token for future API calls
+                localStorage.setItem("accessToken", data.token);
+
+                // Redirect
+                window.location.href = "index-post-login.html";
+            } catch (err) {
+                showMessage(err.message, "error");
+            }
+        }
+
+    </script>
     <script>
         (function () {
             const inputs = Array.from(document.querySelectorAll('.otp-input'));

@@ -535,7 +535,12 @@
             </a>
         </div>
     </footer>
+    <script>
+        // after successful login
+        localStorage.setItem("accessToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user)); // name, role, email, etc.
 
+    </script>
     <script src="styles/effects.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <!-- Leaflet JS -->
