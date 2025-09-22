@@ -42,9 +42,6 @@ public class Project {
     @Column(name = "sub_county")
     private String subCounty;
     
-    @Column(name = "project_area")
-    private String projectArea;
-    
     @Column(name = "maps_address", columnDefinition = "TEXT")
     private String mapsAddress;
     
@@ -60,6 +57,9 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String objectives;
     
+    @Column(precision = 15, scale = 2)
+    private java.math.BigDecimal budget;
+    
     // New latitude and longitude fields extracted from maps_address
     private Double latitude;
     
@@ -73,6 +73,19 @@ public class Project {
     private LocalDateTime updatedAt;
     
     private String status; // e.g., "active", "pending", "stalled", "completed", "abandoned"
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+    
+    @Column(name = "approved_by")
+    private Long approvedBy;
+    
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+    
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
     
     @PrePersist
     protected void onCreate() {
@@ -96,5 +109,102 @@ public class Project {
             return String.format("%.6f,%.6f", latitude, longitude);
         }
         return null;
+    }
+
+    // Explicit getter and setter methods for important fields
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContactPersonEmail() {
+        return contactPersonEmail;
+    }
+
+    public void setContactPersonEmail(String contactPersonEmail) {
+        this.contactPersonEmail = contactPersonEmail;
+    }
+
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+
+    public Long getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Long approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(LocalDateTime approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMapsAddress() {
+        return mapsAddress;
+    }
+
+    public void setMapsAddress(String mapsAddress) {
+        this.mapsAddress = mapsAddress;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

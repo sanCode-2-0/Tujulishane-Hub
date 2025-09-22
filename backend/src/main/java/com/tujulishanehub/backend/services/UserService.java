@@ -1,5 +1,6 @@
 package com.tujulishanehub.backend.services;
 
+import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,10 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
     // Helper to (re)send login OTP for ACTIVE users if needed
     public void sendLoginOtp(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -95,5 +100,113 @@ public class UserService {
             userRepository.save(user);
             emailService.sendEmail(email, "Your login OTP", "Your OTP is: " + otp);
         }
+    }
+
+    // ========== ADMIN METHODS ==========
+
+    /**
+     * Get all users (Super-Admin only)
+     */
+    public java.util.List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    /**
+     * Get total users count
+     */
+    public long getAllUsersCount() {
+        return userRepository.count();
+    }
+
+    /**
+     * Get users by approval status
+     */
+    public java.util.List<User> getUsersByApprovalStatus(ApprovalStatus approvalStatus) {
+        return userRepository.findByApprovalStatus(approvalStatus);
+    }
+
+    /**
+     * Get pending users
+     */
+    public java.util.List<User> getPendingUsers() {
+        return userRepository.findByApprovalStatus(ApprovalStatus.PENDING);
+    }
+
+    /**
+     * Approve user (Super-Admin only)
+     */
+    public boolean approveUser(Long userId, Long approvedBy) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setApprovalStatus(ApprovalStatus.APPROVED);
+            user.setApprovedBy(approvedBy);
+            user.setApprovedAt(java.time.LocalDateTime.now());
+            user.setRejectionReason(null);
+            user.setStatus("ACTIVE"); // Activate user when approved
+            
+            userRepository.save(user);
+            
+            // Send notification to user
+            emailService.sendEmail(user.getEmail(), 
+                "Account Approved", 
+                "Your account has been approved by MOH and you can now access the system.");
+            
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Reject user (Super-Admin only)
+     */
+    public boolean rejectUser(Long userId, Long rejectedBy, String reason) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setApprovalStatus(ApprovalStatus.REJECTED);
+            user.setApprovedBy(rejectedBy);
+            user.setRejectionReason(reason);
+            user.setStatus("INACTIVE"); // Deactivate rejected user
+            
+            userRepository.save(user);
+            
+            // Send notification to user
+            emailService.sendEmail(user.getEmail(), 
+                "Account Rejected", 
+                "Your account has been rejected. Reason: " + reason);
+            
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update user role (Super-Admin only)
+     */
+    public boolean updateUserRole(Long userId, User.Role newRole) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            User.Role oldRole = user.getRole();
+            user.setRole(newRole);
+            userRepository.save(user);
+            
+            // Send notification to user
+            emailService.sendEmail(user.getEmail(), 
+                "Role Updated", 
+                "Your role has been updated from " + oldRole + " to " + newRole + " by MOH administrator.");
+            
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if user can create projects
+     */
+    public boolean canUserCreateProjects(String email) {
+        User user = getUserByEmail(email);
+        return user != null && user.canCreateProjects();
     }
 }

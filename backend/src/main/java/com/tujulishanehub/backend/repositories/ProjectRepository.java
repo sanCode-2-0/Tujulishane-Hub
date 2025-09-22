@@ -1,5 +1,6 @@
 package com.tujulishanehub.backend.repositories;
 
+import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -53,7 +54,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findProjectsNeedingGeocoding();
     
     // Find projects by contact person email
-    Optional<Project> findByContactPersonEmail(String email);
+    List<Project> findByContactPersonEmail(String email);
+    
+    // Find projects by approval status
+    List<Project> findByApprovalStatus(ApprovalStatus approvalStatus);
+    
+    // Count projects by approval status
+    long countByApprovalStatus(ApprovalStatus approvalStatus);
+    
+    // Find recent projects (top 10)
+    List<Project> findTop10ByOrderByCreatedAtDesc();
     
     // Find projects within a geographic bounding box
     @Query("SELECT p FROM Project p WHERE p.latitude BETWEEN :minLat AND :maxLat AND p.longitude BETWEEN :minLng AND :maxLng")

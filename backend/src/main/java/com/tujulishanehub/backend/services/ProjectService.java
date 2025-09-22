@@ -236,17 +236,101 @@ public class ProjectService {
         if (updated.getActivityType() != null) existing.setActivityType(updated.getActivityType());
         if (updated.getCounty() != null) existing.setCounty(updated.getCounty());
         if (updated.getSubCounty() != null) existing.setSubCounty(updated.getSubCounty());
-        if (updated.getProjectArea() != null) existing.setProjectArea(updated.getProjectArea());
         if (updated.getMapsAddress() != null) existing.setMapsAddress(updated.getMapsAddress());
         if (updated.getContactPersonName() != null) existing.setContactPersonName(updated.getContactPersonName());
         if (updated.getContactPersonRole() != null) existing.setContactPersonRole(updated.getContactPersonRole());
         if (updated.getContactPersonEmail() != null) existing.setContactPersonEmail(updated.getContactPersonEmail());
         if (updated.getObjectives() != null) existing.setObjectives(updated.getObjectives());
+        if (updated.getBudget() != null) existing.setBudget(updated.getBudget());
         if (updated.getStatus() != null) existing.setStatus(updated.getStatus());
         
         // Allow manual override of coordinates
         if (updated.getLatitude() != null) existing.setLatitude(updated.getLatitude());
         if (updated.getLongitude() != null) existing.setLongitude(updated.getLongitude());
+    }
+    
+    /**
+     * Create a project by partner
+     */
+    public Project createProjectByPartner(Project project, String userEmail) {
+        logger.info("Creating project by partner: {} for email: {}", project.getTitle(), userEmail);
+        
+        // Set partner email
+        if (project.getContactPersonEmail() == null) {
+            project.setContactPersonEmail(userEmail);
+        }
+        
+        return createProject(project);
+    }
+    
+    /**
+     * Approve project (Admin only)
+     */
+    public boolean approveProject(Long projectId, Long approvedBy) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED);
+            project.setApprovedBy(approvedBy);
+            project.setApprovedAt(java.time.LocalDateTime.now());
+            project.setRejectionReason(null);
+            project.setStatus("active"); // Make project active when approved
+            projectRepository.save(project);
+            logger.info("Project {} approved by admin {}", projectId, approvedBy);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Reject project (Admin only)
+     */
+    public boolean rejectProject(Long projectId, Long rejectedBy, String reason) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.REJECTED);
+            project.setApprovedBy(rejectedBy);
+            project.setRejectionReason(reason);
+            project.setStatus("rejected"); // Set project status to rejected
+            projectRepository.save(project);
+            logger.info("Project {} rejected by admin {} with reason: {}", projectId, rejectedBy, reason);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Get projects by approval status (Admin only)
+     */
+    public List<Project> getProjectsByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus approvalStatus) {
+        return projectRepository.findByApprovalStatus(approvalStatus);
+    }
+    
+    /**
+     * Get projects by partner email
+     */
+    public List<Project> getProjectsByPartnerEmail(String email) {
+        return projectRepository.findByContactPersonEmail(email);
+    }
+    
+    /**
+     * Get admin dashboard statistics
+     */
+    public java.util.Map<String, Object> getAdminDashboardStats() {
+        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        
+        // Project counts by status
+        stats.put("totalProjects", projectRepository.count());
+        stats.put("pendingProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING));
+        stats.put("approvedProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED));
+        stats.put("rejectedProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.REJECTED));
+        
+        // Recent projects
+        List<Project> recentProjects = projectRepository.findTop10ByOrderByCreatedAtDesc();
+        stats.put("recentProjects", recentProjects);
+        
+        return stats;
     }
     
     /**

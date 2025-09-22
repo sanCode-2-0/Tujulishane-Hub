@@ -1,8 +1,11 @@
 package com.tujulishanehub.backend.controllers;
 
+import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Project;
+import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.services.ProjectService;
+import com.tujulishanehub.backend.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -31,14 +37,23 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
     
+    @Autowired
+    private UserService userService;
+    
     /**
-     * Create a new project
+     * Create a new project (Partners/Donors only)
      */
     @PostMapping
+    @PreAuthorize("hasRole('PARTNER') and @userService.canUserCreateProjects(authentication.name)")
     public ResponseEntity<ApiResponse<Project>> createProject(@Valid @RequestBody Project project) {
         try {
             logger.info("Creating new project: {}", project.getTitle());
-            Project createdProject = projectService.createProject(project);
+            
+            // Get the authenticated user and associate with project
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            
+            Project createdProject = projectService.createProjectByPartner(project, userEmail);
             
             ApiResponse<Project> response = new ApiResponse<>(
                 HttpStatus.CREATED.value(), 
@@ -137,9 +152,10 @@ public class ProjectController {
     }
     
     /**
-     * Update project
+     * Update project (Owner or Admin only)
      */
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('SUPER_ADMIN') or @projectService.isProjectOwner(#id, authentication.name))")
     public ResponseEntity<ApiResponse<Project>> updateProject(
             @PathVariable Long id, 
             @Valid @RequestBody Project project) {
@@ -432,6 +448,200 @@ public class ProjectController {
             ApiResponse<Object> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to complete batch geocoding: " + e.getMessage(), 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    // ==================== ADMIN ENDPOINTS ====================
+    
+    /**
+     * Approve a project (Admin only)
+     */
+    @PostMapping("/admin/approve/{projectId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> approveProject(@PathVariable Long projectId) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String adminEmail = auth.getName();
+            User admin = userService.getUserByEmail(adminEmail);
+            
+            boolean success = projectService.approveProject(projectId, admin.getId());
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(), 
+                    "Project approved successfully", 
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(), 
+                    "Project not found", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error approving project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to approve project", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Reject a project (Admin only)
+     */
+    @PostMapping("/admin/reject/{projectId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> rejectProject(
+            @PathVariable Long projectId, 
+            @RequestBody Map<String, String> payload) {
+        try {
+            String reason = payload.getOrDefault("reason", "No reason provided");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String adminEmail = auth.getName();
+            User admin = userService.getUserByEmail(adminEmail);
+            
+            boolean success = projectService.rejectProject(projectId, admin.getId(), reason);
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(), 
+                    "Project rejected successfully", 
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(), 
+                    "Project not found", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error rejecting project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to reject project", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get projects by approval status (Admin only)
+     */
+    @GetMapping("/admin/approval-status/{status}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<Project>>> getProjectsByApprovalStatus(@PathVariable String status) {
+        try {
+            ApprovalStatus approvalStatus = ApprovalStatus.valueOf(status.toUpperCase());
+            List<Project> projects = projectService.getProjectsByApprovalStatus(approvalStatus);
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Projects retrieved successfully", 
+                projects
+            );
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(), 
+                "Invalid approval status. Valid values: PENDING, APPROVED, REJECTED", 
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving projects by approval status {}: {}", status, e.getMessage(), e);
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve projects", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get admin dashboard statistics (Admin only)
+     */
+    @GetMapping("/admin/dashboard-stats")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAdminDashboardStats() {
+        try {
+            Map<String, Object> stats = projectService.getAdminDashboardStats();
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Admin dashboard statistics retrieved successfully", 
+                stats
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving admin dashboard stats: {}", e.getMessage(), e);
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve dashboard statistics", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get user's own projects (Authenticated users)
+     */
+    @GetMapping("/my-projects")
+    @PreAuthorize("hasRole('PARTNER')")
+    public ResponseEntity<ApiResponse<List<Project>>> getMyProjects() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            List<Project> projects = projectService.getProjectsByPartnerEmail(userEmail);
+            
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Your projects retrieved successfully", 
+                projects
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving user projects: {}", e.getMessage(), e);
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve your projects", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // ========== SUPER-ADMIN ENDPOINTS ==========
+
+    /**
+     * Get all projects (Super-Admin only)
+     */
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<Project>>> getAllProjectsAdmin() {
+        try {
+            List<Project> projects = projectService.getAllProjects();
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "All projects retrieved successfully", 
+                projects
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving all projects: {}", e.getMessage(), e);
+            ApiResponse<List<Project>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve projects", 
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

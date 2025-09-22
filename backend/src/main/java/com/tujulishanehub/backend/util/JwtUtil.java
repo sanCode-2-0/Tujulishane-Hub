@@ -1,10 +1,13 @@
 package com.tujulishanehub.backend.util;
 
+import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,9 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration; // seconds
 
+    @Autowired
+    private UserService userService;
+
     private SecretKey signingKey;
 
     @PostConstruct
@@ -42,6 +48,26 @@ public class JwtUtil {
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public String getRoleFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("role", String.class));
+    }
+
+    public Long getUserIdFromToken(String token) {
+        return getClaimFromToken(token, claims -> {
+            Object userIdObj = claims.get("userId");
+            if (userIdObj instanceof Integer) {
+                return ((Integer) userIdObj).longValue();
+            } else if (userIdObj instanceof Long) {
+                return (Long) userIdObj;
+            }
+            return null;
+        });
+    }
+
+    public String getApprovalStatusFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("approvalStatus", String.class));
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -62,6 +88,20 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }
+    
+    public String generateToken(String email) {
+        try {
+            User user = userService.getUserByEmail(email);
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("role", user.getRole().name());
+            claims.put("userId", user.getId());
+            claims.put("approvalStatus", user.getApprovalStatus().name());
+            return doGenerateToken(claims, email);
+        } catch (Exception e) {
+            // Fallback to basic token if user lookup fails
+            return doGenerateToken(email);
+        }
+    }
 
     private String doGenerateToken(String subject) {
         return Jwts.builder().setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -79,8 +119,9 @@ public class JwtUtil {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
-    public String generateToken(String email) {
-        return doGenerateToken(email);
+    
+    public Boolean validateToken(String token, String email) {
+        final String username = getUsernameFromToken(token);
+        return (username.equals(email) && !isTokenExpired(token));
     }
 }
