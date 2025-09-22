@@ -1,7 +1,41 @@
 # Tujulishane Hub API Documentation
 
 
-**Base URL**: `https://api-tujulishane-hub.onrender.com`  
+---
+
+## How to Create a SUPER_ADMIN User (Initial System Setup)
+
+To create the first SUPER_ADMIN user, use the special bootstrap endpoint. This should only be done once during initial setup.
+
+**Step 1:** Set the `BOOTSTRAP_SECRET` environment variable on your server to a secure value (e.g., `xN8y0stcAh0meLwCgXeeErTmK9X5PMO4383292903`).
+
+**Step 2:** Run the following `curl` command to create the SUPER_ADMIN user:
+
+```bash
+curl -X POST https://api-tujulishane-hub.onrender.com/api/auth/bootstrap/super-admin \
+    -H "Content-Type: application/json" \
+    -d '{
+        "email": "admin@moh.gov.ke",
+        "name": "MOH System Administrator",
+        "secretKey": "xN8y0stcAh0meLwCgXeeErTmK9X5PMO4"
+    }'
+```
+
+**Example Response (200 OK):**
+```json
+{
+    "status": 200,
+    "message": "SUPER_ADMIN user created successfully. You can now login with OTP.",
+    "data": null
+}
+```
+
+**Notes:**  
+- This endpoint can only be used once.  
+- The `secretKey` must match the `BOOTSTRAP_SECRET` environment variable.  
+- After successful creation, log in using the OTP sent to the provided email.
+
+---
 **API Version**: 1.0  
 **Authentication**: JWT Bearer Token  
 **Response Format**: JSON  
