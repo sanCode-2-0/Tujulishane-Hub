@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,6 +168,91 @@ public class UserController {
         } catch (RuntimeException e) {
             logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to send email", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    // ==================== BOOTSTRAP ENDPOINT ====================
+    
+    /**
+     * Bootstrap the first SUPER_ADMIN user (USE ONCE ONLY)
+     * This endpoint is for initial system setup and should be removed after use
+     */
+    @PostMapping("/bootstrap/super-admin")
+    public ResponseEntity<ApiResponse<Object>> bootstrapSuperAdmin(@RequestBody Map<String, String> payload) {
+        try {
+            String email = payload.get("email");
+            String name = payload.get("name");
+            String secretKey = payload.get("secretKey");
+            
+            // Security check - require a secret key from environment
+            String expectedSecret = System.getenv("BOOTSTRAP_SECRET");
+            if (expectedSecret == null || !expectedSecret.equals(secretKey)) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(), 
+                    "Invalid bootstrap secret key", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            if (email == null || email.isEmpty() || name == null || name.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Email and name are required", 
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Check if any SUPER_ADMIN users already exist
+            List<User> existingSuperAdmins = userService.getUsersByRole(User.Role.SUPER_ADMIN);
+            if (!existingSuperAdmins.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.CONFLICT.value(), 
+                    "SUPER_ADMIN users already exist. This endpoint can only be used once.", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+            
+            // Create or update user as SUPER_ADMIN
+            Optional<User> existingUser = userService.findByEmail(email);
+            User user;
+            
+            if (existingUser.isPresent()) {
+                user = existingUser.get();
+                user.setName(name);
+            } else {
+                user = new User();
+                user.setEmail(email);
+                user.setName(name);
+            }
+            
+            user.setRole(User.Role.SUPER_ADMIN);
+            user.setApprovalStatus(ApprovalStatus.APPROVED);
+            user.setStatus("ACTIVE");
+            user.setVerified(true);
+            user.setEmailVerified(true);
+            user.setApprovedAt(java.time.LocalDateTime.now());
+            user.setApprovedBy(0L); // Self-approved bootstrap
+            
+            userService.saveUser(user);
+            
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "SUPER_ADMIN user created successfully. You can now login with OTP.", 
+                null
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error bootstrapping SUPER_ADMIN: {}", e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to bootstrap SUPER_ADMIN user", 
+                null
+            );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
