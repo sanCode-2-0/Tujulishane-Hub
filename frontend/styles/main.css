@@ -12,6 +12,10 @@
     transform: translateY(30px);
 }
 
+.fade-down {
+    transform: translateY(-30px);
+}
+
 .fade-left {
     transform: translateX(-30px);
 }

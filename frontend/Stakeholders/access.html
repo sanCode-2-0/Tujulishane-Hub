@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RMNCAH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',   // Custom Blue
+                        secondary: '#f59e0b', // Custom Amber
+                        accent: '#10b981',    // Custom Green
+                        dark: '#1f2937',      // Gray-800
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+
+    <!-- Optional: Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        .fade-slide-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-slide-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s ease;
+        }
+
+        .fade-slide-leave {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-slide-leave-active {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+    </style>
+
+</head>
+
+<body class="text-gray-800 ">
+    <nav x-data="{ open: false }"
+        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+        <div class="flex items-center justify-between px-6 py-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
+                <img src="/resources/gov.png" class="object-contain h-12" alt="Site Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+                <i class="fas fa-bars" x-show="!open"></i>
+                <i class="fas fa-times" x-show="open" x-cloak></i>
+            </button>
+
+            <!-- Nav Links - Desktop -->
+            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+                <li>
+                    <a href="/" class="uppercase transition hover:text-blue-600">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="/about" class="uppercase transition hover:text-blue-600">
+                        Programs
+                    </a>
+                </li>
+
+                <!-- Pages Dropdown Trigger -->
+                <li class="relative" x-data="{ showDropdown: false }">
+                    <button @click="showDropdown = !showDropdown"
+                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+                        Pages <i class="ml-2 fal fa-chevron-down"></i>
+                    </button>
+
+                    <!-- Dropdown Content -->
+                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl md:w-96"
+                        style="display: none;">
+                        <ul class="py-2 text-sm text-left text-blue-800">
+                            <li class="px-4 py-2 transition hover:bg-blue-100">
+                                <a href="index.html">Index</a>
+                            </li>
+                            <li class="px-4 py-2 transition hover:bg-blue-100">
+                                <a href="registration.html">Login / Registration</a>
+                            </li>
+                            <li class="px-4 py-2 transition hover:bg-blue-100">
+                                <a href="dashboard.html">Dashboard</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li>
+                    <a href="/blog" class="uppercase transition hover:text-blue-600">
+                        Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
+                        Partner
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nav Links - Mobile -->
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform -translate-y-2"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+
+            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
+                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
+                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
+                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
+            </ul>
+
+            <!-- CTA Button -->
+            <div class="mt-6">
+                <a href="/contact"
+                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
+                    <span
+                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
+                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-10 ">
+        <div class="relative w-full max-w-4xl mx-auto">
+            <div class="p-6 space-y-4 bg-white rounded-lg shadow-md panel">
+                <label for="baseUrl" class="block text-sm font-medium text-gray-700">Base URL</label>
+                <input id="baseUrl" type="text" value="https://api-rmncah-hub.onrender.com"
+                    class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="mt-2 text-sm text-gray-600">Stored token: <span id="storedToken">-</span></div>
+
+                <label for="username" class="block text-sm font-medium text-gray-700">Name</label>
+                <input id="username" type="text" placeholder="e.g. Jane Doe"
+                    class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input id="email" type="email" placeholder="you@example.com"
+                    class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="flex mt-4 space-x-4">
+                    <button id="openRegister"
+                        class="px-6 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">Register</button>
+                    <button id="openLogin"
+                        class="px-6 py-2 font-semibold text-white bg-green-600 rounded hover:bg-green-700">Test
+                        Login</button>
+                    <button id="openVerifyReg"
+                        class="px-6 py-2 font-semibold text-white bg-yellow-600 rounded hover:bg-yellow-700">Verify
+                        Registration</button>
+                    <button id="openVerifyLogin"
+                        class="px-6 py-2 font-semibold text-white bg-teal-600 rounded hover:bg-teal-700">Verify
+                        Login</button>
+                </div>
+            </div>
+
+            <!-- Register popup / panel -->
+            <div id="registerPanel" class="hidden p-6 space-y-4 bg-white rounded-lg shadow-md panel" aria-hidden="true">
+                <strong class="text-xl font-semibold text-gray-900">Register</strong>
+                <p class="text-sm text-gray-600">Confirm the details below and click "Confirm Register".</p>
+
+                <label for="reg_username" class="block text-sm font-medium text-gray-700">Name</label>
+                <input id="reg_username" type="text" class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <label for="reg_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input id="reg_email" type="email" class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="flex mt-4 space-x-4">
+                    <button id="confirmRegister"
+                        class="px-6 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">Confirm
+                        Register</button>
+                    <button id="cancelRegister"
+                        class="px-6 py-2 font-semibold text-gray-600 border rounded-md bg-gray-50 hover:bg-gray-100">Cancel</button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="font-medium text-gray-700">Response:</div>
+                    <pre id="regResp" class="text-sm text-gray-600">-</pre>
+                </div>
+            </div>
+
+            <!-- Login popup / panel -->
+            <div id="loginPanel" class="hidden p-6 space-y-4 bg-white rounded-lg shadow-md panel" aria-hidden="true">
+                <strong class="text-xl font-semibold text-gray-900">Login</strong>
+                <p class="text-sm text-gray-600">Enter credentials and click "Confirm Login".</p>
+
+                <label for="login_user" class="block text-sm font-medium text-gray-700">Username or Email</label>
+                <input id="login_user" type="email" placeholder="you@example.com"
+                    class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="flex mt-4 space-x-4">
+                    <button id="confirmLogin"
+                        class="px-6 py-2 font-semibold text-white bg-green-600 rounded hover:bg-green-700">Confirm
+                        Login</button>
+                    <button id="cancelLogin"
+                        class="px-6 py-2 font-semibold text-gray-600 border rounded-md bg-gray-50 hover:bg-gray-100">Cancel</button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="font-medium text-gray-700">Response:</div>
+                    <pre id="loginResp" class="text-sm text-gray-600">-</pre>
+                </div>
+            </div>
+
+            <!-- Verify Registration panel -->
+            <div id="verifyRegPanel" class="hidden p-6 space-y-4 bg-white rounded-lg shadow-md panel"
+                aria-hidden="true">
+                <strong class="text-xl font-semibold text-gray-900">Verify Registration</strong>
+                <p class="text-sm text-gray-600">Enter email and the OTP you received after registering.</p>
+
+                <label for="verify_reg_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input id="verify_reg_email" type="email" class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <label for="verify_reg_otp" class="block text-sm font-medium text-gray-700">OTP</label>
+                <input id="verify_reg_otp" type="text" class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="flex mt-4 space-x-4">
+                    <button id="confirmVerifyReg"
+                        class="px-6 py-2 font-semibold text-white bg-yellow-600 rounded hover:bg-yellow-700">Confirm
+                        Verify</button>
+                    <button id="cancelVerifyReg"
+                        class="px-6 py-2 font-semibold text-gray-600 border rounded-md bg-gray-50 hover:bg-gray-100">Cancel</button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="font-medium text-gray-700">Response:</div>
+                    <pre id="verifyRegResp" class="text-sm text-gray-600">-</pre>
+                </div>
+            </div>
+
+            <!-- Verify Login panel -->
+            <div id="verifyLoginPanel" class="hidden p-6 space-y-4 bg-white rounded-lg shadow-md panel"
+                aria-hidden="true">
+                <strong class="text-xl font-semibold text-gray-900">Verify Login</strong>
+                <p class="text-sm text-gray-600">Enter email and the OTP sent for login. Successful verify returns a
+                    token.</p>
+
+                <label for="verify_login_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input id="verify_login_email" type="email"
+                    class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <label for="verify_login_otp" class="block text-sm font-medium text-gray-700">OTP</label>
+                <input id="verify_login_otp" type="text" class="w-full px-4 py-2 text-sm border rounded-md bg-gray-50">
+
+                <div class="flex mt-4 space-x-4">
+                    <button id="confirmVerifyLogin"
+                        class="px-6 py-2 font-semibold text-white bg-teal-600 rounded hover:bg-teal-700">Confirm Verify
+                        Login</button>
+                    <button id="cancelVerifyLogin"
+                        class="px-6 py-2 font-semibold text-gray-600 border rounded-md bg-gray-50 hover:bg-gray-100">Cancel</button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="font-medium text-gray-700">Response:</div>
+                    <pre id="verifyLoginResp" class="text-sm text-gray-600">-</pre>
+                </div>
+            </div>
+
+            <!-- Error log -->
+            <div id="errorLogPanel" class="p-6 space-y-4 bg-white rounded-lg shadow-md panel">
+                <strong class="text-xl font-semibold text-gray-900">Error Log</strong>
+                <div class="mt-2 text-sm text-gray-600">Recent error entries (most recent first):</div>
+                <pre id="errorLog" class="text-sm text-gray-600">-</pre>
+                <div class="mt-4">
+                    <button id="clearLog"
+                        class="px-6 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Clear
+                        Log</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Error log storage
+        const errorLogEntries = [];
+        let storedToken = null;
+
+        function timestamp() {
+            return new Date().toLocaleString();
+        }
+
+        function addErrorLog(entry) {
+            // entry: { time, endpoint, status, message, raw }
+            errorLogEntries.unshift(entry);
+            const out = errorLogEntries.map(e => `${e.time} | ${e.endpoint} | ${e.status} | ${e.message}\n${e.raw}\n`).join('\n---\n');
+            document.getElementById('errorLog').textContent = out || '-';
+        }
+
+        document.getElementById('clearLog').addEventListener('click', () => {
+            errorLogEntries.length = 0;
+            document.getElementById('errorLog').textContent = '-';
+        });
+
+        function by(id) { return document.getElementById(id); }
+
+        // Show panels and prefill with main inputs
+        by('openRegister').addEventListener('click', () => {
+            by('reg_username').value = by('username').value || '';
+            by('reg_email').value = by('email').value || '';
+            by('registerPanel').classList.remove('hidden');
+            by('registerPanel').setAttribute('aria-hidden', 'false');
+        });
+        by('cancelRegister').addEventListener('click', () => {
+            by('registerPanel').classList.add('hidden');
+            by('registerPanel').setAttribute('aria-hidden', 'true');
+        });
+
+        by('openLogin').addEventListener('click', () => {
+            // prefill with email or username
+            by('login_user').value = by('email').value || by('username').value || '';
+            by('loginPanel').classList.remove('hidden');
+            by('loginPanel').setAttribute('aria-hidden', 'false');
+        });
+        by('cancelLogin').addEventListener('click', () => {
+            by('loginPanel').classList.add('hidden');
+            by('loginPanel').setAttribute('aria-hidden', 'true');
+        });
+
+        by('openVerifyReg').addEventListener('click', () => {
+            by('verify_reg_email').value = by('email').value || '';
+            by('verify_reg_otp').value = '';
+            by('verifyRegResp').textContent = '-';
+            by('verifyRegPanel').classList.remove('hidden');
+            by('verifyRegPanel').setAttribute('aria-hidden', 'false');
+        });
+        by('cancelVerifyReg').addEventListener('click', () => {
+            by('verifyRegPanel').classList.add('hidden');
+            by('verifyRegPanel').setAttribute('aria-hidden', 'true');
+        });
+
+        by('openVerifyLogin').addEventListener('click', () => {
+            by('verify_login_email').value = by('email').value || '';
+            by('verify_login_otp').value = '';
+            by('verifyLoginResp').textContent = '-';
+            by('verifyLoginPanel').classList.remove('hidden');
+            by('verifyLoginPanel').setAttribute('aria-hidden', 'false');
+        });
+        by('cancelVerifyLogin').addEventListener('click', () => {
+            by('verifyLoginPanel').classList.add('hidden');
+            by('verifyLoginPanel').setAttribute('aria-hidden', 'true');
+        });
+
+        // Helper to send requests
+        async function sendJson(path, method, json) {
+            const base = by('baseUrl').value.trim().replace(/\/$/, '');
+            const url = path.startsWith('http') ? path : base + path;
+            const reqBody = json ? JSON.stringify(json) : '';
+            try {
+                const res = await fetch(url, {
+                    method: method || 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: json ? JSON.stringify(json) : undefined
+                });
+                const text = await res.text();
+                let out = text;
+                try { out = JSON.stringify(JSON.parse(text), null, 2); } catch (e) { }
+                // If error status, log it
+                if (res.status >= 400) {
+                    let parsedMsg = '';
+                    try {
+                        const parsed = JSON.parse(text);
+                        parsedMsg = parsed.message || parsed.error || '';
+                    } catch (e) { parsedMsg = out; }
+                    // include request body in the raw log for easier debugging
+                    addErrorLog({ time: timestamp(), endpoint: path, status: res.status + ' ' + res.statusText, message: parsedMsg || 'Error', raw: `Request: ${reqBody}\nResponse: ${out}` });
+                }
+                return { status: res.status + ' ' + res.statusText, body: out };
+            } catch (err) {
+                // Network error - log it
+                addErrorLog({ time: timestamp(), endpoint: path, status: 'Network error', message: String(err), raw: `Request: ${reqBody}` });
+                return { status: 'Network error', body: String(err) };
+            }
+        }
+
+        // Register action (client-side validation: name length and email pattern)
+        by('confirmRegister').addEventListener('click', async () => {
+            const name = by('reg_username').value.trim();
+            const email = by('reg_email').value.trim();
+            const emailRe = /^\S+@\S+\.\S+$/;
+            if (!name || name.length < 2) {
+                by('regResp').textContent = 'Please provide a valid name (at least 2 characters).'; return;
+            }
+            if (!email || !emailRe.test(email)) {
+                by('regResp').textContent = 'Please provide a valid email address.'; return;
+            }
+            by('regResp').textContent = 'Sending...';
+            const payload = { name, email };
+            const result = await sendJson('/api/auth/register', 'POST', payload);
+            by('regResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
+            if (result.status.startsWith('4') || result.status.startsWith('5')) {
+                try {
+                    const j = JSON.parse(result.body);
+                    if (j && j.message) by('regResp').textContent = result.status + '\n' + j.message;
+                } catch (e) { }
+            }
+        });
+
+        // Login action - send only email (backend expects email)
+        by('confirmLogin').addEventListener('click', async () => {
+            const userEmail = by('login_user').value.trim();
+            const emailRe = /^\S+@\S+\.\S+$/;
+            if (!userEmail || !emailRe.test(userEmail)) { by('loginResp').textContent = 'Please enter a valid email.'; return; }
+            by('loginResp').textContent = 'Sending...';
+            const payload = { email: userEmail };
+            const result = await sendJson('/api/auth/login', 'POST', payload);
+            by('loginResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
+            if (result.status.startsWith('4') || result.status.startsWith('5')) {
+                try {
+                    const j = JSON.parse(result.body);
+                    if (j && j.message) by('loginResp').textContent = result.status + '\n' + j.message;
+                } catch (e) { }
+            }
+        });
+
+        // Verify Registration action
+        by('confirmVerifyReg').addEventListener('click', async () => {
+            const email = by('verify_reg_email').value.trim();
+            const otp = by('verify_reg_otp').value.trim();
+            const emailRe = /^\S+@\S+\.\S+$/;
+            if (!email || !emailRe.test(email)) { by('verifyRegResp').textContent = 'Please enter a valid email.'; return; }
+            if (!otp) { by('verifyRegResp').textContent = 'OTP cannot be empty.'; return; }
+            by('verifyRegResp').textContent = 'Sending...';
+            const payload = { email, otp };
+            // backend endpoint is /api/auth/verify
+            const result = await sendJson('/api/auth/verify', 'POST', payload);
+            by('verifyRegResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
+            if (result.status.startsWith('4') || result.status.startsWith('5')) {
+                try {
+                    const j = JSON.parse(result.body);
+                    if (j && j.message) by('verifyRegResp').textContent = result.status + '\n' + j.message;
+                } catch (e) { }
+            }
+        });
+
+        // Verify Login action
+        by('confirmVerifyLogin').addEventListener('click', async () => {
+            const email = by('verify_login_email').value.trim();
+            const otp = by('verify_login_otp').value.trim();
+            const emailRe = /^\S+@\S+\.\S+$/;
+            if (!email || !emailRe.test(email)) { by('verifyLoginResp').textContent = 'Please enter a valid email.'; return; }
+            if (!otp) { by('verifyLoginResp').textContent = 'OTP cannot be empty.'; return; }
+            by('verifyLoginResp').textContent = 'Sending...';
+            const payload = { email, otp };
+            // backend endpoint is /api/auth/verify/login which returns a token in data
+            const result = await sendJson('/api/auth/verify/login', 'POST', payload);
+            by('verifyLoginResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
+            // if successful, try to extract token
+            if (result.status.startsWith('2')) {
+                try {
+                    const j = JSON.parse(result.body);
+                    if (j && j.data && j.data.token) {
+                        storedToken = j.data.token;
+                        document.getElementById('storedToken').textContent = storedToken;
+                        by('verifyLoginResp').textContent = result.status + '\n' + (j.message || 'Login verified') + '\nToken stored.';
+                    }
+                } catch (e) { }
+            }
+            if (result.status.startsWith('4') || result.status.startsWith('5')) {
+                try {
+                    const j = JSON.parse(result.body);
+                    if (j && j.message) by('verifyLoginResp').textContent = result.status + '\n' + j.message;
+                } catch (e) { }
+            }
+        });
+    </script>
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <!-- Leaflet JS -->
+
+
+</body>
+
+</html>

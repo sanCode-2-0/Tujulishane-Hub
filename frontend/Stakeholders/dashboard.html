@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RMNCAH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',   // Custom Blue
+                        secondary: '#f59e0b', // Custom Amber
+                        accent: '#10b981',    // Custom Green
+                        dark: '#1f2937',      // Gray-800
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../styles/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Optional: Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <style>
+        .fade-slide-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-slide-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s ease;
+        }
+
+        .fade-slide-leave {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-slide-leave-active {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+    </style>
+
+</head>
+
+<body class="text-gray-800 ">
+    <nav x-data="{ open: false }"
+        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+        <div class="flex items-center justify-between px-6 py-4">
+            <!-- Logo -->
+            <a href="/frontend/index.html"
+                class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+                <img src="/frontend/resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
+                <img src="/frontend/resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+                <i class="fas fa-bars" x-show="!open"></i>
+                <i class="fas fa-times" x-show="open" x-cloak></i>
+            </button>
+
+            <!-- Nav Links - Desktop -->
+            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+                <li>
+                    <a href="/frontend/index-post-login.html" class="uppercase transition hover:text-blue-600">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="/frontend/all-projects.html" class="uppercase transition hover:text-blue-600">
+                        All Projects
+                    </a>
+                </li>
+                <li>
+                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
+                        Announcements
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nav Links - Mobile -->
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform -translate-y-2"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+
+            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
+                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
+                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
+                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
+            </ul>
+
+            <!-- CTA Button -->
+            <div class="mt-6">
+                <a href="/contact"
+                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
+                    <span
+                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
+                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <section class="pt-16 bg-cyan-800 sm:pt-20 ">
+        <div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
+            <div class="md:col-span-4">
+                <h1 class="mb-2 text-4xl font-semibold md:text-4xl">
+                    RMNCAH Hub Sponsor Dashboard
+                </h1>
+
+                <p class="text-[16px] mb-6 max-w-2xl">
+                    Explore and track projects across Kenya. Use filters to view initiatives by category, location, or
+                    status, and gain insights into their progress and impact.
+                </p>
+                <div class="flex gap-12 text-3xl">
+                    <div class="">
+                        <span class="font-bold tracking-wider">
+                            7
+                        </span>
+                        <span class="font-thin">
+                            Projects
+                        </span>
+                    </div>
+                    <div class="">
+                        <span class="font-bold tracking-wider">
+                            6
+                        </span>
+                        <span class="font-thin">
+                            Counties
+                        </span>
+                    </div>
+                    <div class="">
+                        <span class="font-bold tracking-wider">
+                            138
+                        </span>
+                        <span class="font-thin">
+                            Team Members
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-1">
+                <h6
+                    class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase text-gray-50 opacity-90">
+                    Quick Actions
+                </h6>
+                <div class="grid gap-4 text-white">
+                    <button data-twe-toggle="modal" data-twe-target="#createNewProject"
+                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
+                        <span class="text-sm">
+                            New Project
+                        </span>
+                        <span class="text-lg">
+                            <i class="fas fa-file-pdf"></i>
+                        </span>
+                    </button>
+                    <button data-twe-toggle="modal" data-twe-target="#updateProfile"
+                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
+                        <span class="text-sm">
+                            Update Profile
+                        </span>
+                        <span class="text-lg">
+                            <i class="fas fa-clipboard-list-check"></i>
+                        </span>
+                    </button>
+                    <button data-twe-toggle="modal" data-twe-target="#raiseticket"
+                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
+                        <span class="text-sm">
+                            Contact Support
+                        </span>
+                        <span class="text-lg">
+                            <i class="fas fa-headphones-alt"></i>
+                        </span>
+                    </button>
+
+                    <div class="invisible fixed bottom-0 right-0 backdrop-blur-lg top-0 z-[1045] flex w-full md:w-4/5 lg:w-3/4 max-w-full translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
+                        tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" data-twe-offcanvas-init>
+                        <div class="flex items-center justify-between p-4 backdrop-blur-lg">
+                            <h5 class="mb-0 font-semibold leading-normal" id="offcanvasRightLabel">
+                                Offcanvas right
+                            </h5>
+                            <button type="button"
+                                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+                                data-twe-offcanvas-dismiss aria-label="Close">
+                                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="flex-grow p-4 overflow-y-auto offcanvas-body">...</div>
+                    </div>
+                </div>
+            </div>
+            <div data-twe-modal-init
+                class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+                id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true"
+                role="dialog">
+                <div data-twe-modal-dialog-ref
+                    class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                    <div
+                        class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                        <div
+                            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                            <!-- Modal title -->
+                            <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                                New Project
+                            </h5>
+                            <!-- Close button -->
+                            <button type="button"
+                                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                                data-twe-modal-dismiss aria-label="Close">
+                                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="relative p-4">
+                            <form action="#" method="POST">
+                                <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                                    <!-- Title -->
+                                    <div>
+                                        <label for="title" class="block text-sm font-medium text-gray-700">Title
+                                            *</label>
+                                        <input required type="text" id="title" name="title"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+
+
+                                    <!-- Project Theme -->
+                                    <div>
+                                        <label for="theme" class="block text-sm font-medium text-gray-700">Project
+                                            Theme *</label>
+                                        <select id="theme" name="theme"
+                                            class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            <option value="">Select Theme</option>
+                                            <option value="GBV">
+                                                Gender based violence
+                                            </option>
+                                            <option value="AYPSRH">
+                                                Adolescent and Young People Sexual and Reproductive Health
+                                            </option>
+                                            <option value="MNH">
+                                                Maternal and Newborn Health
+                                            </option>
+                                            <option value="FP">
+                                                Family planning
+                                            </option>
+                                            <option value="CH">
+                                                Child Health
+                                            </option>
+                                            <option value="AH">
+                                                Adolescent Health
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+                                    <!-- Time Period -->
+                                    <div>
+                                        <label for="starttime_period" class="block text-sm font-medium text-gray-700">
+                                            Start *
+                                        </label>
+                                        <input required type="date" id="starttime_period" name="start_date"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+                                            *</label>
+                                        <input type="date" id="endtime_period" name="end_date"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <!-- Activity Type -->
+                                    <div class="col-span-2 md:col-span-4">
+                                        <label for="activity_type"
+                                            class="block text-sm font-medium text-gray-700">Activity
+                                            Type (Description) *
+                                        </label>
+                                        <textarea required id="activity_type" name="activity_type" rows="3"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                    </div>
+
+                                    <!-- Location -->
+                                    <div>
+                                        <label for="location" class="block text-sm font-medium text-gray-700">
+                                            County *
+                                        </label>
+                                        <select required id="time_period" name="county" placeholder="County"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            <option value="">-- Select County --</option>
+                                            <option value="baringo">Baringo</option>
+                                            <option value="bomet">Bomet</option>
+                                            <option value="bungoma">Bungoma</option>
+                                            <option value="busia">Busia</option>
+                                            <option value="elgeyo-marakwet">Elgeyo-Marakwet</option>
+                                            <option value="embu">Embu</option>
+                                            <option value="garissa">Garissa</option>
+                                            <option value="homa-bay">Homa Bay</option>
+                                            <option value="isiolo">Isiolo</option>
+                                            <option value="kajiado">Kajiado</option>
+                                            <option value="kakamega">Kakamega</option>
+                                            <option value="kericho">Kericho</option>
+                                            <option value="kiambu">Kiambu</option>
+                                            <option value="kilifi">Kilifi</option>
+                                            <option value="kirinyaga">Kirinyaga</option>
+                                            <option value="kisii">Kisii</option>
+                                            <option value="kisumu">Kisumu</option>
+                                            <option value="kitui">Kitui</option>
+                                            <option value="kwale">Kwale</option>
+                                            <option value="laikipia">Laikipia</option>
+                                            <option value="lamu">Lamu</option>
+                                            <option value="machakos">Machakos</option>
+                                            <option value="makueni">Makueni</option>
+                                            <option value="mandera">Mandera</option>
+                                            <option value="marsabit">Marsabit</option>
+                                            <option value="meru">Meru</option>
+                                            <option value="migori">Migori</option>
+                                            <option value="murang'a">Murang'a</option>
+                                            <option value="nairobi">Nairobi</option>
+                                            <option value="nakuru">Nakuru</option>
+                                            <option value="nandi">Nandi</option>
+                                            <option value="narok">Narok</option>
+                                            <option value="nyamira">Nyamira</option>
+                                            <option value="nyandarua">Nyandarua</option>
+                                            <option value="nyeri">Nyeri</option>
+                                            <option value="samburu">Samburu</option>
+                                            <option value="siaya">Siaya</option>
+                                            <option value="taita-taveta">Taita-Taveta</option>
+                                            <option value="tana-river">Tana River</option>
+                                            <option value="tharaka-nithi">Tharaka-Nithi</option>
+                                            <option value="trans-nzoia">Trans Nzoia</option>
+                                            <option value="turkana">Turkana</option>
+                                            <option value="uasin-gishu">Uasin Gishu</option>
+                                            <option value="vihiga">Vihiga</option>
+                                            <option value="wajir">Wajir</option>
+                                            <option value="west-pokot">West Pokot</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label for="subcounty" class="block text-sm font-medium text-gray-700">Sub
+                                            County
+                                        </label>
+                                        <input required type="text" id="subcounty" name="sub_county"
+                                            placeholder="County"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+
+
+                                    <!-- Contact Person -->
+                                    <div>
+                                        <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                            Contact Person Name *
+                                        </label>
+                                        <input required type="text" id="contact_person" name="contact_person_name"
+                                            placeholder="Name"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                            Contact Person Role *
+                                        </label>
+                                        <input required type="text" id="contact_person" name="contact_person_role"
+                                            placeholder="Role"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                            Contact Person Email *
+                                        </label>
+                                        <input required type="email" id="contact_person" name="contact_person_mail"
+                                            placeholder="Email"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="budget" class="block text-sm font-medium text-gray-700">
+                                            Budget in KES
+                                        </label>
+                                        <input required type="number" id="budget" name="budget" placeholder="amount"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Gaps -->
+                                    <div class="col-span-2 lg:col-span-4">
+                                        <label for="gaps" class="block text-sm font-medium text-gray-700">
+                                            Objectives *
+                                        </label>
+                                        <textarea required id="gaps" name="gaps" rows="3"
+                                            class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Button -->
+                                <div class="mt-3">
+                                    <button type="submit"
+                                        class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        Submit Project
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-twe-modal-init
+                class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+                id="updateProfile" tabindex="-1" aria-labelledby="updateProfile" aria-modal="true" role="dialog">
+                <div data-twe-modal-dialog-ref
+                    class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                    <div
+                        class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                        <div
+                            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                            <!-- Modal title -->
+                            <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                                Update Profile
+                            </h5>
+                            <!-- Close button -->
+                            <button type="button"
+                                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                                data-twe-modal-dismiss aria-label="Close">
+                                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="relative p-4">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-twe-modal-init
+                class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+                id="raiseticket" tabindex="-1" aria-labelledby="updateProfile" aria-modal="true" role="dialog">
+                <div data-twe-modal-dialog-ref
+                    class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                    <div
+                        class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                        <div
+                            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                            <!-- Modal title -->
+                            <div class="">
+                                <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                                    Suppert Ticket
+                                </h5>
+                                <p class="">
+                                    Need help? Please describe your issue and our support team will get back to you
+                                    shortly.
+                                </p>
+                            </div>
+                            <!-- Close button -->
+                            <button type="button"
+                                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                                data-twe-modal-dismiss aria-label="Close">
+                                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="relative p-4">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="min-h-screen bg-gray-100">
+        <!-- Modals -->
+        <!-- New Project -->
+        <div data-twe-modal-init
+            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+            <div data-twe-modal-dialog-ref
+                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                <div
+                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                    <div
+                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                        <!-- Modal title -->
+                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                            New Stakeholder Project
+                        </h5>
+                        <!-- Close button -->
+                        <button type="button"
+                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                            data-twe-modal-dismiss aria-label="Close">
+                            <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="relative p-4 text-black">
+                        <form action="#" method="POST">
+                            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                                <!-- Title -->
+                                <div>
+                                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                                    <input type="text" id="title" name="title"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+
+                                <!-- Project Theme -->
+                                <div>
+                                    <label for="theme" class="block text-sm font-medium text-gray-700">Project
+                                        Theme</label>
+                                    <select id="theme" name="theme"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">Select Theme</option>
+                                        <option value="education">Education</option>
+                                        <option value="health">Health</option>
+                                        <option value="environment">Environment</option>
+                                        <option value="infrastructure">Infrastructure</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+
+
+                                <div>
+                                    <label for="starttime_period" class="block text-sm font-medium text-gray-700">
+                                        Start
+                                    </label>
+                                    <input type="date" id="starttime_period" name="start_date"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="endtime_period"
+                                        class="block text-sm font-medium text-gray-700">End</label>
+                                    <input type="date" id="endtime_period" name="end_date"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <!-- Activity Type -->
+                                <div class="col-span-2 md:col-span-4">
+                                    <label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
+                                        Type (Description)</label>
+                                    <textarea id="activity_type" name="activity_type" rows="3"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                </div>
+
+                                <!-- Location -->
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">County</label>
+                                    <input type="text" id="time_period" name="county" placeholder="County"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="subcounty" class="block text-sm font-medium text-gray-700">Sub
+                                        County</label>
+                                    <input type="text" id="subcounty" name="sub_county" placeholder="County"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">Area</label>
+                                    <input type="text" id="time_period" name="project_area"
+                                        placeholder="Where in county"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">Maps
+                                        Address</label>
+                                    <input type="text" id="time_period" name="maps_address" placeholder="Maps Address"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <!-- Contact Person -->
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Name
+                                    </label>
+                                    <input type="text" id="contact_person" name="contact_person_name" placeholder="Name"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Role
+                                    </label>
+                                    <input type="text" id="contact_person" name="contact_person_role" placeholder="Role"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Email
+                                    </label>
+                                    <input type="email" id="contact_person" name="contact_person_mail"
+                                        placeholder="Email"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <!-- Gaps -->
+                                <div class="col-span-2 lg:col-span-4">
+                                    <label for="gaps" class="block text-sm font-medium text-gray-700">
+                                        Objectives
+                                    </label>
+                                    <textarea id="gaps" name="gaps" rows="3"
+                                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Button -->
+                            <div class="mt-3">
+                                <button type="submit"
+                                    class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
+        </div>
+
+        <div class="max-w-6xl p-8 mx-auto">
+            <div class="flex flex-wrap p-4 bg-white rounded-md shadow-md">
+                <h2 class="flex items-center w-full mb-10 text-2xl font-light text-gray-900 uppercase fade fade-left">
+                    Projects Overview
+                </h2>
+                <div class="w-full">
+                    <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
+                        Projects Distribution By Topic
+                    </h3>
+                    <div id="barChart"></div>
+                </div>
+            </div>
+            <div class="p-6 my-4 bg-white rounded-lg shadow-md fade fade-up">
+                <div class="flex flex-wrap justify-between">
+                    <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
+                        Status Summary
+                    </h3>
+                    <button data-twe-toggle="modal" data-twe-target="#createNewProject"
+                        class="px-2 py-0 text-blue-900 rounded-md opacity-80 fade fade-right">
+                        <i class="fas fa-plus-circle"></i> New Project
+                    </button>
+                </div>
+                <ul class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5" id="pills-tab" role="tablist"
+                    data-twe-nav-ref>
+                    <li class="flex" role="presentation">
+                        <a class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md"
+                            id="pills-home-tab" data-twe-toggle="pill" data-twe-target="#pills-home" data-twe-nav-active
+                            role="tab" aria-controls="pills-home" aria-selected="true">
+                            <p class="text-3xl font-bold">800</p>
+                            <p class="text-sm">Active</p>
+                        </a>
+                    </li>
+                    <li class="flex" role="presentation">
+                        <a class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md"
+                            id="pills-profile-tab" data-twe-toggle="pill" data-twe-target="#pills-profile" role="tab">
+                            <p class="text-3xl font-bold">200</p>
+                            <p class="text-sm">Pending</p>
+                        </a>
+                    </li>
+                    <li class="flex" role="presentation">
+                        <a class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md"
+                            id="pills-contact-tab" data-twe-toggle="pill" data-twe-target="#pills-contact" role="tab">
+                            <p class="text-3xl font-bold">150</p>
+                            <p class="text-sm">Stalled</p>
+                        </a>
+                    </li>
+                    <li class="flex" role="presentation">
+                        <a class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md"
+                            id="pills-disabled-tab" data-twe-toggle="pill" data-twe-target="#pills-disabled" role="tab">
+                            <p class="text-3xl font-bold">100</p>
+                            <p class="text-sm">Completed</p>
+                        </a>
+                    </li>
+                </ul>
+                <!--Pills content-->
+                <div class="mb-6">
+                    <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" data-twe-tab-active>
+                        <div id="accordionFlushExample">
+                            <div
+                                class="bg-white border border-t-0 rounded-none border-e-0 border-s-0 border-neutral-200">
+                                <h2 class="mb-0" id="flush-headingOne">
+                                    <button
+                                        class="group relative flex w-full items-center rounded-none border-0 bg-white px-5 py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none [&:not([data-twe-collapse-collapsed])]:bg-white [&:not([data-twe-collapse-collapsed])]:text-primary [&:not([data-twe-collapse-collapsed])]:shadow-border-b  "
+                                        type="button" data-twe-collapse-init data-twe-target="#flush-collapseOne"
+                                        aria-expanded="false" aria-controls="flush-collapseOne">
+                                        Latest Project
+                                        <span
+                                            class="-me-1 ms-auto h-5 w-5 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:me-0 group-data-[twe-collapse-collapsed]:rotate-0 motion-reduce:transition-none [&>svg]:h-6 [&>svg]:w-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseOne" class="!visible border-0" data-twe-collapse-item
+                                    data-twe-collapse-show aria-labelledby="flush-headingOne"
+                                    data-twe-parent="#accordionFlushExample">
+                                    <div class="px-5 py-4">
+                                        Placeholder content for this accordion, which is intended to
+                                        demonstrate the
+                                        <code>.accordion-flush</code> class. This is the first item's
+                                        accordion body.
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white border border-t-0 rounded-none border-e-0 border-s-0 border-neutral-200">
+                                <h2 class="mb-0" id="flush-headingTwo">
+                                    <button
+                                        class="group relative flex w-full items-center rounded-none border-0 bg-white px-5 py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none [&:not([data-twe-collapse-collapsed])]:bg-white [&:not([data-twe-collapse-collapsed])]:text-primary [&:not([data-twe-collapse-collapsed])]:shadow-border-b  "
+                                        type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                                        data-twe-target="#flush-collapseTwo" aria-expanded="false"
+                                        aria-controls="flush-collapseTwo">
+                                        Project #2
+                                        <span
+                                            class="-me-1 ms-auto h-5 w-5 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:me-0 group-data-[twe-collapse-collapsed]:rotate-0 motion-reduce:transition-none [&>svg]:h-6 [&>svg]:w-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseTwo" class="!visible hidden border-0" data-twe-collapse-item
+                                    aria-labelledby="flush-headingTwo" data-twe-parent="#accordionFlushExample">
+                                    <div class="px-5 py-4">
+                                        Placeholder content for this accordion, which is intended to
+                                        demonstrate the
+                                        <code>.accordion-flush</code> class. This is the second item's
+                                        accordion body. Let's imagine this being filled with some actual
+                                        content.
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white border border-t-0 border-b-0 rounded-none border-e-0 border-s-0 border-neutral-200">
+                                <h2 class="mb-0" id="flush-headingThree">
+                                    <button
+                                        class="group relative flex w-full items-center rounded-none border-0 bg-white px-5 py-4 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none [&:not([data-twe-collapse-collapsed])]:bg-white [&:not([data-twe-collapse-collapsed])]:text-primary [&:not([data-twe-collapse-collapsed])]:shadow-border-b  "
+                                        type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                                        data-twe-target="#flush-collapseThree" aria-expanded="false"
+                                        aria-controls="flush-collapseThree">
+                                        Project #3
+                                        <span
+                                            class="-me-1 ms-auto h-5 w-5 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:me-0 group-data-[twe-collapse-collapsed]:rotate-0 motion-reduce:transition-none [&>svg]:h-6 [&>svg]:w-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseThree" class="!visible hidden" data-twe-collapse-item
+                                    aria-labelledby="flush-headingThree" data-twe-parent="#accordionFlushExample">
+                                    <div class="px-5 py-4">
+                                        Placeholder content for this accordion, which is intended to
+                                        demonstrate the
+                                        <code>.accordion-flush</code> class. This is the third item's
+                                        accordion body. Nothing more exciting happening here in terms of
+                                        content, but just filling up the space to make it look, at least
+                                        at first glance, a bit more representative of how this would look
+                                        in a real-world application.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                            <div class="inline-block min-w-full overflow-hidden rounded-lg">
+                                <table class="min-w-full leading-normal">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Title
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Partner
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Theme
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Members
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Start
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                End
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Contact
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="fade fade-up">
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                        <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                            <div class="inline-block min-w-full overflow-hidden rounded-lg">
+                                <table class="min-w-full leading-normal">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Title
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Partner
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Theme
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Members
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Start
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                End
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                Contact
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="fade fade-up">
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                                ...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab">
+                        <table class="min-w-full leading-normal">
+                            <thead>
+                                <tr>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Title
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Partner
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Theme
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Location
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Start
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        End
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Contact
+                                    </th>
+                                    <th scope="col"
+                                        class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="fade fade-up">
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        ...
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                        <button
+                                            class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600">
+                                            Submit Report
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../styles/effects.js"></script>
+    <script>
+        var options = {
+            chart: {
+                type: 'bar',
+                height: 400,
+                stacked: false
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: {
+                    fontSize: '12px',
+                    colors: ["#304758"]
+                }
+            },
+            series: [
+                {
+                    name: 'Investment (M)',
+                    data: [6, 10, 7] // GBV, Empowerment, Health
+                }
+            ],
+            xaxis: {
+                categories: ['GBV', 'Community Empowerment', 'Community Health'],
+                title: { text: 'Category' }
+            },
+            yaxis: {
+                title: { text: 'Value (Millions)' }
+            },
+            legend: {
+                position: 'top'
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " "; // since you only have investments
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#barChart"), options);
+        chart.render();
+    </script>
+
+    <script>
+        var options = {
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            series: [65, 35], // Example: 65 males, 35 females
+            labels: ['Male', 'Female'],
+            colors: ['#008FFB', '#FF4560'],
+            legend: {
+                position: 'bottom'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    return opts.w.config.series[opts.seriesIndex];
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " Members";
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#teamChart"), options);
+        chart.render();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, selectedMarker = null;
+        const markers = [];
+        const icons = {
+            default: (tag) => L.icon({ iconUrl: `../resources/${tag}.png`, iconSize: [20, 20] }),
+            selected: (tag) => L.icon({ iconUrl: `../resources/${tag}.png`, iconSize: [40, 40] })
+        };
+
+        const bgColors = {
+            active: 'bg-green-50',
+            pending: 'bg-yellow-50',
+            stalled: 'bg-red-50',
+            abandoned: 'bg-gray-100',
+            default: 'bg-white'
+        };
+
+        const statusBadge = (tag) => {
+            return {
+                active: 'bg-green-200 text-green-800',
+                pending: 'bg-yellow-200 text-yellow-800',
+                stalled: 'bg-red-200 text-red-800',
+                abandoned: 'bg-gray-300 text-gray-800',
+            }[tag] || 'bg-gray-200 text-gray-800';
+        };
+
+        let sortBy = 'name';
+        let sortOrder = 'asc';
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let currentFilter = 'all';
+
+        let searchQuery = '';
+        let dateRangeFrom = null;
+        let dateRangeTo = null;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            map = L.map('kenyaMap', {
+                center: [-0.0236, 37.9062],
+                zoom: 6.3,
+                scrollWheelZoom: false,
+                dragging: true,
+                touchZoom: false,
+                doubleClickZoom: true,
+                boxZoom: false,
+                keyboard: false,
+                zoomControl: true // keeps the + / – buttons visible
+            });
+
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20,
+                attribution: '&copy; Stadia Maps & OpenMapTiles & OpenStreetMap'
+            }).addTo(map);
+
+
+            const markerData = [
+                { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
+                { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
+                { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
+                { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "abandoned" },
+                { lat: 0.5673, lng: 35.2489, name: "Project 5", tag: "active" },
+                { lat: -0.7584, lng: 36.9684, name: "Project 6", tag: "pending" },
+                { lat: 1.0321, lng: 37.7456, name: "Project 7", tag: "stalled" },
+                { lat: -0.5648, lng: 35.6892, name: "Project 8", tag: "abandoned" },
+                { lat: -1.3201, lng: 36.9021, name: "Project 9", tag: "active" },
+                { lat: 0.8231, lng: 36.4562, name: "Project 10", tag: "pending" },
+                { lat: -0.8723, lng: 35.9231, name: "Project 11", tag: "stalled" },
+                { lat: 0.2974, lng: 36.8762, name: "Project 12", tag: "abandoned" },
+                { lat: 0.1492, lng: 37.5312, name: "Project 13", tag: "active" },
+                { lat: -1.6754, lng: 36.1212, name: "Project 14", tag: "pending" },
+                { lat: 0.9273, lng: 35.1342, name: "Project 15", tag: "stalled" },
+                { lat: 0.6284, lng: 36.3173, name: "Project 16", tag: "abandoned" },
+                { lat: -1.3627, lng: 36.5431, name: "Project 17", tag: "active" },
+                { lat: 0.7542, lng: 35.9751, name: "Project 18", tag: "pending" },
+                { lat: -0.8921, lng: 36.6519, name: "Project 19", tag: "stalled" },
+                { lat: -1.0234, lng: 37.0917, name: "Project 20", tag: "abandoned" },
+                { lat: 1.1023, lng: 36.8342, name: "Project 21", tag: "active" },
+                { lat: 0.4132, lng: 35.8423, name: "Project 22", tag: "pending" },
+                { lat: -0.5273, lng: 36.4398, name: "Project 23", tag: "stalled" },
+                { lat: -1.2573, lng: 37.2812, name: "Project 24", tag: "abandoned" },
+                { lat: 0.7632, lng: 35.1231, name: "Project 25", tag: "active" },
+                { lat: -0.2734, lng: 36.9781, name: "Project 26", tag: "pending" },
+                { lat: 1.0213, lng: 36.5341, name: "Project 27", tag: "stalled" },
+                { lat: 0.6842, lng: 36.8345, name: "Project 28", tag: "abandoned" },
+                { lat: -1.0214, lng: 37.2134, name: "Project 29", tag: "active" },
+                { lat: 0.8123, lng: 35.7481, name: "Project 30", tag: "pending" },
+                { lat: 0.9431, lng: 36.1934, name: "Project 31", tag: "stalled" },
+                { lat: -0.7421, lng: 36.0298, name: "Project 32", tag: "abandoned" },
+                { lat: -1.2419, lng: 36.7492, name: "Project 33", tag: "active" },
+                { lat: 0.4561, lng: 35.9021, name: "Project 34", tag: "pending" },
+                { lat: -0.6872, lng: 36.4983, name: "Project 35", tag: "stalled" },
+                { lat: 0.9812, lng: 37.3847, name: "Project 36", tag: "abandoned" },
+                { lat: -1.1023, lng: 36.9821, name: "Project 37", tag: "active" },
+                { lat: 0.7421, lng: 36.4213, name: "Project 38", tag: "pending" },
+                { lat: -0.3421, lng: 35.8741, name: "Project 39", tag: "stalled" },
+                { lat: 0.9843, lng: 36.1321, name: "Project 40", tag: "abandoned" },
+                { lat: 0.2142, lng: 37.8234, name: "Project 41", tag: "active" },
+                { lat: -0.9432, lng: 36.9431, name: "Project 42", tag: "pending" },
+                { lat: 1.1543, lng: 35.6212, name: "Project 43", tag: "stalled" },
+                { lat: 0.5324, lng: 36.0932, name: "Project 44", tag: "abandoned" },
+                { lat: -1.1932, lng: 36.8371, name: "Project 45", tag: "active" },
+                { lat: 0.8934, lng: 35.8232, name: "Project 46", tag: "pending" },
+                { lat: -0.4721, lng: 36.4731, name: "Project 47", tag: "stalled" },
+                { lat: 0.6231, lng: 36.9512, name: "Project 48", tag: "abandoned" },
+                { lat: -1.0132, lng: 36.3421, name: "Project 49", tag: "active" },
+                { lat: 0.3782, lng: 35.6491, name: "Project 50", tag: "pending" }
+            ];
+
+            markerData.forEach((data) => {
+                data.description = `This is a description for ${data.name}`;
+                data.region = `Region ${Math.ceil(Math.random() * 10)}`;
+                data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
+                data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
+                data.sponsor = `Sponsor for ${data.name}`;
+                data.participants = Math.ceil(Math.random() * 100);
+                data.start_date = new Date(Date.now() - Math.random() * 10000000000).toISOString();
+                data.status = data.tag;
+
+                const marker = L.marker([data.lat, data.lng], { icon: icons.default(data.tag) })
+                    .addTo(map)
+                    .bindTooltip(data.name)
+                    .on("click", function () {
+                        if (selectedMarker && selectedMarker !== this) {
+                            selectedMarker.setIcon(icons.default(selectedMarker.tag));
+                        }
+                        this.setIcon(icons.selected(data.tag));
+                        selectedMarker = this;
+                        showProjectInfo(data);
+                    });
+
+                marker.data = data;
+                marker.tag = data.tag;
+                markers.push(marker);
+            });
+
+            highlightMarkers('all');
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('dateFrom').addEventListener('change', (e) => {
+                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('dateTo').addEventListener('change', (e) => {
+                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                sortProjects(e.target.value);
+            });
+        });
+
+        function showProjectInfo(project) {
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.remove("hidden");
+            infoBox.innerHTML = `
+            <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
+            <p><strong>Description:</strong> ${project.description}</p>
+            <p><strong>Region:</strong> ${project.region}</p>
+            <p><strong>Budget:</strong> ${project.budget}</p>
+            <p><strong>Team:</strong> ${project.team}</p>
+            <p><strong>Participants:</strong> ${project.participants}</p>
+            <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+            <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
+            <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+        `;
+        }
+
+        function focusMarker(index) {
+            const marker = markers[index];
+            map.setView(marker.getLatLng(), 9);
+            marker.fire('click');
+            document.getElementById('kenyaMap').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function sortProjects(field) {
+            if (sortBy === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortBy = field;
+                sortOrder = 'asc';
+            }
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+        }
+
+        function highlightMarkers(tag) {
+            currentFilter = tag;
+            const accordion = document.getElementById("projectAccordion");
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.add("hidden");
+            accordion.innerHTML = '';
+            accordion.classList.remove("hidden");
+            accordion.classList.add("opacity-0", "translate-y-4");
+
+            let filteredMarkers = markers.filter(marker => {
+                const p = marker.data;
+                if (tag !== 'all' && marker.tag !== tag) return false;
+                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+                const pDate = new Date(p.start_date);
+                if (dateRangeFrom && pDate < dateRangeFrom) return false;
+                if (dateRangeTo && pDate > dateRangeTo) return false;
+                return true;
+            });
+
+            filteredMarkers.sort((a, b) => {
+                const aVal = sortBy === 'name' ? a.data.name : new Date(a.data.start_date);
+                const bVal = sortBy === 'name' ? b.data.name : new Date(b.data.start_date);
+                return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+            });
+
+            const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
+            const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+            updatePaginationControls(totalPages);
+
+            markers.forEach(marker => {
+                marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+            });
+
+            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
+
+            paginated.forEach((marker, idx) => {
+                const i = markers.indexOf(marker);
+                const project = marker.data;
+                const bg = bgColors[project.status] || bgColors.default;
+
+                const item = document.createElement("div");
+                item.className = `rounded shadow-sm ${bg}`;
+
+                item.innerHTML = `
+                <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
+                            <p class="text-sm text-gray-600">${project.description}</p>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-500 sm:mt-0">${new Date(project.start_date).toLocaleDateString()}</div>
+                    </div>
+                </button>
+                <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
+                    <p><strong>Region:</strong> ${project.region}</p>
+                    <p><strong>Budget:</strong> ${project.budget}</p>
+                    <p><strong>Team:</strong> ${project.team}</p>
+                    <p><strong>Participants:</strong> ${project.participants}</p>
+                    <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+                    <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+                    <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+                        Show on Map
+                    </button>
+                </div>
+            `;
+
+                accordion.appendChild(item);
+
+                item.querySelector(`[data-toggle="collapse-${i}"]`).addEventListener("click", () => {
+                    document.getElementById(`collapse-${i}`).classList.toggle("hidden");
+                });
+            });
+        }
+
+        function updatePaginationControls(totalPages) {
+            const container = document.getElementById("paginationControls");
+            container.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.textContent = i;
+                btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    highlightMarkers(currentFilter);
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function exportCSV() {
+            const headers = ['Name', 'Description', 'Region', 'Budget', 'Team', 'Participants', 'Sponsor', 'Start Date', 'Status'];
+            const rows = markers
+                .map(m => m.data)
+                .filter(p => {
+                    if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+                    const date = new Date(p.start_date);
+                    if (dateRangeFrom && date < dateRangeFrom) return false;
+                    if (dateRangeTo && date > dateRangeTo) return false;
+                    if (currentFilter !== 'all' && p.status !== currentFilter) return false;
+                    return true;
+                })
+                .map(p => [
+                    p.name, p.description, p.region, p.budget, p.team, p.participants,
+                    p.sponsor, new Date(p.start_date).toLocaleDateString(), p.status
+                ]);
+
+            let csvContent = [headers.join(',')];
+            rows.forEach(r => csvContent.push(r.map(field => `"${field}"`).join(',')));
+
+            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `projects_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

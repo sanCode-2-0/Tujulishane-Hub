@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tailwind + Alpine Boilerplate</title>
+    <title>RMNCAH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="frontend/styles/main.js"></script>
+    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
         integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
@@ -45,9 +45,10 @@
         integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Optional: Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <style>
         .fade-slide-enter {
             opacity: 0;
@@ -79,8 +80,10 @@
         class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
         <div class="flex items-center justify-between px-6 py-4">
             <!-- Logo -->
-            <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/frontend/resources/gov.png" class="object-contain h-12" alt="Site Logo">
+            <a href="/frontend/index.html"
+                class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+                <img src="/frontend/resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
+                <img src="/frontend/resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
             </a>
 
             <!-- Mobile Menu Toggle -->
@@ -90,52 +93,26 @@
             </button>
 
             <!-- Nav Links - Desktop -->
-            <ul class="hidden lg:flex items-center space-x-8 font-medium text-sm text-gray-700">
+            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
                 <li>
-                    <a href="/" class="uppercase transition hover:text-blue-600">
+                    <a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">
                         Home
                     </a>
                 </li>
                 <li>
-                    <a href="/about" class="uppercase transition hover:text-blue-600">
-                        Programs
-                    </a>
-                </li>
-
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="uppercase font-medium inline-flex items-center transition focus:outline-none">
-                        Pages <i class="fal fa-chevron-down ml-2"></i>
-                    </button>
-
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 mt-2 bg-white rounded-xl shadow-md w-56 md:w-96 divide-y divide-gray-100"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="hover:bg-blue-100 px-4 py-2 transition">
-                                <a href="index.html">Index</a>
-                            </li>
-                            <li class="hover:bg-blue-100 px-4 py-2 transition">
-                                <a href="registration.html">Login / Registration</a>
-                            </li>
-                            <li class="hover:bg-blue-100 px-4 py-2 transition">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-
-                <li>
-                    <a href="/blog" class="uppercase transition hover:text-blue-600">
-                        Blog
+                    <a href="/frontend/projects.html" class="uppercase transition hover:text-blue-600">
+                        All Projects
                     </a>
                 </li>
                 <li>
-                    <a href="/contact" class="uppercase font-bold text-blue-700 hover:text-pink-500">
-                        Partner
+                    <a href="/frontend/members.html" class="uppercase transition hover:text-blue-600">
+                        Stakeholders
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
+                        Announcements
                     </a>
                 </li>
             </ul>
@@ -159,7 +136,7 @@
             <!-- CTA Button -->
             <div class="mt-6">
                 <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white rounded-full bg-pink-600 group">
+                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
                     <span
                         class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
                     <span class="relative z-10 group-hover:text-white">Collaborate</span>
@@ -167,194 +144,620 @@
             </div>
         </div>
     </nav>
-    <div class="min-h-screen bg-gray-100">
-        <div class="max-w-6xl mx-auto p-8">
-            <h3 class="text-lg font-medium text-gray-700 mt-20 mb-3 uppercase font-bold">Quick Admin Actions</h3>
-            <div class="grid fade fade-up sm:grid-cols-4 gap-4">
-                <button
-                    class="bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition duration-200 flex items-center justify-center">
-                    <i class="fas fa-user-plus mr-2"></i> Create User & Role
-                </button>
-                <button
-                    class="bg-teal-600 text-white py-3 rounded-md hover:bg-teal-700 transition duration-200 flex items-center justify-center">
-                    <i class="fas fa-clipboard-check mr-2"></i> Whitelisted Organizations.
-                </button>
-                <button
-                    class="bg-gray-700 text-white py-3 rounded-md hover:bg-gray-800 transition duration-200 flex items-center justify-center">
-                    <i class="fas fa-magnifying-glass-chart mr-2"></i> System Reports
-                </button>
-                <button
-                    class="bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition duration-200 flex items-center justify-center">
-                    <i class="fas fa-bell mr-2"></i> View Alerts
-                </button>
-            </div>
-        </div>
-        <div class="max-w-6xl mx-auto p-8">
-            <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center border-b-2 border-indigo-300 pb-3">
-                Operational Dashboard</h1>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
-                    <i class="fas fa-layer-group text-blue-500 text-3xl mb-2"></i>
-                    <p class="text-4xl font-bold text-gray-900">1250</p>
-                    <p class="text-lg text-gray-600">Total Projects</p>
-                </div>
-                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
-                    <i class="fas fa-users text-green-500 text-3xl mb-2"></i>
-                    <p class="text-4xl font-bold text-gray-900">480</p>
-                    <p class="text-lg text-gray-600">Active Members</p>
-                </div>
-                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
-                    <i class="fas fa-building text-purple-500 text-3xl mb-2"></i>
-                    <p class="text-4xl font-bold text-gray-900">120</p>
-                    <p class="text-lg text-gray-600">Organizations</p>
-                </div>
-                <div class="fade fade-up bg-white p-6 rounded-lg shadow-md text-center">
-                    <i class="fas fa-handshake text-orange-500 text-3xl mb-2"></i>
-                    <p class="text-4xl font-bold text-gray-900">35</p>
-                    <p class="text-lg text-gray-600">Partners</p>
+    <section class="pt-16 mt-20 bg-cyan-800 sm:pt-20 ">
+        <div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
+            <div class="md:col-span-4">
+                <h1 class="mb-2 text-4xl font-semibold md:text-4xl">
+                    RMNCAH Hub Admn Portal
+                </h1>
+                <p class="text-[16px] mb-6 max-w-2xl">
+                    Welcome back, <span class="font-bold">John</span>! Here is a quick overview of the system
+                    statistics and your recent activities.
+                </p>
+            </div>
+            <div class="md:col-span-1">
+                <h6 class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase">
+                    Admin Actions
+                </h6>
+                <div class="grid gap-4 text-white">
+                    <button data-twe-toggle="modal" data-twe-target="#createNewUser"
+                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
+                        <span class="text-sm">
+                            New Admin
+                        </span>
+                        <span class="text-sm">
+                            <i class="far fa-user-plus"></i>
+                        </span>
+                    </button>
+                    <button data-twe-toggle="modal" data-twe-target="#createNewUser"
+                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
+                        <span class="text-sm">
+                            Access Control
+                        </span>
+                        <span class="text-sm">
+                            <i class="far fa-user-shield"></i>
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
-        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
+    </section>
+
+    <div class="min-h-screen bg-gray-100">
+
+        <!-- New User -->
+        <div data-twe-modal-init
+            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+            id="createNewUser" tabindex="-1" aria-labelledby="createNewUserTitle" aria-modal="true" role="dialog">
+            <div data-twe-modal-dialog-ref
+                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                <div
+                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                    <div
+                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                        <!-- Modal title -->
+                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewUserTitle">
+                            New User
+                        </h5>
+                        <!-- Close button -->
+                        <button type="button"
+                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                            data-twe-modal-dismiss aria-label="Close">
+                            <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="relative p-4">
+                        <form id="userForm" class="space-y-5">
+                            <!-- First & Last Name -->
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                    <input type="text" name="first_name" required
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                    <input type="text" name="last_name" required
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Role</label>
+                                    <select name="role" required
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">Select Role...</option>
+                                        <option>
+                                            Super Admin
+                                        </option>
+                                        <option>
+                                            Ei
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Email -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                                    <input type="email" name="email" required
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                            </div>
+                            <!-- Submit -->
+                            <div class="pt-4">
+                                <button type="submit"
+                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
+                                    Create User
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="max-w-6xl mx-auto p-8">
-            <div class="bg-white fade fade-up rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl fade fade-left font-semibold text-gray-900 mb-5 flex items-center">
-                    <i class="fas fa-folder text-indigo-600 mr-3"></i> Projects Management
+
+        <!-- New Project -->
+        <div data-twe-modal-init
+            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+            <div data-twe-modal-dialog-ref
+                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+                <div
+                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+                    <div
+                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+                        <!-- Modal title -->
+                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                            New ADMIN Project
+                        </h5>
+                        <!-- Close button -->
+                        <button type="button"
+                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                            data-twe-modal-dismiss aria-label="Close">
+                            <span class="[&>svg]:h-6 [&>svg]:w-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="relative p-4">
+                        <form action="#" method="POST">
+                            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                                <!-- Title -->
+                                <div>
+                                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                                    <input type="text" id="title" name="title"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+
+                                <!-- Project Theme -->
+                                <div>
+                                    <label for="theme" class="block text-sm font-medium text-gray-700">Project
+                                        Theme</label>
+                                    <select id="theme" name="theme"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">Select Theme</option>
+                                        <option value="GBV">
+                                            Gender based violence
+                                        </option>
+                                        <option value="AYPSRH">
+                                            Adolescent and young people sexual and reproductive health
+                                        </option>
+                                        <option value="MNH">
+                                            Maternal and newborn health
+                                        </option>
+                                        <option value="FP">
+                                            Family planning
+                                        </option>
+                                        <option value="CH">
+                                            Child Health
+                                        </option>
+                                        <option value="AH">
+                                            Adolescent Health
+                                        </option>
+                                    </select>
+                                </div>
+
+
+                                <!-- Time Period -->
+                                <div>
+                                    <label for="starttime_period" class="block text-sm font-medium text-gray-700">
+                                        Start
+                                    </label>
+                                    <input type="date" id="starttime_period" name="start_date"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="endtime_period"
+                                        class="block text-sm font-medium text-gray-700">End</label>
+                                    <input type="date" id="endtime_period" name="end_date"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <!-- Activity Type -->
+                                <div class="col-span-2 md:col-span-4">
+                                    <label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
+                                        Type (Description)</label>
+                                    <textarea id="activity_type" name="activity_type" rows="3"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                </div>
+
+                                <!-- Location -->
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">County</label>
+                                    <input type="text" id="time_period" name="county" placeholder="County"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="subcounty" class="block text-sm font-medium text-gray-700">Sub
+                                        County</label>
+                                    <input type="text" id="subcounty" name="sub_county" placeholder="County"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">Area</label>
+                                    <input type="text" id="time_period" name="project_area"
+                                        placeholder="Where in county"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700">Maps
+                                        Address</label>
+                                    <input type="text" id="time_period" name="maps_address" placeholder="Maps Address"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <!-- Contact Person -->
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Name
+                                    </label>
+                                    <input type="text" id="contact_person" name="contact_person_name" placeholder="Name"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Role
+                                    </label>
+                                    <input type="text" id="contact_person" name="contact_person_role" placeholder="Role"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
+                                        Contact Person Email
+                                    </label>
+                                    <input type="email" id="contact_person" name="contact_person_mail"
+                                        placeholder="Email"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+
+                                <!-- Gaps -->
+                                <div class="col-span-2 lg:col-span-4">
+                                    <label for="gaps" class="block text-sm font-medium text-gray-700">
+                                        Objectives
+                                    </label>
+                                    <textarea id="gaps" name="gaps" rows="3"
+                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Button -->
+                            <div class="mt-3">
+                                <button type="submit"
+                                    class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Request Info
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl p-8 mx-auto">
+            <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
+                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
+                    Projects Overview
                 </h2>
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6">
-                    <div class="fade fade-up bg-green-50 p-4 rounded-md">
+                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
+                    Investments Over Time
+                </h3>
+                <div id="chart" class="p-4 mt-6 fade fade-up">
+                </div>
+                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
+                    Projects Distribution By Topic
+                </h3>
+                <div id="barChart"></div>
+                <h2 class="flex items-center mb-5 text-lg font-light text-gray-900 uppercase fade fade-left">
+                    Status Summary
+                </h2>
+                <div class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5">
+                    <button data-twe-toggle="modal" data-twe-target="#createNewProject"
+                        class="p-4 rounded-md fade fade-up bg-blue-50">
+                        <p class="text-3xl font-bold text-blue-700">
+                            <i class="text-xl fas fa-plus-circle"></i>
+                        </p>
+                        <p class="text-sm text-blue-600">New Project</p>
+                    </button>
+                    <div class="p-4 rounded-md fade fade-up bg-green-50">
                         <p class="text-3xl font-bold text-green-700">800</p>
                         <p class="text-sm text-green-600">Approved</p>
                     </div>
-                    <div class="fade fade-up bg-yellow-50 p-4 rounded-md">
+                    <div class="p-4 rounded-md fade fade-up bg-yellow-50">
                         <p class="text-3xl font-bold text-yellow-700">200</p>
                         <p class="text-sm text-yellow-600">Pending</p>
                     </div>
-                    <div class="fade fade-up bg-red-50 p-4 rounded-md">
+                    <div class="p-4 rounded-md fade fade-up bg-red-50">
                         <p class="text-3xl font-bold text-red-700">150</p>
                         <p class="text-sm text-red-600">Stalled</p>
                     </div>
-                    <div class="fade fade-up bg-gray-50 p-4 rounded-md">
+                    <div class="p-4 rounded-md fade fade-up bg-gray-50">
                         <p class="text-3xl font-bold text-gray-700">100</p>
                         <p class="text-sm text-gray-600">Abandoned</p>
                     </div>
                 </div>
-                <ul class="text-gray-700 fade fade-left space-y-2 text-base">
-                    <li><span class="font-medium">Avg. Cost:</span> <span class="text-blue-600">$250,000</span></li>
-                    <li><span class="font-medium">Top Sponsor:</span> Global Development Fund</li>
-                    <li><span class="font-medium">Region Focus:</span> East Africa & Southeast Asia</li>
-                    <li><span class="font-medium">Latest Start:</span> June 2025</li>
+                <ul class="space-y-2 text-base text-gray-700 fade fade-left">
+                    <li>
+                        <span class="font-medium">
+                            Avg. Cost:
+                        </span>
+                        <span class="text-blue-600">
+                            <span class="text-xs opacity-75">
+                                KES
+                            </span>
+                            25,000,000
+                        </span>
+                    </li>
+                    <li>
+                        <span class="font-medium">
+                            Top County By Projects:
+                        </span>
+                        Mombasa , 378
+                    </li>
+                    <li>
+                        <span class="font-medium">
+                            Top County By Project Value:
+                        </span>
+                        Kisumu , <span class="ml-2 text-xs">KES</span> 1,200,000
+                    </li>
+                    <li>
+                        <span class="font-medium">
+                            Addressed Topics:
+                        </span>
+                        GBV , Community Empowerment , Community Health
+                    </li>
+                    <li>
+                        <span class="font-medium">
+                            Latest Start:
+                        </span>
+                        June 2025 , Nakuru
+                    </li>
                 </ul>
-                <div class="fade fade-up">
-                    <button
-                        class="w-full bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5">
-                        <i class="fas fa-arrow-alt-circle-right mr-2"></i> Go to Project Dashboard
-                    </button>
+                <div class="flex fade fade-up">
+                    <a href="projects.html"
+                        class="w-full text-center bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5">
+                        <i class="mr-2 fas fa-cog"></i>
+                        Manage Projects
+                    </a>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white fade fade-left rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl fade fade-up font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-users-line text-blue-600 mr-3"></i> Member Status
-                    </h2>
-                    <div class="grid fade fade-up grid-cols-2 gap-4 text-center mb-6">
-                        <div class="bg-blue-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-blue-700">350</p>
-                            <p class="text-sm text-blue-600">Active</p>
-                        </div>
-                        <div class="bg-yellow-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-yellow-700">50</p>
-                            <p class="text-sm text-yellow-600">Pending</p>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-red-700">40</p>
-                            <p class="text-sm text-red-600">Suspended</p>
-                        </div>
-                        <div class="bg-purple-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-purple-700">40</p>
-                            <p class="text-sm text-purple-600">Onboarding</p>
-                        </div>
-                    </div>
-                    <div class="fade fade-up">
-                        <button
-                            class="w-full bg-blue-600 text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200">
-                            <i class="fas fa-address-book mr-2"></i> Manage Members
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white fade fade-right rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-building-flag text-purple-600 mr-3"></i> Organization Status
-                    </h2>
-                    <div class="grid fade fade-up grid-cols-2 gap-4 text-center mb-6">
-                        <div class="bg-green-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-green-700">80</p>
-                            <p class="text-sm text-green-600">Approved</p>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-blue-700">20</p>
-                            <p class="text-sm text-blue-600">Whitelisted</p>
-                        </div>
-                        <div class="bg-yellow-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-yellow-700">10</p>
-                            <p class="text-sm text-yellow-600">Applications</p>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-md">
-                            <p class="text-3xl font-bold text-red-700">10</p>
-                            <p class="text-sm text-red-600">Restricted</p>
-                        </div>
-                    </div>
-                    <div class="fade fade-up">
-                        <button
-                            class="w-full bg-purple-600 text-white py-2.5 rounded-md hover:bg-purple-700 transition duration-200">
-                            <i class="fas fa-sitemap mr-2"></i> Organization Directory
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg fade fade-up shadow-md p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <i class="fas fa-gem text-teal-600 mr-3"></i> Partners Tools
+            <div class="p-6 my-4 bg-white rounded-lg shadow-md fade fade-right">
+                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
+                    Stakeholder Overview
                 </h2>
-                <div class="fade fade-up">
-                    <h3 class="text-lg font-medium text-gray-700 mb-3">Partner Status</h3>
-                    <div class="space-y-3 fade fade-up">
-                        <div class="flex items-center justify-between text-base">
-                            <span class="text-gray-700">Pending:</span>
-                            <span class="font-bold text-yellow-700">15</span>
-                        </div>
-                        <div class="flex items-center justify-between text-base">
-                            <span class="text-gray-700">Approved:</span>
-                            <span class="font-bold text-green-700">18</span>
-                        </div>
-                        <div class="flex items-center justify-between text-base">
-                            <span class="text-gray-700">New Applications:</span>
-                            <span class="font-bold text-blue-700">2</span>
-                        </div>
+                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
+                    Organization Types
+                </h3>
+                <div id="orgChart" class="fade fade-up"></div>
+                <div class="grid grid-cols-2 gap-4 mb-6 text-center fade fade-up">
+                    <div class="p-4 rounded-md bg-blue-50">
+                        <p class="text-3xl font-bold text-blue-700">100</p>
+                        <p class="text-sm text-blue-600">Whitelisted</p>
                     </div>
-                    <div class="fade fade-up">
-                        <button
-                            class="w-full bg-orange-600 text-white py-2 rounded-md hover:bg-orange-700 transition duration-200 mt-5">
-                            <i class="fas fa-handshake-angle mr-2"></i> View All Partners
-                        </button>
+                    <div class="p-4 rounded-md bg-yellow-50">
+                        <p class="text-3xl font-bold text-yellow-700">10</p>
+                        <p class="text-sm text-yellow-600">Pending</p>
                     </div>
+                    <div class="p-4 rounded-md bg-red-50">
+                        <p class="text-3xl font-bold text-red-700">10</p>
+                        <p class="text-sm text-red-600">Restricted</p>
+                    </div>
+                </div>
+                <div class="flex fade fade-up">
+                    <a href="members.html"
+                        class="w-full bg-blue-600 text-center text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200">
+                        <i class="mr-2 fas fa-address-book"></i> Manage Members
+                    </a>
                 </div>
             </div>
         </div>
+
+        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
+        </div>
     </div>
+    <script>
+        var options = {
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            series: [65, 35],
+            labels: ['Implementing', 'Development'],
+            colors: ['#A08BFB', '#FFF560'],
+            legend: {
+                position: 'bottom'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    return opts.w.config.series[opts.seriesIndex];
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " Oranizations";
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#orgChart"), options);
+        chart.render();
+    </script>
+    <script>
+        var options = {
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            series: [65, 35], // Example: 65 males, 35 females
+            labels: ['Male', 'Female'],
+            colors: ['#008FFB', '#FF4560'],
+            legend: {
+                position: 'bottom'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    return opts.w.config.series[opts.seriesIndex];
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " Members";
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#teamChart"), options);
+        chart.render();
+    </script>
+    <script>
+        var options = {
+            chart: {
+                type: 'bar',
+                height: 400,
+                stacked: false
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: {
+                    fontSize: '12px',
+                    colors: ["#304758"]
+                }
+            },
+            series: [
+                {
+                    name: 'Implementing Projects',
+                    data: [8, 12, 9]
+                },
+                {
+                    name: 'Development Projects',
+                    data: [6, 10, 7]
+                }
+            ],
+            xaxis: {
+                categories: ['GBV', 'Community Empowerment', 'Community Health'],
+                title: { text: 'Category' }
+            },
+            yaxis: {
+                title: { text: 'Value (Millions / No. of Projects)' }
+            },
+            legend: {
+                position: 'top'
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: {
+                    formatter: function (val, opts) {
+                        let seriesName = opts.seriesIndex < 2 ? "Investment (M)" : "Projects";
+                        return val + " " + seriesName;
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#barChart"), options);
+        chart.render();
+    </script>
+
+    <script>
+        // Example data
+        var localData = [120, 150, 180, 200, 170, 220, 250];
+        var foreignData = [100, 130, 160, 140, 190, 210, 230];
+
+        // Extra info aligned with each data point
+        var localExtra = [
+            { stakeholders: 10, projects: 5 },
+            { stakeholders: 12, projects: 6 },
+            { stakeholders: 15, projects: 7 },
+            { stakeholders: 18, projects: 8 },
+            { stakeholders: 14, projects: 5 },
+            { stakeholders: 20, projects: 9 },
+            { stakeholders: 22, projects: 11 }
+        ];
+
+        var foreignExtra = [
+            { stakeholders: 8, projects: 3 },
+            { stakeholders: 11, projects: 4 },
+            { stakeholders: 13, projects: 6 },
+            { stakeholders: 12, projects: 4 },
+            { stakeholders: 15, projects: 7 },
+            { stakeholders: 17, projects: 8 },
+            { stakeholders: 19, projects: 9 }
+        ];
+
+        var options = {
+            chart: {
+                type: 'line',
+                height: 400,
+                toolbar: { show: true }
+            },
+            series: [
+                { name: 'Implementing Investment', data: localData },
+                { name: 'Development Investment', data: foreignData }
+            ],
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                title: { text: 'Months' }
+            },
+            yaxis: {
+                title: { text: 'Investment (in Millions)' }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            markers: {
+                size: 4
+            },
+            tooltip: {
+                shared: false,
+                custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                    let investment = series[seriesIndex][dataPointIndex];
+                    let extra =
+                        seriesIndex === 0
+                            ? localExtra[dataPointIndex]
+                            : foreignExtra[dataPointIndex];
+
+                    return `
+            <div style="padding:8px;">
+              <strong>${w.globals.seriesNames[seriesIndex]}</strong><br/>
+              Investment: ${investment} M<br/>
+              No. of Stakeholders: ${extra.stakeholders}<br/>
+              No. of Projects: ${extra.projects}
+            </div>
+          `;
+                }
+            },
+            legend: {
+                position: 'top'
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    </script>
+
     <script src="styles/effects.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let map, selectedMarker = null;
         const markers = [];
         const icons = {
-            default: (tag) => L.icon({ iconUrl: `/resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `/resources/${tag}.png`, iconSize: [40, 40] })
+            default: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
+            selected: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] })
         };
 
         const bgColors = {
@@ -512,7 +915,7 @@
             const infoBox = document.getElementById("projectInfo");
             infoBox.classList.remove("hidden");
             infoBox.innerHTML = `
-            <h3 class="text-xl font-bold text-gray-800 mb-4">${project.name}</h3>
+            <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
             <p><strong>Description:</strong> ${project.description}</p>
             <p><strong>Region:</strong> ${project.region}</p>
             <p><strong>Budget:</strong> ${project.budget}</p>
@@ -586,13 +989,13 @@
                 item.className = `rounded shadow-sm ${bg}`;
 
                 item.innerHTML = `
-                <button class="w-full text-left px-6 py-4 border-b focus:outline-none" data-toggle="collapse-${i}">
+                <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                         <div>
                             <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
                             <p class="text-sm text-gray-600">${project.description}</p>
                         </div>
-                        <div class="text-sm text-gray-500 mt-2 sm:mt-0">${new Date(project.start_date).toLocaleDateString()}</div>
+                        <div class="mt-2 text-sm text-gray-500 sm:mt-0">${new Date(project.start_date).toLocaleDateString()}</div>
                     </div>
                 </button>
                 <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
@@ -602,7 +1005,7 @@
                     <p><strong>Participants:</strong> ${project.participants}</p>
                     <p><strong>Sponsor:</strong> ${project.sponsor}</p>
                     <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
-                    <button onclick="focusMarker(${i})" class="mt-3 px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded transition hover:scale-105">
+                    <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                         Show on Map
                     </button>
                 </div>

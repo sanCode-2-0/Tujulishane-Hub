@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Enter OTP</title>
+
+    <!-- Tailwind CDN for quick demo (replace with your compiled Tailwind in production) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* small extra polish for input focus ring */
+        .otp-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+            border-color: rgb(59 130 246);
+        }
+
+        /* smooth transition for button states */
+        .btn {
+            transition: transform .06s, box-shadow .06s, opacity .12s;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen px-4 bg-gradient-to-b from-slate-50 via-white to-indigo-50">
+
+    <main class="w-full max-w-xl p-8 border shadow-lg bg-white/60 backdrop-blur-md border-white/60 rounded-2xl md:p-12">
+        <a href="/frontend/index.html"
+            class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+            <img src="/frontend/resources/images/moh.jpg" class="object-contain h-8" alt="Site Logo">
+            <img src="/frontend/resources/images/log2.jpg" class="object-contain h-8" alt="Site Logo">
+        </a>
+        <header class="my-6 text-center">
+            <h1 class="text-2xl font-semibold md:text-3xl text-slate-800">
+                Enter verification code
+            </h1>
+            <p class="mt-2 text-sm text-slate-600">
+                We sent a 6-digit code to your email
+            </p>
+        </header>
+
+        <form id="otpForm" class="space-y-6" onsubmit="return false;">
+            <div class="flex items-center justify-center gap-3 md:gap-4">
+                <!-- 6 inputs -->
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 1"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 5"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+                <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 6"
+                    class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+            </div>
+
+            <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+                <div class="text-sm text-slate-600">
+                    <span id="timerText">Resend code in <span id="countdown">00:30</span></span>
+                    <button id="resendBtn" class="hidden ml-2 text-sm font-medium text-indigo-600"
+                        type="button">Resend</button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button id="clearBtn" type="button"
+                        class="inline-flex items-center px-4 py-2 text-sm bg-white border rounded-lg btn border-slate-200 text-slate-700 hover:bg-slate-50">
+                        Clear
+                    </button>
+                    <button id="verifyBtn" type="submit" disabled
+                        class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm btn disabled:opacity-50 disabled:cursor-not-allowed">
+                        Verify
+                    </button>
+                </div>
+            </div>
+
+            <div id="message" role="status" class="min-h-[1.25rem] text-center text-sm"></div>
+        </form>
+
+        <p class="mt-1 text-xs text-center opacity-70">
+            RMNCAH Coordination Hub
+        </p>
+    </main>
+
+    <script>
+        (function () {
+            const inputs = Array.from(document.querySelectorAll('.otp-input'));
+            const verifyBtn = document.getElementById('verifyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const message = document.getElementById('message');
+            const resendBtn = document.getElementById('resendBtn');
+            const timerText = document.getElementById('timerText');
+            const countdownEl = document.getElementById('countdown');
+
+            // Config
+            const RESEND_SECONDS = 30;
+            let timer = RESEND_SECONDS;
+            let countdownInterval = null;
+
+            // Focus first input on load
+            inputs[0].focus();
+
+            // Helpers
+            function updateVerifyState() {
+                const filled = inputs.every(i => i.value.trim().length === 1);
+                verifyBtn.disabled = !filled;
+            }
+
+            function clearAll() {
+                inputs.forEach(i => i.value = '');
+                inputs[0].focus();
+                updateVerifyState();
+                message.textContent = '';
+            }
+
+            function getCode() {
+                return inputs.map(i => i.value.trim()).join('');
+            }
+
+            function showMessage(text, type = 'info') {
+                message.textContent = text;
+                message.className = type === 'error' ? 'text-red-600' : 'text-green-600';
+            }
+
+            // Input events
+            inputs.forEach((input, idx) => {
+                input.addEventListener('input', (e) => {
+                    const c = e.target.value;
+                    // allow only digits
+                    if (!/^\d$/.test(c)) {
+                        e.target.value = c.replace(/\D/g, '');
+                        // if nothing numeric left, stop
+                        if (e.target.value === '') return;
+                    }
+                    // move to next if present
+                    if (e.target.value.length === 1 && idx < inputs.length - 1) {
+                        inputs[idx + 1].focus();
+                        inputs[idx + 1].select();
+                    }
+                    updateVerifyState();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '' && idx > 0) {
+                        inputs[idx - 1].focus();
+                        inputs[idx - 1].select();
+                    } else if (e.key === 'ArrowLeft' && idx > 0) {
+                        inputs[idx - 1].focus();
+                    } else if (e.key === 'ArrowRight' && idx < inputs.length - 1) {
+                        inputs[idx + 1].focus();
+                    }
+                });
+
+                // handle paste on each input to support paste into any box
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+                    const digits = paste.replace(/\D/g, '').slice(0, inputs.length);
+                    if (!digits) return;
+                    // fill inputs sequentially
+                    for (let i = 0; i < inputs.length; i++) {
+                        inputs[i].value = digits[i] || '';
+                    }
+                    // focus next empty or last
+                    const firstEmpty = inputs.find(i => i.value === '');
+                    (firstEmpty || inputs[inputs.length - 1]).focus();
+                    updateVerifyState();
+                });
+
+                // select content on focus to make replacing easy
+                input.addEventListener('focus', (e) => e.target.select());
+            });
+
+            // Clear button
+            clearBtn.addEventListener('click', clearAll);
+
+            // Verify action (demo)
+            verifyBtn.addEventListener('click', () => {
+                const code = getCode();
+                if (code.length !== inputs.length) {
+                    showMessage('Please enter the full 6-digit code.', 'error');
+                    return;
+                }
+
+                // demo: simple validation (replace with real API call)
+                verifyBtn.disabled = true;
+                showMessage('Verifying...', 'info');
+
+                setTimeout(() => {
+                    if (code === '123456') {
+                        showMessage('Success! Code verified.', 'success');
+                        // 🚀 Redirect to your demo page
+                        window.location.href = "index-post-login.html";
+                    } else {
+                        showMessage('Invalid code. Try again.', 'error');
+                        verifyBtn.disabled = false;
+                        inputs[0].focus();
+                        inputs[0].select();
+                    }
+                }, 900);
+            });
+
+
+            // Resend timer
+            function startCountdown() {
+                timer = RESEND_SECONDS;
+                countdownEl.textContent = formatTime(timer);
+                resendBtn.classList.add('hidden');
+                timerText.classList.remove('hidden');
+                countdownInterval = setInterval(() => {
+                    timer--;
+                    if (timer <= 0) {
+                        clearInterval(countdownInterval);
+                        countdownEl.textContent = '00:00';
+                        timerText.textContent = '';
+                        resendBtn.classList.remove('hidden');
+                    } else {
+                        countdownEl.textContent = formatTime(timer);
+                    }
+                }, 1000);
+            }
+
+            function formatTime(s) {
+                const mm = String(Math.floor(s / 60)).padStart(2, '0');
+                const ss = String(s % 60).padStart(2, '0');
+                return mm + ':' + ss;
+            }
+
+            // Resend logic
+            resendBtn.addEventListener('click', () => {
+                // your resend API call goes here
+                showMessage('A new code has been sent.', 'success');
+                startCountdown();
+                clearAll();
+            });
+
+
+
+            // start initial countdown
+            startCountdown();
+
+            // expose some functions to window (optional)
+            window.otpHelpers = {
+                getCode,
+                clearAll
+            };
+        })();
+    </script>
+</body>
+
+</html>
