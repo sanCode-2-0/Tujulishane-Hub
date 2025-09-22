@@ -46,6 +46,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Authentication utilities -->
+    <script src="auth.js"></script>
+    
     <!-- Optional: Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
@@ -104,6 +107,11 @@
                         All Projects
                     </a>
                 </li>
+                <li id="myProjectsNav" class="hidden">
+                    <a href="#my-projects" onclick="showMyProjects()" class="uppercase transition hover:text-blue-600">
+                        My Projects
+                    </a>
+                </li>
 
                 <!-- Pages Dropdown Trigger -->
                 <li class="relative" x-data="{ showDropdown: false }">
@@ -148,6 +156,48 @@
                     <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
                         Announcements
                     </a>
+                </li>
+                
+                <!-- User Profile Dropdown -->
+                <li class="relative" x-data="{ showUserDropdown: false }">
+                    <button @click="showUserDropdown = !showUserDropdown"
+                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition rounded-lg hover:bg-gray-100 focus:outline-none">
+                        <i class="mr-2 fas fa-user-circle"></i>
+                        <span id="userDisplayName">User</span>
+                        <i class="ml-2 fal fa-chevron-down"></i>
+                    </button>
+
+                    <!-- User Dropdown Content -->
+                    <div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+                        class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+                        style="display: none;">
+                        <div class="px-4 py-3">
+                            <div class="text-sm font-medium text-gray-900" id="userNameDisplay">Loading...</div>
+                            <div class="text-sm text-gray-500" id="userEmailDisplay"></div>
+                            <div class="text-xs text-gray-400 mt-1">
+                                Role: <span id="userRoleDisplay"></span> | 
+                                Status: <span id="userStatusDisplay"></span>
+                            </div>
+                        </div>
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li>
+                                <a href="/frontend/profile.html" class="block px-4 py-2 transition hover:bg-gray-100">
+                                    <i class="mr-2 fas fa-user"></i>Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/frontend/settings.html" class="block px-4 py-2 transition hover:bg-gray-100">
+                                    <i class="mr-2 fas fa-cog"></i>Settings
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="py-2">
+                            <button onclick="authManager.logout()" 
+                                class="block w-full px-4 py-2 text-left text-sm text-red-600 transition hover:bg-red-50">
+                                <i class="mr-2 fas fa-sign-out-alt"></i>Logout
+                            </button>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -195,24 +245,24 @@
                 </p>
                 <div class="flex gap-12 text-3xl">
                     <div class="">
-                        <span class="font-bold tracking-wider">
-                            771
+                        <span id="totalProjectsCount" class="font-bold tracking-wider">
+                            0
                         </span>
                         <span class="font-thin">
                             Projects
                         </span>
                     </div>
                     <div class="">
-                        <span class="font-bold tracking-wider">
-                            6
+                        <span id="totalCountiesCount" class="font-bold tracking-wider">
+                            0
                         </span>
                         <span class="font-thin">
                             Counties
                         </span>
                     </div>
                     <div class="">
-                        <span class="font-bold tracking-wider">
-                            138
+                        <span id="totalStakeholdersCount" class="font-bold tracking-wider">
+                            0
                         </span>
                         <span class="font-thin">
                             Stakeholders
@@ -332,27 +382,12 @@
                         class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0">
                         <h3 class="mb-4 text-xl font-semibold text-gray-800">All Projects</h3>
                         <div class="p-6 bg-white border border-gray-200 shadow-lg rounded-xl">
-                            <p class="text-gray-700">Project list or accordion items will load here.</p>
-
-                            <div class="py-4 border-b border-gray-200">
-                                <button
-                                    class="flex items-center justify-between w-full text-lg font-medium text-gray-800">
-                                    <span>Project Alpha</span>
-                                    <i class="text-gray-500 fas fa-chevron-down"></i>
-                                </button>
-                                <div class="hidden mt-2 text-gray-600">
-                                    <p>Description for Project Alpha.</p>
-                                </div>
-                            </div>
-
-                            <div class="py-4 border-b border-gray-200">
-                                <button
-                                    class="flex items-center justify-between w-full text-lg font-medium text-gray-800">
-                                    <span>Project Beta</span>
-                                    <i class="text-gray-500 fas fa-chevron-down"></i>
-                                </button>
-                                <div class="hidden mt-2 text-gray-600">
-                                    <p>Description for Project Beta.</p>
+                            <!-- Projects will be loaded dynamically here -->
+                            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Loading state -->
+                                <div class="col-span-full text-center py-8">
+                                    <i class="fas fa-spinner fa-spin text-gray-400 text-4xl mb-4"></i>
+                                    <p class="text-gray-600">Loading projects...</p>
                                 </div>
                             </div>
                         </div>
@@ -585,6 +620,9 @@
 
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize authentication and load user data
+            initializeUserSession();
+            
             map = L.map('localMap', {
                 center: [-0.0236, 37.9062],
                 zoom: 6.3,
@@ -892,6 +930,692 @@
                     }, interval);
                 }
             }
+        }
+        
+        // User session initialization
+        async function initializeUserSession() {
+            // Check if user is authenticated
+            if (!authManager.isAuthenticated()) {
+                alert('You must be logged in to access this page.');
+                window.location.href = '/frontend/index.html';
+                return;
+            }
+
+            try {
+                // Load current user data
+                const user = await authManager.getCurrentUser();
+                
+                // Update UI with user information
+                updateUserDisplay(user);
+                
+                // Check if user is approved
+                if (user.approvalStatus !== 'APPROVED') {
+                    showApprovalPendingMessage(user);
+                }
+                
+                // Load dashboard data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('Failed to load user session:', error);
+                alert('Failed to load user session. Please log in again.');
+                authManager.logout();
+            }
+        }
+        
+        // Load dashboard statistics and projects from API
+        async function loadDashboardData() {
+            try {
+                console.log('Loading dashboard data...');
+                
+                // Load project statistics
+                await loadProjectStatistics();
+                
+                // Load projects list
+                await loadProjects();
+                
+                console.log('Dashboard data loaded successfully');
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                // Show user-friendly error
+                showDashboardError();
+            }
+        }
+        
+        // Load project statistics from API
+        async function loadProjectStatistics() {
+            try {
+                console.log('Loading dashboard statistics...');
+                
+                // Load project data and organizations in parallel
+                const [projectsResponse, organizationsResponse] = await Promise.all([
+                    authManager.apiCall('/api/projects?size=1000', 'GET'),
+                    authManager.apiCall('/api/organizations/approved', 'GET')
+                ]);
+                
+                let combinedStats = {
+                    totalProjects: 0,
+                    countyCounts: {},
+                    totalStakeholders: 0,
+                    coordinatesCoveragePercentage: 0
+                };
+                
+                // Process projects data to calculate statistics
+                if (projectsResponse.ok) {
+                    const projectData = await projectsResponse.json();
+                    console.log('Projects data received:', projectData);
+                    
+                    if (projectData.status === 200 && projectData.data && projectData.data.projects) {
+                        const projects = projectData.data.projects;
+                        combinedStats.totalProjects = projects.length;
+                        
+                        // Count projects by county and status
+                        const countyCounts = {};
+                        const statusCounts = {};
+                        let totalBudget = 0;
+                        
+                        projects.forEach(project => {
+                            if (project.county) {
+                                countyCounts[project.county] = (countyCounts[project.county] || 0) + 1;
+                            }
+                            if (project.status) {
+                                statusCounts[project.status] = (statusCounts[project.status] || 0) + 1;
+                            }
+                            if (project.budget) {
+                                totalBudget += project.budget;
+                            }
+                        });
+                        
+                        combinedStats.countyCounts = countyCounts;
+                        combinedStats.statusCounts = statusCounts;
+                        combinedStats.totalBudget = totalBudget;
+                        
+                        // Calculate coordinates coverage
+                        const projectsWithCoords = projects.filter(p => p.latitude && p.longitude).length;
+                        combinedStats.coordinatesCoveragePercentage = projects.length > 0 
+                            ? Math.round((projectsWithCoords / projects.length) * 100) 
+                            : 0;
+                    }
+                } else {
+                    console.warn('Failed to load projects data');
+                }
+                
+                // Process organizations data
+                if (organizationsResponse.ok) {
+                    const organizationData = await organizationsResponse.json();
+                    console.log('Organizations data received:', organizationData);
+                    
+                    if (organizationData.status === 200 && organizationData.data) {
+                        combinedStats.totalStakeholders = organizationData.data.length || 0;
+                    }
+                } else {
+                    console.warn('Failed to load organizations data');
+                }
+                
+                console.log('Combined statistics:', combinedStats);
+                
+                // Update display with calculated statistics
+                updateStatisticsDisplay(combinedStats);
+                
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                useDefaultStatistics();
+            }
+        }
+        
+        // Use default statistics if API calls fail
+        function useDefaultStatistics() {
+            const defaultStats = {
+                totalProjects: 0,
+                countyCounts: {},
+                statusCounts: {},
+                totalStakeholders: 0,
+                totalBudget: 0,
+                coordinatesCoveragePercentage: 0
+            };
+            
+            // Show message about using defaults
+            console.warn('⚠️ Using default statistics due to API failure - this should show 0 for all stats');
+            showApiConnectionWarning();
+            
+            updateStatisticsDisplay(defaultStats);
+        }
+        
+        // Show API connection warning
+        function showApiConnectionWarning() {
+            const warningBanner = document.createElement('div');
+            warningBanner.className = 'fixed top-20 left-4 right-4 z-40 bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded';
+            warningBanner.innerHTML = `
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <strong>API Connection Issue:</strong> Unable to load live data. Showing default values. 
+                            This may be due to server maintenance or connectivity issues.
+                        </p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-yellow-500 hover:text-yellow-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(warningBanner);
+            
+            setTimeout(() => {
+                if (warningBanner.parentElement) {
+                    warningBanner.remove();
+                }
+            }, 10000);
+        }
+        
+        // Load projects from API
+        async function loadProjects() {
+            try {
+                const response = await authManager.apiCall('/api/projects?size=50', 'GET');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Projects data:', data);
+                    
+                    if (data.status === 200 && data.data && data.data.projects) {
+                        updateProjectsDisplay(data.data.projects);
+                        updateMapWithProjects(data.data.projects);
+                    }
+                } else {
+                    console.warn('Failed to load projects');
+                    showProjectsError();
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                showProjectsError();
+            }
+        }
+        
+        // Update map with real project data
+        function updateMapWithProjects(projects) {
+            // Find projects with coordinates
+            const projectsWithCoords = projects.filter(project => 
+                project.latitude && project.longitude
+            );
+            
+            console.log('Updating map with', projectsWithCoords.length, 'projects');
+            
+            // Clear existing markers if any
+            if (window.mapMarkers) {
+                window.mapMarkers.forEach(marker => {
+                    if (window.map) {
+                        window.map.removeLayer(marker);
+                    }
+                });
+            }
+            window.mapMarkers = [];
+            
+            // Add new markers from real project data
+            projectsWithCoords.forEach(project => {
+                if (window.map) {
+                    const marker = L.marker([project.latitude, project.longitude]);
+                    
+                    const popupContent = `
+                        <div style="min-width: 200px;">
+                            <h3 style="margin: 0 0 8px 0; font-weight: bold;">${project.title || project.name || 'Untitled Project'}</h3>
+                            <p style="margin: 4px 0;"><strong>Partner:</strong> ${project.partner || 'N/A'}</p>
+                            <p style="margin: 4px 0;"><strong>County:</strong> ${project.county || 'N/A'}</p>
+                            <p style="margin: 4px 0;"><strong>Status:</strong> 
+                                <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; 
+                                    background-color: ${getStatusColor(project.status)}; color: white;">
+                                    ${project.status || 'unknown'}
+                                </span>
+                            </p>
+                            ${project.budget ? `<p style="margin: 4px 0;"><strong>Budget:</strong> $${project.budget.toLocaleString()}</p>` : ''}
+                            ${project.objectives ? `<p style="margin: 8px 0 0 0; font-size: 12px;">${project.objectives.substring(0, 150)}${project.objectives.length > 150 ? '...' : ''}</p>` : ''}
+                        </div>
+                    `;
+                    
+                    marker.bindPopup(popupContent);
+                    marker.addTo(window.map);
+                    window.mapMarkers.push(marker);
+                }
+            });
+        }
+        
+        // Helper function to get status color for map markers
+        function getStatusColor(status) {
+            const colors = {
+                'active': '#10b981',
+                'pending': '#f59e0b', 
+                'stalled': '#ef4444',
+                'completed': '#3b82f6',
+                'abandoned': '#6b7280'
+            };
+            return colors[status] || '#6b7280';
+        }
+        
+        // Update statistics display with real data
+        function updateStatisticsDisplay(stats) {
+            console.log('Updating statistics display with:', stats);
+            
+            // Update hero section statistics
+            const totalProjectsElement = document.getElementById('totalProjectsCount');
+            const totalCountiesElement = document.getElementById('totalCountiesCount');
+            const totalStakeholdersElement = document.getElementById('totalStakeholdersCount');
+            
+            if (totalProjectsElement) {
+                totalProjectsElement.textContent = stats.totalProjects || 0;
+                console.log('Updated total projects count:', stats.totalProjects);
+            }
+            if (totalCountiesElement) {
+                totalCountiesElement.textContent = Object.keys(stats.countyCounts || {}).length || 0;
+                console.log('Updated total counties count:', Object.keys(stats.countyCounts || {}).length);
+            }
+            if (totalStakeholdersElement) {
+                totalStakeholdersElement.textContent = stats.totalStakeholders || 0;
+                console.log('Updated total stakeholders count:', stats.totalStakeholders);
+            }
+            
+            // Update Alpine.js countdownStats component
+            try {
+                const statsComponent = Alpine.$data(document.querySelector('[x-data*="countdownStats"]'));
+                
+                if (statsComponent) {
+                    // Update targets with real data
+                    statsComponent.targets = {
+                        locations: stats.coordinatesCoveragePercentage || 0,
+                        projects: stats.totalProjects || 0,
+                        regions: Object.keys(stats.countyCounts || {}).length || 0,
+                        users: stats.totalStakeholders || 0,
+                        amount: stats.totalBudget || 0 // This would need to be calculated from projects
+                    };
+                    
+                    // Reset the animation values
+                    statsComponent.locations = 0;
+                    statsComponent.projects = 0;
+                    statsComponent.regions = 0;
+                    statsComponent.users = 0;
+                    statsComponent.amount = 0;
+                    statsComponent.amountDisplay = '0';
+                    
+                    // Restart the animation with new targets
+                    statsComponent.start();
+                    
+                    console.log('Alpine.js statistics updated:', statsComponent.targets);
+                } else {
+                    console.warn('Alpine.js countdownStats component not found');
+                }
+            } catch (error) {
+                console.error('Error updating Alpine.js component:', error);
+            }
+            
+            console.log('Hero statistics updated:', {
+                projects: stats.totalProjects,
+                counties: Object.keys(stats.countyCounts || {}).length,
+                stakeholders: stats.totalStakeholders
+            });
+        }
+        
+        // Update projects display
+        function updateProjectsDisplay(projectsData) {
+            // Update global projects variable
+            window.projects = projectsData;
+            window.filteredProjects = projectsData;
+            
+            // Update the projects table or list
+            renderProjectsList(projectsData);
+            
+            console.log('Projects display updated with', projectsData.length, 'projects');
+        }
+        
+        // Render projects list in the UI
+        function renderProjectsList(projects) {
+            // If there's a projects container, update it
+            const projectsContainer = document.getElementById('projects-container');
+            if (projectsContainer) {
+                // Clear existing content
+                projectsContainer.innerHTML = '';
+                
+                if (projects.length === 0) {
+                    projectsContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-project-diagram text-gray-400 text-4xl mb-4"></i>
+                            <p class="text-gray-600">No projects found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Render project cards
+                projects.forEach(project => {
+                    const projectCard = createProjectCard(project);
+                    projectsContainer.appendChild(projectCard);
+                });
+            }
+        }
+        
+        // Create project card element
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow';
+            
+            const statusClass = getStatusClass(project.status);
+            const themeClass = getThemeClass(project.projectTheme);
+            
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 line-clamp-2">${project.title}</h3>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusClass}">
+                        ${project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                    </span>
+                </div>
+                
+                <div class="space-y-2 mb-4">
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-building mr-2"></i>${project.partner}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-map-marker-alt mr-2"></i>${project.county}${project.subCounty ? ', ' + project.subCounty : ''}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-calendar mr-2"></i>${project.startDate} - ${project.endDate}
+                    </p>
+                    ${project.budget ? `
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-dollar-sign mr-2"></i>$${project.budget.toLocaleString()}
+                        </p>
+                    ` : ''}
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="px-2 py-1 rounded text-xs font-medium ${themeClass}">
+                        ${project.projectTheme}
+                    </span>
+                    <button onclick="viewProject(${project.id})" 
+                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        View Details →
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Helper functions for styling
+        function getStatusClass(status) {
+            const classes = {
+                'active': 'bg-green-100 text-green-800',
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'completed': 'bg-blue-100 text-blue-800',
+                'stalled': 'bg-red-100 text-red-800',
+                'abandoned': 'bg-gray-100 text-gray-800'
+            };
+            return classes[status] || 'bg-gray-100 text-gray-800';
+        }
+        
+        function getThemeClass(theme) {
+            const classes = {
+                'MNH': 'bg-pink-100 text-pink-800',
+                'FP': 'bg-blue-100 text-blue-800',
+                'GBV': 'bg-red-100 text-red-800',
+                'CH': 'bg-green-100 text-green-800',
+                'AH': 'bg-purple-100 text-purple-800',
+                'AYPSRH': 'bg-indigo-100 text-indigo-800'
+            };
+            return classes[theme] || 'bg-gray-100 text-gray-800';
+        }
+        
+        // View project details
+        function viewProject(projectId) {
+            window.open(`/frontend/project-details.html?id=${projectId}`, '_blank');
+        }
+        
+        // Use default statistics if API fails
+        function useDefaultStatistics() {
+            console.log('Using default statistics');
+            // The existing hardcoded values will be used
+        }
+        
+        // Show dashboard error
+        function showDashboardError() {
+            const errorBanner = document.createElement('div');
+            errorBanner.className = 'fixed top-20 left-4 right-4 z-40 bg-red-100 border-l-4 border-red-500 p-4 rounded';
+            errorBanner.innerHTML = `
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            Failed to load some dashboard data. Showing cached or default information.
+                        </p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(errorBanner);
+            
+            setTimeout(() => {
+                if (errorBanner.parentElement) {
+                    errorBanner.remove();
+                }
+            }, 5000);
+        }
+        
+        // Show projects error
+        function showProjectsError() {
+            const projectsContainer = document.getElementById('projects-container');
+            if (projectsContainer) {
+                projectsContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                        <p class="text-gray-600 mb-4">Failed to load projects. Please try again later.</p>
+                        <button onclick="loadProjects()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateUserDisplay(user) {
+            // Update navigation display
+            const userDisplayName = document.getElementById('userDisplayName');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userRoleDisplay = document.getElementById('userRoleDisplay');
+            const userStatusDisplay = document.getElementById('userStatusDisplay');
+            
+            if (userDisplayName) userDisplayName.textContent = user.name || 'User';
+            if (userNameDisplay) userNameDisplay.textContent = user.name || 'N/A';
+            if (userEmailDisplay) userEmailDisplay.textContent = user.email || 'N/A';
+            if (userRoleDisplay) userRoleDisplay.textContent = user.role || 'N/A';
+            if (userStatusDisplay) {
+                userStatusDisplay.textContent = user.approvalStatus || 'N/A';
+                userStatusDisplay.className = user.approvalStatus === 'APPROVED' ? 'text-green-600' : 
+                                           user.approvalStatus === 'PENDING' ? 'text-yellow-600' : 'text-red-600';
+            }
+            
+            // Show "My Projects" link for PARTNER users
+            const myProjectsNav = document.getElementById('myProjectsNav');
+            if (myProjectsNav && user.role === 'PARTNER') {
+                myProjectsNav.classList.remove('hidden');
+            }
+        }
+        
+        function showApprovalPendingMessage(user) {
+            if (user.approvalStatus === 'PENDING') {
+                const banner = document.createElement('div');
+                banner.className = 'fixed top-20 left-4 right-4 z-40 bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded';
+                banner.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                Your account is pending approval. Some features may be limited until an administrator approves your account.
+                            </p>
+                        </div>
+                        <div class="ml-auto pl-3">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-yellow-500 hover:text-yellow-600">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(banner);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (banner.parentElement) {
+                        banner.remove();
+                    }
+                }, 10000);
+            }
+        }
+        
+        // Show My Projects section for PARTNER users
+        function showMyProjects() {
+            if (currentUser && currentUser.role === 'PARTNER') {
+                loadUserProjects();
+                // Scroll to projects section or show modal
+                document.getElementById('projects-container').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Load user's own projects (for PARTNER users)
+        async function loadUserProjects() {
+            try {
+                console.log('Loading user projects...');
+                const userId = currentUser.id;
+                const response = await authManager.apiCall(`/api/projects/user/${userId}`, {
+                    method: 'GET'
+                });
+                
+                if (response && response.length > 0) {
+                    renderUserProjectsList(response);
+                } else {
+                    showNoUserProjectsMessage();
+                }
+            } catch (error) {
+                console.error('Failed to load user projects:', error);
+                showUserProjectsError();
+            }
+        }
+        
+        // Render user's projects list
+        function renderUserProjectsList(projects) {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">My Projects</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${projects.map(project => createUserProjectCard(project)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Create project card for user's projects
+        function createUserProjectCard(project) {
+            const statusColors = {
+                'ACTIVE': 'bg-green-100 text-green-800',
+                'PENDING': 'bg-yellow-100 text-yellow-800',
+                'STALLED': 'bg-red-100 text-red-800',
+                'COMPLETED': 'bg-blue-100 text-blue-800',
+                'ABANDONED': 'bg-gray-100 text-gray-800'
+            };
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-gray-800 truncate">${project.name || 'Untitled Project'}</h4>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[project.status] || 'bg-gray-100 text-gray-800'}">
+                                ${project.status || 'Unknown'}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                            ${project.description || 'No description available'}
+                        </p>
+                        <div class="space-y-2 text-sm text-gray-500">
+                            <div class="flex justify-between">
+                                <span>Budget:</span>
+                                <span class="font-medium">$${project.budget ? project.budget.toLocaleString() : 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Progress:</span>
+                                <span class="font-medium">${project.progress || 0}%</span>
+                            </div>
+                            ${project.startDate ? `
+                            <div class="flex justify-between">
+                                <span>Started:</span>
+                                <span class="font-medium">${new Date(project.startDate).toLocaleDateString()}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button onclick="viewProjectDetails(${project.id})" 
+                                    class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show no user projects message
+        function showNoUserProjectsMessage() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="mb-4">
+                        <i class="fas fa-folder-open text-6xl text-gray-300"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Projects Yet</h3>
+                    <p class="text-gray-500 mb-6">You haven't created any projects yet. Start by submitting a new project proposal.</p>
+                    <a href="Forms/Admin/new-project.html" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create New Project
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Show user projects error
+        function showUserProjectsError() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle text-6xl text-red-300"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Failed to Load Projects</h3>
+                    <p class="text-gray-500 mb-6">There was an error loading your projects. Please try again.</p>
+                    <button onclick="loadUserProjects()" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-refresh mr-2"></i>
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+        
+        // View project details
+        function viewProjectDetails(projectId) {
+            // Navigate to project details page or show modal
+            window.location.href = `project-details.html?id=${projectId}`;
         }
     </script>
 

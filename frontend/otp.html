@@ -89,27 +89,96 @@
         </p>
     </main>
     <script>
+        // Global showMessage function
+        function showMessage(text, type = 'info') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = type === 'error' ? 'text-red-600' : type === 'success' ? 'text-green-600' : 'text-blue-600';
+        }
+
         async function verifyOtp() {
+            console.log('=== Starting verifyOtp() ===');
+            
             const email = localStorage.getItem("pendingEmail");
+            const isLogin = localStorage.getItem("isLogin") === "true";
             const code = otpHelpers.getCode(); // from your OTP script
 
+            console.log('Email from localStorage:', email);
+            console.log('isLogin flag:', isLogin);
+            console.log('OTP code entered:', code);
+            console.log('Code length:', code ? code.length : 'null');
+
+            if (!email) {
+                console.error('No email found in localStorage');
+                throw new Error("No email found. Please go back and try again.");
+            }
+
             try {
-                const res = await fetch("https://api.tujulishanehub.org/auth/verify-otp", {
+                let endpoint;
+                if (isLogin) {
+                    // Login verification - returns token
+                    endpoint = "https://api-tujulishane-hub.onrender.com/api/auth/verify/login";
+                } else {
+                    // Registration verification - just confirms email
+                    endpoint = "https://api-tujulishane-hub.onrender.com/api/auth/verify";
+                }
+
+                console.log(`Selected endpoint: ${endpoint}`);
+                
+                const requestBody = { email, otp: code };
+                console.log('Request body:', JSON.stringify(requestBody, null, 2));
+
+                console.log('Making fetch request...');
+                const res = await fetch(endpoint, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, otp: code })
+                    body: JSON.stringify(requestBody)
                 });
 
+                console.log('Response status:', res.status);
+                console.log('Response ok:', res.ok);
+                console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Invalid code");
+                console.log('Response data:', JSON.stringify(data, null, 2));
 
-                // Save token for future API calls
-                localStorage.setItem("accessToken", data.token);
+                if (!res.ok) {
+                    console.error('API returned error:', data);
+                    throw new Error(data.message || "Invalid code");
+                }
 
-                // Redirect
-                window.location.href = "index-post-login.html";
+                console.log('API call successful!');
+
+                if (isLogin && data.data && data.data.token) {
+                    console.log('Login flow - saving token and redirecting');
+                    // Save token for future API calls
+                    localStorage.setItem("accessToken", data.data.token);
+                    localStorage.removeItem("isLogin");
+                    localStorage.removeItem("pendingEmail");
+                    
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = "index-post-login.html";
+                    }, 1000);
+                } else if (!isLogin) {
+                    console.log('Registration flow - redirecting to login');
+                    // Registration verified - now can login
+                    localStorage.removeItem("pendingEmail");
+                    showMessage('Email verified! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1000);
+                } else {
+                    console.error('Unexpected response format:', data);
+                    throw new Error("Unexpected response format");
+                }
             } catch (err) {
-                showMessage(err.message, "error");
+                console.error('=== Error in verifyOtp() ===');
+                console.error('Error type:', err.constructor.name);
+                console.error('Error message:', err.message);
+                console.error('Full error:', err);
+                console.error('=== End Error ===');
+                throw err;
             }
         }
 
@@ -147,11 +216,6 @@
 
             function getCode() {
                 return inputs.map(i => i.value.trim()).join('');
-            }
-
-            function showMessage(text, type = 'info') {
-                message.textContent = text;
-                message.className = type === 'error' ? 'text-red-600' : 'text-green-600';
             }
 
             // Input events
@@ -206,30 +270,35 @@
             // Clear button
             clearBtn.addEventListener('click', clearAll);
 
-            // Verify action (demo)
-            verifyBtn.addEventListener('click', () => {
+            // Verify action - calls real API
+            verifyBtn.addEventListener('click', async () => {
+                console.log('=== Verify button clicked ===');
+                
                 const code = getCode();
+                console.log('Code from getCode():', code);
+                console.log('Required length:', inputs.length);
+                
                 if (code.length !== inputs.length) {
+                    console.log('Code length validation failed');
                     showMessage('Please enter the full 6-digit code.', 'error');
                     return;
                 }
 
-                // demo: simple validation (replace with real API call)
+                console.log('Disabling verify button and showing verifying message');
                 verifyBtn.disabled = true;
                 showMessage('Verifying...', 'info');
 
-                setTimeout(() => {
-                    if (code === '123456') {
-                        showMessage('Success! Code verified.', 'success');
-                        // 🚀 Redirect to your demo page
-                        window.location.href = "index-post-login.html";
-                    } else {
-                        showMessage('Invalid code. Try again.', 'error');
-                        verifyBtn.disabled = false;
-                        inputs[0].focus();
-                        inputs[0].select();
-                    }
-                }, 900);
+                try {
+                    console.log('Calling verifyOtp()...');
+                    await verifyOtp();
+                    console.log('verifyOtp() completed successfully');
+                } catch (error) {
+                    console.error('verifyOtp() threw error:', error);
+                    showMessage(error.message || 'Verification failed. Please try again.', 'error');
+                    verifyBtn.disabled = false;
+                    inputs[0].focus();
+                    inputs[0].select();
+                }
             });
 
 
@@ -259,11 +328,44 @@
             }
 
             // Resend logic
-            resendBtn.addEventListener('click', () => {
-                // your resend API call goes here
-                showMessage('A new code has been sent.', 'success');
-                startCountdown();
-                clearAll();
+            resendBtn.addEventListener('click', async () => {
+                const email = localStorage.getItem("pendingEmail");
+                const isLogin = localStorage.getItem("isLogin") === "true";
+                
+                if (!email) {
+                    showMessage('No email found. Please go back and try again.', 'error');
+                    return;
+                }
+                
+                try {
+                    let endpoint;
+                    if (isLogin) {
+                        // For login, resend using login endpoint
+                        endpoint = "https://api-tujulishane-hub.onrender.com/api/auth/send-login-otp";
+                    } else {
+                        // For registration, we'd need to re-register (not ideal, but current API structure)
+                        // For now, just show a message to contact support
+                        showMessage('Please contact support to resend registration OTP.', 'error');
+                        return;
+                    }
+                    
+                    const res = await fetch(endpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email })
+                    });
+                    
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.message || 'Failed to resend OTP');
+                    }
+                    
+                    showMessage('A new code has been sent to your email.', 'success');
+                    startCountdown();
+                    clearAll();
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                }
             });
 
 
