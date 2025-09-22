@@ -36,15 +36,19 @@ public class UserController {
     private Long jwtExpiration;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Object>> register(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<ApiResponse<Object>> register(@RequestBody Map<String, Object> payload) {
         try {
-            String name = payload.get("name");
-            String email = payload.get("email");
+            String name = (String) payload.get("name");
+            String email = (String) payload.get("email");
+            Long organizationId = payload.get("organizationId") != null ? 
+                Long.valueOf(payload.get("organizationId").toString()) : null;
+            
             if (name == null || name.isEmpty() || email == null || email.isEmpty()) {
                 ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Name and email are required.", null);
                 return ResponseEntity.badRequest().body(response);
             }
-            userService.registerUser(name, email);
+            
+            userService.registerUser(name, email, organizationId);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Registration received. Check your email for the verification OTP.", null);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {

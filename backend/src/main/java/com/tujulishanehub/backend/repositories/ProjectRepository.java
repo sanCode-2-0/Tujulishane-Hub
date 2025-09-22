@@ -2,6 +2,7 @@ package com.tujulishanehub.backend.repositories;
 
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Project;
+import com.tujulishanehub.backend.models.ProjectTheme;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,8 +33,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // Find projects by activity type
     List<Project> findByActivityTypeContainingIgnoreCase(String activityType);
     
-    // Find projects by project theme
-    List<Project> findByProjectThemeContainingIgnoreCase(String projectTheme);
+    // Find projects by project theme (enum)
+    List<Project> findByProjectTheme(ProjectTheme projectTheme);
+    
+    // Find projects by project theme with case-insensitive string search
+    @Query("SELECT p FROM Project p WHERE LOWER(CAST(p.projectTheme AS string)) LIKE LOWER(CONCAT('%', :theme, '%'))")
+    List<Project> findByProjectThemeContaining(@Param("theme") String theme);
     
     // Find projects by date range
     List<Project> findByStartDateBetween(LocalDate startDate, LocalDate endDate);
@@ -76,11 +81,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     
     // Search projects by multiple criteria
     @Query("SELECT p FROM Project p WHERE " +
-           "(:partner IS NULL OR LOWER(p.partner) LIKE LOWER(CONCAT('%', :partner, '%'))) AND " +
-           "(:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
-           "(:status IS NULL OR p.status = :status) AND " +
-           "(:county IS NULL OR LOWER(p.county) LIKE LOWER(CONCAT('%', :county, '%'))) AND " +
-           "(:activityType IS NULL OR LOWER(p.activityType) LIKE LOWER(CONCAT('%', :activityType, '%')))")
+           "(:partner IS NULL OR :partner = '' OR LOWER(CAST(p.partner AS string)) LIKE LOWER(CONCAT('%', :partner, '%'))) AND " +
+           "(:title IS NULL OR :title = '' OR LOWER(CAST(p.title AS string)) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
+           "(:status IS NULL OR :status = '' OR p.status = :status) AND " +
+           "(:county IS NULL OR :county = '' OR LOWER(CAST(p.county AS string)) LIKE LOWER(CONCAT('%', :county, '%'))) AND " +
+           "(:activityType IS NULL OR :activityType = '' OR LOWER(CAST(p.activityType AS string)) LIKE LOWER(CONCAT('%', :activityType, '%')))")
     List<Project> searchProjects(
         @Param("partner") String partner,
         @Param("title") String title,

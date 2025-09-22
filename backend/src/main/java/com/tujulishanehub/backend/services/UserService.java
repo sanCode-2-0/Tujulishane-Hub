@@ -1,6 +1,7 @@
 package com.tujulishanehub.backend.services;
 
 import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.Organization;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,36 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private OrganizationService organizationService;
 
-    // Register user (name + email). Create INACTIVE account and send OTP
-    public void registerUser(String name, String email) {
+    // Register user (name + email + optional organization). Create INACTIVE account and send OTP
+    public void registerUser(String name, String email, Long organizationId) {
         Optional<User> existingUser = userRepository.findByEmail(email);
         String otp = generateOtp();
+        
+        // Validate organization if provided
+        Organization organization = null;
+        if (organizationId != null) {
+            Optional<Organization> orgOpt = organizationService.getOrganizationById(organizationId);
+            if (orgOpt.isEmpty()) {
+                throw new RuntimeException("Organization not found with ID: " + organizationId);
+            }
+            organization = orgOpt.get();
+            if (!organization.isApproved()) {
+                throw new RuntimeException("Organization must be approved before users can register with it");
+            }
+        }
+        
         if (existingUser.isPresent()) {
             User user = existingUser.get();
             user.setName(name);
             user.setOtp(otp);
             user.setVerified(false);
+            user.setEmailVerified(false);
             user.setStatus("INACTIVE");
+            user.setOrganization(organization);
             userRepository.save(user);
             emailService.sendEmail(email, "Your verification OTP", "Your OTP is: " + otp);
         } else {
@@ -36,10 +56,17 @@ public class UserService {
             newUser.setEmail(email);
             newUser.setOtp(otp);
             newUser.setVerified(false);
+            newUser.setEmailVerified(false);
             newUser.setStatus("INACTIVE");
+            newUser.setOrganization(organization);
             userRepository.save(newUser);
             emailService.sendEmail(email, "Your verification OTP", "Your OTP is: " + otp);
         }
+    }
+    
+    // Backward compatibility method
+    public void registerUser(String name, String email) {
+        registerUser(name, email, null);
     }
 
     // Verify OTP and activate user

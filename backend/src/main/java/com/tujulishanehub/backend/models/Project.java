@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "projects")
@@ -25,8 +27,9 @@ public class Project {
     @Column(nullable = false)
     private String title;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "project_theme")
-    private String projectTheme;
+    private ProjectTheme projectTheme;
     
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -74,6 +77,15 @@ public class Project {
     
     private String status; // e.g., "active", "pending", "stalled", "completed", "abandoned"
     
+    @Column(name = "completion_percentage")
+    private Integer completionPercentage = 0;
+    
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+    
+    @Column(name = "has_reports")
+    private Boolean hasReports = false;
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
@@ -86,6 +98,10 @@ public class Project {
     
     @Column(name = "rejection_reason")
     private String rejectionReason;
+    
+    // Bidirectional relationship with ProjectReports
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProjectReport> reports = new HashSet<>();
     
     @PrePersist
     protected void onCreate() {
@@ -206,5 +222,67 @@ public class Project {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public ProjectTheme getProjectTheme() {
+        return projectTheme;
+    }
+    
+    public void setProjectTheme(ProjectTheme projectTheme) {
+        this.projectTheme = projectTheme;
+    }
+    
+    // Helper methods for project completion
+    public boolean isCompleted() {
+        return "completed".equalsIgnoreCase(status);
+    }
+    
+    public boolean canCreateReports() {
+        return completionPercentage != null && completionPercentage >= 50;
+    }
+    
+    public void markAsCompleted() {
+        this.status = "completed";
+        this.completionPercentage = 100;
+        this.completedAt = LocalDateTime.now();
+    }
+    
+    public Integer getCompletionPercentage() {
+        return completionPercentage != null ? completionPercentage : 0;
+    }
+    
+    public void setCompletionPercentage(Integer completionPercentage) {
+        this.completionPercentage = completionPercentage;
+        if (completionPercentage != null && completionPercentage >= 100) {
+            this.status = "completed";
+            if (this.completedAt == null) {
+                this.completedAt = LocalDateTime.now();
+            }
+        }
+    }
+    
+    public Boolean getHasReports() {
+        return hasReports != null ? hasReports : false;
+    }
+    
+    public void setHasReports(Boolean hasReports) {
+        this.hasReports = hasReports;
+    }
+    
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+    
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+    
+    public Set<ProjectReport> getReports() {
+        return reports;
+    }
+    
+    public void setReports(Set<ProjectReport> reports) {
+        this.reports = reports;
+        this.hasReports = reports != null && !reports.isEmpty();
     }
 }
