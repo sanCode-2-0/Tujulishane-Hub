@@ -255,25 +255,30 @@
         const strengthMsg = document.getElementById("passwordStrength");
         const matchMsg = document.getElementById("passwordMatch");
 
-        passwordInput.addEventListener("input", () => {
-            const password = passwordInput.value;
-            const result = checkPasswordStrength(password);
-            strengthMsg.textContent = result.message;
-            strengthMsg.className = "text-sm mt-1 " + result.textClass;
+        // Only add event listeners if the elements exist (for forms that have password fields)
+        if (passwordInput && strengthMsg && strengthBar) {
+            passwordInput.addEventListener("input", () => {
+                const password = passwordInput.value;
+                const result = checkPasswordStrength(password);
+                strengthMsg.textContent = result.message;
+                strengthMsg.className = "text-sm mt-1 " + result.textClass;
 
-            // Update bar
-            strengthBar.className = `h-full ${result.barColor}`;
-            strengthBar.style.width = result.percent + "%";
-        });
+                // Update bar
+                strengthBar.className = `h-full ${result.barColor}`;
+                strengthBar.style.width = result.percent + "%";
+            });
+        }
 
-        confirmInput.addEventListener("input", () => {
-            if (confirmInput.value !== passwordInput.value) {
-                matchMsg.textContent = "Passwords do not match.";
-                matchMsg.className = "text-sm mt-1 text-red-600";
-            } else {
-                matchMsg.textContent = "";
-            }
-        });
+        if (confirmInput && passwordInput && matchMsg) {
+            confirmInput.addEventListener("input", () => {
+                if (confirmInput.value !== passwordInput.value) {
+                    matchMsg.textContent = "Passwords do not match.";
+                    matchMsg.className = "text-sm mt-1 text-red-600";
+                } else {
+                    matchMsg.textContent = "";
+                }
+            });
+        }
 
         function checkPasswordStrength(password) {
             const minLength = 8;
@@ -309,11 +314,16 @@
 
     <script>
         function validateBeforeSubmit() {
+            // Only validate passwords if password elements exist
+            if (!passwordInput || !confirmInput) {
+                return true; // Allow submit if no password fields
+            }
+            
             const password = passwordInput.value;
             const confirm = confirmInput.value;
             const result = checkPasswordStrength(password);
 
-            if (result.class !== "text-green-600") {
+            if (result.textClass !== "text-green-600") {
                 alert("Please use a stronger password.");
                 return false;
             }
