@@ -36,6 +36,13 @@ public class UserController {
     @Value("${jwt.expiration:3600}")
     private Long jwtExpiration;
 
+    // Simple health check endpoint to test JSON serialization
+    @GetMapping("/health")
+    public ResponseEntity<ApiResponse<String>> health() {
+        ApiResponse<String> response = new ApiResponse<>(200, "API is working", "OK");
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Object>> register(@RequestBody Map<String, Object> payload) {
         try {
