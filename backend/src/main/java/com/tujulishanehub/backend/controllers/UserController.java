@@ -178,7 +178,7 @@ public class UserController {
      * Bootstrap the first SUPER_ADMIN user (USE ONCE ONLY)
      * This endpoint is for initial system setup and should be removed after use
      */
-    @PostMapping("/bootstrap/super-admin")
+    @PostMapping(value = "/bootstrap/super-admin", produces = "application/json")
     public ResponseEntity<ApiResponse<Object>> bootstrapSuperAdmin(@RequestBody Map<String, String> payload) {
         try {
             String email = payload.get("email");
