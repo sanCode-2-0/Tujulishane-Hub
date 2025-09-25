@@ -144,6 +144,7 @@
                             Get OTP
                         </button>
                     </div>
+                    <div id="loginErrorMsg" class="hidden mt-2 text-center text-red-600 text-sm"></div>
                     <div class="pt-4 text-center">
                         <button onclick="showRegister()" class="text-blue-600 hover:underline">Create a new
                             account
@@ -198,6 +199,13 @@
             if (!email) return alert("Please enter your email");
 
             try {
+                // Hide any previous error
+                const errorMsg = document.getElementById("loginErrorMsg");
+                if (errorMsg) {
+                    errorMsg.classList.add("hidden");
+                    errorMsg.innerHTML = "";
+                }
+
                 const res = await fetch("https://api-tujulishane-hub.onrender.com/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -209,20 +217,24 @@
                 if (!res.ok) {
                     // Handle specific error cases
                     if (res.status === 404) {
-                        // User not found - show option to create account
-                        const createAccount = confirm(
-                            "User not found. This email is not registered in our system.\n\n" +
-                            "Would you like to create a new account instead?\n\n" +
-                            "Click OK to register, or Cancel to try a different email."
-                        );
-                        
-                        if (createAccount) {
-                            // Pre-fill the email in registration form and show it
-                            const registerEmailInput = document.querySelector("#registerForm input[type=email]");
-                            if (registerEmailInput) {
-                                registerEmailInput.value = email;
-                            }
-                            showRegister();
+                        // User not found - show visible message and button
+                        if (errorMsg) {
+                            errorMsg.innerHTML = `User not found. This email is not registered.<br><button id='createAccountBtn' class='mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700'>Create a new account</button>`;
+                            errorMsg.classList.remove("hidden");
+                            // Add click handler for the button
+                            setTimeout(() => {
+                                const btn = document.getElementById('createAccountBtn');
+                                if (btn) {
+                                    btn.onclick = function() {
+                                        const registerEmailInput = document.querySelector("#registerForm input[type=email]");
+                                        if (registerEmailInput) {
+                                            registerEmailInput.value = email;
+                                        }
+                                        showRegister();
+                                        errorMsg.classList.add("hidden");
+                                    };
+                                }
+                            }, 10);
                         }
                         return;
                     } else {
@@ -240,7 +252,13 @@
                 // Go to OTP page
                 window.location.href = "otp.html";
             } catch (err) {
-                alert(err.message);
+                const errorMsg = document.getElementById("loginErrorMsg");
+                if (errorMsg) {
+                    errorMsg.textContent = err.message;
+                    errorMsg.classList.remove("hidden");
+                } else {
+                    alert(err.message);
+                }
             }
         }
     </script>
