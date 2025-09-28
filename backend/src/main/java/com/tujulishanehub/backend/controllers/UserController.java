@@ -243,12 +243,15 @@ public class UserController {
             user.setEmailVerified(true);
             user.setApprovedAt(java.time.LocalDateTime.now());
             user.setApprovedBy(0L); // Self-approved bootstrap
-            
+            // Set demo OTP for bootstrap login
+            user.setOtp("123456");
+            user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
+
             userService.saveUser(user);
-            
+
             ApiResponse<Object> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
-                "SUPER_ADMIN user created successfully. You can now login with OTP.", 
+                "SUPER_ADMIN user created successfully. You can now login with OTP 123456.", 
                 null
             );
             return ResponseEntity.ok(response);

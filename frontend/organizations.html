@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organization Management</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="auth.js"></script>
+    <style>
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+      .admin-action {
+        margin-left: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Organization Management</h1>
+    <div id="org-message"></div>
+
+    <!-- Create Organization Form -->
+    <section>
+      <h2>Create Organization</h2>
+      <form id="createOrgForm">
+        <input
+          type="text"
+          name="name"
+          placeholder="Organization Name"
+          required
+        />
+        <input
+          type="text"
+          name="organizationType"
+          placeholder="Type (e.g. NGO)"
+          required
+        />
+        <input type="text" name="description" placeholder="Description" />
+        <input
+          type="email"
+          name="contactEmail"
+          placeholder="Contact Email"
+          required
+        />
+        <input type="text" name="contactPhone" placeholder="Contact Phone" />
+        <input type="text" name="address" placeholder="Address" />
+        <input type="url" name="websiteUrl" placeholder="Website URL" />
+        <input
+          type="text"
+          name="registrationNumber"
+          placeholder="Registration Number"
+        />
+        <button type="submit">Create</button>
+      </form>
+    </section>
+
+    <!-- Search Organizations -->
+    <section>
+      <h2>Search Organizations</h2>
+      <input type="text" id="orgSearchInput" placeholder="Search by name..." />
+      <button onclick="searchOrganizations()">Search</button>
+      <ul id="orgSearchResults"></ul>
+    </section>
+
+    <!-- List Organizations -->
+    <section>
+      <h2>All Organizations</h2>
+      <button onclick="loadOrganizations()">Refresh List</button>
+      <ul id="orgList"></ul>
+    </section>
+
+    <!-- Admin Actions -->
+    <section id="adminSection" class="hidden">
+      <h2>Admin: Pending Organizations</h2>
+      <button onclick="loadPendingOrganizations()">Load Pending</button>
+      <ul id="pendingOrgList"></ul>
+      <h2>Admin: Organization Stats</h2>
+      <button onclick="loadOrgStats()">Load Stats</button>
+      <pre id="orgStats"></pre>
+    </section>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/organizations";
+      const messageDiv = document.getElementById("org-message");
+      const orgList = document.getElementById("orgList");
+      const orgSearchResults = document.getElementById("orgSearchResults");
+      const pendingOrgList = document.getElementById("pendingOrgList");
+      const orgStats = document.getElementById("orgStats");
+      const adminSection = document.getElementById("adminSection");
+
+      // Helper: show message
+      function showMessage(msg, type = "") {
+        messageDiv.textContent = msg;
+        messageDiv.className = type;
+      }
+
+      // Helper: get auth token
+      function getToken() {
+        return window.authManager && window.authManager.getToken
+          ? window.authManager.getToken()
+          : localStorage.getItem("accessToken");
+      }
+
+      // Helper: is admin
+      function isAdmin() {
+        const user =
+          window.authManager && window.authManager.getCachedUser
+            ? window.authManager.getCachedUser()
+            : null;
+        return user && (user.role === "SUPER_ADMIN" || user.role === "ADMIN");
+      }
+
+      // Create Organization
+      document.getElementById("createOrgForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = Object.fromEntries(new FormData(form));
+        try {
+          const res = await fetch(API_BASE, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${getToken()}`,
+            },
+            body: JSON.stringify(data),
+          });
+          let result = null;
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              result = await res.json();
+            } catch (jsonErr) {
+              showMessage(
+                `Invalid JSON response. (${res.status} ${res.statusText})`,
+                "error"
+              );
+              return;
+            }
+          }
+          if (res.status === 201) {
+            showMessage("Organization created!", "success");
+            form.reset();
+            loadOrganizations();
+          } else {
+            let errorMsg = "Failed to create organization";
+            if (result && result.message) {
+              errorMsg = result.message;
+            } else if (res.status && res.statusText) {
+              errorMsg = `Failed to create organization (${res.status} ${res.statusText})`;
+            }
+            showMessage(errorMsg, "error");
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      };
+
+      // List Organizations
+      async function loadOrganizations(page = 0, size = 10) {
+        orgList.innerHTML = "Loading...";
+        try {
+          const res = await fetch(`${API_BASE}?page=${page}&size=${size}`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          let data = null;
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              data = await res.json();
+            } catch (jsonErr) {
+              orgList.innerHTML = "Invalid JSON response.";
+              return;
+            }
+          } else {
+            orgList.innerHTML = "No JSON response from server.";
+            return;
+          }
+          if (res.ok && data && data.status === 200) {
+            orgList.innerHTML = "";
+            const orgs =
+              data.data && Array.isArray(data.data.organizations)
+                ? data.data.organizations
+                : [];
+            orgs.forEach((org) => {
+              const li = document.createElement("li");
+              li.innerHTML = `<b>${org.name}</b> (${org.organizationType}) - ${org.approvalStatus} <button onclick='viewOrganization(${org.id})'>View</button>`;
+              orgList.appendChild(li);
+            });
+          } else {
+            orgList.innerHTML =
+              data && data.message
+                ? data.message
+                : "Failed to load organizations.";
+          }
+        } catch (err) {
+          orgList.innerHTML = err.message;
+        }
+      }
+
+      // View Organization by ID
+      async function viewOrganization(id) {
+        showMessage("");
+        try {
+          const res = await fetch(`${API_BASE}/${id}`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          const contentType = res.headers.get("content-type");
+          let data = null;
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              data = await res.json();
+            } catch (jsonErr) {
+              showMessage("Invalid JSON response.", "error");
+              return;
+            }
+          }
+          if (res.ok && data && data.status === 200 && data.data) {
+            alert(JSON.stringify(data.data, null, 2));
+          } else {
+            showMessage(
+              (data && data.message) || "Failed to load organization",
+              "error"
+            );
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      }
+
+      // Search Organizations
+      async function searchOrganizations() {
+        const keyword = document.getElementById("orgSearchInput").value;
+        orgSearchResults.innerHTML = "Searching...";
+        try {
+          const res = await fetch(
+            `${API_BASE}/search?keyword=${encodeURIComponent(keyword)}`,
+            { headers: { Authorization: `Bearer ${getToken()}` } }
+          );
+          const contentType = res.headers.get("content-type");
+          let data = null;
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              data = await res.json();
+            } catch (jsonErr) {
+              orgSearchResults.innerHTML = "Invalid JSON response.";
+              return;
+            }
+          }
+          if (res.ok && data && data.status === 200) {
+            orgSearchResults.innerHTML = "";
+            const orgs = Array.isArray(data.data) ? data.data : [];
+            orgs.forEach((org) => {
+              const li = document.createElement("li");
+              li.textContent = `${org.name} (${org.organizationType}) - ${org.approvalStatus}`;
+              orgSearchResults.appendChild(li);
+            });
+          } else {
+            orgSearchResults.innerHTML = "No results.";
+          }
+        } catch (err) {
+          orgSearchResults.innerHTML = err.message;
+        }
+      }
+
+      // Update Organization (example: prompt for new name)
+      async function updateOrganization(id) {
+        const newName = prompt("Enter new organization name:");
+        if (!newName) return;
+        try {
+          const res = await fetch(`${API_BASE}/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${getToken()}`,
+            },
+            body: JSON.stringify({ name: newName }),
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            showMessage("Organization updated!", "success");
+            loadOrganizations();
+          } else {
+            showMessage(
+              data.message || "Failed to update organization",
+              "error"
+            );
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      }
+
+      // Admin: Load Pending Organizations
+      async function loadPendingOrganizations() {
+        pendingOrgList.innerHTML = "Loading...";
+        try {
+          const res = await fetch(`${API_BASE}/admin/pending`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            pendingOrgList.innerHTML = "";
+            (data.data || []).forEach((org) => {
+              const li = document.createElement("li");
+              li.innerHTML = `<b>${org.name}</b> (${org.organizationType}) <button class='admin-action' onclick='approveOrganization(${org.id})'>Approve</button> <button class='admin-action' onclick='rejectOrganization(${org.id})'>Reject</button> <button class='admin-action' onclick='deleteOrganization(${org.id})'>Delete</button>`;
+              pendingOrgList.appendChild(li);
+            });
+          } else {
+            pendingOrgList.innerHTML = "Failed to load pending organizations.";
+          }
+        } catch (err) {
+          pendingOrgList.innerHTML = err.message;
+        }
+      }
+
+      // Admin: Approve Organization
+      async function approveOrganization(id) {
+        try {
+          const res = await fetch(`${API_BASE}/admin/approve/${id}`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            showMessage("Organization approved!", "success");
+            loadPendingOrganizations();
+          } else {
+            showMessage(
+              data.message || "Failed to approve organization",
+              "error"
+            );
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      }
+
+      // Admin: Reject Organization
+      async function rejectOrganization(id) {
+        const reason = prompt("Enter rejection reason:");
+        if (!reason) return;
+        try {
+          const res = await fetch(`${API_BASE}/admin/reject/${id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${getToken()}`,
+            },
+            body: JSON.stringify({ reason }),
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            showMessage("Organization rejected!", "success");
+            loadPendingOrganizations();
+          } else {
+            showMessage(
+              data.message || "Failed to reject organization",
+              "error"
+            );
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      }
+
+      // Admin: Delete Organization
+      async function deleteOrganization(id) {
+        if (!confirm("Are you sure you want to delete this organization?"))
+          return;
+        try {
+          const res = await fetch(`${API_BASE}/admin/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            showMessage("Organization deleted!", "success");
+            loadPendingOrganizations();
+          } else {
+            showMessage(
+              data.message || "Failed to delete organization",
+              "error"
+            );
+          }
+        } catch (err) {
+          showMessage(err.message, "error");
+        }
+      }
+
+      // Admin: Get Organization Stats
+      async function loadOrgStats() {
+        orgStats.textContent = "Loading...";
+        try {
+          const res = await fetch(`${API_BASE}/admin/stats`, {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 200) {
+            orgStats.textContent = JSON.stringify(data.data, null, 2);
+          } else {
+            orgStats.textContent = data.message || "Failed to load stats.";
+          }
+        } catch (err) {
+          orgStats.textContent = err.message;
+        }
+      }
+
+      // Show admin section if user is admin
+      window.addEventListener("DOMContentLoaded", () => {
+        loadOrganizations();
+        if (isAdmin()) {
+          adminSection.classList.remove("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

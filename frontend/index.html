@@ -46,6 +46,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
 
+    <!-- Auto-redirect for logged-in users -->
+    <script src="auto-redirect.js"></script>
+
     <!-- Optional: Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -214,7 +217,7 @@
             try {
                 // For now, just send name and email as the API expects
                 // TODO: Later add organization selection/creation functionality
-                const res = await fetch("https://api-tujulishane-hub.onrender.com/api/auth/register", {
+                const res = await fetch("http://localhost:8080/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, email })

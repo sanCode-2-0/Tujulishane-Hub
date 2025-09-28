@@ -1,767 +1,1073 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <!-- Tailwind CSS (with custom config using inline script) -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',   // Custom Blue
-                        secondary: '#f59e0b', // Custom Amber
-                        accent: '#10b981',    // Custom Green
-                        dark: '#1f2937',      // Gray-800
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
     <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
     <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN"
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
+      crossorigin=""
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
     <style>
-        .fade-slide-enter {
-            opacity: 0;
-            transform: translateY(20px);
-        }
+      .fade-slide-enter {
+        opacity: 0;
+        transform: translateY(20px);
+      }
 
-        .fade-slide-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.4s ease;
-        }
+      .fade-slide-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.4s ease;
+      }
 
-        .fade-slide-leave {
-            opacity: 1;
-            transform: translateY(0);
-        }
+      .fade-slide-leave {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-        .fade-slide-leave-active {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
+      .fade-slide-leave-active {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
     </style>
+  </head>
 
-</head>
+  <body class="text-gray-800">
+    <nav
+      x-data="{ open: false }"
+      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
+    >
+      <div class="flex items-center justify-between px-6 py-4">
+        <!-- Logo -->
+        <a
+          href="/frontend/index.html"
+          class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase"
+        >
+          <img
+            src="/frontend/resources/images/log2.png"
+            class="object-contain h-12"
+            alt="Site Logo"
+          />
+          <img
+            src="/frontend/resources/images/moh.png"
+            class="object-contain h-12"
+            alt="Site Logo"
+          />
+        </a>
 
-<body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
-            <!-- Logo -->
-            <a href="/frontend/index.html"
-                class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/frontend/resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
-                <img src="/frontend/resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
+        <!-- Mobile Menu Toggle -->
+        <button
+          @click="open = !open"
+          class="text-xl lg:hidden focus:outline-none"
+        >
+          <i class="fas fa-bars" x-show="!open"></i>
+          <i class="fas fa-times" x-show="open" x-cloak></i>
+        </button>
+
+        <!-- Nav Links - Desktop -->
+        <ul
+          class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex"
+        >
+          <li>
+            <a href="/" class="uppercase transition hover:text-blue-600">
+              Home
             </a>
+          </li>
+          <li>
+            <a href="/about" class="uppercase transition hover:text-blue-600">
+              Programs
+            </a>
+          </li>
 
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
+          <!-- Pages Dropdown Trigger -->
+          <li class="relative" x-data="{ showDropdown: false }">
+            <button
+              @click="showDropdown = !showDropdown"
+              class="inline-flex items-center font-medium uppercase transition focus:outline-none"
+            >
+              Stakeholder <i class="ml-2 fal fa-chevron-down"></i>
             </button>
 
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
-                <li>
-                    <a href="/" class="uppercase transition hover:text-blue-600">
-                        Home
-                    </a>
+            <!-- Dropdown Content -->
+            <div
+              x-show="showDropdown"
+              @click.outside="showDropdown = false"
+              x-transition
+              class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+              style="display: none"
+            >
+              <ul class="py-2 text-sm text-left text-blue-800">
+                <li class="px-4 py-2 transition hover:bg-blue-100">
+                  <a href="/frontend/Stakeholders/access.html"
+                    >Login / Registration</a
+                  >
                 </li>
-                <li>
-                    <a href="/about" class="uppercase transition hover:text-blue-600">
-                        Programs
-                    </a>
+                <li class="px-4 py-2 transition hover:bg-blue-100">
+                  <a href="Stakeholders/dashboard.html">Dashboard</a>
                 </li>
-
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Stakeholder <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
-
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="/frontend/Stakeholders/access.html">Login / Registration</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="Stakeholders/dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Admin <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
-
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
-                        Announcements
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
-
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
+              </ul>
             </div>
+          </li>
+          <!-- Pages Dropdown Trigger -->
+          <li class="relative" x-data="{ showDropdown: false }">
+            <button
+              @click="showDropdown = !showDropdown"
+              class="inline-flex items-center font-medium uppercase transition focus:outline-none"
+            >
+              Admin <i class="ml-2 fal fa-chevron-down"></i>
+            </button>
+
+            <!-- Dropdown Content -->
+            <div
+              x-show="showDropdown"
+              @click.outside="showDropdown = false"
+              x-transition
+              class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+              style="display: none"
+            >
+              <ul class="py-2 text-sm text-left text-blue-800">
+                <li class="px-4 py-2 transition hover:bg-blue-100">
+                  <a href="dashboard.html">Dashboard</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <a
+              href="/contact"
+              class="font-bold text-blue-700 uppercase hover:text-pink-500"
+            >
+              Announcements
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Nav Links - Mobile -->
+      <div
+        x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="px-6 pb-6 lg:hidden"
+      >
+        <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+          <li>
+            <a href="/" class="block transition hover:text-blue-600">Home</a>
+          </li>
+          <li>
+            <a href="#about" class="block transition hover:text-blue-600"
+              >About</a
+            >
+          </li>
+          <li>
+            <a href="#why-us" class="block transition hover:text-blue-600"
+              >Why Us</a
+            >
+          </li>
+          <li>
+            <a href="#contact-us" class="block transition hover:text-blue-600"
+              >Contact Us</a
+            >
+          </li>
+        </ul>
+
+        <!-- CTA Button -->
+        <div class="mt-6">
+          <a
+            href="/contact"
+            class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group"
+          >
+            <span
+              class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"
+            ></span>
+            <span class="relative z-10 group-hover:text-white"
+              >Collaborate</span
+            >
+          </a>
         </div>
+      </div>
     </nav>
     <section class="bg-cyan-50/50">
-
-        <div id="localMap" class="h-[450px] mt-20 sm:h-[550px] z-0 w-full ">
-        </div>
+      <div id="localMap" class="h-[450px] mt-20 sm:h-[550px] z-0 w-full"></div>
     </section>
     <section class="bg-white">
-        <div class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <!-- Status Filter Buttons -->
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-7">
-
-                <!-- Main Content Area -->
-                <div class="flex flex-col md:col-span-3 fade fade-left lg:col-span-5">
-                    <!-- Project Info -->
-                    <div id="projectInfo"
-                        class="flex-grow hidden p-6 mb-4 bg-white border border-gray-200 shadow-lg rounded-xl">
-                        <h3 class="mb-4 text-xl font-semibold text-gray-800">Selected Project Details</h3>
-                        <p class="text-gray-700">Details of the selected project will appear here.</p>
-                    </div>
-
-                    <!-- Accordion -->
-                    <div id="projectAccordion"
-                        class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0">
-                        <h3 class="mb-4 text-xl font-semibold text-gray-800">All Projects</h3>
-                        <div class="p-6 bg-white border border-gray-200 shadow-lg rounded-xl">
-                            <p class="text-gray-700">Project list or accordion items will load here.</p>
-
-                            <div class="py-4 border-b border-gray-200">
-                                <button
-                                    class="flex items-center justify-between w-full text-lg font-medium text-gray-800">
-                                    <span>Project Alpha</span>
-                                    <i class="text-gray-500 fas fa-chevron-down"></i>
-                                </button>
-                                <div class="hidden mt-2 text-gray-600">
-                                    <p>Description for Project Alpha.</p>
-                                </div>
-                            </div>
-
-                            <div class="py-4 border-b border-gray-200">
-                                <button
-                                    class="flex items-center justify-between w-full text-lg font-medium text-gray-800">
-                                    <span>Project Beta</span>
-                                    <i class="text-gray-500 fas fa-chevron-down"></i>
-                                </button>
-                                <div class="hidden mt-2 text-gray-600">
-                                    <p>Description for Project Beta.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sticky Filter Sidebar (Right Side) -->
-                <div
-                    class="sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6">
-                    <h2 class="mb-2 -mt-10 text-sm font-semibold text-right text-gray-800 transform rounded-xl">
-                        <i class="p-2 text-black bg-white rounded-sm shadow fas fa-filter"></i>
-                    </h2>
-
-                    <div class="flex flex-col gap-5">
-                        <!-- Search -->
-                        <div class="relative w-full">
-                            <label for="searchInput" class="sr-only">Search by name...</label>
-                            <input type="text" id="searchInput" placeholder="Search by name..."
-                                class="block w-full py-2 pl-10 pr-4 text-base text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <i class="text-gray-400 fas fa-search"></i>
-                            </div>
-                        </div>
-                        <div class="grid gap-2 lg:grid-cols-2">
-                            <!-- From Date -->
-                            <div class="flex flex-col gap-2">
-                                <label for="dateFrom" class="text-sm font-medium text-gray-700">From Date:</label>
-                                <input type="date" id="dateFrom"
-                                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                            </div>
-
-                            <!-- To Date -->
-                            <div class="flex flex-col gap-2">
-                                <label for="dateTo" class="text-sm font-medium text-gray-700">To Date:</label>
-                                <input type="date" id="dateTo"
-                                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                            </div>
-                        </div>
-
-                        <!-- Sort By -->
-                        <div class="flex flex-col gap-2">
-                            <label for="sortSelect" class="text-sm font-medium text-gray-700">Sort By:</label>
-                            <select id="sortSelect"
-                                class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="name">Name (A-Z)</option>
-                                <option value="date">Date (Newest First)</option>
-                            </select>
-                        </div>
-
-                        <!-- Sort By Theme -->
-                        <div class="flex flex-col gap-2">
-                            <label for="sortSelect" class="text-sm font-medium text-gray-700">Themes:</label>
-                            <select id="sortSelect"
-                                class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="name">Name (A-Z)</option>
-                                <option value="date">Date (Newest First)</option>
-                            </select>
-                        </div>
-
-                        <!-- Sort By Theme -->
-                        <div class="flex flex-col gap-2">
-                            <label for="status" class="text-sm font-medium text-gray-700">Status:</label>
-                            <select autocomplete="off" id="status"
-                                class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                onchange="highlightMarkers(this.value)">
-                                <option value="all">Show All</option>
-                                <option value="active">Active</option>
-                                <option value="pending">Pending</option>
-                                <option value="stalled">Stalled</option>
-                                <option value="completed">Completed</option>
-                            </select>
-
-                        </div>
-
-                        <!-- Export Button -->
-                        <button onclick="exportCSV()"
-                            class="flex items-center justify-center px-5 py-2 mt-6 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <i class="mr-2 fas fa-file-csv"></i> Export Data
-                        </button>
-                    </div>
-                </div>
+      <div class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <!-- Status Filter Buttons -->
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-7">
+          <!-- Main Content Area -->
+          <div class="flex flex-col md:col-span-3 fade fade-left lg:col-span-5">
+            <!-- Project Info -->
+            <div
+              id="projectInfo"
+              class="flex-grow hidden p-6 mb-4 bg-white border border-gray-200 shadow-lg rounded-xl"
+            >
+              <h3 class="mb-4 text-xl font-semibold text-gray-800">
+                Selected Project Details
+              </h3>
+              <p class="text-gray-700">
+                Details of the selected project will appear here.
+              </p>
             </div>
-        </div>
 
-        <div class="flex items-center justify-center px-4 my-4">
-            <div id="paginationControls" class="space-x-2"></div>
-        </div>
+            <!-- Accordion -->
+            <div
+              id="projectAccordion"
+              class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0"
+            >
+              <!-- Project cards will be rendered here dynamically by JS -->
+            </div>
+          </div>
 
-        <div class="max-w-6xl px-4 mx-auto mt-12 sm:px-6 lg:px-8">
-            <h2 class="mb-10 text-xl font-light leading-tight text-center text-gray-900 uppercase opacity-70">
-                Impact
+          <!-- Sticky Filter Sidebar (Right Side) -->
+          <div
+            class="sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6"
+          >
+            <h2
+              class="mb-2 -mt-10 text-sm font-semibold text-right text-gray-800 transform rounded-xl"
+            >
+              <i
+                class="p-2 text-black bg-white rounded-sm shadow fas fa-filter"
+              ></i>
             </h2>
-            <div class="flex flex-wrap justify-center gap-6 mb-8" x-data="countdownStats()" x-init="start()">
+
+            <div class="flex flex-col gap-5">
+              <!-- Search -->
+              <div class="relative w-full">
+                <label for="searchInput" class="sr-only"
+                  >Search by name...</label
+                >
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Search by name..."
+                  class="block w-full py-2 pl-10 pr-4 text-base text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
                 <div
-                    class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
-                    <div class="text-5xl font-light font-extrabold text-blue-700" x-text="locations"></div>
-                    <p class="mt-3 text-base font-thin font-medium text-gray-600">Locations</p>
+                  class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                >
+                  <i class="text-gray-400 fas fa-search"></i>
+                </div>
+              </div>
+              <div class="grid gap-2 lg:grid-cols-2">
+                <!-- From Date -->
+                <div class="flex flex-col gap-2">
+                  <label
+                    for="dateFrom"
+                    class="text-sm font-medium text-gray-700"
+                    >From Date:</label
+                  >
+                  <input
+                    type="date"
+                    id="dateFrom"
+                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </div>
 
-                <div
-                    class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
-                    <div class="text-5xl font-light font-extrabold text-pink-600" x-text="projects"></div>
-                    <p class="mt-3 text-base font-thin font-medium text-gray-600">Projects</p>
+                <!-- To Date -->
+                <div class="flex flex-col gap-2">
+                  <label for="dateTo" class="text-sm font-medium text-gray-700"
+                    >To Date:</label
+                  >
+                  <input
+                    type="date"
+                    id="dateTo"
+                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </div>
+              </div>
 
-                <div
-                    class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
-                    <div class="text-5xl font-light font-extrabold text-green-600" x-text="regions"></div>
-                    <p class="mt-3 text-base font-thin font-medium text-gray-600">Regions</p>
-                </div>
+              <!-- Sort By -->
+              <div class="flex flex-col gap-2">
+                <label
+                  for="sortSelect"
+                  class="text-sm font-medium text-gray-700"
+                  >Sort By:</label
+                >
+                <select
+                  id="sortSelect"
+                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="date">Date (Newest First)</option>
+                </select>
+              </div>
 
-                <div
-                    class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
-                    <div class="text-5xl font-light font-extrabold text-purple-600" x-text="users"></div>
-                    <p class="mt-3 text-base font-thin font-medium text-gray-600">Teams</p>
-                </div>
+              <!-- Sort By Theme -->
+              <div class="flex flex-col gap-2">
+                <label
+                  for="sortSelect"
+                  class="text-sm font-medium text-gray-700"
+                  >Themes:</label
+                >
+                <select
+                  id="sortSelect"
+                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="date">Date (Newest First)</option>
+                </select>
+              </div>
 
-                <div
-                    class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
-                    <div class="text-5xl font-light font-extrabold text-yellow-600" x-text="amountDisplay"></div>
-                    <p class="mt-3 text-base font-thin font-medium text-gray-600">Raised (KES)</p>
-                </div>
+              <!-- Sort By Theme -->
+              <div class="flex flex-col gap-2">
+                <label for="status" class="text-sm font-medium text-gray-700"
+                  >Status:</label
+                >
+                <select
+                  autocomplete="off"
+                  id="status"
+                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onchange="highlightMarkers(this.value)"
+                >
+                  <option value="all">Show All</option>
+                  <option value="active">Active</option>
+                  <option value="pending">Pending</option>
+                  <option value="stalled">Stalled</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+
+              <!-- Export Button -->
+              <button
+                onclick="exportCSV()"
+                class="flex items-center justify-center px-5 py-2 mt-6 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="mr-2 fas fa-file-csv"></i> Export Data
+              </button>
             </div>
+          </div>
         </div>
+      </div>
+
+      <div class="flex items-center justify-center px-4 my-4">
+        <div id="paginationControls" class="space-x-2"></div>
+      </div>
+
+      <div class="max-w-6xl px-4 mx-auto mt-12 sm:px-6 lg:px-8">
+        <h2
+          class="mb-10 text-xl font-light leading-tight text-center text-gray-900 uppercase opacity-70"
+        >
+          Impact
+        </h2>
+        <div
+          class="flex flex-wrap justify-center gap-6 mb-8"
+          x-data="countdownStats()"
+          x-init="start()"
+        >
+          <div
+            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
+          >
+            <div
+              class="text-5xl font-light font-extrabold text-blue-700"
+              x-text="locations"
+            ></div>
+            <p class="mt-3 text-base font-thin font-medium text-gray-600">
+              Locations
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
+          >
+            <div
+              class="text-5xl font-light font-extrabold text-pink-600"
+              x-text="projects"
+            ></div>
+            <p class="mt-3 text-base font-thin font-medium text-gray-600">
+              Projects
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
+          >
+            <div
+              class="text-5xl font-light font-extrabold text-green-600"
+              x-text="regions"
+            ></div>
+            <p class="mt-3 text-base font-thin font-medium text-gray-600">
+              Regions
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
+          >
+            <div
+              class="text-5xl font-light font-extrabold text-purple-600"
+              x-text="users"
+            ></div>
+            <p class="mt-3 text-base font-thin font-medium text-gray-600">
+              Teams
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
+          >
+            <div
+              class="text-5xl font-light font-extrabold text-yellow-600"
+              x-text="amountDisplay"
+            ></div>
+            <p class="mt-3 text-base font-thin font-medium text-gray-600">
+              Raised (KES)
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
     <!--Footer container-->
-    <footer class="flex flex-col items-center text-center bg-white text-surface">
-        <div class="">
-            <!-- Social media icons container -->
-            <div class="flex items-center justify-center mb-6 space-x-2">
-                <a href="#!" type="button"
-                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-                    data-twe-ripple-init>
-                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512">
-                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
-                        </svg>
-                    </span>
-                </a>
+    <footer
+      class="flex flex-col items-center text-center bg-white text-surface"
+    >
+      <div class="">
+        <!-- Social media icons container -->
+        <div class="flex items-center justify-center mb-6 space-x-2">
+          <a
+            href="#!"
+            type="button"
+            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+            data-twe-ripple-init
+          >
+            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 512 512"
+              >
+                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                  d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+                />
+              </svg>
+            </span>
+          </a>
 
-                <a href="#!" type="button"
-                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-                    data-twe-ripple-init>
-                    <i class="fab fa-facebook-f"></i>
-                </a>
+          <a
+            href="#!"
+            type="button"
+            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+            data-twe-ripple-init
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
 
-                <a href="#!" type="button"
-                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-                    data-twe-ripple-init>
-                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
-                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
-                        </svg>
-                    </span>
-                </a>
+          <a
+            href="#!"
+            type="button"
+            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+            data-twe-ripple-init
+          >
+            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 448 512"
+              >
+                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                  d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
+                />
+              </svg>
+            </span>
+          </a>
 
-                <a href="#!" type="button"
-                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-                    data-twe-ripple-init>
-                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
-                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z" />
-                        </svg>
-                    </span>
-                </a>
-            </div>
+          <a
+            href="#!"
+            type="button"
+            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+            data-twe-ripple-init
+          >
+            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 448 512"
+              >
+                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                  d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"
+                />
+              </svg>
+            </span>
+          </a>
         </div>
+      </div>
 
-        <!--Copyright section-->
-        <div class="w-full p-4 text-xs text-center bg-black/5">
-            © 2025 Copyright:
-            <a href="">
-                RMNCAH Hub
-            </a>
-        </div>
+      <!--Copyright section-->
+      <div class="w-full p-4 text-xs text-center bg-black/5">
+        © 2025 Copyright:
+        <a href=""> RMNCAH Hub </a>
+      </div>
     </footer>
 
     <script src="styles/effects.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        let map, heatLayer;
-        let projects = [];
-        let filteredProjects = [];
-        let sortBy = 'name';
-        let sortOrder = 'asc';
-        let currentPage = 1;
-        const itemsPerPage = 5;
-        let currentFilter = 'all';
-        let searchQuery = '';
-        let dateRangeFrom = null;
-        let dateRangeTo = null;
+    <!-- Ensure authManager is loaded before module code -->
+    <script src="auth.js"></script>
 
+    <script type="module">
+      import { BASE_URL } from "./config.js";
+      // Always use global authManager from auth.js, fallback if not present
+      const authManager = window.authManager || {
+        apiCall: () => {
+          throw new Error("authManager is not defined");
+        },
+      };
 
-        const markers = [];
-        const icons = {
-            default: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [40, 40] })
-        };
+      let map, selectedMarker;
+      let projects = [];
+      let markers = [];
+      let sortBy = "name";
+      let sortOrder = "asc";
+      let currentPage = 1;
+      const itemsPerPage = 5;
+      let currentFilter = "all";
+      let searchQuery = "";
+      let dateRangeFrom = null;
+      let dateRangeTo = null;
 
-        const bgColors = {
-            active: 'bg-green-50',
-            pending: 'bg-yellow-50',
-            stalled: 'bg-red-50',
-            completed: 'bg-cyan-100',
-            default: 'bg-white'
-        };
+      const icons = {
+        default: (tag) =>
+          L.icon({
+            iconUrl: `/frontend/resources/${tag}.png`,
+            iconSize: [20, 20],
+          }),
+        selected: (tag) =>
+          L.icon({
+            iconUrl: `/frontend/resources/${tag}.png`,
+            iconSize: [40, 40],
+          }),
+      };
 
-        const statusBadge = (tag) => {
-            return {
-                active: 'bg-green-200 text-green-800',
-                pending: 'bg-yellow-200 text-yellow-800',
-                stalled: 'bg-red-200 text-red-800',
-                completed: 'bg-cyan-300 text-gray-800',
-            }[tag] || 'bg-gray-200 text-gray-800';
-        };
+      const bgColors = {
+        active: "bg-green-50",
+        pending: "bg-yellow-50",
+        stalled: "bg-red-50",
+        completed: "bg-cyan-100",
+        default: "bg-white",
+      };
 
+      const statusBadge = (tag) => {
+        return (
+          {
+            active: "bg-green-200 text-green-800",
+            pending: "bg-yellow-200 text-yellow-800",
+            stalled: "bg-red-200 text-red-800",
+            completed: "bg-cyan-300 text-gray-800",
+          }[tag] || "bg-gray-200 text-gray-800"
+        );
+      };
 
-
-        document.addEventListener("DOMContentLoaded", function () {
-            map = L.map('localMap', {
-                center: [-0.0236, 37.9062],
-                zoom: 6.3,
-                scrollWheelZoom: false,
-                dragging: true,
-                touchZoom: false,
-                doubleClickZoom: true,
-                boxZoom: false,
-                keyboard: false,
-                zoomControl: true // keeps the + / – buttons visible
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-
-            // This comes from the db  -->
-            const markerData = [
-                { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
-                { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
-                { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
-                { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "completed" },
-            ];
-
-            // This comes from db-- >
-            markerData.forEach((data) => {
-                const fullDescription = `Loin ipsum dolor sit amet, leo in savanna stride, rugitus magna echoing plains. 
-                    Praeterea mane hunters vigilant, acacia shade sub arbore. Serengeti felis aurum, 
-                    crinibus ventis fluctuantibus, prideland auctor sapien. Ungulae zebrae cursitant, 
-                    antelopae metu per campos. Territorium regale defenditur, solis ardor fulget super 
-                    juba. Luna sub nocte vigil, oculi flammae micantes, silentium ruptum rugitu ${data.name}`;
-
-                data.description = fullDescription.substring(0, 300) + "...";
-                data.fullDescription = fullDescription;
-                data.region = `Region ${Math.ceil(Math.random() * 10)}`;
-                data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
-                data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
-                data.sponsor = `Sponsor for ${data.name}`;
-                data.participants = Math.ceil(Math.random() * 100);
-                data.start_date = new Date(Date.now() - Math.random() * 10000000000).toISOString();
-                data.status = data.tag;
-
-                const marker = L.marker([data.lat, data.lng], { icon: icons.default(data.tag) })
-                    .addTo(map)
-                    .bindTooltip(data.name)
-                    .on("click", function () {
-                        if (selectedMarker && selectedMarker !== this) {
-                            selectedMarker.setIcon(icons.default(selectedMarker.tag));
-                        }
-                        this.setIcon(icons.selected(data.tag));
-                        selectedMarker = this;
-                        showProjectInfo(data);
-                    });
-
-                marker.data = data;
-                marker.tag = data.tag;
-                markers.push(marker);
-            });
-
-
-            highlightMarkers('all');
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim().toLowerCase();
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateFrom').addEventListener('change', (e) => {
-                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateTo').addEventListener('change', (e) => {
-                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('sortSelect').addEventListener('change', (e) => {
-                sortProjects(e.target.value);
-            });
+      document.addEventListener("DOMContentLoaded", async function () {
+        map = L.map("localMap", {
+          center: [-0.0236, 37.9062],
+          zoom: 6.3,
+          scrollWheelZoom: false,
+          dragging: true,
+          touchZoom: false,
+          doubleClickZoom: true,
+          boxZoom: false,
+          keyboard: false,
+          zoomControl: true,
         });
-        // Comes From DB
-        function showProjectInfo(project) {
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.remove("hidden");
-            infoBox.innerHTML = `
-            <div class="flex flex-wrap">
-                <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
-                <p><strong>Description:</strong> ${project.description}</p>
-                <p><strong>Region:</strong> ${project.region}</p>
-                <p><strong>Budget:</strong> ${project.budget}</p>
-                <p><strong>Team:</strong> ${project.team}</p>
-                <p><strong>Participants:</strong> ${project.participants}</p>
-                <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
-                <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
-            </div>
-        `;
-        }
 
-        function focusMarker(index) {
-            const marker = markers[index];
-            map.setView(marker.getLatLng(), 9);
-            marker.fire('click');
-            document.getElementById('localMap').scrollIntoView({ behavior: 'smooth' });
-        }
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors",
+        }).addTo(map);
 
-        function sortProjects(field) {
-            if (sortBy === field) {
-                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortBy = field;
-                sortOrder = 'asc';
-            }
+        // Load projects with coordinates from backend
+        await loadProjectsWithCoordinates();
+        // Load statistics
+        await loadStatistics();
+
+        // Event listeners for filters
+        document
+          .getElementById("searchInput")
+          .addEventListener("input", (e) => {
+            searchQuery = e.target.value.trim().toLowerCase();
             currentPage = 1;
             highlightMarkers(currentFilter);
+          });
+        document.getElementById("dateFrom").addEventListener("change", (e) => {
+          dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+          currentPage = 1;
+          highlightMarkers(currentFilter);
+        });
+        document.getElementById("dateTo").addEventListener("change", (e) => {
+          dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+          currentPage = 1;
+          highlightMarkers(currentFilter);
+        });
+        document
+          .getElementById("sortSelect")
+          .addEventListener("change", (e) => {
+            sortProjects(e.target.value);
+          });
+        document.getElementById("status").addEventListener("change", (e) => {
+          highlightMarkers(e.target.value);
+        });
+      });
+
+      async function loadProjectsWithCoordinates() {
+        try {
+          console.log(
+            "[DEBUG] Fetching projects from /api/projects/with-coordinates..."
+          );
+          const response = await authManager.apiCall(
+            "/api/projects/with-coordinates",
+            "GET"
+          );
+          console.log("[DEBUG] API response:", response);
+          if (!response || !response.ok) {
+            console.error("[DEBUG] API response not ok:", response);
+            throw new Error("Failed to fetch projects");
+          }
+          const data = await response.json();
+          console.log("[DEBUG] API data:", data);
+          projects = data.data || [];
+          console.log("[DEBUG] Projects array:", projects);
+          // Remove old markers
+          if (markers.length > 0) {
+            markers.forEach((m) => map.removeLayer(m));
+          }
+          markers = [];
+          projects.forEach((project, idx) => {
+            // Defensive: ensure required fields
+            const tag = project.status || "default";
+            const marker = L.marker([project.latitude, project.longitude], {
+              icon: icons.default(tag),
+            })
+              .addTo(map)
+              .bindTooltip(project.name)
+              .on("click", function () {
+                if (selectedMarker && selectedMarker !== this) {
+                  selectedMarker.setIcon(icons.default(selectedMarker.tag));
+                }
+                this.setIcon(icons.selected(tag));
+                selectedMarker = this;
+                showProjectInfo(project);
+              });
+            marker.data = project;
+            marker.tag = tag;
+            markers.push(marker);
+          });
+          console.log("[DEBUG] Markers array:", markers);
+          highlightMarkers(currentFilter);
+        } catch (err) {
+          console.error("Error loading projects:", err);
         }
+      }
 
-        function highlightMarkers(tag) {
-            currentFilter = tag;
-            const accordion = document.getElementById("projectAccordion");
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.add("hidden");
-            accordion.innerHTML = '';
-            accordion.classList.remove("hidden");
-            accordion.classList.add("opacity-0", "translate-y-4");
-
-            let filteredMarkers = markers.filter(marker => {
-                const p = marker.data;
-                if (tag !== 'all' && marker.tag !== tag) return false;
-                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                const pDate = new Date(p.start_date);
-                if (dateRangeFrom && pDate < dateRangeFrom) return false;
-                if (dateRangeTo && pDate > dateRangeTo) return false;
-                return true;
-            });
-
-            filteredMarkers.sort((a, b) => {
-                const aVal = sortBy === 'name' ? a.data.name : new Date(a.data.start_date);
-                const bVal = sortBy === 'name' ? b.data.name : new Date(b.data.start_date);
-                return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
-            });
-
-            const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-            const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-            updatePaginationControls(totalPages);
-
-            markers.forEach(marker => {
-                marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
-            });
-
-            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
-
-            paginated.forEach((marker, idx) => {
-                const i = markers.indexOf(marker);
-                const project = marker.data;
-                const bg = bgColors[project.status] || bgColors.default;
-
-                const item = document.createElement("div");
-                item.className = `rounded shadow-sm ${bg}`;
-
-                item.innerHTML = `
-                    <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
-                                <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${project.description}</p>
-                            </div>
-                            <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
-                                ${new Date(project.start_date).toLocaleDateString()}
-                            </div>
-                        </div>
-                    </button>
-                    <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
-                        <p><strong>Region:</strong> ${project.region}</p>
-                        <p><strong>Budget:</strong> ${project.budget}</p>
-                        <p><strong>Team:</strong> ${project.team}</p>
-                        <p><strong>Participants:</strong> ${project.participants}</p>
-                        <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                        <p><strong>Status:</strong> 
-                            <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">
-                                ${project.status}
-                            </span>
-                        </p>
-                        <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
-                            Show on Map
-                        </button>
-                    </div>
-                `;
-
-                accordion.appendChild(item);
-
-                // Toggle description between truncated and full
-                const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
-                btn.addEventListener("click", () => {
-                    const collapse = document.getElementById(`collapse-${i}`);
-                    const desc = document.getElementById(`desc-${i}`);
-                    collapse.classList.toggle("hidden");
-
-                    if (!collapse.classList.contains("hidden")) {
-                        desc.textContent = project.fullDescription; // expand
-                    } else {
-                        desc.textContent = project.description; // truncate
-                    }
-                });
-            });
-
-        }
-
-        function updatePaginationControls(totalPages) {
-            const container = document.getElementById("paginationControls");
-            container.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement("button");
-                btn.textContent = i;
-                btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`;
-                btn.onclick = () => {
-                    currentPage = i;
-                    highlightMarkers(currentFilter);
-                };
-                container.appendChild(btn);
+      async function loadStatistics() {
+        try {
+          const response = await authManager.apiCall(
+            "/api/projects/statistics",
+            "GET"
+          );
+          if (!response || !response.ok)
+            throw new Error("Failed to fetch statistics");
+          const stats = await response.json();
+          // stats.data: { locations, projects, regions, users, amount }
+          if (stats.data) {
+            // Alpine.js x-data expects these variables
+            const statsRoot = document.querySelector(
+              '[x-data="countdownStats()"]'
+            );
+            if (statsRoot && statsRoot.__x && statsRoot.__x.$data) {
+              statsRoot.__x.$data.targets = {
+                locations: stats.data.locations || 0,
+                projects: stats.data.projects || 0,
+                regions: stats.data.regions || 0,
+                users: stats.data.users || 0,
+                amount: stats.data.amount || 0,
+              };
+              statsRoot.__x.$data.start();
             }
+          }
+        } catch (err) {
+          console.error("Error loading statistics:", err);
         }
+      }
 
-        function exportCSV() {
-            const headers = ['Name', 'Description', 'Region', 'Budget', 'Team', 'Participants', 'Sponsor', 'Start Date', 'Status'];
-            const rows = markers
-                .map(m => m.data)
-                .filter(p => {
-                    if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                    const date = new Date(p.start_date);
-                    if (dateRangeFrom && date < dateRangeFrom) return false;
-                    if (dateRangeTo && date > dateRangeTo) return false;
-                    if (currentFilter !== 'all' && p.status !== currentFilter) return false;
-                    return true;
-                })
-                .map(p => [
-                    p.name, p.description, p.region, p.budget, p.team, p.participants,
-                    p.sponsor, new Date(p.start_date).toLocaleDateString(), p.status
-                ]);
+      function showProjectInfo(project) {
+        const infoBox = document.getElementById("projectInfo");
+        infoBox.classList.remove("hidden");
+        infoBox.innerHTML = `
+            <div class="flex flex-wrap">
+                <h3 class="mb-4 text-xl font-bold text-gray-800">${
+                  project.title || ""
+                }</h3>
+                <p><strong>County:</strong> ${project.county || ""}</p>
+                <p><strong>Budget:</strong> ${project.budget || ""}</p>
+                <p><strong>Partner:</strong> ${project.partner || ""}</p>
+                <p><strong>Start Date:</strong> ${
+                  project.startDate
+                    ? new Date(project.startDate).toLocaleDateString()
+                    : ""
+                }</p>
+                <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
+                  project.status
+                )}">${project.status || ""}</span></p>
+            </div>
+        `;
+      }
 
-            let csvContent = [headers.join(',')];
-            rows.forEach(r => csvContent.push(r.map(field => `"${field}"`).join(',')));
+      function focusMarker(index) {
+        const marker = markers[index];
+        map.setView(marker.getLatLng(), 9);
+        marker.fire("click");
+        document
+          .getElementById("localMap")
+          .scrollIntoView({ behavior: "smooth" });
+      }
 
-            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `projects_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
+      function sortProjects(field) {
+        if (sortBy === field) {
+          sortOrder = sortOrder === "asc" ? "desc" : "asc";
+        } else {
+          sortBy = field;
+          sortOrder = "asc";
         }
+        currentPage = 1;
+        highlightMarkers(currentFilter);
+      }
+
+      function highlightMarkers(tag) {
+        currentFilter = tag;
+        const accordion = document.getElementById("projectAccordion");
+        const infoBox = document.getElementById("projectInfo");
+        if (!accordion) {
+          console.error("[DEBUG] #projectAccordion not found in DOM");
+          return;
+        }
+        if (!infoBox) {
+          console.error("[DEBUG] #projectInfo not found in DOM");
+          return;
+        }
+        infoBox.classList.add("hidden");
+        accordion.innerHTML = "";
+        accordion.classList.remove("hidden");
+        accordion.classList.add("opacity-0", "translate-y-4");
+
+        let filteredMarkers = markers.filter((marker) => {
+          const p = marker.data;
+          if (tag !== "all" && marker.tag !== tag) return false;
+          if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+            return false;
+          const pDate = p.start_date ? new Date(p.start_date) : null;
+          if (dateRangeFrom && pDate && pDate < dateRangeFrom) return false;
+          if (dateRangeTo && pDate && pDate > dateRangeTo) return false;
+          return true;
+        });
+
+        console.log(
+          "[DEBUG] highlightMarkers: filteredMarkers:",
+          filteredMarkers
+        );
+
+        filteredMarkers.sort((a, b) => {
+          const aVal =
+            sortBy === "name" ? a.data.name : new Date(a.data.start_date);
+          const bVal =
+            sortBy === "name" ? b.data.name : new Date(b.data.start_date);
+          return sortOrder === "asc"
+            ? aVal > bVal
+              ? 1
+              : -1
+            : aVal < bVal
+            ? 1
+            : -1;
+        });
+
+        const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
+        const paginated = filteredMarkers.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        );
+        console.log("[DEBUG] highlightMarkers: paginated:", paginated);
+        updatePaginationControls(totalPages);
+
+        markers.forEach((marker) => {
+          marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+        });
+
+        setTimeout(
+          () => accordion.classList.remove("opacity-0", "translate-y-4"),
+          10
+        );
+
+        paginated.forEach((marker, idx) => {
+          const i = markers.indexOf(marker);
+          const project = marker.data;
+          const bg = bgColors[project.status] || bgColors.default;
+
+          const item = document.createElement("div");
+          item.className = `rounded shadow-sm ${bg}`;
+
+          item.innerHTML = `
+            <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800">${
+                          project.title || ""
+                        }</h4>
+                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${
+            project.objectives || ""
+          }</p>
+                    </div>
+                    <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
+                        ${
+                          project.startDate
+                            ? new Date(project.startDate).toLocaleDateString()
+                            : ""
+                        }
+                    </div>
+                </div>
+            </button>
+            <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
+                <p><strong>County:</strong> ${project.county || ""}</p>
+                <p><strong>Budget:</strong> ${project.budget || ""}</p>
+                <p><strong>Partner:</strong> ${project.partner || ""}</p>
+                <p><strong>Status:</strong> 
+                    <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
+                      project.status
+                    )}">
+                        ${project.status || ""}
+                    </span>
+                </p>
+                <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+                    Show on Map
+                </button>
+            </div>
+          `;
+
+          accordion.appendChild(item);
+
+          // Toggle description between truncated and full
+          const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
+          btn.addEventListener("click", () => {
+            const collapse = document.getElementById(`collapse-${i}`);
+            const desc = document.getElementById(`desc-${i}`);
+            if (!collapse || !desc) return;
+            collapse.classList.toggle("hidden");
+            if (!collapse.classList.contains("hidden")) {
+              desc.textContent =
+                project.fullDescription || project.description || "";
+            } else {
+              desc.textContent = project.description || "";
+            }
+          });
+        });
+      }
+
+      function updatePaginationControls(totalPages) {
+        const container = document.getElementById("paginationControls");
+        container.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          btn.className = `px-3 py-1 rounded ${
+            i === currentPage
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+          }`;
+          btn.onclick = () => {
+            currentPage = i;
+            highlightMarkers(currentFilter);
+          };
+          container.appendChild(btn);
+        }
+      }
+
+      window.exportCSV = function exportCSV() {
+        const headers = [
+          "Name",
+          "Description",
+          "Region",
+          "Budget",
+          "Team",
+          "Participants",
+          "Sponsor",
+          "Start Date",
+          "Status",
+        ];
+        const rows = markers
+          .map((m) => m.data)
+          .filter((p) => {
+            if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+              return false;
+            const date = p.start_date ? new Date(p.start_date) : null;
+            if (dateRangeFrom && date && date < dateRangeFrom) return false;
+            if (dateRangeTo && date && date > dateRangeTo) return false;
+            if (currentFilter !== "all" && p.status !== currentFilter)
+              return false;
+            return true;
+          })
+          .map((p) => [
+            p.name,
+            p.description,
+            p.region,
+            p.budget,
+            p.team,
+            p.participants,
+            p.sponsor,
+            p.start_date ? new Date(p.start_date).toLocaleDateString() : "",
+            p.status,
+          ]);
+
+        let csvContent = [headers.join(",")];
+        rows.forEach((r) =>
+          csvContent.push(r.map((field) => `"${field}"`).join(","))
+        );
+
+        const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `projects_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        link.click();
+      };
     </script>
 
     <script>
-        function countdownStats() {
-            return {
-                locations: 0,
-                projects: 0,
-                regions: 0,
-                users: 0,
-                amount: 0,
-                amountDisplay: '0',
+      function countdownStats() {
+        return {
+          locations: 0,
+          projects: 0,
+          regions: 0,
+          users: 0,
+          amount: 0,
+          amountDisplay: "0",
 
-                targets: {
-                    locations: 35,
-                    projects: 120,
-                    regions: 15,
-                    users: 500,
-                    amount: 4500000
-                },
+          targets: {
+            locations: 35,
+            projects: 120,
+            regions: 15,
+            users: 500,
+            amount: 4500000,
+          },
 
-                duration: 1500, // in ms
-                steps: 30,
+          duration: 1500, // in ms
+          steps: 30,
 
-                // number formatter
-                formatAmount(value) {
-                    if (value >= 1e12) return (value / 1e12).toFixed(2) + 'Tn';
-                    if (value >= 1e9) return (value / 1e9).toFixed(2) + 'Bn';
-                    if (value >= 1e6) return (value / 1e6).toFixed(2) + 'Mn';
-                    if (value >= 1e3) return (value / 1e3).toFixed(2) + 'K';
-                    return value.toString();
-                },
+          // number formatter
+          formatAmount(value) {
+            if (value >= 1e12) return (value / 1e12).toFixed(2) + "Tn";
+            if (value >= 1e9) return (value / 1e9).toFixed(2) + "Bn";
+            if (value >= 1e6) return (value / 1e6).toFixed(2) + "Mn";
+            if (value >= 1e3) return (value / 1e3).toFixed(2) + "K";
+            return value.toString();
+          },
 
-                start() {
-                    const interval = this.duration / this.steps;
+          start() {
+            const interval = this.duration / this.steps;
 
-                    let currentStep = 0;
-                    const timer = setInterval(() => {
-                        currentStep++;
-                        const progress = currentStep / this.steps;
+            let currentStep = 0;
+            const timer = setInterval(() => {
+              currentStep++;
+              const progress = currentStep / this.steps;
 
-                        this.locations = Math.floor(this.targets.locations * progress);
-                        this.projects = Math.floor(this.targets.projects * progress);
-                        this.regions = Math.floor(this.targets.regions * progress);
-                        this.users = Math.floor(this.targets.users * progress);
-                        this.amount = Math.floor(this.targets.amount * progress);
+              this.locations = Math.floor(this.targets.locations * progress);
+              this.projects = Math.floor(this.targets.projects * progress);
+              this.regions = Math.floor(this.targets.regions * progress);
+              this.users = Math.floor(this.targets.users * progress);
+              this.amount = Math.floor(this.targets.amount * progress);
 
-                        // use formatter here
-                        this.amountDisplay = '' + this.formatAmount(this.amount);
+              // use formatter here
+              this.amountDisplay = "" + this.formatAmount(this.amount);
 
-                        if (currentStep >= this.steps) clearInterval(timer);
-                    }, interval);
-                }
-            }
-        }
+              if (currentStep >= this.steps) clearInterval(timer);
+            }, interval);
+          },
+        };
+      }
     </script>
 
-
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-</body>
-
+  </body>
 </html>

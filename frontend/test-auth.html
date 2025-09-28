@@ -1,314 +1,441 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Simple Register / Login Tester</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    /* Very minimal layout */
-    body { font-family: Arial, sans-serif; padding: 16px; }
-    label { display:block; margin-top:8px; }
-    input { padding:6px; }
-    .panel { border:1px solid #ddd; padding:10px; margin-top:12px; max-width:520px; }
-    .hidden { display:none; }
-    button { margin-top:8px; padding:6px 10px; }
-    pre { background:#f6f6f6; padding:8px; }
-  </style>
-</head>
-<body>
-  <h2>Simple Register / Login Tester</h2>
-
-  <div class="panel">
-    <label for="baseUrl">Base URL</label>
-    <input id="baseUrl" type="text" value="https://api-tujulishane-hub.onrender.com" style="width:100%">
-    <div style="margin-top:8px">Stored token: <span id="storedToken">-</span></div>
-
-    <label for="username">Name</label>
-    <input id="username" type="text" placeholder="e.g. Jane Doe" style="width:100%">
-
-    <label for="email">Email</label>
-    <input id="email" type="email" placeholder="you@example.com" style="width:100%">
-
-    <div style="margin-top:10px">
-      <button id="openRegister">Register</button>
-      <button id="openLogin">Test Login</button>
-      <button id="openVerifyReg">Verify Registration</button>
-      <button id="openVerifyLogin">Verify Login</button>
-    </div>
-  </div>
-
-  <!-- Register popup / panel -->
-  <div id="registerPanel" class="panel hidden" aria-hidden="true">
-    <strong>Register</strong>
-    <p>Confirm the details below and click "Confirm Register".</p>
-    <label for="reg_username">Name</label>
-    <input id="reg_username" type="text" style="width:100%">
-    <label for="reg_email">Email</label>
-    <input id="reg_email" type="email" style="width:100%">
-    <div>
-      <button id="confirmRegister">Confirm Register</button>
-      <button id="cancelRegister">Cancel</button>
-    </div>
-    <div style="margin-top:8px">
-      <div>Response:</div>
-      <pre id="regResp">-</pre>
-    </div>
-  </div>
-
-  <!-- Login popup / panel -->
-  <div id="loginPanel" class="panel hidden" aria-hidden="true">
-    <strong>Login</strong>
-    <p>Enter credentials and click "Confirm Login".</p>
-    <label for="login_user">Username or Email</label>
-    <input id="login_user" type="email" placeholder="you@example.com" style="width:100%">
-    <div>
-      <button id="confirmLogin">Confirm Login</button>
-      <button id="cancelLogin">Cancel</button>
-    </div>
-    <div style="margin-top:8px">
-      <div>Response:</div>
-      <pre id="loginResp">-</pre>
-    </div>
-  </div>
-
-  <!-- Verify Registration panel -->
-  <div id="verifyRegPanel" class="panel hidden" aria-hidden="true">
-    <strong>Verify Registration</strong>
-    <p>Enter email and the OTP you received after registering.</p>
-    <label for="verify_reg_email">Email</label>
-    <input id="verify_reg_email" type="email" style="width:100%">
-    <label for="verify_reg_otp">OTP</label>
-    <input id="verify_reg_otp" type="text" style="width:100%">
-    <div>
-      <button id="confirmVerifyReg">Confirm Verify</button>
-      <button id="cancelVerifyReg">Cancel</button>
-    </div>
-    <div style="margin-top:8px">
-      <div>Response:</div>
-      <pre id="verifyRegResp">-</pre>
-    </div>
-  </div>
-
-  <!-- Verify Login panel -->
-  <div id="verifyLoginPanel" class="panel hidden" aria-hidden="true">
-    <strong>Verify Login</strong>
-    <p>Enter email and the OTP sent for login. Successful verify returns a token.</p>
-    <label for="verify_login_email">Email</label>
-    <input id="verify_login_email" type="email" style="width:100%">
-    <label for="verify_login_otp">OTP</label>
-    <input id="verify_login_otp" type="text" style="width:100%">
-    <div>
-      <button id="confirmVerifyLogin">Confirm Verify Login</button>
-      <button id="cancelVerifyLogin">Cancel</button>
-    </div>
-    <div style="margin-top:8px">
-      <div>Response:</div>
-      <pre id="verifyLoginResp">-</pre>
-    </div>
-  </div>
-
-  <!-- Error log -->
-  <div id="errorLogPanel" class="panel">
-    <strong>Error Log</strong>
-    <div style="margin-top:8px">Recent error entries (most recent first):</div>
-    <pre id="errorLog">-</pre>
-    <div style="margin-top:8px">
-      <button id="clearLog">Clear Log</button>
-    </div>
-  </div>
-
-<script>
-// Error log storage
-const errorLogEntries = [];
-let storedToken = null;
-
-function timestamp() {
-  return new Date().toLocaleString();
-}
-
-function addErrorLog(entry) {
-  // entry: { time, endpoint, status, message, raw }
-  errorLogEntries.unshift(entry);
-  const out = errorLogEntries.map(e => `${e.time} | ${e.endpoint} | ${e.status} | ${e.message}\n${e.raw}\n`).join('\n---\n');
-  document.getElementById('errorLog').textContent = out || '-';
-}
-
-document.getElementById('clearLog').addEventListener('click', ()=>{
-  errorLogEntries.length = 0;
-  document.getElementById('errorLog').textContent = '-';
-});
-
-function by(id){ return document.getElementById(id); }
-
-// Show panels and prefill with main inputs
-by('openRegister').addEventListener('click', ()=>{
-  by('reg_username').value = by('username').value || '';
-  by('reg_email').value = by('email').value || '';
-  by('registerPanel').classList.remove('hidden');
-  by('registerPanel').setAttribute('aria-hidden','false');
-});
-by('cancelRegister').addEventListener('click', ()=>{
-  by('registerPanel').classList.add('hidden');
-  by('registerPanel').setAttribute('aria-hidden','true');
-});
-
-by('openLogin').addEventListener('click', ()=>{
-  // prefill with email or username
-  by('login_user').value = by('email').value || by('username').value || '';
-  by('loginPanel').classList.remove('hidden');
-  by('loginPanel').setAttribute('aria-hidden','false');
-});
-by('cancelLogin').addEventListener('click', ()=>{
-  by('loginPanel').classList.add('hidden');
-  by('loginPanel').setAttribute('aria-hidden','true');
-});
-
-by('openVerifyReg').addEventListener('click', ()=>{
-  by('verify_reg_email').value = by('email').value || '';
-  by('verify_reg_otp').value = '';
-  by('verifyRegResp').textContent = '-';
-  by('verifyRegPanel').classList.remove('hidden');
-  by('verifyRegPanel').setAttribute('aria-hidden','false');
-});
-by('cancelVerifyReg').addEventListener('click', ()=>{
-  by('verifyRegPanel').classList.add('hidden');
-  by('verifyRegPanel').setAttribute('aria-hidden','true');
-});
-
-by('openVerifyLogin').addEventListener('click', ()=>{
-  by('verify_login_email').value = by('email').value || '';
-  by('verify_login_otp').value = '';
-  by('verifyLoginResp').textContent = '-';
-  by('verifyLoginPanel').classList.remove('hidden');
-  by('verifyLoginPanel').setAttribute('aria-hidden','false');
-});
-by('cancelVerifyLogin').addEventListener('click', ()=>{
-  by('verifyLoginPanel').classList.add('hidden');
-  by('verifyLoginPanel').setAttribute('aria-hidden','true');
-});
-
-// Helper to send requests
-async function sendJson(path, method, json) {
-  const base = by('baseUrl').value.trim().replace(/\/$/, '');
-  const url = path.startsWith('http') ? path : base + path;
-  const reqBody = json ? JSON.stringify(json) : '';
-  try {
-    const res = await fetch(url, {
-      method: method || 'POST',
-      headers: { 'Accept':'application/json', 'Content-Type':'application/json' },
-      body: json ? JSON.stringify(json) : undefined
-    });
-    const text = await res.text();
-    let out = text;
-    try { out = JSON.stringify(JSON.parse(text), null, 2); } catch(e){}
-    // If error status, log it
-    if (res.status >= 400) {
-      let parsedMsg = '';
-      try {
-        const parsed = JSON.parse(text);
-        parsedMsg = parsed.message || parsed.error || '';
-      } catch(e) { parsedMsg = out; }
-      // include request body in the raw log for easier debugging
-      addErrorLog({ time: timestamp(), endpoint: path, status: res.status + ' ' + res.statusText, message: parsedMsg || 'Error', raw: `Request: ${reqBody}\nResponse: ${out}` });
-    }
-    return { status: res.status + ' ' + res.statusText, body: out };
-  } catch (err) {
-    // Network error - log it
-    addErrorLog({ time: timestamp(), endpoint: path, status: 'Network error', message: String(err), raw: `Request: ${reqBody}` });
-    return { status: 'Network error', body: String(err) };
-  }
-}
-
-// Register action (client-side validation: name length and email pattern)
-by('confirmRegister').addEventListener('click', async ()=>{
-  const name = by('reg_username').value.trim();
-  const email = by('reg_email').value.trim();
-  const emailRe = /^\S+@\S+\.\S+$/;
-  if (!name || name.length < 2) {
-    by('regResp').textContent = 'Please provide a valid name (at least 2 characters).'; return;
-  }
-  if (!email || !emailRe.test(email)) {
-    by('regResp').textContent = 'Please provide a valid email address.'; return;
-  }
-  by('regResp').textContent = 'Sending...';
-  const payload = { name, email };
-  const result = await sendJson('/api/auth/register', 'POST', payload);
-  by('regResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
-  if (result.status.startsWith('4') || result.status.startsWith('5')) {
-    try {
-      const j = JSON.parse(result.body);
-      if (j && j.message) by('regResp').textContent = result.status + '\n' + j.message;
-    } catch(e){}
-  }
-});
-
-// Login action - send only email (backend expects email)
-by('confirmLogin').addEventListener('click', async ()=>{
-  const userEmail = by('login_user').value.trim();
-  const emailRe = /^\S+@\S+\.\S+$/;
-  if (!userEmail || !emailRe.test(userEmail)) { by('loginResp').textContent = 'Please enter a valid email.'; return; }
-  by('loginResp').textContent = 'Sending...';
-  const payload = { email: userEmail };
-  const result = await sendJson('/api/auth/login', 'POST', payload);
-  by('loginResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
-  if (result.status.startsWith('4') || result.status.startsWith('5')) {
-    try {
-      const j = JSON.parse(result.body);
-      if (j && j.message) by('loginResp').textContent = result.status + '\n' + j.message;
-    } catch(e){}
-  }
-});
-
-// Verify Registration action
-by('confirmVerifyReg').addEventListener('click', async ()=>{
-  const email = by('verify_reg_email').value.trim();
-  const otp = by('verify_reg_otp').value.trim();
-  const emailRe = /^\S+@\S+\.\S+$/;
-  if (!email || !emailRe.test(email)) { by('verifyRegResp').textContent = 'Please enter a valid email.'; return; }
-  if (!otp) { by('verifyRegResp').textContent = 'OTP cannot be empty.'; return; }
-  by('verifyRegResp').textContent = 'Sending...';
-  const payload = { email, otp };
-  // backend endpoint is /api/auth/verify
-  const result = await sendJson('/api/auth/verify', 'POST', payload);
-  by('verifyRegResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
-  if (result.status.startsWith('4') || result.status.startsWith('5')) {
-    try {
-      const j = JSON.parse(result.body);
-      if (j && j.message) by('verifyRegResp').textContent = result.status + '\n' + j.message;
-    } catch(e){}
-  }
-});
-
-// Verify Login action
-by('confirmVerifyLogin').addEventListener('click', async ()=>{
-  const email = by('verify_login_email').value.trim();
-  const otp = by('verify_login_otp').value.trim();
-  const emailRe = /^\S+@\S+\.\S+$/;
-  if (!email || !emailRe.test(email)) { by('verifyLoginResp').textContent = 'Please enter a valid email.'; return; }
-  if (!otp) { by('verifyLoginResp').textContent = 'OTP cannot be empty.'; return; }
-  by('verifyLoginResp').textContent = 'Sending...';
-  const payload = { email, otp };
-  // backend endpoint is /api/auth/verify/login which returns a token in data
-  const result = await sendJson('/api/auth/verify/login', 'POST', payload);
-  by('verifyLoginResp').textContent = result.status + '\n' + result.body + '\n\nRequest payload:\n' + JSON.stringify(payload);
-  // if successful, try to extract token
-  if (result.status.startsWith('2')) {
-    try {
-      const j = JSON.parse(result.body);
-      if (j && j.data && j.data.token) {
-        storedToken = j.data.token;
-        document.getElementById('storedToken').textContent = storedToken;
-        by('verifyLoginResp').textContent = result.status + '\n' + (j.message || 'Login verified') + '\nToken stored.';
+  <head>
+    <meta charset="utf-8" />
+    <title>Simple Register / Login Tester</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      /* Very minimal layout */
+      body {
+        font-family: Arial, sans-serif;
+        padding: 16px;
       }
-    } catch(e){}
-  }
-   if (result.status.startsWith('4') || result.status.startsWith('5')) {
-     try {
-       const j = JSON.parse(result.body);
-       if (j && j.message) by('verifyLoginResp').textContent = result.status + '\n' + j.message;
-     } catch(e){}
-   }
-});
-</script>
-</body>
+      label {
+        display: block;
+        margin-top: 8px;
+      }
+      input {
+        padding: 6px;
+      }
+      .panel {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-top: 12px;
+        max-width: 520px;
+      }
+      .hidden {
+        display: none;
+      }
+      button {
+        margin-top: 8px;
+        padding: 6px 10px;
+      }
+      pre {
+        background: #f6f6f6;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Simple Register / Login Tester</h2>
+
+    <div class="panel">
+      <label for="baseUrl">Base URL</label>
+      <input
+        id="baseUrl"
+        type="text"
+        value="http://localhost:8080"
+        style="width: 100%"
+      />
+      <div style="margin-top: 8px">
+        Stored token: <span id="storedToken">-</span>
+      </div>
+
+      <label for="username">Name</label>
+      <input
+        id="username"
+        type="text"
+        placeholder="e.g. Jane Doe"
+        style="width: 100%"
+      />
+
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="you@example.com"
+        style="width: 100%"
+      />
+
+      <div style="margin-top: 10px">
+        <button id="openRegister">Register</button>
+        <button id="openLogin">Test Login</button>
+        <button id="openVerifyReg">Verify Registration</button>
+        <button id="openVerifyLogin">Verify Login</button>
+      </div>
+    </div>
+
+    <!-- Register popup / panel -->
+    <div id="registerPanel" class="panel hidden" aria-hidden="true">
+      <strong>Register</strong>
+      <p>Confirm the details below and click "Confirm Register".</p>
+      <label for="reg_username">Name</label>
+      <input id="reg_username" type="text" style="width: 100%" />
+      <label for="reg_email">Email</label>
+      <input id="reg_email" type="email" style="width: 100%" />
+      <div>
+        <button id="confirmRegister">Confirm Register</button>
+        <button id="cancelRegister">Cancel</button>
+      </div>
+      <div style="margin-top: 8px">
+        <div>Response:</div>
+        <pre id="regResp">-</pre>
+      </div>
+    </div>
+
+    <!-- Login popup / panel -->
+    <div id="loginPanel" class="panel hidden" aria-hidden="true">
+      <strong>Login</strong>
+      <p>Enter credentials and click "Confirm Login".</p>
+      <label for="login_user">Username or Email</label>
+      <input
+        id="login_user"
+        type="email"
+        placeholder="you@example.com"
+        style="width: 100%"
+      />
+      <div>
+        <button id="confirmLogin">Confirm Login</button>
+        <button id="cancelLogin">Cancel</button>
+      </div>
+      <div style="margin-top: 8px">
+        <div>Response:</div>
+        <pre id="loginResp">-</pre>
+      </div>
+    </div>
+
+    <!-- Verify Registration panel -->
+    <div id="verifyRegPanel" class="panel hidden" aria-hidden="true">
+      <strong>Verify Registration</strong>
+      <p>Enter email and the OTP you received after registering.</p>
+      <label for="verify_reg_email">Email</label>
+      <input id="verify_reg_email" type="email" style="width: 100%" />
+      <label for="verify_reg_otp">OTP</label>
+      <input id="verify_reg_otp" type="text" style="width: 100%" />
+      <div>
+        <button id="confirmVerifyReg">Confirm Verify</button>
+        <button id="cancelVerifyReg">Cancel</button>
+      </div>
+      <div style="margin-top: 8px">
+        <div>Response:</div>
+        <pre id="verifyRegResp">-</pre>
+      </div>
+    </div>
+
+    <!-- Verify Login panel -->
+    <div id="verifyLoginPanel" class="panel hidden" aria-hidden="true">
+      <strong>Verify Login</strong>
+      <p>
+        Enter email and the OTP sent for login. Successful verify returns a
+        token.
+      </p>
+      <label for="verify_login_email">Email</label>
+      <input id="verify_login_email" type="email" style="width: 100%" />
+      <label for="verify_login_otp">OTP</label>
+      <input id="verify_login_otp" type="text" style="width: 100%" />
+      <div>
+        <button id="confirmVerifyLogin">Confirm Verify Login</button>
+        <button id="cancelVerifyLogin">Cancel</button>
+      </div>
+      <div style="margin-top: 8px">
+        <div>Response:</div>
+        <pre id="verifyLoginResp">-</pre>
+      </div>
+    </div>
+
+    <!-- Error log -->
+    <div id="errorLogPanel" class="panel">
+      <strong>Error Log</strong>
+      <div style="margin-top: 8px">
+        Recent error entries (most recent first):
+      </div>
+      <pre id="errorLog">-</pre>
+      <div style="margin-top: 8px">
+        <button id="clearLog">Clear Log</button>
+      </div>
+    </div>
+
+    <script>
+      // Error log storage
+      const errorLogEntries = [];
+      let storedToken = null;
+
+      function timestamp() {
+        return new Date().toLocaleString();
+      }
+
+      function addErrorLog(entry) {
+        // entry: { time, endpoint, status, message, raw }
+        errorLogEntries.unshift(entry);
+        const out = errorLogEntries
+          .map(
+            (e) =>
+              `${e.time} | ${e.endpoint} | ${e.status} | ${e.message}\n${e.raw}\n`
+          )
+          .join("\n---\n");
+        document.getElementById("errorLog").textContent = out || "-";
+      }
+
+      document.getElementById("clearLog").addEventListener("click", () => {
+        errorLogEntries.length = 0;
+        document.getElementById("errorLog").textContent = "-";
+      });
+
+      function by(id) {
+        return document.getElementById(id);
+      }
+
+      // Show panels and prefill with main inputs
+      by("openRegister").addEventListener("click", () => {
+        by("reg_username").value = by("username").value || "";
+        by("reg_email").value = by("email").value || "";
+        by("registerPanel").classList.remove("hidden");
+        by("registerPanel").setAttribute("aria-hidden", "false");
+      });
+      by("cancelRegister").addEventListener("click", () => {
+        by("registerPanel").classList.add("hidden");
+        by("registerPanel").setAttribute("aria-hidden", "true");
+      });
+
+      by("openLogin").addEventListener("click", () => {
+        // prefill with email or username
+        by("login_user").value =
+          by("email").value || by("username").value || "";
+        by("loginPanel").classList.remove("hidden");
+        by("loginPanel").setAttribute("aria-hidden", "false");
+      });
+      by("cancelLogin").addEventListener("click", () => {
+        by("loginPanel").classList.add("hidden");
+        by("loginPanel").setAttribute("aria-hidden", "true");
+      });
+
+      by("openVerifyReg").addEventListener("click", () => {
+        by("verify_reg_email").value = by("email").value || "";
+        by("verify_reg_otp").value = "";
+        by("verifyRegResp").textContent = "-";
+        by("verifyRegPanel").classList.remove("hidden");
+        by("verifyRegPanel").setAttribute("aria-hidden", "false");
+      });
+      by("cancelVerifyReg").addEventListener("click", () => {
+        by("verifyRegPanel").classList.add("hidden");
+        by("verifyRegPanel").setAttribute("aria-hidden", "true");
+      });
+
+      by("openVerifyLogin").addEventListener("click", () => {
+        by("verify_login_email").value = by("email").value || "";
+        by("verify_login_otp").value = "";
+        by("verifyLoginResp").textContent = "-";
+        by("verifyLoginPanel").classList.remove("hidden");
+        by("verifyLoginPanel").setAttribute("aria-hidden", "false");
+      });
+      by("cancelVerifyLogin").addEventListener("click", () => {
+        by("verifyLoginPanel").classList.add("hidden");
+        by("verifyLoginPanel").setAttribute("aria-hidden", "true");
+      });
+
+      // Helper to send requests
+      async function sendJson(path, method, json) {
+        const base = by("baseUrl").value.trim().replace(/\/$/, "");
+        const url = path.startsWith("http") ? path : base + path;
+        const reqBody = json ? JSON.stringify(json) : "";
+        try {
+          const res = await fetch(url, {
+            method: method || "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: json ? JSON.stringify(json) : undefined,
+          });
+          const text = await res.text();
+          let out = text;
+          try {
+            out = JSON.stringify(JSON.parse(text), null, 2);
+          } catch (e) {}
+          // If error status, log it
+          if (res.status >= 400) {
+            let parsedMsg = "";
+            try {
+              const parsed = JSON.parse(text);
+              parsedMsg = parsed.message || parsed.error || "";
+            } catch (e) {
+              parsedMsg = out;
+            }
+            // include request body in the raw log for easier debugging
+            addErrorLog({
+              time: timestamp(),
+              endpoint: path,
+              status: res.status + " " + res.statusText,
+              message: parsedMsg || "Error",
+              raw: `Request: ${reqBody}\nResponse: ${out}`,
+            });
+          }
+          return { status: res.status + " " + res.statusText, body: out };
+        } catch (err) {
+          // Network error - log it
+          addErrorLog({
+            time: timestamp(),
+            endpoint: path,
+            status: "Network error",
+            message: String(err),
+            raw: `Request: ${reqBody}`,
+          });
+          return { status: "Network error", body: String(err) };
+        }
+      }
+
+      // Register action (client-side validation: name length and email pattern)
+      by("confirmRegister").addEventListener("click", async () => {
+        const name = by("reg_username").value.trim();
+        const email = by("reg_email").value.trim();
+        const emailRe = /^\S+@\S+\.\S+$/;
+        if (!name || name.length < 2) {
+          by("regResp").textContent =
+            "Please provide a valid name (at least 2 characters).";
+          return;
+        }
+        if (!email || !emailRe.test(email)) {
+          by("regResp").textContent = "Please provide a valid email address.";
+          return;
+        }
+        by("regResp").textContent = "Sending...";
+        const payload = { name, email };
+        const result = await sendJson("/api/auth/register", "POST", payload);
+        by("regResp").textContent =
+          result.status +
+          "\n" +
+          result.body +
+          "\n\nRequest payload:\n" +
+          JSON.stringify(payload);
+        if (result.status.startsWith("4") || result.status.startsWith("5")) {
+          try {
+            const j = JSON.parse(result.body);
+            if (j && j.message)
+              by("regResp").textContent = result.status + "\n" + j.message;
+          } catch (e) {}
+        }
+      });
+
+      // Login action - send only email (backend expects email)
+      by("confirmLogin").addEventListener("click", async () => {
+        const userEmail = by("login_user").value.trim();
+        const emailRe = /^\S+@\S+\.\S+$/;
+        if (!userEmail || !emailRe.test(userEmail)) {
+          by("loginResp").textContent = "Please enter a valid email.";
+          return;
+        }
+        by("loginResp").textContent = "Sending...";
+        const payload = { email: userEmail };
+        const result = await sendJson("/api/auth/login", "POST", payload);
+        by("loginResp").textContent =
+          result.status +
+          "\n" +
+          result.body +
+          "\n\nRequest payload:\n" +
+          JSON.stringify(payload);
+        if (result.status.startsWith("4") || result.status.startsWith("5")) {
+          try {
+            const j = JSON.parse(result.body);
+            if (j && j.message)
+              by("loginResp").textContent = result.status + "\n" + j.message;
+          } catch (e) {}
+        }
+      });
+
+      // Verify Registration action
+      by("confirmVerifyReg").addEventListener("click", async () => {
+        const email = by("verify_reg_email").value.trim();
+        const otp = by("verify_reg_otp").value.trim();
+        const emailRe = /^\S+@\S+\.\S+$/;
+        if (!email || !emailRe.test(email)) {
+          by("verifyRegResp").textContent = "Please enter a valid email.";
+          return;
+        }
+        if (!otp) {
+          by("verifyRegResp").textContent = "OTP cannot be empty.";
+          return;
+        }
+        by("verifyRegResp").textContent = "Sending...";
+        const payload = { email, otp };
+        // backend endpoint is /api/auth/verify
+        const result = await sendJson("/api/auth/verify", "POST", payload);
+        by("verifyRegResp").textContent =
+          result.status +
+          "\n" +
+          result.body +
+          "\n\nRequest payload:\n" +
+          JSON.stringify(payload);
+        if (result.status.startsWith("4") || result.status.startsWith("5")) {
+          try {
+            const j = JSON.parse(result.body);
+            if (j && j.message)
+              by("verifyRegResp").textContent =
+                result.status + "\n" + j.message;
+          } catch (e) {}
+        }
+      });
+
+      // Verify Login action
+      by("confirmVerifyLogin").addEventListener("click", async () => {
+        const email = by("verify_login_email").value.trim();
+        const otp = by("verify_login_otp").value.trim();
+        const emailRe = /^\S+@\S+\.\S+$/;
+        if (!email || !emailRe.test(email)) {
+          by("verifyLoginResp").textContent = "Please enter a valid email.";
+          return;
+        }
+        if (!otp) {
+          by("verifyLoginResp").textContent = "OTP cannot be empty.";
+          return;
+        }
+        by("verifyLoginResp").textContent = "Sending...";
+        const payload = { email, otp };
+        // backend endpoint is /api/auth/verify/login which returns a token in data
+        const result = await sendJson(
+          "/api/auth/verify/login",
+          "POST",
+          payload
+        );
+        by("verifyLoginResp").textContent =
+          result.status +
+          "\n" +
+          result.body +
+          "\n\nRequest payload:\n" +
+          JSON.stringify(payload);
+        // if successful, try to extract token
+        if (result.status.startsWith("2")) {
+          try {
+            const j = JSON.parse(result.body);
+            if (j && j.data && j.data.token) {
+              storedToken = j.data.token;
+              document.getElementById("storedToken").textContent = storedToken;
+              by("verifyLoginResp").textContent =
+                result.status +
+                "\n" +
+                (j.message || "Login verified") +
+                "\nToken stored.";
+            }
+          } catch (e) {}
+        }
+        if (result.status.startsWith("4") || result.status.startsWith("5")) {
+          try {
+            const j = JSON.parse(result.body);
+            if (j && j.message)
+              by("verifyLoginResp").textContent =
+                result.status + "\n" + j.message;
+          } catch (e) {}
+        }
+      });
+    </script>
+  </body>
 </html>

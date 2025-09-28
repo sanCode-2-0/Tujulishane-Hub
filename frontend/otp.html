@@ -186,36 +186,51 @@
           throw new Error("No email found. Please go back and try again.");
         }
 
-        // DEMO SIMULATION: Always accept 123456 and show success, no backend check
-        if (code === "123456") {
+        // Real backend OTP verification
+        try {
+          let endpoint, payload;
+          const baseUrl = window.authManager
+            ? window.authManager.baseUrl
+            : "http://localhost:8080";
           if (isLogin) {
-            // Store a demo JWT token for simulation
-            if (window.authManager && window.authManager.setToken) {
-              // This is a dummy JWT for demo only (header.payload.signature)
-              window.authManager.setToken(
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vQGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk1ODQwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dummysignature"
-              );
-            } else {
-              localStorage.setItem(
-                "accessToken",
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vQGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk1ODQwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dummysignature"
-              );
-            }
-            localStorage.removeItem("isLogin");
-            localStorage.removeItem("pendingEmail");
-            showMessage("Login successful! Redirecting...", "success");
-            setTimeout(() => {
-              window.location.href = "index-post-login.html";
-            }, 1000);
+            endpoint = `${baseUrl}/api/auth/verify/login`;
+            payload = { email, otp: code };
           } else {
-            localStorage.removeItem("pendingEmail");
-            showMessage("Email verified! Redirecting to login...", "success");
-            setTimeout(() => {
-              window.location.href = "index.html";
-            }, 1000);
+            endpoint = `${baseUrl}/api/auth/verify-otp`;
+            payload = { email, otp: code };
           }
-        } else {
-          showMessage("Invalid code. For demo, use 123456.", "error");
+
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+          if (!res.ok || !data.data || !data.data.token) {
+            throw new Error(data.message || "OTP verification failed");
+          }
+
+          // Store the real JWT
+          if (window.authManager && window.authManager.setToken) {
+            window.authManager.setToken(data.data.token);
+            try {
+              await window.authManager.getCurrentUser();
+            } catch (e) {
+              console.error("Failed to fetch user profile after login:", e);
+            }
+          } else {
+            localStorage.setItem("accessToken", data.data.token);
+          }
+
+          localStorage.removeItem("isLogin");
+          localStorage.removeItem("pendingEmail");
+          showMessage("Login successful! Redirecting...", "success");
+          setTimeout(() => {
+            window.location.href = "index-post-login.html";
+          }, 1000);
+        } catch (err) {
+          showMessage(err.message || "OTP verification failed.", "error");
         }
       }
     </script>
@@ -381,10 +396,12 @@
 
           try {
             let endpoint;
+            const baseUrl = window.authManager
+              ? window.authManager.baseUrl
+              : "http://localhost:8080";
             if (isLogin) {
               // For login, resend using login endpoint
-              endpoint =
-                "https://api-tujulishane-hub.onrender.com/api/auth/send-login-otp";
+              endpoint = `${baseUrl}/api/auth/send-login-otp`;
             } else {
               // For registration, we'd need to re-register (not ideal, but current API structure)
               // For now, just show a message to contact support

@@ -3,8 +3,22 @@
  * Handles JWT token management, API calls with authentication, and user session
  */
 
+// Allow switching between dev and prod base URLs
+function getBaseUrl() {
+  // 1. Check for ?env=dev or ?env=prod in URL
+  const params = new URLSearchParams(window.location.search);
+  const env = params.get("env") || localStorage.getItem("apiEnv");
+  if (env === "dev") {
+    return "http://localhost:8080";
+  }
+  // 2. Optionally allow switching via localStorage
+  // localStorage.setItem('apiEnv', 'dev') or 'prod'
+  // return "http://localhost:8080";
+  return "http://localhost:8080";
+}
+
 const AUTH_CONFIG = {
-  BASE_URL: "https://api-tujulishane-hub.onrender.com",
+  BASE_URL: getBaseUrl(),
   TOKEN_KEY: "accessToken",
   USER_KEY: "currentUser",
 };
@@ -31,7 +45,10 @@ class AuthManager {
    * @param {string} token - JWT token to store
    */
   setToken(token) {
+    console.log("[auth.js] setToken: storing token", token);
     localStorage.setItem(this.tokenKey, token);
+    const stored = localStorage.getItem(this.tokenKey);
+    console.log("[auth.js] setToken: token in localStorage now =", stored);
   }
 
   /**
@@ -62,11 +79,19 @@ class AuthManager {
    * @returns {Promise<Object>} User profile data
    */
   async getCurrentUser() {
+    console.log("[auth.js] getCurrentUser: called");
     try {
       const response = await this.apiCall("/api/auth/profile", "GET");
+      console.log("[auth.js] getCurrentUser: response.ok =", response.ok);
       if (response.ok) {
         const data = await response.json();
+        console.log("[auth.js] getCurrentUser: received data", data);
         localStorage.setItem(this.userKey, JSON.stringify(data.data));
+        const storedUser = localStorage.getItem(this.userKey);
+        console.log(
+          "[auth.js] getCurrentUser: user in localStorage now =",
+          storedUser
+        );
         return data.data;
       }
       throw new Error("Failed to get user profile");
@@ -187,12 +212,15 @@ class AuthManager {
   async init() {
     if (this.isAuthenticated()) {
       try {
-        await this.getCurrentUser();
+        const user = await this.getCurrentUser();
+        console.log("[auth.js] init: user loaded", user);
       } catch (error) {
         console.error("Failed to load user data:", error);
         // If token is invalid, clear it
         this.removeToken();
       }
+    } else {
+      console.log("[auth.js] init: not authenticated, skipping getCurrentUser");
     }
   }
 }
