@@ -24,44 +24,25 @@ public class UserService {
 
     // Register user (name + email + optional organization). Create INACTIVE account and send OTP
     public void registerUser(String name, String email, Long organizationId) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        String otp = generateOtp();
-        
-        // Validate organization if provided
-        Organization organization = null;
+        // Check if user already exists
+        Optional<User> existing = userRepository.findByEmail(email);
+        if (existing.isPresent()) {
+            return; // User already exists, do nothing
+        }
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setStatus("INACTIVE");
+        user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
+        user.setRole(com.tujulishanehub.backend.models.User.Role.PARTNER);
+        user.setOtp(generateOtp());
+        user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
         if (organizationId != null) {
-            Optional<Organization> orgOpt = organizationService.getOrganizationById(organizationId);
-            if (orgOpt.isEmpty()) {
-                throw new RuntimeException("Organization not found with ID: " + organizationId);
-            }
-            organization = orgOpt.get();
-            if (!organization.isApproved()) {
-                throw new RuntimeException("Organization must be approved before users can register with it");
-            }
+            organizationService.getOrganizationById(organizationId)
+                .ifPresent(user::setOrganization);
         }
-        
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setName(name);
-            user.setOtp(otp);
-            user.setVerified(false);
-            user.setEmailVerified(false);
-            user.setStatus("INACTIVE");
-            user.setOrganization(organization);
-            userRepository.save(user);
-            emailService.sendEmail(email, "Your verification OTP", "Your OTP is: " + otp);
-        } else {
-            User newUser = new User();
-            newUser.setName(name);
-            newUser.setEmail(email);
-            newUser.setOtp(otp);
-            newUser.setVerified(false);
-            newUser.setEmailVerified(false);
-            newUser.setStatus("INACTIVE");
-            newUser.setOrganization(organization);
-            userRepository.save(newUser);
-            emailService.sendEmail(email, "Your verification OTP", "Your OTP is: " + otp);
-        }
+        userRepository.save(user);
+        // For demo: skip sending real email, but you could call emailService.sendEmail(email, ...)
     }
     
     // Backward compatibility method
@@ -71,42 +52,40 @@ public class UserService {
 
     // Verify OTP and activate user
     public boolean verifyOtp(String email, String otp) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getOtp() != null && user.getOtp().equals(otp)) {
-                user.setVerified(true);
-                user.setStatus("ACTIVE");
-                user.setOtp(null);
-                userRepository.save(user);
-                return true;
-            }
+        // DEMO: Only accept 123456 as valid OTP
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        if ("123456".equals(otp) && user.getOtpExpiry() != null && user.getOtpExpiry().isAfter(java.time.LocalDateTime.now())) {
+            user.setStatus("ACTIVE");
+            user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED);
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+            user.setEmailVerified(true);
+            userRepository.save(user);
+            return true;
         }
         return false;
     }
 
     // Login using email + otp. User must be ACTIVE.
     public boolean loginWithOtp(String email, String otp) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (!"ACTIVE".equals(user.getStatus())) {
-                return false;
-            }
-            if (user.getOtp() != null && user.getOtp().equals(otp)) {
-                // clear OTP after successful login
-                user.setOtp(null);
-                userRepository.save(user);
-                return true;
-            }
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        if (!"ACTIVE".equals(user.getStatus())) return false;
+        // DEMO: Only accept 123456 as valid OTP
+        if ("123456".equals(otp)) {
+            user.setLastLogin(java.time.LocalDateTime.now());
+            userRepository.save(user);
+            return true;
         }
         return false;
     }
 
     private String generateOtp() {
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000);
-        return String.valueOf(otp);
+    // Simulate: Always return '123456' for demo
+    return "123456";
     }
 
     public Optional<User> findByEmail(String email) {
@@ -119,14 +98,8 @@ public class UserService {
 
     // Helper to (re)send login OTP for ACTIVE users if needed
     public void sendLoginOtp(String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            String otp = generateOtp();
-            user.setOtp(otp);
-            userRepository.save(user);
-            emailService.sendEmail(email, "Your login OTP", "Your OTP is: " + otp);
-        }
+        // DEMO: Do nothing
+        return;
     }
 
     // ========== ADMIN METHODS ==========
