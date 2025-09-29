@@ -205,7 +205,8 @@
         <!-- New Project -->
         <div data-twe-modal-init
             class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+            id="createNewOrganization" tabindex="-1" aria-labelledby="createNewOrganizationTitle" aria-modal="true"
+            role="dialog">
             <div data-twe-modal-dialog-ref
                 class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
                 <div
@@ -213,7 +214,7 @@
                     <div
                         class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
                         <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
+                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewOrganizationTitle">
                             New Project
                         </h5>
                         <!-- Close button -->
@@ -303,6 +304,7 @@
             </div>
         </div>
 
+
         <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
         </div>
 
@@ -361,6 +363,13 @@
                                 role="tab">
                                 <p class="text-3xl font-bold">150</p>
                                 <p class="text-sm">Restricted</p>
+                            </a>
+                        </li>
+                        <li class="flex" role="presentation">
+                            <a class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md"
+                                id="pills-new-tab" data-twe-toggle="pill" data-twe-target="#pills-new" role="tab">
+                                <p class="text-3xl font-bold"><i class="fad fa-plus"></i></p>
+                                <p class="text-sm">New Member</p>
                             </a>
                         </li>
                     </ul>
@@ -424,6 +433,48 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                            id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
+                            <div class="max-w-6xl mx-auto">
+                                <h2 class="mb-6 text-2xl font-semibold text-center text-gray-700">Create Account
+                                </h2>
+
+                                <form id="registerForm" onsubmit="return validateBeforeSubmit()"
+                                    class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Full Name</label>
+                                        <input type="text" placeholder="John Doe"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Email Address</label>
+                                        <input type="email" placeholder="email@example.com"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Organization</label>
+                                        <input type="text" placeholder="Company or School"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Role / Title</label>
+                                        <input type="text" placeholder="e.g. Marketing Manager"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+
+
+                                    <div class="grid grid-cols-2 gap-4 mt-6 space-x-4 md:col-span-2">
+                                        <button type="submit"
+                                            class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">Create
+                                            Account</button>
+                                        <button type="button" onclick="hideRegister()"
+                                            class="px-6 py-2 text-blue-600 rounded bg-gray-50 hover:underline">Already
+                                            have an
+                                            account?</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
