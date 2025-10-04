@@ -9,6 +9,7 @@
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Tailwind CSS (with custom config using inline script) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -26,10 +27,9 @@
             }
         }
     </script>
+    <!-- WARNING: cdn.tailwindcss.com should not be used in production. Use PostCSS or CLI for production builds. -->
     <link rel="stylesheet" href="styles/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
         integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
@@ -41,10 +41,7 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Optional: Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -81,7 +78,8 @@
         <div class="flex items-center justify-between px-6 py-4">
             <!-- Logo -->
             <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/resources/gov.png" class="object-contain h-12" alt="Site Logo">
+                <!-- If logo not found, check path or add frontend/resources/gov.png -->
+                <img src="resources/gov.png" class="object-contain h-12" alt="Site Logo">
             </a>
 
             <!-- Mobile Menu Toggle -->
@@ -377,7 +375,7 @@
                             <a class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md"
                                 id="pills-home-tab" data-twe-toggle="pill" data-twe-target="#pills-home"
                                 data-twe-nav-active role="tab" aria-controls="pills-home" aria-selected="true">
-                                <p class="text-3xl font-bold">800</p>
+                                <p class="text-3xl font-bold" id="count-active">0</p>
                                 <p class="text-sm">Active</p>
                             </a>
                         </li>
@@ -385,7 +383,7 @@
                             <a class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md"
                                 id="pills-profile-tab" data-twe-toggle="pill" data-twe-target="#pills-profile"
                                 role="tab">
-                                <p class="text-3xl font-bold">200</p>
+                                <p class="text-3xl font-bold" id="count-pending">0</p>
                                 <p class="text-sm">Pending</p>
                             </a>
                         </li>
@@ -393,7 +391,7 @@
                             <a class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md"
                                 id="pills-contact-tab" data-twe-toggle="pill" data-twe-target="#pills-contact"
                                 role="tab">
-                                <p class="text-3xl font-bold">150</p>
+                                <p class="text-3xl font-bold" id="count-stalled">0</p>
                                 <p class="text-sm">Stalled</p>
                             </a>
                         </li>
@@ -401,7 +399,7 @@
                             <a class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md"
                                 id="pills-disabled-tab" data-twe-toggle="pill" data-twe-target="#pills-disabled"
                                 role="tab">
-                                <p class="text-3xl font-bold">100</p>
+                                <p class="text-3xl font-bold" id="count-completed">0</p>
                                 <p class="text-sm">Completed</p>
                             </a>
                         </li>
@@ -449,40 +447,7 @@
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    School Feeding Program
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Partner A
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Education
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Nairobi, Langata
-                                                    <br>
-                                                    <span class="text-xs">St. Marys Hospital</span>
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-01-01
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-12-31
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Jane Doe
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orage-600">
-                                                        Has Stalled
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
+                                        <tbody id="tbody-active"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -528,48 +493,7 @@
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    School Feeding Program
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Partner A
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Education
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Nairobi, Langata
-                                                    <br>
-                                                    <span class="text-xs">St. Marys Hospital</span>
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-01-01
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-12-31
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Jane Doe
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600">
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
-                                                        Approve
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600">
-                                                        Dismiss
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
+                                        <tbody id="tbody-pending"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -581,44 +505,7 @@
                                     <table class="min-w-full leading-normal">
                                         <thead>
                                             <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Title
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Partner
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Theme
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Location
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Start
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    End
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Contact
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    School Feeding Program
+                                                <tbody id="tbody-stalled"></tbody>
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
                                                     Partner A
@@ -697,40 +584,227 @@
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr class="fade fade-up">
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            School Feeding Program
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Partner A
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Education
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Nairobi, Langata
-                                            <br>
-                                            <span class="text-xs">St. Marys Hospital</span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-01-01
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-12-31
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Jane Doe
-                                        </td>
-                                        <td
-                                            class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                            <button data-twe-toggle="modal" data-twe-target="#submitReport"
-                                                class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600">
-                                                Submit Report
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="tbody-completed"></tbody>
+</div>
+
+<!-- Dynamic Project List, Info, and Pagination Controls -->
+<div id="projectAccordion"></div>
+<div id="projectInfo" class="hidden"></div>
+<div id="paginationControls" class="my-4"></div>
+<script src="config.js"></script>
+<script>
+let API_BASE = 'http://localhost:8080/api';
+
+// Fetch and display project statistics
+async function loadProjectStats() {
+    try {
+        const res = await fetch(`${API_BASE}/projects/statistics`);
+        console.log('[API] GET /projects/statistics response:', res);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        console.log('[API] /projects/statistics data:', data);
+        if (data.status === 200) {
+            let stats = data.data.statusCounts;
+            console.log('[Stats] FULL API RESPONSE:', data);
+            console.log('[Stats] statusCounts:', stats);
+            // Show raw statusCounts for debugging
+            let debugDiv = document.getElementById('debug-statuscounts');
+            if (!debugDiv) {
+                debugDiv = document.createElement('div');
+                debugDiv.id = 'debug-statuscounts';
+                debugDiv.style.background = '#ffe';
+                debugDiv.style.fontSize = '12px';
+                debugDiv.style.padding = '4px';
+                debugDiv.style.margin = '8px 0';
+                document.body.insertBefore(debugDiv, document.body.firstChild);
+            }
+            debugDiv.textContent = 'Raw statusCounts: ' + JSON.stringify(stats);
+
+            // If statusCounts is an array of arrays (e.g. [['pending', 1]]), convert to object
+            if (Array.isArray(stats)) {
+                const obj = {};
+                stats.forEach(s => {
+                    if (Array.isArray(s) && s.length === 2) {
+                        obj[String(s[0]).toLowerCase()] = s[1];
+                    } else if (s && typeof s === 'object' && s.status && s.count !== undefined) {
+                        obj[s.status.toLowerCase()] = s.count;
+                    }
+                });
+                stats = obj;
+            }
+            document.getElementById('count-active').textContent = stats.active || 0;
+            document.getElementById('count-pending').textContent = stats.pending || 0;
+            document.getElementById('count-stalled').textContent = stats.stalled || 0;
+            document.getElementById('count-completed').textContent = stats.completed || 0;
+        }
+    } catch (e) {
+        console.error('Failed to load project stats', e);
+    }
+}
+
+// Helper to render action buttons
+function renderActions(project, status) {
+    let html = '';
+    if (status === 'pending') {
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"editProject(${project.id})\">Edit</button> `;
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"approveProject(${project.id})\">Approve</button> `;
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600\" onclick=\"dismissProject(${project.id})\">Dismiss</button>`;
+    } else if (status === 'active') {
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600\" onclick=\"stalledProject(${project.id})\">Has Stalled</button>`;
+    } else if (status === 'stalled') {
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"reactivateProject(${project.id})\">Re-activate</button> `;
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600\" disabled>Is Completed</button>`;
+    } else if (status === 'completed') {
+        html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"submitReport(${project.id})\">Submit Report</button>`;
+    }
+
+// Mark project as stalled (exposed globally)
+window.stalledProject = async function(id) {
+    if (!confirm('Mark this project as stalled?')) return;
+    try {
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+        };
+        // Assuming your backend supports a PATCH or POST endpoint for this action
+        const res = await fetch(`${API_BASE}/projects/admin/stall/${id}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers
+        });
+        let data = null;
+        try {
+            data = await res.json();
+        } catch (jsonErr) {
+            console.error('[stalledProject] Failed to parse JSON:', jsonErr);
+        }
+        if (res.ok && data && data.message) {
+            alert(data.message || 'Project marked as stalled');
+        } else {
+            alert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status));
+        }
+        loadProjectStats();
+        loadProjectsByStatus('active', 'tbody-active');
+        loadProjectsByStatus('stalled', 'tbody-stalled');
+    } catch (e) {
+        console.error('[stalledProject] Exception:', e);
+        alert('Failed to mark project as stalled: ' + e);
+    }
+}
+    return html;
+}
+
+// Fetch and render projects by status
+async function loadProjectsByStatus(status, tableBodyId) {
+    try {
+        const res = await fetch(`${API_BASE}/projects/status/${status}`);
+        console.log(`[API] GET /projects/status/${status} response:`, res);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        console.log(`[API] /projects/status/${status} data:`, data);
+        if (data.status === 200) {
+            const projects = data.data;
+            const tbody = document.getElementById(tableBodyId);
+            tbody.innerHTML = '';
+            projects.forEach(project => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectTheme || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.county || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
+                        <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
+                    </tr>
+                `;
+            });
+        }
+    } catch (e) {
+        console.error(`Failed to load projects for status ${status}`, e);
+    }
+}
+
+// Action handlers
+async function approveProject(id) {
+    if (!confirm('Approve this project?')) return;
+    try {
+        console.log('[approveProject] Sending POST to', `${API_BASE}/projects/admin/approve/${id}`);
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+        };
+        const res = await fetch(`${API_BASE}/projects/admin/approve/${id}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers
+        });
+        console.log('[approveProject] Response:', res);
+        let data = null;
+        try {
+            data = await res.json();
+        } catch (jsonErr) {
+            console.error('[approveProject] Failed to parse JSON:', jsonErr);
+        }
+        console.log('[approveProject] Response data:', data);
+        if (res.ok && data && data.message) {
+            alert(data.message || 'Project approved');
+        } else {
+            alert('Failed to approve project: ' + (data && data.message ? data.message : res.status));
+        }
+        loadProjectStats();
+        loadProjectsByStatus('pending', 'tbody-pending');
+        loadProjectsByStatus('active', 'tbody-active');
+    } catch (e) {
+        console.error('[approveProject] Exception:', e);
+        alert('Failed to approve project: ' + e);
+    }
+}
+
+async function dismissProject(id) {
+    const reason = prompt('Enter reason for rejection:');
+    if (!reason) return;
+    try {
+        const res = await fetch(`${API_BASE}/projects/admin/reject/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ reason })
+        });
+        const data = await res.json();
+        alert(data.message || 'Project dismissed');
+        loadProjectStats();
+        loadProjectsByStatus('pending', 'tbody-pending');
+    } catch (e) {
+        alert('Failed to dismiss project');
+    }
+}
+
+function editProject(id) {
+    // Redirect to edit page or open modal (implement as needed)
+    alert('Edit project ' + id);
+}
+
+function reactivateProject(id) {
+    // Implement re-activation logic as needed
+    alert('Re-activate project ' + id);
+}
+
+function submitReport(id) {
+    // Implement report submission logic as needed
+    alert('Submit report for project ' + id);
+}
+
+// On page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadProjectStats();
+    loadProjectsByStatus('active', 'tbody-active');
+    loadProjectsByStatus('pending', 'tbody-pending');
+    loadProjectsByStatus('stalled', 'tbody-stalled');
+    loadProjectsByStatus('completed', 'tbody-completed');
+});
+</script>
                             </table>
                         </div>
                     </div>
@@ -923,10 +997,13 @@
             currentFilter = tag;
             const accordion = document.getElementById("projectAccordion");
             const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.add("hidden");
-            accordion.innerHTML = '';
-            accordion.classList.remove("hidden");
-            accordion.classList.add("opacity-0", "translate-y-4");
+            console.log('[highlightMarkers] tag:', tag, 'accordion:', accordion, 'infoBox:', infoBox);
+            if (infoBox) infoBox.classList.add("hidden");
+            if (accordion) {
+                accordion.innerHTML = '';
+                accordion.classList.remove("hidden");
+                accordion.classList.add("opacity-0", "translate-y-4");
+            }
 
             let filteredMarkers = markers.filter(marker => {
                 const p = marker.data;
@@ -946,72 +1023,79 @@
 
             const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
             const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+            console.log('[highlightMarkers] totalPages:', totalPages, 'paginated:', paginated);
             updatePaginationControls(totalPages);
 
             markers.forEach(marker => {
                 marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
             });
 
-            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
+            if (accordion) {
+                setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
 
-            paginated.forEach((marker, idx) => {
-                const i = markers.indexOf(marker);
-                const project = marker.data;
-                const bg = bgColors[project.status] || bgColors.default;
+                paginated.forEach((marker, idx) => {
+                    const i = markers.indexOf(marker);
+                    const project = marker.data;
+                    const bg = bgColors[project.status] || bgColors.default;
 
-                const item = document.createElement("div");
-                item.className = `rounded shadow-sm ${bg}`;
+                    const item = document.createElement("div");
+                    item.className = `rounded shadow-sm ${bg}`;
 
-                item.innerHTML = `
-                    <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
-                                <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${project.description}</p>
+                    item.innerHTML = `
+                        <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
+                                    <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${project.description}</p>
+                                </div>
+                                <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
+                                    ${new Date(project.start_date).toLocaleDateString()}
+                                </div>
                             </div>
-                            <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
-                                ${new Date(project.start_date).toLocaleDateString()}
-                            </div>
-                        </div>
-                    </button>
-                    <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
-                        <p><strong>Region:</strong> ${project.region}</p>
-                        <p><strong>Budget:</strong> ${project.budget}</p>
-                        <p><strong>Team:</strong> ${project.team}</p>
-                        <p><strong>Participants:</strong> ${project.participants}</p>
-                        <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                        <p><strong>Status:</strong> 
-                            <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">
-                                ${project.status}
-                            </span>
-                        </p>
-                        <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
-                            Show on Map
                         </button>
-                    </div>
-                `;
+                        <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
+                            <p><strong>Region:</strong> ${project.region}</p>
+                            <p><strong>Budget:</strong> ${project.budget}</p>
+                            <p><strong>Team:</strong> ${project.team}</p>
+                            <p><strong>Participants:</strong> ${project.participants}</p>
+                            <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">
+                                    ${project.status}
+                                </span>
+                            </p>
+                            <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+                                Show on Map
+                            </button>
+                        </div>
+                    `;
 
-                accordion.appendChild(item);
+                    accordion.appendChild(item);
 
-                // Toggle description between truncated and full
-                const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
-                btn.addEventListener("click", () => {
-                    const collapse = document.getElementById(`collapse-${i}`);
-                    const desc = document.getElementById(`desc-${i}`);
-                    collapse.classList.toggle("hidden");
+                    // Toggle description between truncated and full
+                    const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
+                    btn.addEventListener("click", () => {
+                        const collapse = document.getElementById(`collapse-${i}`);
+                        const desc = document.getElementById(`desc-${i}`);
+                        if (collapse) collapse.classList.toggle("hidden");
 
-                    if (!collapse.classList.contains("hidden")) {
-                        desc.textContent = project.fullDescription; // expand
-                    } else {
-                        desc.textContent = project.description; // truncate
-                    }
+                        if (collapse && !collapse.classList.contains("hidden")) {
+                            desc.textContent = project.fullDescription; // expand
+                        } else {
+                            desc.textContent = project.description; // truncate
+                        }
+                    });
                 });
-            });
-
+            }
         }
 
         function updatePaginationControls(totalPages) {
             const container = document.getElementById("paginationControls");
+            console.log('[updatePaginationControls] container:', container, 'totalPages:', totalPages);
+            if (!container) {
+                console.warn('[updatePaginationControls] #paginationControls not found');
+                return;
+            }
             container.innerHTML = '';
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement("button");

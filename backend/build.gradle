@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     
     // Database
-    runtimeOnly 'com.h2database:h2'
+    // runtimeOnly 'com.h2database:h2' // Removed H2 dependency
     runtimeOnly 'org.postgresql:postgresql'
     
     // JWT
