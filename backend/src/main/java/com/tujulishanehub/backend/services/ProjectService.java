@@ -50,8 +50,8 @@ public class ProjectService {
     /**
      * Update an existing project
      */
-    public Project updateProject(Long id, Project updatedProject) {
-        logger.info("Updating project with ID: {}", id);
+    public Project updateProject(Long id, Project updatedProject, String modifiedByEmail) {
+        logger.info("Updating project with ID: {} by user: {}", id, modifiedByEmail);
         
         Optional<Project> existingProjectOpt = projectRepository.findById(id);
         if (existingProjectOpt.isEmpty()) {
@@ -59,6 +59,10 @@ public class ProjectService {
         }
         
         Project existingProject = existingProjectOpt.get();
+        
+        // Track who modified the project
+        existingProject.setLastModifiedBy(modifiedByEmail);
+        existingProject.setLastModifiedAt(java.time.LocalDateTime.now());
         
         // Update fields
         updateProjectFields(existingProject, updatedProject);
@@ -70,7 +74,7 @@ public class ProjectService {
         }
         
         Project savedProject = projectRepository.save(existingProject);
-        logger.info("Project updated successfully: {}", savedProject.getId());
+        logger.info("Project updated successfully: {} by {}", savedProject.getId(), modifiedByEmail);
         return savedProject;
     }
     
@@ -312,6 +316,14 @@ public class ProjectService {
      */
     public List<Project> getProjectsByPartnerEmail(String email) {
         return projectRepository.findByContactPersonEmail(email);
+    }
+    
+    /**
+     * Check if user is the owner of a project
+     */
+    public boolean isProjectOwner(Long projectId, String userEmail) {
+        Optional<Project> project = projectRepository.findById(projectId);
+        return project.isPresent() && project.get().getContactPersonEmail().equals(userEmail);
     }
     
     /**

@@ -4,6 +4,7 @@ import com.tujulishanehub.backend.models.Announcement;
 import com.tujulishanehub.backend.models.AnnouncementStatus;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.payload.AnnouncementRequest;
 import com.tujulishanehub.backend.repositories.AnnouncementRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,38 @@ public class AnnouncementService {
     private UserService userService;
     
     /**
-     * Create a new announcement
+     * Create a new announcement from request DTO
+     */
+    public Announcement createAnnouncement(AnnouncementRequest request, String userEmail) {
+        logger.info("Creating announcement for project ID: {} by user: {}", 
+                   request.getProjectId(), userEmail);
+        
+        User user = userService.getUserByEmail(userEmail);
+        Project project = projectService.getProjectById(request.getProjectId())
+            .orElseThrow(() -> new RuntimeException("Project not found"));
+        
+        // Verify user owns the project or is admin
+        if (!project.getContactPersonEmail().equals(userEmail) && !user.isSuperAdmin()) {
+            throw new RuntimeException("You don't have permission to create announcements for this project");
+        }
+        
+        Announcement announcement = new Announcement();
+        announcement.setTitle(request.getTitle());
+        announcement.setContent(request.getContent());
+        announcement.setDeadline(request.getDeadline());
+        announcement.setStatus(request.getStatus() != null ? request.getStatus() : AnnouncementStatus.ACTIVE);
+        announcement.setCreatedBy(user);
+        announcement.setProject(project);
+        announcement.setCreatedAt(LocalDateTime.now());
+        announcement.setUpdatedAt(LocalDateTime.now());
+        
+        Announcement saved = announcementRepository.save(announcement);
+        logger.info("Announcement created successfully with ID: {}", saved.getId());
+        return saved;
+    }
+    
+    /**
+     * Create a new announcement (legacy method)
      */
     public Announcement createAnnouncement(Announcement announcement, String userEmail) {
         logger.info("Creating announcement for project ID: {} by user: {}", 

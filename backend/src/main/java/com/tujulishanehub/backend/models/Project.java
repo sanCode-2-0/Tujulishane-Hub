@@ -99,6 +99,13 @@ public class Project {
     @Column(name = "rejection_reason")
     private String rejectionReason;
     
+    // Collaboration tracking fields
+    @Column(name = "last_modified_by")
+    private String lastModifiedBy; // Email of the user who last modified
+    
+    @Column(name = "last_modified_at")
+    private LocalDateTime lastModifiedAt;
+    
     // Bidirectional relationship with ProjectReports
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ProjectReport> reports = new HashSet<>();
@@ -107,11 +114,13 @@ public class Project {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
     }
     
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
     }
     
     // Helper method to check if coordinates are available

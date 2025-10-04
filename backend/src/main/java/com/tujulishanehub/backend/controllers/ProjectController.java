@@ -5,6 +5,7 @@ import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.services.ProjectService;
+import com.tujulishanehub.backend.services.ProjectCollaboratorService;
 import com.tujulishanehub.backend.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,9 @@ public class ProjectController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ProjectCollaboratorService projectCollaboratorService;
     
     /**
      * Create a new project (Partners/Donors only)
@@ -152,16 +156,37 @@ public class ProjectController {
     }
     
     /**
-     * Update project (Owner or Admin only)
+     * Update project (Owner, Admin, or Collaborator with EDITOR/CO_OWNER role)
      */
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('SUPER_ADMIN') or @projectService.isProjectOwner(#id, authentication.name))")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Project>> updateProject(
             @PathVariable Long id, 
             @Valid @RequestBody Project project) {
         
         try {
-            Project updatedProject = projectService.updateProject(id, project);
+            // Get authenticated user
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            
+            // Check if user is admin, super admin, owner, or collaborator with edit permission
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+            boolean isOwner = projectService.isProjectOwner(id, userEmail);
+            boolean canEdit = projectCollaboratorService.canEditProject(id, userEmail);
+            
+            if (!isAdmin && !isOwner && !canEdit) {
+                logger.warn("User {} attempted to edit project {} without permission", userEmail, id);
+                ApiResponse<Project> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(), 
+                    "You don't have permission to edit this project", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Update the project with tracking
+            Project updatedProject = projectService.updateProject(id, project, userEmail);
             
             ApiResponse<Project> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 

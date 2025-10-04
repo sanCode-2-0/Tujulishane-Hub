@@ -2,6 +2,7 @@ package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.models.Announcement;
 import com.tujulishanehub.backend.payload.ApiResponse;
+import com.tujulishanehub.backend.payload.AnnouncementRequest;
 import com.tujulishanehub.backend.services.AnnouncementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,12 @@ public class AnnouncementController {
     @PostMapping
     @PreAuthorize("hasRole('PARTNER')")
     public ResponseEntity<ApiResponse<Announcement>> createAnnouncement(
-            @Valid @RequestBody Announcement announcement) {
+            @Valid @RequestBody AnnouncementRequest request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
             
-            Announcement created = announcementService.createAnnouncement(announcement, userEmail);
+            Announcement created = announcementService.createAnnouncement(request, userEmail);
             
             ApiResponse<Announcement> response = new ApiResponse<>(
                 HttpStatus.CREATED.value(),

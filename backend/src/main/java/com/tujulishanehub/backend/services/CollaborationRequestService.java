@@ -3,6 +3,7 @@ package com.tujulishanehub.backend.services;
 import com.tujulishanehub.backend.models.Announcement;
 import com.tujulishanehub.backend.models.CollaborationRequest;
 import com.tujulishanehub.backend.models.CollaborationRequestStatus;
+import com.tujulishanehub.backend.models.CollaboratorRole;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.repositories.AnnouncementRepository;
 import com.tujulishanehub.backend.repositories.CollaborationRequestRepository;
@@ -30,6 +31,9 @@ public class CollaborationRequestService {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ProjectCollaboratorService projectCollaboratorService;
     
     /**
      * Create collaboration request
@@ -117,6 +121,26 @@ public class CollaborationRequestService {
             request.setUpdatedAt(LocalDateTime.now());
             
             collaborationRequestRepository.save(request);
+            
+            // AUTO-ADD: Add the requesting user as a collaborator on the project
+            try {
+                Long projectId = request.getAnnouncement().getProject().getId();
+                User requestingUser = request.getRequestingUser();
+                
+                projectCollaboratorService.addCollaborator(
+                    projectId, 
+                    requestingUser, 
+                    CollaboratorRole.EDITOR,  // Default role for approved collaborators
+                    reviewer, 
+                    "Added via approved collaboration request #" + requestId
+                );
+                
+                logger.info("Automatically added user {} as collaborator on project {} after approval", 
+                           requestingUser.getEmail(), projectId);
+            } catch (Exception e) {
+                logger.error("Failed to auto-add collaborator after approval: {}", e.getMessage(), e);
+                // Don't fail the approval if adding collaborator fails
+            }
             
             logger.info("Collaboration request {} approved successfully", requestId);
             // TODO: Send notification emails to involved parties
