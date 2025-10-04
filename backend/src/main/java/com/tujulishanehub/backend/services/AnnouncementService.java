@@ -61,7 +61,14 @@ public class AnnouncementService {
      */
     public List<Announcement> getActiveAnnouncements() {
         logger.info("Retrieving all active announcements");
-        return announcementRepository.findActiveAnnouncements(AnnouncementStatus.ACTIVE);
+        try {
+            List<Announcement> announcements = announcementRepository.findByStatusOrderByCreatedAtDesc(AnnouncementStatus.ACTIVE);
+            logger.info("Found {} announcements with ACTIVE status", announcements.size());
+            return announcements;
+        } catch (Exception e) {
+            logger.error("Error fetching active announcements: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     /**

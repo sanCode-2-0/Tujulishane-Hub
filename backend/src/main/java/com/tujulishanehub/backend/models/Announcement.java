@@ -1,5 +1,6 @@
 package com.tujulishanehub.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Announcement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +28,12 @@ public class Announcement {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "reports"})
     private Project project;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "otp", "otpExpiry"})
     private User createdBy;
     
     @Enumerated(EnumType.STRING)

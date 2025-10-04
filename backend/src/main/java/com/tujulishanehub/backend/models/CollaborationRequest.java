@@ -1,5 +1,6 @@
 package com.tujulishanehub.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CollaborationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,14 +21,17 @@ public class CollaborationRequest {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "announcement_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "project", "createdBy"})
     private Announcement announcement;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requesting_user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "otp", "otpExpiry"})
     private User requestingUser;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requesting_organization_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Organization requestingOrganization;
     
     @Column(columnDefinition = "TEXT")
@@ -41,6 +46,7 @@ public class CollaborationRequest {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewed_by")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "otp", "otpExpiry"})
     private User reviewedBy;
     
     @Column(name = "reviewed_at")

@@ -68,9 +68,12 @@ public class AnnouncementController {
      * Get all active announcements (Public)
      */
     @GetMapping
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<List<Announcement>>> getActiveAnnouncements() {
         try {
+            logger.info("Fetching all active announcements");
             List<Announcement> announcements = announcementService.getActiveAnnouncements();
+            logger.info("Found {} active announcements", announcements.size());
             
             ApiResponse<List<Announcement>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
@@ -83,7 +86,7 @@ public class AnnouncementController {
             logger.error("Error retrieving announcements: {}", e.getMessage(), e);
             ApiResponse<List<Announcement>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Failed to retrieve announcements",
+                "Failed to retrieve announcements: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

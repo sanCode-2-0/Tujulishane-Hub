@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/projects/**").permitAll()  // Allow public access to projects API
+                        .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )

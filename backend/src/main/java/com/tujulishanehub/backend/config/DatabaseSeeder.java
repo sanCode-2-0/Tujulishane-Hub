@@ -66,6 +66,27 @@ public class DatabaseSeeder {
                 } else {
                     logger.info("Partner user already exists: {}", partnerEmail);
                 }
+                
+                // Second Partner (for testing collaboration requests)
+                String partner2Email = "partner2@example.com";
+                if (userRepository.findByEmail(partner2Email).isEmpty()) {
+                    User partner2 = new User();
+                    partner2.setEmail(partner2Email);
+                    partner2.setName("Partner Two");
+                    partner2.setPassword(passwordEncoder.encode("partner2password"));
+                    partner2.setRole(User.Role.PARTNER);
+                    partner2.setStatus("ACTIVE");
+                    partner2.setEmailVerified(true);
+                    partner2.setVerified(true);
+                    partner2.setApprovalStatus(ApprovalStatus.APPROVED);
+                    partner2.setCreatedAt(LocalDateTime.now());
+                    partner2.setUpdatedAt(LocalDateTime.now());
+                    partner2.setApprovedAt(LocalDateTime.now());
+                    userRepository.save(partner2);
+                    logger.info("Second partner user created: {}", partner2Email);
+                } else {
+                    logger.info("Second partner user already exists: {}", partner2Email);
+                }
             } catch (Exception e) {
                 logger.error("Error seeding users: {}", e.getMessage(), e);
             }
