@@ -73,6 +73,19 @@
       integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
       crossorigin=""
     ></script>
+    <!-- Mapbox GL JS -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <!-- Mapbox Geocoder Plugin -->
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Authentication utilities -->
     <script src="../auth.js"></script>
@@ -86,6 +99,23 @@
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
     <style>
+      /* Ensure Mapbox map renders properly */
+      #newProjectMap {
+        min-height: 400px;
+      }
+
+      #newProjectMap .mapboxgl-canvas {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .mapboxgl-map {
+        font-family: "Inter", sans-serif;
+      }
+
       .fade-slide-enter {
         opacity: 0;
         transform: translateY(20px);
@@ -397,6 +427,50 @@
                   onsubmit="handleProjectSubmission(event)"
                 >
                   <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                    <!-- Map Picker for Location -->
+                    <div class="col-span-2 lg:col-span-4">
+                      <label
+                        class="block text-sm font-medium text-gray-700 mb-2"
+                        >Pick Project Location on Map</label
+                      >
+                      <div class="text-xs text-gray-600 mb-2">
+                        Search for a location or click on the map to select the
+                        project coordinates.
+                      </div>
+                      <div
+                        id="newProjectMap"
+                        style="
+                          height: 400px;
+                          width: 100%;
+                          border-radius: 8px;
+                          margin-bottom: 8px;
+                          border: 1px solid #e5e7eb;
+                          background-color: #f3f4f6;
+                          position: relative;
+                          overflow: hidden;
+                        "
+                      ></div>
+                      <input
+                        type="hidden"
+                        id="project_latitude"
+                        name="latitude"
+                      />
+                      <input
+                        type="hidden"
+                        id="project_longitude"
+                        name="longitude"
+                      />
+                      <div
+                        class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
+                      >
+                        <strong>Selected Coordinates:</strong>
+                        <span
+                          id="selectedLatLng"
+                          class="font-mono text-blue-600"
+                          >Click on map to select location</span
+                        >
+                      </div>
+                    </div>
                     <!-- Title -->
                     <div>
                       <label
@@ -842,16 +916,24 @@
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
                   <!-- Map Picker for Location -->
                   <div class="col-span-2 lg:col-span-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
                       >Pick Project Location on Map</label
                     >
+                    <div class="text-xs text-gray-600 mb-2">
+                      Search for a location or click on the map to select the
+                      project coordinates.
+                    </div>
                     <div
                       id="newProjectMap"
                       style="
-                        height: 250px;
+                        height: 400px;
                         width: 100%;
                         border-radius: 8px;
                         margin-bottom: 8px;
+                        border: 1px solid #e5e7eb;
+                        background-color: #f3f4f6;
+                        position: relative;
+                        overflow: hidden;
                       "
                     ></div>
                     <input
@@ -864,9 +946,13 @@
                       id="project_longitude"
                       name="longitude"
                     />
-                    <div class="text-xs text-gray-500 mt-1">
-                      Click on the map to select the project location. Selected:
-                      <span id="selectedLatLng">None</span>
+                    <div
+                      class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
+                    >
+                      <strong>Selected Coordinates:</strong>
+                      <span id="selectedLatLng" class="font-mono text-blue-600"
+                        >Click on map to select location</span
+                      >
                     </div>
                   </div>
                   <!-- Title -->
@@ -1088,7 +1174,8 @@
                     "#createNewProject form, #newProjectForm"
                   );
                   if (!form) return;
-                  // Map picker logic
+
+                  // Mapbox map picker logic
                   let mapPicker, markerPicker;
                   const mapModal = document.getElementById("createNewProject");
                   const mapDiv = document.getElementById("newProjectMap");
@@ -1096,53 +1183,215 @@
                   let lngInput = document.getElementById("project_longitude");
                   let latLngDisplay = document.getElementById("selectedLatLng");
                   let mapInitialized = false;
+
+                  // Mapbox access token
+                  mapboxgl.accessToken =
+                    "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+                  console.log(
+                    "Mapbox token set:",
+                    mapboxgl.accessToken ? "✓" : "✗"
+                  );
+                  console.log(
+                    "Map container exists:",
+                    document.getElementById("newProjectMap") ? "✓" : "✗"
+                  );
+
                   function initMapPicker() {
-                    if (mapInitialized) return;
-                    mapPicker = L.map("newProjectMap", {
-                      center: [-0.0236, 37.9062],
-                      zoom: 6.3,
-                      scrollWheelZoom: true,
-                      dragging: true,
-                      doubleClickZoom: true,
-                      boxZoom: true,
-                      keyboard: true,
-                      zoomControl: true,
-                    });
-                    L.tileLayer(
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                      {
-                        maxZoom: 19,
-                        attribution: "&copy; OpenStreetMap contributors",
+                    if (mapInitialized) {
+                      console.log("Map already initialized, skipping...");
+                      return;
+                    }
+
+                    console.log("🗺️ Initializing Mapbox map picker...");
+
+                    try {
+                      // Initialize Mapbox map
+                      mapPicker = new mapboxgl.Map({
+                        container: "newProjectMap",
+                        style: "mapbox://styles/mapbox/streets-v12",
+                        center: [37.9062, -0.0236], // Kenya center [lng, lat]
+                        zoom: 6,
+                      });
+
+                      console.log("Map object created successfully");
+
+                      // Add navigation controls
+                      mapPicker.addControl(
+                        new mapboxgl.NavigationControl(),
+                        "top-right"
+                      );
+
+                      console.log("Navigation controls added");
+
+                      // Add search/geocoder control
+                      const geocoder = new MapboxGeocoder({
+                        accessToken: mapboxgl.accessToken,
+                        mapboxgl: mapboxgl,
+                        countries: "ke", // Restrict to Kenya
+                        placeholder: "Search for location in Kenya...",
+                        marker: false, // We'll add our own marker
+                      });
+
+                      mapPicker.addControl(geocoder, "top-left");
+
+                      console.log("Geocoder added");
+
+                      // Handle geocoder result
+                      geocoder.on("result", function (e) {
+                        console.log("Geocoder result:", e.result);
+                        const coords = e.result.geometry.coordinates;
+                        addMarker(coords[0], coords[1]);
+                      });
+
+                      // Click on map to place marker
+                      mapPicker.on("click", function (e) {
+                        console.log("Map clicked:", e.lngLat);
+                        addMarker(e.lngLat.lng, e.lngLat.lat);
+                      });
+
+                      // Function to add/update marker
+                      function addMarker(lng, lat) {
+                        console.log("Adding marker at:", lng, lat);
+                        // Remove existing marker if any
+                        if (markerPicker) {
+                          markerPicker.remove();
+                        }
+
+                        // Create new marker
+                        markerPicker = new mapboxgl.Marker({
+                          color: "#3b82f6",
+                          draggable: true,
+                        })
+                          .setLngLat([lng, lat])
+                          .addTo(mapPicker);
+
+                        // Update form inputs
+                        updateCoordinates(lng, lat);
+
+                        // Handle marker drag
+                        markerPicker.on("dragend", function () {
+                          const lngLat = markerPicker.getLngLat();
+                          console.log("Marker dragged to:", lngLat);
+                          updateCoordinates(lngLat.lng, lngLat.lat);
+                        });
+
+                        // Center map on marker
+                        mapPicker.flyTo({
+                          center: [lng, lat],
+                          zoom: 12,
+                        });
                       }
-                    ).addTo(mapPicker);
-                    mapPicker.on("click", function (e) {
-                      if (markerPicker) mapPicker.removeLayer(markerPicker);
-                      markerPicker = L.marker(e.latlng).addTo(mapPicker);
-                      latInput.value = e.latlng.lat;
-                      lngInput.value = e.latlng.lng;
-                      latLngDisplay.textContent = `${e.latlng.lat.toFixed(
-                        5
-                      )}, ${e.latlng.lng.toFixed(5)}`;
+
+                      // Update coordinates in form and display
+                      function updateCoordinates(lng, lat) {
+                        latInput.value = lat.toFixed(6);
+                        lngInput.value = lng.toFixed(6);
+                        latLngDisplay.textContent = `${lat.toFixed(
+                          6
+                        )}, ${lng.toFixed(6)}`;
+                        latLngDisplay.classList.add("font-semibold");
+                        console.log("Coordinates updated:", {
+                          lat: lat.toFixed(6),
+                          lng: lng.toFixed(6),
+                        });
+                      }
+
+                      mapInitialized = true;
+                      console.log("✓ Map initialization complete!");
+
+                      // Ensure map renders properly after initialization
+                      setTimeout(() => {
+                        if (mapPicker) {
+                          mapPicker.resize();
+                          console.log("Map resized");
+                        }
+                      }, 100);
+                    } catch (error) {
+                      console.error("❌ Error initializing map:", error);
+                      alert(
+                        "Failed to load map. Please refresh the page and try again."
+                      );
+                    }
+                  }
+
+                  // Initialize map when modal is shown
+                  const modalElement =
+                    document.getElementById("createNewProject");
+
+                  // Multiple initialization strategies to ensure map loads
+
+                  // Strategy 1: Observer to detect when modal becomes visible
+                  const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                      if (mutation.attributeName === "class") {
+                        const isVisible =
+                          !modalElement.classList.contains("hidden");
+                        console.log("Modal visibility changed:", isVisible);
+                        if (isVisible && !mapInitialized) {
+                          console.log("Initializing map via observer...");
+                          setTimeout(() => {
+                            initMapPicker();
+                            if (mapPicker) {
+                              mapPicker.resize();
+                            }
+                          }, 300);
+                        }
+                      }
                     });
-                    mapInitialized = true;
-                  }
-                  // Show map when modal opens
-                  mapModal.addEventListener("show.tw.modal", function () {
-                    setTimeout(() => {
-                      initMapPicker();
-                      mapPicker.invalidateSize();
-                    }, 200);
                   });
-                  // Also initialize if modal is already visible (fallback)
-                  if (!mapInitialized && mapModal.classList.contains("show")) {
-                    setTimeout(() => {
-                      initMapPicker();
-                      mapPicker.invalidateSize();
-                    }, 200);
-                  }
-                  form.addEventListener("submit", async function (e) {
-                    // If you have custom submission logic, add here. Otherwise, lat/lng will be included in form data.
+
+                  observer.observe(modalElement, {
+                    attributes: true,
+                    attributeFilter: ["class"],
                   });
+
+                  // Strategy 2: Check periodically if modal is visible (fallback)
+                  const checkInterval = setInterval(() => {
+                    if (mapInitialized) {
+                      clearInterval(checkInterval);
+                      return;
+                    }
+                    if (
+                      !modalElement.classList.contains("hidden") &&
+                      !mapInitialized
+                    ) {
+                      console.log("Initializing map via interval check...");
+                      clearInterval(checkInterval);
+                      setTimeout(() => {
+                        initMapPicker();
+                        if (mapPicker) {
+                          mapPicker.resize();
+                        }
+                      }, 300);
+                    }
+                  }, 500);
+
+                  // Strategy 3: Listen for TW Elements modal show event
+                  modalElement.addEventListener("show.twe.modal", function () {
+                    console.log("Modal show event fired!");
+                    if (!mapInitialized) {
+                      setTimeout(() => {
+                        initMapPicker();
+                        if (mapPicker) {
+                          mapPicker.resize();
+                        }
+                      }, 300);
+                    }
+                  });
+
+                  // Strategy 4: Also try on shown event
+                  modalElement.addEventListener("shown.twe.modal", function () {
+                    console.log("Modal shown event fired!");
+                    if (mapPicker && !mapInitialized) {
+                      setTimeout(() => {
+                        mapPicker.resize();
+                      }, 100);
+                    }
+                  });
+
+                  // Form submission - connect to handleProjectSubmission
+                  form.addEventListener("submit", handleProjectSubmission);
                 });
               </script>
             </div>
@@ -2258,6 +2507,12 @@
           contactPersonEmail: formData.get("contact_person_mail"),
           objectives: formData.get("gaps"),
           budget: parseFloat(formData.get("budget")) || 0,
+          latitude: formData.get("latitude")
+            ? parseFloat(formData.get("latitude"))
+            : null,
+          longitude: formData.get("longitude")
+            ? parseFloat(formData.get("longitude"))
+            : null,
         };
 
         console.log("📝 Project data to submit:", projectData);
@@ -2396,6 +2651,17 @@
             // You can update user display elements here
             console.log(`Welcome, ${user.name}!`);
           }
+
+          // Automatically open the "New Project" modal when page loads
+          setTimeout(() => {
+            const modalTriggerButton = document.querySelector(
+              '[data-twe-target="#createNewProject"]'
+            );
+            if (modalTriggerButton) {
+              modalTriggerButton.click();
+              console.log("📝 New Project form opened automatically");
+            }
+          }, 500); // Small delay to ensure TW Elements is initialized
         } catch (error) {
           console.error("Error getting user info:", error);
         }

@@ -56,23 +56,13 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <!-- Leaflet CSS -->
+    <!-- Mapbox CSS -->
     <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
-    <!-- Leaflet JS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN"
-      crossorigin=""
-    />
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
-      crossorigin=""
-    ></script>
+    <!-- Mapbox JS -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Authentication utilities -->
     <script type="module">
@@ -904,10 +894,8 @@
     <!-- Removed script that sets localStorage with undefined 'data' to fix ReferenceError. This should only be set after login. -->
     <script src="styles/effects.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-      let map, heatLayer;
+      let map;
       let projects = [];
       let filteredProjects = [];
       let sortBy = "name";
@@ -919,18 +907,10 @@
       let dateRangeFrom = null;
       let dateRangeTo = null;
 
-      const markers = [];
-      const icons = {
-        default: (tag) =>
-          L.icon({
-            iconUrl: `/frontend/resources/${tag}.png`,
-            iconSize: [20, 20],
-          }),
-        selected: (tag) =>
-          L.icon({
-            iconUrl: `/frontend/resources/${tag}.png`,
-            iconSize: [40, 40],
-          }),
+      const mapMarkers = [];
+      let stores = {
+        type: "FeatureCollection",
+        features: [],
       };
 
       const bgColors = {
@@ -956,71 +936,25 @@
         // Initialize authentication and load user data
         initializeUserSession();
 
-        map = L.map("localMap", {
-          center: [-0.0236, 37.9062],
+        // Set Mapbox access token
+        mapboxgl.accessToken =
+          "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+        // Initialize Mapbox map
+        map = new mapboxgl.Map({
+          container: "localMap",
+          style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+          center: [37.9062, -0.0236],
           zoom: 6.3,
-          scrollWheelZoom: false,
-          dragging: true,
-          touchZoom: false,
-          doubleClickZoom: true,
-          boxZoom: false,
-          keyboard: false,
-          zoomControl: true, // keeps the + / – buttons visible
         });
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
+        // Add zoom and rotation controls to the map
+        map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-        // This comes from the db  -->
-        const markerData = [
-          { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
-          { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
-          { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
-          { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "completed" },
-        ];
-
-        // This comes from db-- >
-        markerData.forEach((data) => {
-          const fullDescription = `Loin ipsum dolor sit amet, leo in savanna stride, rugitus magna echoing plains. 
-                    Praeterea mane hunters vigilant, acacia shade sub arbore. Serengeti felis aurum, 
-                    crinibus ventis fluctuantibus, prideland auctor sapien. Ungulae zebrae cursitant, 
-                    antelopae metu per campos. Territorium regale defenditur, solis ardor fulget super 
-                    juba. Luna sub nocte vigil, oculi flammae micantes, silentium ruptum rugitu ${data.name}`;
-
-          data.description = fullDescription.substring(0, 300) + "...";
-          data.fullDescription = fullDescription;
-          data.region = `Region ${Math.ceil(Math.random() * 10)}`;
-          data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
-          data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
-          data.sponsor = `Sponsor for ${data.name}`;
-          data.participants = Math.ceil(Math.random() * 100);
-          data.start_date = new Date(
-            Date.now() - Math.random() * 10000000000
-          ).toISOString();
-          data.status = data.tag;
-
-          const marker = L.marker([data.lat, data.lng], {
-            icon: icons.default(data.tag),
-          })
-            .addTo(map)
-            .bindTooltip(data.name)
-            .on("click", function () {
-              if (selectedMarker && selectedMarker !== this) {
-                selectedMarker.setIcon(icons.default(selectedMarker.tag));
-              }
-              this.setIcon(icons.selected(data.tag));
-              selectedMarker = this;
-              showProjectInfo(data);
-            });
-
-          marker.data = data;
-          marker.tag = data.tag;
-          markers.push(marker);
+        // Load projects after map is initialized
+        map.on("load", () => {
+          loadProjectsForMap();
         });
-
-        highlightMarkers("all");
 
         document
           .getElementById("searchInput")
@@ -1048,6 +982,165 @@
             sortProjects(e.target.value);
           });
       });
+
+      // Load projects and add to map
+      async function loadProjectsForMap() {
+        try {
+          const response = await fetch(
+            `${window.BASE_URL}/api/projects/with-coordinates`,
+            {
+              headers: {
+                Authorization: `Bearer ${authManager.getToken()}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Raw API response (with-coordinates):", data);
+            // Handle API response structure: { status: 200, data: [...], message: "..." }
+            let projectsData = [];
+            if (data.status === 200 && data.data) {
+              projectsData = Array.isArray(data.data) ? data.data : [];
+            } else if (Array.isArray(data)) {
+              projectsData = data;
+            }
+
+            console.log("Loaded projects for map:", projectsData.length);
+            console.log("Projects data (with coordinates):", projectsData);
+
+            // Log each project's coordinates
+            projectsData.forEach((project, idx) => {
+              console.log(`Map Project ${idx + 1}:`, {
+                name: project.projectName || project.name,
+                latitude: project.latitude,
+                longitude: project.longitude,
+                hasCoordinates: !!(project.latitude && project.longitude),
+              });
+            });
+
+            // ONLY add markers to map - don't overwrite the main projects array
+            // The main projects array is managed by loadProjects() which includes ALL projects
+            addMarkersToMap(projectsData);
+          } else {
+            console.warn("API response not OK, loading sample projects");
+            loadSampleProjects();
+          }
+        } catch (error) {
+          console.error("Error loading projects for map:", error);
+          // Use sample data for demo
+          loadSampleProjects();
+        }
+      }
+
+      // Load sample projects for demo
+      function loadSampleProjects() {
+        const sampleProjects = [
+          {
+            id: 1,
+            projectName: "Project 1",
+            latitude: -1.2921,
+            longitude: 36.8219,
+            status: "ACTIVE",
+          },
+          {
+            id: 2,
+            projectName: "Project 2",
+            latitude: -0.1023,
+            longitude: 34.7619,
+            status: "PENDING",
+          },
+          {
+            id: 3,
+            projectName: "Project 3",
+            latitude: 0.3256,
+            longitude: 37.1231,
+            status: "STALLED",
+          },
+          {
+            id: 4,
+            projectName: "Project 4",
+            latitude: -1.1504,
+            longitude: 36.8907,
+            status: "COMPLETED",
+          },
+        ];
+        projects = sampleProjects;
+        updateMapWithProjects(sampleProjects);
+        highlightMarkers("all");
+      }
+
+      // Add markers to Mapbox map
+      function addMarkersToMap(projectsData) {
+        // Clear existing markers
+        mapMarkers.forEach((marker) => marker.remove());
+        mapMarkers.length = 0;
+
+        // Add new markers
+        projectsData.forEach((project) => {
+          if (project.latitude && project.longitude) {
+            // Create marker element
+            const el = document.createElement("div");
+            el.className = "marker";
+            el.style.backgroundColor = getStatusColor(project.status);
+            el.style.width = "30px";
+            el.style.height = "30px";
+            el.style.borderRadius = "50%";
+            el.style.border = "2px solid white";
+            el.style.cursor = "pointer";
+            el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+
+            // Create popup
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+                <div style="padding: 10px; min-width: 200px;">
+                  <h3 style="font-weight: bold; margin-bottom: 8px;">${
+                    project.projectName || "Project"
+                  }</h3>
+                  <p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(
+                    project.status?.toLowerCase()
+                  )}">${project.status || "N/A"}</span></p>
+                  <p style="margin: 4px 0;"><strong>Region:</strong> ${
+                    project.region || "N/A"
+                  }</p>
+                  <p style="margin: 4px 0;"><strong>Budget:</strong> ${
+                    project.budget || "N/A"
+                  }</p>
+                  <button onclick="viewProject(${
+                    project.id
+                  })" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
+                </div>
+              `);
+
+            // Create and add marker
+            const marker = new mapboxgl.Marker(el)
+              .setLngLat([project.longitude, project.latitude])
+              .setPopup(popup)
+              .addTo(map);
+
+            // Add click event
+            el.addEventListener("click", () => {
+              map.flyTo({
+                center: [project.longitude, project.latitude],
+                zoom: 12,
+              });
+            });
+
+            mapMarkers.push(marker);
+          }
+        });
+      }
+
+      // Get status color
+      function getStatusColor(status) {
+        const colors = {
+          ACTIVE: "#22c55e",
+          PENDING: "#eab308",
+          STALLED: "#ef4444",
+          COMPLETED: "#06b6d4",
+        };
+        return colors[status] || "#6b7280";
+      }
+
       // Comes From DB
       function showProjectInfo(project) {
         const infoBox = document.getElementById("projectInfo");
@@ -1074,12 +1167,17 @@
       }
 
       function focusMarker(index) {
-        const marker = markers[index];
-        map.setView(marker.getLatLng(), 9);
-        marker.fire("click");
-        document
-          .getElementById("localMap")
-          .scrollIntoView({ behavior: "smooth" });
+        if (mapMarkers[index] && projects[index]) {
+          const project = projects[index];
+          map.flyTo({
+            center: [project.longitude, project.latitude],
+            zoom: 12,
+          });
+          mapMarkers[index].togglePopup();
+          document
+            .getElementById("localMap")
+            .scrollIntoView({ behavior: "smooth" });
+        }
       }
 
       function sortProjects(field) {
@@ -1095,6 +1193,10 @@
 
       function highlightMarkers(tag) {
         currentFilter = tag;
+        console.log("highlightMarkers called with tag:", tag);
+        console.log("Total projects available:", projects.length);
+        console.log("Projects:", projects);
+
         const accordion = document.getElementById("projectAccordion");
         const infoBox = document.getElementById("projectInfo");
         infoBox.classList.add("hidden");
@@ -1102,22 +1204,37 @@
         accordion.classList.remove("hidden");
         accordion.classList.add("opacity-0", "translate-y-4");
 
-        let filteredMarkers = markers.filter((marker) => {
-          const p = marker.data;
-          if (tag !== "all" && marker.tag !== tag) return false;
-          if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+        let filteredProjects = projects.filter((project) => {
+          if (tag !== "all" && project.status?.toLowerCase() !== tag)
             return false;
-          const pDate = new Date(p.start_date);
-          if (dateRangeFrom && pDate < dateRangeFrom) return false;
-          if (dateRangeTo && pDate > dateRangeTo) return false;
+          if (
+            searchQuery &&
+            !project.projectName
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
+            return false;
+          if (
+            dateRangeFrom &&
+            new Date(project.startDate) < new Date(dateRangeFrom)
+          )
+            return false;
+          if (
+            dateRangeTo &&
+            new Date(project.startDate) > new Date(dateRangeTo)
+          )
+            return false;
           return true;
         });
 
-        filteredMarkers.sort((a, b) => {
+        console.log("Filtered projects count:", filteredProjects.length);
+        console.log("Filtered projects:", filteredProjects);
+
+        filteredProjects.sort((a, b) => {
           const aVal =
-            sortBy === "name" ? a.data.name : new Date(a.data.start_date);
+            sortBy === "name" ? a.projectName : new Date(a.startDate);
           const bVal =
-            sortBy === "name" ? b.data.name : new Date(b.data.start_date);
+            sortBy === "name" ? b.projectName : new Date(b.startDate);
           return sortOrder === "asc"
             ? aVal > bVal
               ? 1
@@ -1127,15 +1244,21 @@
             : -1;
         });
 
-        const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-        const paginated = filteredMarkers.slice(
+        const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+        const paginated = filteredProjects.slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         );
+        console.log("Paginated projects for display:", paginated);
         updatePaginationControls(totalPages);
 
-        markers.forEach((marker) => {
-          marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+        // Update marker visibility
+        mapMarkers.forEach((marker, idx) => {
+          const project = projects[idx];
+          const isVisible = filteredProjects.includes(project);
+          if (marker.getElement()) {
+            marker.getElement().style.opacity = isVisible ? "1" : "0.2";
+          }
         });
 
         setTimeout(
@@ -1143,10 +1266,10 @@
           10
         );
 
-        paginated.forEach((marker, idx) => {
-          const i = markers.indexOf(marker);
-          const project = marker.data;
-          const bg = bgColors[project.status] || bgColors.default;
+        paginated.forEach((project, idx) => {
+          const i = projects.indexOf(project);
+          const bg =
+            bgColors[project.status?.toLowerCase()] || bgColors.default;
 
           const item = document.createElement("div");
           item.className = `rounded shadow-sm ${bg}`;
@@ -1156,11 +1279,13 @@
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <div>
                         <h4 class="text-lg font-semibold text-gray-800">${
-                          project.title || ""
+                          project.title || project.projectName || ""
                         }</h4>
-                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${
-            project.objectives || ""
-          }</p>
+                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${(
+            project.objectives ||
+            project.description ||
+            ""
+          ).substring(0, 150)}...</p>
                     </div>
                     <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
                         ${
@@ -1172,12 +1297,14 @@
                 </div>
             </button>
             <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
-                <p><strong>County:</strong> ${project.county || ""}</p>
+                <p><strong>County:</strong> ${
+                  project.county || project.region || ""
+                }</p>
                 <p><strong>Budget:</strong> ${project.budget || ""}</p>
                 <p><strong>Partner:</strong> ${project.partner || ""}</p>
                 <p><strong>Status:</strong> 
                     <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
-                      project.status
+                      project.status?.toLowerCase()
                     )}">
                         ${project.status || ""}
                     </span>
@@ -1198,9 +1325,14 @@
             collapse.classList.toggle("hidden");
 
             if (!collapse.classList.contains("hidden")) {
-              desc.textContent = project.fullDescription; // expand
+              desc.textContent =
+                project.objectives || project.description || ""; // expand
             } else {
-              desc.textContent = project.description; // truncate
+              desc.textContent =
+                (project.objectives || project.description || "").substring(
+                  0,
+                  150
+                ) + "..."; // truncate
             }
           });
         });
@@ -1231,39 +1363,38 @@
           "Description",
           "Region",
           "Budget",
-          "Team",
-          "Participants",
-          "Sponsor",
-          "Start Date",
           "Status",
+          "Start Date",
         ];
-        const rows = markers
-          .map((m) => m.data)
+        const rows = projects
           .filter((p) => {
-            if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+            if (
+              searchQuery &&
+              !p.projectName?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
               return false;
-            const date = new Date(p.start_date);
+            const date = new Date(p.startDate);
             if (dateRangeFrom && date < dateRangeFrom) return false;
             if (dateRangeTo && date > dateRangeTo) return false;
-            if (currentFilter !== "all" && p.status !== currentFilter)
+            if (
+              currentFilter !== "all" &&
+              p.status?.toLowerCase() !== currentFilter
+            )
               return false;
             return true;
           })
           .map((p) => [
-            p.name,
-            p.description,
-            p.region,
-            p.budget,
-            p.team,
-            p.participants,
-            p.sponsor,
-            new Date(p.start_date).toLocaleDateString(),
-            p.status,
+            p.projectName || "",
+            (p.description || "").replace(/,/g, ";"),
+            p.region || p.county || "",
+            p.budget || "",
+            p.status || "",
+            p.startDate ? new Date(p.startDate).toLocaleDateString() : "",
           ]);
 
         let csvContent = [headers.join(",")];
         rows.forEach((r) =>
-          csvContent.push(r.map((field) => `"${field}"`).join(","))
+          csvContent.push(r.map((val) => `"${val}"`).join(","))
         );
 
         const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
@@ -1498,14 +1629,30 @@
           const response = await authManager.apiCall(url, "GET");
           if (response.ok) {
             const data = await response.json();
+            console.log("loadProjects API response:", data);
             if (data.status === 200 && data.data && data.data.projects) {
-              updateProjectsDisplay(data.data.projects);
-              updateMapWithProjects(data.data.projects);
+              const allProjects = data.data.projects;
+              console.log("Loaded all projects:", allProjects.length);
+
+              // Update the global projects array
+              projects = allProjects;
+
+              // Update the projects display (accordion)
+              updateProjectsDisplay(allProjects);
+
+              // Also add map markers for projects that have coordinates
+              addMarkersToMap(
+                allProjects.filter((p) => p.latitude && p.longitude)
+              );
+
+              // Trigger the accordion display
+              highlightMarkers("all");
             }
           } else {
             showProjectsError();
           }
         } catch (error) {
+          console.error("Error loading projects:", error);
           showProjectsError();
         }
       }
@@ -1634,85 +1781,44 @@
       }
 
       // Update map with real project data
-      function updateMapWithProjects(projects) {
+      function updateMapWithProjects(projectsData) {
+        console.log("updateMapWithProjects called with:", projectsData);
+        console.log("Number of projects received:", projectsData.length);
+
+        // Log all projects to see their structure
+        projectsData.forEach((project, idx) => {
+          console.log(`Project ${idx + 1} structure:`, {
+            id: project.id,
+            name: project.projectName || project.name,
+            latitude: project.latitude,
+            longitude: project.longitude,
+            status: project.status,
+            hasCoordinates: !!(project.latitude && project.longitude),
+            allFields: Object.keys(project),
+          });
+        });
+
         // Find projects with coordinates
-        const projectsWithCoords = projects.filter(
-          (project) => project.latitude && project.longitude
-        );
+        const projectsWithCoords = projectsData.filter((p) => {
+          const hasCoords = p.latitude && p.longitude;
+          if (!hasCoords) {
+            console.warn(
+              `Project "${p.projectName || p.name}" (ID: ${
+                p.id
+              }) is missing coordinates!`
+            );
+          }
+          return hasCoords;
+        });
 
         console.log("Updating map with", projectsWithCoords.length, "projects");
+        console.log("Projects with coordinates:", projectsWithCoords);
 
-        // Clear existing markers if any
-        if (window.mapMarkers) {
-          window.mapMarkers.forEach((marker) => {
-            if (window.map) {
-              window.map.removeLayer(marker);
-            }
-          });
-        }
-        window.mapMarkers = [];
+        // Add markers to Mapbox map
+        addMarkersToMap(projectsWithCoords);
 
-        // Add new markers from real project data
-        projectsWithCoords.forEach((project) => {
-          if (window.map) {
-            const marker = L.marker([project.latitude, project.longitude]);
-
-            const popupContent = `
-                        <div style="min-width: 200px;">
-                            <h3 style="margin: 0 0 8px 0; font-weight: bold;">${
-                              project.title ||
-                              project.name ||
-                              "Untitled Project"
-                            }</h3>
-                            <p style="margin: 4px 0;"><strong>Partner:</strong> ${
-                              project.partner || "N/A"
-                            }</p>
-                            <p style="margin: 4px 0;"><strong>County:</strong> ${
-                              project.county || "N/A"
-                            }</p>
-                            <p style="margin: 4px 0;"><strong>Status:</strong> 
-                                <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; 
-                                    background-color: ${getStatusColor(
-                                      project.status
-                                    )}; color: white;">
-                                    ${project.status || "unknown"}
-                                </span>
-                            </p>
-                            ${
-                              project.budget
-                                ? `<p style="margin: 4px 0;"><strong>Budget:</strong> $${project.budget.toLocaleString()}</p>`
-                                : ""
-                            }
-                            ${
-                              project.objectives
-                                ? `<p style="margin: 8px 0 0 0; font-size: 12px;">${project.objectives.substring(
-                                    0,
-                                    150
-                                  )}${
-                                    project.objectives.length > 150 ? "..." : ""
-                                  }</p>`
-                                : ""
-                            }
-                        </div>
-                    `;
-
-            marker.bindPopup(popupContent);
-            marker.addTo(window.map);
-            window.mapMarkers.push(marker);
-          }
-        });
-      }
-
-      // Helper function to get status color for map markers
-      function getStatusColor(status) {
-        const colors = {
-          active: "#10b981",
-          pending: "#f59e0b",
-          stalled: "#ef4444",
-          completed: "#3b82f6",
-          abandoned: "#6b7280",
-        };
-        return colors[status] || "#6b7280";
+        // Update project list
+        projects = projectsData;
       }
 
       // Update statistics display with real data
@@ -1795,6 +1901,12 @@
 
       // Update projects display
       function updateProjectsDisplay(projectsData) {
+        console.log(
+          "updateProjectsDisplay called with:",
+          projectsData.length,
+          "projects"
+        );
+
         // Update global projects variable
         window.projects = projectsData;
         window.filteredProjects = projectsData;
@@ -1811,10 +1923,23 @@
 
       // Render projects accordion in the UI
       function renderProjectsList(projects) {
+        console.log(
+          "renderProjectsList called with:",
+          projects.length,
+          "projects"
+        );
         const accordion = document.getElementById("projectAccordion");
-        if (!accordion) return;
+        if (!accordion) {
+          console.error("Accordion element not found!");
+          return;
+        }
+
+        // Make sure accordion is visible
+        accordion.classList.remove("hidden");
         accordion.innerHTML = "";
+
         if (projects.length === 0) {
+          console.log("No projects to display");
           accordion.innerHTML = `
             <div class="text-center py-8">
               <i class="fas fa-project-diagram text-gray-400 text-4xl mb-4"></i>
@@ -1823,7 +1948,13 @@
           `;
           return;
         }
+
+        console.log("Rendering", projects.length, "projects in accordion");
         projects.forEach((project, idx) => {
+          console.log(
+            `Rendering project ${idx + 1}:`,
+            project.projectName || project.name
+          );
           // Status color classes
           const statusBg =
             {
