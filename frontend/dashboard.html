@@ -329,13 +329,62 @@
             </a>
           </li>
 
-          <li>
-            <a
-              href="/contact"
-              class="font-bold text-blue-700 uppercase hover:text-pink-500"
+          <!-- Collaboration Dropdown -->
+          <li class="relative" x-data="{ showDropdown: false }">
+            <button
+              @click="showDropdown = !showDropdown"
+              class="inline-flex items-center font-medium uppercase transition focus:outline-none hover:text-blue-600"
             >
-              Announcements
-            </a>
+              Collaboration <i class="ml-2 fas fa-chevron-down text-xs"></i>
+            </button>
+
+            <!-- Dropdown Content -->
+            <div
+              x-show="showDropdown"
+              @click.outside="showDropdown = false"
+              x-transition
+              class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+              style="display: none"
+            >
+              <ul class="py-2 text-sm text-left text-gray-700">
+                <li class="px-4 py-2 transition hover:bg-blue-50">
+                  <a
+                    href="/frontend/announcements.html"
+                    class="flex items-center"
+                  >
+                    <i class="fas fa-bullhorn mr-2 text-blue-600"></i>
+                    Announcements
+                  </a>
+                </li>
+                <li class="px-4 py-2 transition hover:bg-blue-50">
+                  <a
+                    href="/frontend/my-collaborations.html"
+                    class="flex items-center"
+                  >
+                    <i class="fas fa-users mr-2 text-green-600"></i>
+                    My Collaborations
+                  </a>
+                </li>
+                <li
+                  class="px-4 py-2 transition hover:bg-blue-50"
+                  id="admin-collab-requests"
+                  style="display: none"
+                >
+                  <a
+                    href="/frontend/Forms/Admin/collaboration-requests.html"
+                    class="flex items-center"
+                  >
+                    <i class="fas fa-handshake mr-2 text-purple-600"></i>
+                    Manage Requests
+                    <span
+                      id="pending-badge"
+                      class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
+                      style="display: none"
+                    ></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
@@ -356,18 +405,38 @@
             <a href="/" class="block transition hover:text-blue-600">Home</a>
           </li>
           <li>
-            <a href="#about" class="block transition hover:text-blue-600"
-              >About</a
+            <a
+              href="/frontend/projects.html"
+              class="block transition hover:text-blue-600"
+              >Projects</a
             >
           </li>
           <li>
-            <a href="#why-us" class="block transition hover:text-blue-600"
-              >Why Us</a
+            <a
+              href="/frontend/members.html"
+              class="block transition hover:text-blue-600"
+              >Stakeholders</a
             >
           </li>
           <li>
-            <a href="#contact-us" class="block transition hover:text-blue-600"
-              >Contact Us</a
+            <a
+              href="/frontend/announcements.html"
+              class="block transition hover:text-blue-600"
+              ><i class="fas fa-bullhorn mr-2"></i>Announcements</a
+            >
+          </li>
+          <li>
+            <a
+              href="/frontend/my-collaborations.html"
+              class="block transition hover:text-blue-600"
+              ><i class="fas fa-users mr-2"></i>My Collaborations</a
+            >
+          </li>
+          <li id="admin-collab-requests-mobile" style="display: none">
+            <a
+              href="/frontend/Forms/Admin/collaboration-requests.html"
+              class="block transition hover:text-blue-600"
+              ><i class="fas fa-handshake mr-2"></i>Manage Requests</a
             >
           </li>
         </ul>
@@ -1713,6 +1782,49 @@
           new Date().toISOString().split("T")[0]
         }.csv`;
         link.click();
+      }
+
+      // Show/hide admin collaboration menu and load pending count
+      document.addEventListener("DOMContentLoaded", function () {
+        const userRole = localStorage.getItem("userRole");
+
+        // Show admin menu items if user is admin or super admin
+        if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+          const adminMenuItem = document.getElementById(
+            "admin-collab-requests"
+          );
+          const adminMenuMobile = document.getElementById(
+            "admin-collab-requests-mobile"
+          );
+          if (adminMenuItem) adminMenuItem.style.display = "block";
+          if (adminMenuMobile) adminMenuMobile.style.display = "block";
+
+          // Load pending collaboration requests count
+          loadPendingRequestsCount();
+        }
+      });
+
+      async function loadPendingRequestsCount() {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          const data = await response.json();
+
+          if (data.status === 200 && data.data.length > 0) {
+            const badge = document.getElementById("pending-badge");
+            if (badge) {
+              badge.textContent = data.data.length;
+              badge.style.display = "inline-block";
+            }
+          }
+        } catch (error) {
+          console.error("Error loading pending requests count:", error);
+        }
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>

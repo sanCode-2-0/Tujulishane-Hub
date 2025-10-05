@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Collaboration Requests - RMNCAH</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af",
+              secondary: "#f59e0b",
+              accent: "#10b981",
+              dark: "#1f2937",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script type="module">
+      import { BASE_URL } from "../../config.js";
+      window.BASE_URL = BASE_URL;
+    </script>
+    <script src="../../auth.js"></script>
+  </head>
+
+  <body class="bg-gray-50">
+    <div x-data="adminCollaborationsApp()" x-init="init()">
+      <!-- Navigation matching site design -->
+      <nav
+        x-data="{ open: false }"
+        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
+      >
+        <div class="flex items-center justify-between px-6 py-4">
+          <a
+            href="../../index.html"
+            class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase"
+          >
+            <img
+              src="../../resources/images/moh.png"
+              class="object-contain h-12"
+              alt="MOH Logo"
+            />
+            <img
+              src="../../resources/images/log2.png"
+              class="object-contain h-12"
+              alt="Site Logo"
+            />
+          </a>
+
+          <button
+            @click="open = !open"
+            class="text-xl lg:hidden focus:outline-none"
+          >
+            <i class="fas fa-bars" x-show="!open"></i>
+            <i class="fas fa-times" x-show="open" x-cloak></i>
+          </button>
+
+          <ul
+            class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex"
+          >
+            <li>
+              <a
+                href="../../index.html"
+                class="uppercase transition hover:text-blue-600"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../dashboard.html"
+                class="uppercase transition hover:text-blue-600"
+                >Dashboard</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../projects.html"
+                class="uppercase transition hover:text-blue-600"
+                >Projects</a
+              >
+            </li>
+            <li class="relative" x-data="{ showDropdown: false }">
+              <button
+                @click="showDropdown = !showDropdown"
+                class="inline-flex items-center font-bold uppercase text-purple-700 hover:text-pink-500 transition focus:outline-none"
+              >
+                Collaboration <i class="ml-2 fas fa-chevron-down text-xs"></i>
+              </button>
+              <div
+                x-show="showDropdown"
+                @click.outside="showDropdown = false"
+                x-transition
+                class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+                style="display: none"
+              >
+                <ul class="py-2 text-sm text-left text-gray-700">
+                  <li class="px-4 py-2 transition hover:bg-blue-50">
+                    <a
+                      href="../../announcements.html"
+                      class="flex items-center"
+                    >
+                      <i class="fas fa-bullhorn mr-2 text-blue-600"></i
+                      >Announcements
+                    </a>
+                  </li>
+                  <li class="px-4 py-2 transition hover:bg-blue-50">
+                    <a
+                      href="../../my-collaborations.html"
+                      class="flex items-center"
+                    >
+                      <i class="fas fa-users mr-2 text-green-600"></i>My
+                      Collaborations
+                    </a>
+                  </li>
+                  <li class="px-4 py-2 transition hover:bg-purple-50">
+                    <a
+                      href="collaboration-requests.html"
+                      class="flex items-center font-semibold text-purple-700"
+                    >
+                      <i class="fas fa-handshake mr-2"></i>Manage Requests
+                      <span
+                        x-show="pendingCount > 0"
+                        x-text="pendingCount"
+                        class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
+                      ></span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div x-show="open" x-transition class="px-6 pb-6 lg:hidden">
+          <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+            <li>
+              <a
+                href="../../index.html"
+                class="block transition hover:text-blue-600"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../dashboard.html"
+                class="block transition hover:text-blue-600"
+                >Dashboard</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../projects.html"
+                class="block transition hover:text-blue-600"
+                >Projects</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../announcements.html"
+                class="block transition hover:text-blue-600"
+                ><i class="fas fa-bullhorn mr-2"></i>Announcements</a
+              >
+            </li>
+            <li>
+              <a
+                href="../../my-collaborations.html"
+                class="block transition hover:text-blue-600"
+                ><i class="fas fa-users mr-2"></i>My Collaborations</a
+              >
+            </li>
+            <li>
+              <a
+                href="collaboration-requests.html"
+                class="block transition hover:text-blue-600 font-bold text-purple-700"
+                ><i class="fas fa-handshake mr-2"></i>Manage Requests</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="container mx-auto px-4 py-8 mt-24">
+        <!-- Tabs -->
+        <div class="mb-6 border-b border-gray-200">
+          <nav class="-mb-px flex space-x-8">
+            <button
+              @click="activeTab = 'pending'"
+              :class="activeTab === 'pending' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Pending
+              <span
+                x-show="pendingCount > 0"
+                class="ml-2 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
+                x-text="pendingCount"
+              ></span>
+            </button>
+            <button
+              @click="activeTab = 'approved'"
+              :class="activeTab === 'approved' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Approved
+            </button>
+            <button
+              @click="activeTab = 'declined'"
+              :class="activeTab === 'declined' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Declined
+            </button>
+          </nav>
+        </div>
+
+        <!-- Loading State -->
+        <div x-show="loading" class="text-center py-12">
+          <i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+          <p class="mt-4 text-gray-600">Loading requests...</p>
+        </div>
+
+        <!-- Requests List -->
+        <div x-show="!loading" class="space-y-4">
+          <!-- Pending Requests -->
+          <template x-if="activeTab === 'pending'">
+            <div>
+              <template x-if="pendingRequests.length === 0">
+                <div class="bg-white rounded-lg shadow p-12 text-center">
+                  <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                  <p class="text-gray-600">No pending collaboration requests</p>
+                </div>
+              </template>
+
+              <template x-for="request in pendingRequests" :key="request.id">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <!-- Request Header -->
+                      <div class="flex items-center mb-4">
+                        <span
+                          class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold"
+                        >
+                          PENDING
+                        </span>
+                        <span
+                          class="ml-3 text-sm text-gray-500"
+                          x-text="'Submitted: ' + new Date(request.createdAt).toLocaleDateString()"
+                        ></span>
+                      </div>
+
+                      <!-- Project Info -->
+                      <div class="mb-4">
+                        <h3
+                          class="text-xl font-bold text-gray-800"
+                          x-text="request.announcement?.project?.title"
+                        ></h3>
+                        <p
+                          class="text-gray-600"
+                          x-text="request.announcement?.project?.partner"
+                        ></p>
+                      </div>
+
+                      <!-- Announcement Title -->
+                      <div class="mb-4 bg-blue-50 p-3 rounded">
+                        <p class="text-sm text-gray-600 mb-1">Announcement:</p>
+                        <p
+                          class="font-semibold"
+                          x-text="request.announcement?.title"
+                        ></p>
+                      </div>
+
+                      <!-- Requesting User -->
+                      <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-1">
+                          Requesting Partner:
+                        </p>
+                        <p
+                          class="font-semibold text-gray-800"
+                          x-text="request.requestingUser?.name"
+                        ></p>
+                        <p
+                          class="text-sm text-gray-600"
+                          x-text="request.requestingUser?.email"
+                        ></p>
+                      </div>
+
+                      <!-- Proposed Contribution -->
+                      <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-1 font-semibold">
+                          Proposed Contribution:
+                        </p>
+                        <p
+                          class="text-gray-700 bg-gray-50 p-3 rounded"
+                          x-text="request.proposedContribution"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="flex justify-end space-x-3 mt-4 pt-4 border-t">
+                    <button
+                      @click="declineRequest(request)"
+                      class="px-6 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition"
+                    >
+                      <i class="fas fa-times mr-2"></i>Decline
+                    </button>
+                    <button
+                      @click="approveRequest(request)"
+                      class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                    >
+                      <i class="fas fa-check mr-2"></i>Approve & Add as
+                      Collaborator
+                    </button>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Approved Requests -->
+          <template x-if="activeTab === 'approved'">
+            <div>
+              <template x-if="approvedRequests.length === 0">
+                <div class="bg-white rounded-lg shadow p-12 text-center">
+                  <i
+                    class="fas fa-check-circle text-6xl text-gray-300 mb-4"
+                  ></i>
+                  <p class="text-gray-600">No approved requests</p>
+                </div>
+              </template>
+
+              <template x-for="request in approvedRequests" :key="request.id">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                  <div class="flex items-center mb-4">
+                    <span
+                      class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold"
+                    >
+                      APPROVED
+                    </span>
+                    <span
+                      class="ml-3 text-sm text-gray-500"
+                      x-text="'Approved: ' + new Date(request.reviewedAt).toLocaleDateString()"
+                    ></span>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <p class="text-sm text-gray-600">Project:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.announcement?.project?.title"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Partner:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.requestingUser?.name"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Reviewed By:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.reviewedBy?.name"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Review Notes:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.reviewNotes || 'N/A'"
+                      ></p>
+                    </div>
+                  </div>
+
+                  <div
+                    x-show="request.proposedContribution"
+                    class="mt-4 bg-gray-50 p-3 rounded"
+                  >
+                    <p class="text-sm text-gray-600 mb-1">Contribution:</p>
+                    <p
+                      class="text-sm"
+                      x-text="request.proposedContribution"
+                    ></p>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Declined Requests -->
+          <template x-if="activeTab === 'declined'">
+            <div>
+              <template x-if="declinedRequests.length === 0">
+                <div class="bg-white rounded-lg shadow p-12 text-center">
+                  <i
+                    class="fas fa-times-circle text-6xl text-gray-300 mb-4"
+                  ></i>
+                  <p class="text-gray-600">No declined requests</p>
+                </div>
+              </template>
+
+              <template x-for="request in declinedRequests" :key="request.id">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                  <div class="flex items-center mb-4">
+                    <span
+                      class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold"
+                    >
+                      DECLINED
+                    </span>
+                    <span
+                      class="ml-3 text-sm text-gray-500"
+                      x-text="'Declined: ' + new Date(request.reviewedAt).toLocaleDateString()"
+                    ></span>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <p class="text-sm text-gray-600">Project:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.announcement?.project?.title"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Partner:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.requestingUser?.name"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Reviewed By:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.reviewedBy?.name"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Reason:</p>
+                      <p
+                        class="font-semibold text-red-600"
+                        x-text="request.reviewNotes || 'N/A'"
+                      ></p>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Approve Modal -->
+      <div
+        x-show="showApproveModal"
+        x-cloak
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        @click.self="showApproveModal = false"
+      >
+        <div class="bg-white rounded-lg p-8 max-w-xl w-full mx-4">
+          <h3 class="text-2xl font-bold mb-4 text-green-700">
+            <i class="fas fa-check-circle mr-2"></i>Approve Collaboration
+            Request
+          </h3>
+
+          <div class="mb-4 bg-blue-50 p-4 rounded">
+            <p class="text-sm text-gray-600">
+              Partner:
+              <span
+                class="font-semibold"
+                x-text="selectedRequest?.requestingUser?.name"
+              ></span>
+            </p>
+            <p class="text-sm text-gray-600">
+              Project:
+              <span
+                class="font-semibold"
+                x-text="selectedRequest?.announcement?.project?.title"
+              ></span>
+            </p>
+          </div>
+
+          <p class="text-gray-700 mb-4">
+            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+            The partner will be automatically added as an
+            <strong>EDITOR</strong> on this project.
+          </p>
+
+          <form @submit.prevent="submitApproval()">
+            <div class="mb-6">
+              <label class="block text-gray-700 font-semibold mb-2"
+                >Review Notes (Optional)</label
+              >
+              <textarea
+                x-model="reviewNotes"
+                rows="3"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                placeholder="Add any notes about this approval..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                @click="showApproveModal = false"
+                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="processing"
+                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                <span x-show="!processing">Approve & Add Collaborator</span>
+                <span x-show="processing"
+                  ><i class="fas fa-spinner fa-spin mr-2"></i
+                  >Processing...</span
+                >
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Decline Modal -->
+      <div
+        x-show="showDeclineModal"
+        x-cloak
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        @click.self="showDeclineModal = false"
+      >
+        <div class="bg-white rounded-lg p-8 max-w-xl w-full mx-4">
+          <h3 class="text-2xl font-bold mb-4 text-red-700">
+            <i class="fas fa-times-circle mr-2"></i>Decline Collaboration
+            Request
+          </h3>
+
+          <div class="mb-4 bg-blue-50 p-4 rounded">
+            <p class="text-sm text-gray-600">
+              Partner:
+              <span
+                class="font-semibold"
+                x-text="selectedRequest?.requestingUser?.name"
+              ></span>
+            </p>
+            <p class="text-sm text-gray-600">
+              Project:
+              <span
+                class="font-semibold"
+                x-text="selectedRequest?.announcement?.project?.title"
+              ></span>
+            </p>
+          </div>
+
+          <form @submit.prevent="submitDecline()">
+            <div class="mb-6">
+              <label class="block text-gray-700 font-semibold mb-2"
+                >Reason for Declining *</label
+              >
+              <textarea
+                x-model="reviewNotes"
+                required
+                rows="3"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500"
+                placeholder="Please provide a reason for declining this request..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                @click="showDeclineModal = false"
+                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="processing"
+                class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                <span x-show="!processing">Decline Request</span>
+                <span x-show="processing"
+                  ><i class="fas fa-spinner fa-spin mr-2"></i
+                  >Processing...</span
+                >
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { BASE_URL } from "../../config.js";
+
+      // Make BASE_URL available globally
+      window.BASE_URL = BASE_URL;
+
+      // Define and expose adminCollaborationsApp to global scope for Alpine.js
+      window.adminCollaborationsApp = function adminCollaborationsApp() {
+        return {
+          activeTab: "pending",
+          loading: true,
+          processing: false,
+          showApproveModal: false,
+          showDeclineModal: false,
+          selectedRequest: null,
+          reviewNotes: "",
+          pendingRequests: [],
+          approvedRequests: [],
+          declinedRequests: [],
+          pendingCount: 0,
+
+          async init() {
+            await this.loadRequests();
+          },
+
+          async loadRequests() {
+            this.loading = true;
+            try {
+              const token = localStorage.getItem("token");
+
+              // Load pending requests
+              const pendingRes = await fetch(
+                `${BASE_URL}/api/collaboration-requests/admin/pending`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              const pendingData = await pendingRes.json();
+              if (pendingData.status === 200) {
+                this.pendingRequests = pendingData.data;
+                this.pendingCount = this.pendingRequests.length;
+              }
+
+              // Load all requests to filter approved/declined
+              const allRes = await fetch(
+                `${BASE_URL}/api/collaboration-requests/admin/all`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              const allData = await allRes.json();
+              if (allData.status === 200) {
+                this.approvedRequests = allData.data.filter(
+                  (r) => r.status === "APPROVED"
+                );
+                this.declinedRequests = allData.data.filter(
+                  (r) => r.status === "DECLINED"
+                );
+              }
+            } catch (error) {
+              console.error("Error loading requests:", error);
+              alert("Failed to load collaboration requests");
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          approveRequest(request) {
+            this.selectedRequest = request;
+            this.reviewNotes = "";
+            this.showApproveModal = true;
+          },
+
+          declineRequest(request) {
+            this.selectedRequest = request;
+            this.reviewNotes = "";
+            this.showDeclineModal = true;
+          },
+
+          async submitApproval() {
+            this.processing = true;
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch(
+                `${BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/approve`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
+                }
+              );
+              const data = await response.json();
+
+              if (data.status === 200) {
+                alert(
+                  "Collaboration request approved! Partner added as EDITOR on the project."
+                );
+                this.showApproveModal = false;
+                await this.loadRequests();
+              } else {
+                alert("Error: " + data.message);
+              }
+            } catch (error) {
+              console.error("Error approving request:", error);
+              alert("Failed to approve collaboration request");
+            } finally {
+              this.processing = false;
+            }
+          },
+
+          async submitDecline() {
+            this.processing = true;
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch(
+                `${BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/decline`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
+                }
+              );
+              const data = await response.json();
+
+              if (data.status === 200) {
+                alert("Collaboration request declined.");
+                this.showDeclineModal = false;
+                await this.loadRequests();
+              } else {
+                alert("Error: " + data.message);
+              }
+            } catch (error) {
+              console.error("Error declining request:", error);
+              alert("Failed to decline collaboration request");
+            } finally {
+              this.processing = false;
+            }
+          },
+        };
+      };
+
+      // Admin menu visibility control
+      document.addEventListener("DOMContentLoaded", function () {
+        let userRole = null;
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            userRole = user.role;
+          } catch (e) {
+            userRole = localStorage.getItem("userRole"); // Fallback
+          }
+        }
+        // This page is admin-only, but the script ensures consistency
+        // The navigation dropdown is always visible on this page
+        loadPendingCount();
+      });
+
+      async function loadPendingCount() {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${BASE_URL}/api/collaboration-requests/admin/pending`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (data.status === 200 && data.data) {
+            const count = data.data.length;
+            const badges = document.querySelectorAll(
+              '[x-show="pendingCount > 0"]'
+            );
+            badges.forEach((badge) => {
+              if (count > 0) {
+                badge.style.display = "inline-block";
+                badge.textContent = count;
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Error loading pending count:", error);
+        }
+      }
+    </script>
+
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </body>
+</html>

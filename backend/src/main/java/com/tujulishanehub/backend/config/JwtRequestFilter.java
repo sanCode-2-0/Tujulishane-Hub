@@ -29,19 +29,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String token = null;
         String username = null;
+        String role = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
                 username = jwtUtil.getUsernameFromToken(token);
+                role = jwtUtil.getRoleFromToken(token);
             } catch (Exception e) {
                 // invalid token or parse error
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Use the role from the JWT token, or default to ROLE_USER if not present
+            String authority = (role != null && !role.isEmpty()) ? "ROLE_" + role : "ROLE_USER";
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    username, null, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+                    username, null, Collections.singleton(new SimpleGrantedAuthority(authority)));
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
