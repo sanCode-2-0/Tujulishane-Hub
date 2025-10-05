@@ -93,7 +93,14 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
+        // Organization is now eagerly loaded due to FetchType.EAGER
+        // But we can explicitly access it to ensure it's loaded
+        if (user != null && user.getOrganization() != null) {
+            // This will trigger loading if for some reason it wasn't loaded
+            user.getOrganization().getName();
+        }
+        return user;
     }
 
     // Helper to (re)send login OTP for ACTIVE users if needed

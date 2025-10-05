@@ -1354,10 +1354,18 @@
             </button>
             <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
                 <p><strong>County:</strong> ${
-                  project.county || project.region || ""
+                  project.county || project.region || "Not specified"
                 }</p>
-                <p><strong>Budget:</strong> ${project.budget || ""}</p>
-                <p><strong>Partner:</strong> ${project.partner || ""}</p>
+                <p><strong>Budget:</strong> ${
+                  project.budget
+                    ? "KES " + Number(project.budget).toLocaleString()
+                    : "Not specified"
+                }</p>
+                <p><strong>Partner:</strong> ${
+                  project.partner && project.partner !== "TBD"
+                    ? project.partner
+                    : "Partner information pending"
+                }</p>
                 <p><strong>Status:</strong> 
                     <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
                       project.status?.toLowerCase()
@@ -2066,9 +2074,15 @@
               </div>
             </button>
             <div id=\"collapse-${idx}\" class=\"hidden px-6 py-4 bg-white\">
-              <p><strong>County:</strong> ${project.county || ""}</p>
+              <p><strong>County:</strong> ${
+                project.county || "Not specified"
+              }</p>
               <p><strong>Budget:</strong> ${budget}</p>
-              <p><strong>Partner:</strong> ${project.partner || ""}</p>
+              <p><strong>Partner:</strong> ${
+                project.partner && project.partner !== "TBD"
+                  ? project.partner
+                  : "Partner information pending"
+              }</p>
               <p><strong>Status:</strong> 
                 <span class=\"inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge}\">
                   ${project.status || ""}

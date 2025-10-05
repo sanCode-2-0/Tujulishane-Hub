@@ -69,7 +69,7 @@ public class User {
     private LocalDateTime lastLogin;
     
     // Organization relationship - Many users can belong to one organization
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organization_id")
     private Organization organization;
     
