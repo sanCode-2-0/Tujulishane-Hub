@@ -33,15 +33,273 @@
       href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
+    <script src="../../auth.js"></script>
+    <script>
+      // Set the BASE_URL - you may need to adjust this to match your config
+      window.BASE_URL =
+        window.location.origin.includes("localhost") ||
+        window.location.origin.includes("127.0.0.1")
+          ? "http://localhost:8080"
+          : "https://tujulishane-hub.onrender.com";
+
+      // Define adminCollaborationsApp function globally before Alpine.js initializes
+      window.adminCollaborationsApp = function adminCollaborationsApp() {
+        return {
+          activeTab: "pending",
+          loading: true,
+          processing: false,
+          showApproveModal: false,
+          showDeclineModal: false,
+          selectedRequest: null,
+          reviewNotes: "",
+          pendingRequests: [],
+          approvedRequests: [],
+          declinedRequests: [],
+          pendingCount: 0,
+
+          async init() {
+            await this.loadRequests();
+          },
+
+          async fetchAnnouncementDetails(announcementId) {
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(
+                `${window.BASE_URL}/api/announcements/${announcementId}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              const data = await response.json();
+              if (data.status === 200) {
+                return data.data;
+              }
+            } catch (error) {
+              console.error(
+                `Error fetching announcement ${announcementId}:`,
+                error
+              );
+            }
+            return null;
+          },
+
+          async enrichRequestWithProjectData(request) {
+            if (request.announcement && request.announcement.id) {
+              const fullAnnouncement = await this.fetchAnnouncementDetails(
+                request.announcement.id
+              );
+              if (fullAnnouncement && fullAnnouncement.project) {
+                // Add project data to the request
+                request.announcement.project = fullAnnouncement.project;
+                request.announcement.createdBy = fullAnnouncement.createdBy;
+                console.log(
+                  `Enriched request ${request.id} with project:`,
+                  fullAnnouncement.project
+                );
+              }
+            }
+            return request;
+          },
+
+          async loadRequests() {
+            this.loading = true;
+            try {
+              const token = localStorage.getItem("accessToken");
+
+              // Load pending requests
+              console.log("Loading pending requests...");
+              const pendingRes = await fetch(
+                `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              const pendingData = await pendingRes.json();
+              console.log("Pending requests response:", pendingData);
+              if (pendingData.status === 200) {
+                // Enrich pending requests with project data
+                this.pendingRequests = await Promise.all(
+                  pendingData.data.map((req) =>
+                    this.enrichRequestWithProjectData(req)
+                  )
+                );
+                this.pendingCount = this.pendingRequests.length;
+                console.log(
+                  "Pending requests loaded:",
+                  this.pendingRequests.length
+                );
+              }
+
+              // Load all requests to filter approved/declined
+              console.log("Loading all requests for filtering...");
+              const allRes = await fetch(
+                `${window.BASE_URL}/api/collaboration-requests/admin/all`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              const allData = await allRes.json();
+              console.log("All requests response:", allData);
+
+              if (allData.status === 200) {
+                console.log("All requests data:", allData.data);
+                console.log(
+                  "Total requests count:",
+                  allData.data ? allData.data.length : 0
+                );
+
+                // Log each request's status for debugging
+                if (allData.data && Array.isArray(allData.data)) {
+                  allData.data.forEach((request, index) => {
+                    console.log(
+                      `Request ${index + 1} - ID: ${request.id}, Status: ${
+                        request.status
+                      }`
+                    );
+                  });
+                }
+
+                // Enrich all requests with project data
+                const enrichedRequests = await Promise.all(
+                  allData.data.map((req) =>
+                    this.enrichRequestWithProjectData(req)
+                  )
+                );
+
+                this.approvedRequests = enrichedRequests.filter(
+                  (r) => r.status === "APPROVED"
+                );
+                this.declinedRequests = enrichedRequests.filter(
+                  (r) => r.status === "DECLINED"
+                );
+
+                console.log(
+                  "Approved requests filtered:",
+                  this.approvedRequests.length
+                );
+                console.log("Approved requests:", this.approvedRequests);
+                console.log(
+                  "Declined requests filtered:",
+                  this.declinedRequests.length
+                );
+                console.log("Declined requests:", this.declinedRequests);
+              } else {
+                console.error(
+                  "Failed to load all requests - Status:",
+                  allData.status,
+                  "Message:",
+                  allData.message
+                );
+              }
+            } catch (error) {
+              console.error("Error loading requests:", error);
+              alert("Failed to load collaboration requests");
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          approveRequest(request) {
+            this.selectedRequest = request;
+            this.reviewNotes = "";
+            this.showApproveModal = true;
+          },
+
+          declineRequest(request) {
+            this.selectedRequest = request;
+            this.reviewNotes = "";
+            this.showDeclineModal = true;
+          },
+
+          async submitApproval() {
+            this.processing = true;
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(
+                `${window.BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/approve`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
+                }
+              );
+              const data = await response.json();
+              console.log("Approval response:", data);
+
+              if (data.status === 200) {
+                console.log(
+                  "Request approved successfully, reloading requests..."
+                );
+                alert(
+                  "Collaboration request approved successfully! Partner has been granted access to the project."
+                );
+                this.showApproveModal = false;
+                await this.loadRequests();
+              } else {
+                console.error("Approval failed:", data);
+                alert(
+                  "Error: " +
+                    (data.message || "Failed to approve collaboration request")
+                );
+              }
+            } catch (error) {
+              console.error("Error approving request:", error);
+              alert(
+                "Failed to approve collaboration request. Please try again."
+              );
+            } finally {
+              this.processing = false;
+            }
+          },
+
+          async submitDecline() {
+            this.processing = true;
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(
+                `${window.BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/decline`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
+                }
+              );
+              const data = await response.json();
+              console.log("Decline response:", data);
+
+              if (data.status === 200) {
+                console.log(
+                  "Request declined successfully, reloading requests..."
+                );
+                alert("Collaboration request declined.");
+                this.showDeclineModal = false;
+                await this.loadRequests();
+              } else {
+                console.error("Decline failed:", data);
+                alert("Error: " + data.message);
+              }
+            } catch (error) {
+              console.error("Error declining request:", error);
+              alert(
+                "Failed to decline collaboration request. Please try again."
+              );
+            } finally {
+              this.processing = false;
+            }
+          },
+        };
+      };
+    </script>
     <script
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <script type="module">
-      import { BASE_URL } from "../../config.js";
-      window.BASE_URL = BASE_URL;
-    </script>
-    <script src="../../auth.js"></script>
   </head>
 
   <body class="bg-gray-50">
@@ -206,7 +464,7 @@
         <div class="mb-6 border-b border-gray-200">
           <nav class="-mb-px flex space-x-8">
             <button
-              @click="activeTab = 'pending'"
+              @click="activeTab = 'pending'; console.log('Switched to pending tab, count:', pendingRequests.length)"
               :class="activeTab === 'pending' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
               class="py-4 px-1 border-b-2 font-medium text-sm"
             >
@@ -218,14 +476,14 @@
               ></span>
             </button>
             <button
-              @click="activeTab = 'approved'"
+              @click="activeTab = 'approved'; console.log('Switched to approved tab, count:', approvedRequests.length, approvedRequests)"
               :class="activeTab === 'approved' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
               class="py-4 px-1 border-b-2 font-medium text-sm"
             >
               Approved
             </button>
             <button
-              @click="activeTab = 'declined'"
+              @click="activeTab = 'declined'; console.log('Switched to declined tab, count:', declinedRequests.length, declinedRequests)"
               :class="activeTab === 'declined' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'"
               class="py-4 px-1 border-b-2 font-medium text-sm"
             >
@@ -273,11 +531,11 @@
                       <div class="mb-4">
                         <h3
                           class="text-xl font-bold text-gray-800"
-                          x-text="request.announcement?.project?.title"
+                          x-text="request.announcement?.project?.title || request.project?.title || request.projectTitle || request.announcement?.title || 'N/A'"
                         ></h3>
                         <p
                           class="text-gray-600"
-                          x-text="request.announcement?.project?.partner"
+                          x-text="request.announcement?.project?.partner || (request.announcement?.project?.partners ? (request.announcement.project.partners.length + (request.announcement.project.partners.length === 1 ? ' partner' : ' partners')) : (request.announcement?.project?.partnerCount || 'N/A'))"
                         ></p>
                       </div>
 
@@ -370,14 +628,21 @@
                       <p class="text-sm text-gray-600">Project:</p>
                       <p
                         class="font-semibold"
-                        x-text="request.announcement?.project?.title"
+                        x-text="request.announcement?.project?.title || request.project?.title || request.projectTitle || request.announcement?.title || 'N/A'"
                       ></p>
                     </div>
                     <div>
-                      <p class="text-sm text-gray-600">Partner:</p>
+                      <p class="text-sm text-gray-600">New Partner:</p>
                       <p
                         class="font-semibold"
-                        x-text="request.requestingUser?.name"
+                        x-text="request.requestingUser?.name || request.requestingUser?.email || 'N/A'"
+                      ></p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-600">Original Partners:</p>
+                      <p
+                        class="font-semibold"
+                        x-text="request.announcement?.project?.partner || request.announcement?.createdBy?.name || request.project?.partner || 'N/A'"
                       ></p>
                     </div>
                     <div>
@@ -442,7 +707,7 @@
                       <p class="text-sm text-gray-600">Project:</p>
                       <p
                         class="font-semibold"
-                        x-text="request.announcement?.project?.title"
+                        x-text="request.announcement?.project?.title || request.project?.title || request.projectTitle || request.announcement?.title || 'N/A'"
                       ></p>
                     </div>
                     <div>
@@ -489,17 +754,24 @@
 
           <div class="mb-4 bg-blue-50 p-4 rounded">
             <p class="text-sm text-gray-600">
-              Partner:
+              New Partner:
               <span
                 class="font-semibold"
-                x-text="selectedRequest?.requestingUser?.name"
+                x-text="selectedRequest?.requestingUser?.name || selectedRequest?.requestingUser?.email || 'N/A'"
               ></span>
             </p>
             <p class="text-sm text-gray-600">
               Project:
               <span
                 class="font-semibold"
-                x-text="selectedRequest?.announcement?.project?.title"
+                x-text="selectedRequest?.announcement?.project?.title || selectedRequest?.project?.title || selectedRequest?.projectTitle || selectedRequest?.announcement?.title || 'N/A'"
+              ></span>
+            </p>
+            <p class="text-sm text-gray-600 mt-1">
+              Original Partners:
+              <span
+                class="font-semibold"
+                x-text="selectedRequest?.announcement?.project?.partner || selectedRequest?.announcement?.createdBy?.name || selectedRequest?.project?.partner || 'N/A'"
               ></span>
             </p>
           </div>
@@ -616,153 +888,7 @@
       </div>
     </div>
 
-    <script type="module">
-      import { BASE_URL } from "../../config.js";
-
-      // Make BASE_URL available globally
-      window.BASE_URL = BASE_URL;
-
-      // Define and expose adminCollaborationsApp to global scope for Alpine.js
-      window.adminCollaborationsApp = function adminCollaborationsApp() {
-        return {
-          activeTab: "pending",
-          loading: true,
-          processing: false,
-          showApproveModal: false,
-          showDeclineModal: false,
-          selectedRequest: null,
-          reviewNotes: "",
-          pendingRequests: [],
-          approvedRequests: [],
-          declinedRequests: [],
-          pendingCount: 0,
-
-          async init() {
-            await this.loadRequests();
-          },
-
-          async loadRequests() {
-            this.loading = true;
-            try {
-              const token = localStorage.getItem("token");
-
-              // Load pending requests
-              const pendingRes = await fetch(
-                `${BASE_URL}/api/collaboration-requests/admin/pending`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              const pendingData = await pendingRes.json();
-              if (pendingData.status === 200) {
-                this.pendingRequests = pendingData.data;
-                this.pendingCount = this.pendingRequests.length;
-              }
-
-              // Load all requests to filter approved/declined
-              const allRes = await fetch(
-                `${BASE_URL}/api/collaboration-requests/admin/all`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              const allData = await allRes.json();
-              if (allData.status === 200) {
-                this.approvedRequests = allData.data.filter(
-                  (r) => r.status === "APPROVED"
-                );
-                this.declinedRequests = allData.data.filter(
-                  (r) => r.status === "DECLINED"
-                );
-              }
-            } catch (error) {
-              console.error("Error loading requests:", error);
-              alert("Failed to load collaboration requests");
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          approveRequest(request) {
-            this.selectedRequest = request;
-            this.reviewNotes = "";
-            this.showApproveModal = true;
-          },
-
-          declineRequest(request) {
-            this.selectedRequest = request;
-            this.reviewNotes = "";
-            this.showDeclineModal = true;
-          },
-
-          async submitApproval() {
-            this.processing = true;
-            try {
-              const token = localStorage.getItem("token");
-              const response = await fetch(
-                `${BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/approve`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
-                }
-              );
-              const data = await response.json();
-
-              if (data.status === 200) {
-                alert(
-                  "Collaboration request approved! Partner added as EDITOR on the project."
-                );
-                this.showApproveModal = false;
-                await this.loadRequests();
-              } else {
-                alert("Error: " + data.message);
-              }
-            } catch (error) {
-              console.error("Error approving request:", error);
-              alert("Failed to approve collaboration request");
-            } finally {
-              this.processing = false;
-            }
-          },
-
-          async submitDecline() {
-            this.processing = true;
-            try {
-              const token = localStorage.getItem("token");
-              const response = await fetch(
-                `${BASE_URL}/api/collaboration-requests/admin/${this.selectedRequest.id}/decline`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({ reviewNotes: this.reviewNotes }),
-                }
-              );
-              const data = await response.json();
-
-              if (data.status === 200) {
-                alert("Collaboration request declined.");
-                this.showDeclineModal = false;
-                await this.loadRequests();
-              } else {
-                alert("Error: " + data.message);
-              }
-            } catch (error) {
-              console.error("Error declining request:", error);
-              alert("Failed to decline collaboration request");
-            } finally {
-              this.processing = false;
-            }
-          },
-        };
-      };
-
+    <script>
       // Admin menu visibility control
       document.addEventListener("DOMContentLoaded", function () {
         let userRole = null;
@@ -782,9 +908,9 @@
 
       async function loadPendingCount() {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("accessToken");
           const response = await fetch(
-            `${BASE_URL}/api/collaboration-requests/admin/pending`,
+            `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
             {
               method: "GET",
               headers: {

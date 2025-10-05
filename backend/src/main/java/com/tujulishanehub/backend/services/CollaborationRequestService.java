@@ -84,6 +84,14 @@ public class CollaborationRequestService {
     }
     
     /**
+     * Get all collaboration requests (for admin review)
+     */
+    public List<CollaborationRequest> getAllRequests() {
+        logger.info("Retrieving all collaboration requests");
+        return collaborationRequestRepository.findAllByOrderByCreatedAtDesc();
+    }
+    
+    /**
      * Get requests for user's projects/announcements
      */
     public List<CollaborationRequest> getRequestsForUserProjects(String userEmail) {
@@ -127,16 +135,22 @@ public class CollaborationRequestService {
                 Long projectId = request.getAnnouncement().getProject().getId();
                 User requestingUser = request.getRequestingUser();
                 
-                projectCollaboratorService.addCollaborator(
-                    projectId, 
-                    requestingUser, 
-                    CollaboratorRole.EDITOR,  // Default role for approved collaborators
-                    reviewer, 
-                    "Added via approved collaboration request #" + requestId
-                );
-                
-                logger.info("Automatically added user {} as collaborator on project {} after approval", 
-                           requestingUser.getEmail(), projectId);
+                // Check if user is already a collaborator to avoid duplicate addition
+                if (!projectCollaboratorService.isCollaborator(projectId, requestingUser.getEmail())) {
+                    projectCollaboratorService.addCollaborator(
+                        projectId, 
+                        requestingUser, 
+                        CollaboratorRole.EDITOR,  // Default role for approved collaborators
+                        reviewer, 
+                        "Added via approved collaboration request #" + requestId
+                    );
+                    
+                    logger.info("Automatically added user {} as collaborator on project {} after approval", 
+                               requestingUser.getEmail(), projectId);
+                } else {
+                    logger.info("User {} is already a collaborator on project {}, skipping auto-add", 
+                               requestingUser.getEmail(), projectId);
+                }
             } catch (Exception e) {
                 logger.error("Failed to auto-add collaborator after approval: {}", e.getMessage(), e);
                 // Don't fail the approval if adding collaborator fails

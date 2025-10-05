@@ -1806,7 +1806,7 @@
 
       async function loadPendingRequestsCount() {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("accessToken");
           const response = await fetch(
             `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
             {

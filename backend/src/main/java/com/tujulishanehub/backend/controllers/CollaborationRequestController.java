@@ -193,6 +193,33 @@ public class CollaborationRequestController {
     }
     
     /**
+     * Get all collaboration requests (MOH only)
+     */
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<CollaborationRequest>>> getAllRequests() {
+        try {
+            List<CollaborationRequest> requests = collaborationRequestService.getAllRequests();
+            
+            ApiResponse<List<CollaborationRequest>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "All collaboration requests retrieved successfully",
+                requests
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving all collaboration requests: {}", e.getMessage(), e);
+            ApiResponse<List<CollaborationRequest>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve all collaboration requests",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * Approve collaboration request (MOH only)
      */
     @PostMapping("/admin/{id}/approve")

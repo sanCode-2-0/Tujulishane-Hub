@@ -53,6 +53,7 @@
           announcements: [],
           myProjects: [],
           organizations: [],
+          myCollaborationRequests: [], // Track user's submitted requests
           loading: true,
           creating: false,
           submitting: false,
@@ -61,6 +62,7 @@
           showRequestModal: false,
           selectedAnnouncement: null,
           userRole: null, // Will be set in init from user object
+          currentUser: null, // Store current user data including email
           newAnnouncement: {
             projectId: "",
             title: "",
@@ -76,16 +78,18 @@
             // Wait for auth.js to load user data and get it directly
             const user = await this.waitForAuth();
 
-            // Set user role from the returned user object
+            // Set user role and store user data from the returned user object
             if (user && user.role) {
               this.userRole = user.role;
+              this.currentUser = user; // Store full user object
             } else {
               // Fallback: try to read from localStorage
-              const userStr = localStorage.getItem("user");
+              const userStr = localStorage.getItem("currentUser");
               if (userStr) {
                 try {
                   const parsedUser = JSON.parse(userStr);
                   this.userRole = parsedUser.role;
+                  this.currentUser = parsedUser;
                 } catch (e) {
                   console.error("Error parsing user data:", e);
                 }
@@ -96,11 +100,21 @@
               }
             }
             console.log("🔍 User Role:", this.userRole); // Debug log
+            console.log("🔍 Current User:", this.currentUser); // Debug log
 
             await this.loadAnnouncements();
-            if (this.userRole === "PARTNER") {
+
+            // Always try to load projects if user is authenticated
+            // The backend will handle authorization
+            const token = localStorage.getItem("accessToken");
+            if (token) {
+              console.log("🔍 User authenticated, loading projects...");
               await this.loadMyProjects();
               await this.loadOrganizations();
+              // Load user's collaboration requests to prevent duplicates
+              await this.loadMyCollaborationRequests();
+            } else {
+              console.warn("⚠️ No access token found, skipping project load");
             }
           },
 
@@ -147,25 +161,63 @@
 
           async loadMyProjects() {
             try {
-              const token = localStorage.getItem("token");
+              const token = localStorage.getItem("accessToken");
+              console.log(
+                "🔍 Loading my projects with token:",
+                token ? "Present" : "Missing"
+              );
+
               const response = await fetch(
                 `${window.BASE_URL}/api/projects/my-projects`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
               );
+
+              console.log("🔍 My projects response status:", response.status);
+
+              if (!response.ok) {
+                console.error(
+                  "❌ Failed to load projects. Status:",
+                  response.status
+                );
+                if (response.status === 403) {
+                  console.error(
+                    "❌ 403 Forbidden - You may not have PARTNER role"
+                  );
+                } else if (response.status === 401) {
+                  console.error(
+                    "❌ 401 Unauthorized - Token may be invalid or expired"
+                  );
+                }
+                this.myProjects = [];
+                return;
+              }
+
               const data = await response.json();
+              console.log("🔍 My projects response data:", data);
+
               if (data.status === 200) {
-                this.myProjects = data.data;
+                this.myProjects = data.data || [];
+                console.log(
+                  "✅ Loaded projects:",
+                  this.myProjects.length,
+                  "projects"
+                );
+                console.log("📋 Projects:", this.myProjects);
+              } else {
+                console.warn("⚠️ Unexpected response status:", data.status);
+                this.myProjects = [];
               }
             } catch (error) {
-              console.error("Error loading projects:", error);
+              console.error("❌ Error loading projects:", error);
+              this.myProjects = [];
             }
           },
 
           async loadOrganizations() {
             try {
-              const token = localStorage.getItem("token");
+              const token = localStorage.getItem("accessToken");
               const response = await fetch(
                 `${window.BASE_URL}/api/organizations`,
                 {
@@ -190,10 +242,45 @@
             }
           },
 
+          async loadMyCollaborationRequests() {
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(
+                `${window.BASE_URL}/api/collaboration-requests/my-requests`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+
+              if (!response.ok) {
+                console.warn(
+                  "Could not load collaboration requests:",
+                  response.status
+                );
+                this.myCollaborationRequests = [];
+                return;
+              }
+
+              const data = await response.json();
+              if (data.status === 200) {
+                this.myCollaborationRequests = data.data || [];
+                console.log(
+                  "✅ Loaded collaboration requests:",
+                  this.myCollaborationRequests.length
+                );
+              } else {
+                this.myCollaborationRequests = [];
+              }
+            } catch (error) {
+              console.error("Error loading collaboration requests:", error);
+              this.myCollaborationRequests = [];
+            }
+          },
+
           async createAnnouncement() {
             this.creating = true;
             try {
-              const token = localStorage.getItem("token");
+              const token = localStorage.getItem("accessToken");
               const response = await fetch(
                 `${window.BASE_URL}/api/announcements`,
                 {
@@ -257,7 +344,21 @@
           async submitRequest() {
             this.submitting = true;
             try {
-              const token = localStorage.getItem("token");
+              const token = localStorage.getItem("accessToken");
+
+              // Prepare request payload - only include organizationId if it's not empty
+              const payload = {
+                proposedContribution:
+                  this.collaborationRequest.proposedContribution,
+              };
+
+              // Only add organizationId if it's set (not empty string)
+              if (this.collaborationRequest.organizationId) {
+                payload.organizationId = parseInt(
+                  this.collaborationRequest.organizationId
+                );
+              }
+
               const response = await fetch(
                 `${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
                 {
@@ -266,27 +367,42 @@
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                   },
-                  body: JSON.stringify(this.collaborationRequest),
+                  body: JSON.stringify(payload),
                 }
               );
 
-              // Check if response is OK before parsing JSON
+              // Always try to parse JSON to get the error message
+              const data = await response.json();
+
+              // Check if response is OK
               if (!response.ok) {
                 if (response.status === 403) {
                   alert(
-                    "Permission denied. You may not have access to submit collaboration requests."
+                    "Permission denied: " +
+                      (data.message ||
+                        "You may not have access to submit collaboration requests.")
                   );
                 } else if (response.status === 401) {
                   alert(
-                    "You must be logged in to submit a collaboration request."
+                    "Authentication required: " +
+                      (data.message ||
+                        "You must be logged in to submit a collaboration request.")
+                  );
+                } else if (response.status === 400) {
+                  alert(
+                    "Invalid request: " +
+                      (data.message || "Please check your input and try again.")
                   );
                 } else {
-                  alert(`Error: Server returned status ${response.status}`);
+                  alert(
+                    `Error: ${
+                      data.message ||
+                      "Server returned status " + response.status
+                    }`
+                  );
                 }
                 return;
               }
-
-              const data = await response.json();
 
               if (data.status === 201) {
                 alert(
@@ -297,6 +413,8 @@
                   organizationId: "",
                   proposedContribution: "",
                 };
+                // Reload collaboration requests to update the UI
+                await this.loadMyCollaborationRequests();
               } else {
                 alert("Error: " + (data.message || "Unknown error occurred"));
               }
@@ -308,6 +426,48 @@
             } finally {
               this.submitting = false;
             }
+          },
+
+          // Helper method to check if announcement was created by current user
+          isOwnAnnouncement(announcement) {
+            if (!this.currentUser || !announcement || !announcement.createdBy) {
+              console.log("🔍 isOwnAnnouncement: Missing data", {
+                hasCurrentUser: !!this.currentUser,
+                hasAnnouncement: !!announcement,
+                hasCreatedBy: !!(announcement && announcement.createdBy),
+              });
+              return false;
+            }
+            // Compare by email as it's unique
+            const isOwn =
+              this.currentUser.email === announcement.createdBy.email;
+            console.log("🔍 isOwnAnnouncement:", {
+              currentUserEmail: this.currentUser.email,
+              createdByEmail: announcement.createdBy.email,
+              isOwn: isOwn,
+            });
+            return isOwn;
+          },
+
+          // Helper method to check if user has already requested collaboration for this announcement
+          hasAlreadyRequested(announcement) {
+            if (!announcement || !this.myCollaborationRequests) {
+              return false;
+            }
+
+            const hasRequested = this.myCollaborationRequests.some(
+              (request) =>
+                request.announcement &&
+                request.announcement.id === announcement.id
+            );
+
+            console.log("🔍 hasAlreadyRequested:", {
+              announcementId: announcement.id,
+              totalRequests: this.myCollaborationRequests.length,
+              hasRequested: hasRequested,
+            });
+
+            return hasRequested;
           },
         };
       };
@@ -588,13 +748,21 @@
                 >
                   <i class="fas fa-eye mr-2"></i>View Details
                 </button>
+                <!-- Request button - only show if user can request -->
                 <button
-                  x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE'"
+                  x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && !hasAlreadyRequested(announcement)"
                   @click="requestCollaboration(announcement)"
                   class="flex-1 bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition"
                 >
                   <i class="fas fa-handshake mr-2"></i>Request
                 </button>
+                <!-- Already requested indicator -->
+                <div
+                  x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && hasAlreadyRequested(announcement)"
+                  class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-center"
+                >
+                  <i class="fas fa-check mr-2"></i>Requested
+                </div>
               </div>
             </div>
           </template>
@@ -637,15 +805,45 @@
                 x-model="newAnnouncement.projectId"
                 required
                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+                :disabled="myProjects.length === 0"
               >
-                <option value="">-- Select a project --</option>
+                <option value="">
+                  <template x-if="myProjects.length === 0">
+                    -- No projects available. Create a project first --
+                  </template>
+                  <template x-if="myProjects.length > 0">
+                    -- Select a project --
+                  </template>
+                </option>
                 <template x-for="project in myProjects" :key="project.id">
                   <option
                     :value="project.id"
-                    x-text="`${project.title} (${project.partner})`"
+                    x-text="`${project.title} (${project.partner || 'Your Organization'})`"
                   ></option>
                 </template>
               </select>
+              <p
+                x-show="myProjects.length === 0"
+                class="mt-2 text-sm text-amber-600"
+              >
+                <i class="fas fa-info-circle mr-1"></i>
+                You need to create a project before you can create an
+                announcement.
+                <a
+                  href="Forms/Admin/new-project.html"
+                  class="underline font-semibold"
+                  >Create a project now</a
+                >
+              </p>
+              <p
+                x-show="myProjects.length > 0"
+                class="mt-1 text-sm text-gray-500"
+              >
+                <i class="fas fa-info-circle mr-1"></i>
+                <span
+                  x-text="`${myProjects.length} project(s) available`"
+                ></span>
+              </p>
             </div>
 
             <!-- Title -->
@@ -806,12 +1004,40 @@
 
             <!-- Action Button for Partners -->
             <button
-              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE'"
+              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && !hasAlreadyRequested(selectedAnnouncement)"
               @click="requestCollaboration(selectedAnnouncement)"
               class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition mt-4"
             >
               <i class="fas fa-handshake mr-2"></i>Request Collaboration
             </button>
+
+            <!-- Already requested message -->
+            <div
+              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && hasAlreadyRequested(selectedAnnouncement)"
+              class="mt-4 p-4 bg-green-50 rounded-lg"
+            >
+              <p class="text-green-700 text-sm">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                You have already submitted a collaboration request for this
+                announcement. Check your
+                <a href="my-collaborations.html" class="underline font-semibold"
+                  >collaboration status</a
+                >
+                for updates.
+              </p>
+            </div>
+
+            <!-- Message for own announcements -->
+            <div
+              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && isOwnAnnouncement(selectedAnnouncement)"
+              class="mt-4 p-4 bg-gray-50 rounded-lg"
+            >
+              <p class="text-gray-700 text-sm">
+                <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                This is your announcement. You cannot request collaboration on
+                your own posts.
+              </p>
+            </div>
 
             <!-- Login prompt for non-authenticated users -->
             <div
@@ -865,7 +1091,10 @@
 
           <form @submit.prevent="submitRequest()">
             <!-- Organization Selection (Optional) -->
-            <div class="mb-4" x-show="organizations.length > 0">
+            <div
+              class="mb-4"
+              x-show="organizations && organizations.length > 0"
+            >
               <label class="block text-gray-700 font-semibold mb-2"
                 >Your Organization (Optional)</label
               >
@@ -874,7 +1103,10 @@
                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
               >
                 <option value="">-- Select your organization --</option>
-                <template x-for="org in organizations" :key="org.id">
+                <template
+                  x-for="(org, index) in organizations"
+                  :key="org && org.id ? org.id : `org-${index}`"
+                >
                   <option :value="org.id" x-text="org.name"></option>
                 </template>
               </select>

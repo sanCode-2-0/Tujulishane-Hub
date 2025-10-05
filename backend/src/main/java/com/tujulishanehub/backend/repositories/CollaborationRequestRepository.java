@@ -16,6 +16,7 @@ public interface CollaborationRequestRepository extends JpaRepository<Collaborat
     List<CollaborationRequest> findByAnnouncementIdOrderByCreatedAtDesc(Long announcementId);
     List<CollaborationRequest> findByRequestingUserOrderByCreatedAtDesc(User requestingUser);
     List<CollaborationRequest> findByStatusOrderByCreatedAtDesc(CollaborationRequestStatus status);
+    List<CollaborationRequest> findAllByOrderByCreatedAtDesc();
     
     boolean existsByAnnouncementAndRequestingUser(Announcement announcement, User requestingUser);
     
