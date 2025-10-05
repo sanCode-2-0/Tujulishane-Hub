@@ -786,62 +786,7 @@
                         }, 200);
                       }
 
-                      form.addEventListener("submit", async function (e) {
-                        e.preventDefault();
-                        const formData = new FormData(form);
-                        const payload = {
-                          title: formData.get("title"),
-                          theme: formData.get("theme"),
-                          startDate: formData.get("start_date"),
-                          endDate: formData.get("end_date"),
-                          activityType: formData.get("activity_type"),
-                          county: formData.get("county"),
-                          subCounty: formData.get("sub_county"),
-                          projectArea: formData.get("project_area"),
-                          mapsAddress: formData.get("maps_address"),
-                          contactPersonName: formData.get(
-                            "contact_person_name"
-                          ),
-                          contactPersonRole: formData.get(
-                            "contact_person_role"
-                          ),
-                          contactPersonEmail: formData.get(
-                            "contact_person_mail"
-                          ),
-                          budget: formData.get("budget"),
-                          objectives: formData.get("gaps"),
-                          latitude: formData.get("latitude"),
-                          longitude: formData.get("longitude"),
-                        };
-                        try {
-                          const resp = await authManager.apiCall(
-                            "/api/projects",
-                            "POST",
-                            payload
-                          );
-                          if (resp.ok) {
-                            alert("Project created successfully!");
-                            form.reset();
-                            latInput.value = "";
-                            lngInput.value = "";
-                            latLngDisplay.textContent = "None";
-                            if (markerPicker)
-                              mapPicker.removeLayer(markerPicker);
-                            // Close modal (if using tw-elements)
-                            const modal =
-                              document.getElementById("createNewProject");
-                            if (modal) modal.classList.add("hidden");
-                          } else {
-                            const err = await resp.json().catch(() => ({}));
-                            alert(
-                              "Failed to create project: " +
-                                (err.message || resp.status)
-                            );
-                          }
-                        } catch (error) {
-                          alert("Error creating project: " + error.message);
-                        }
-                      });
+                      // Submission handled by centralized handler in Stakeholders/dashboard.html
                     });
                   </script>
                   <!-- Title -->
@@ -927,36 +872,7 @@
                     ></textarea>
                   </div>
 
-                  <!-- Location -->
-                  <div>
-                    <label
-                      for="location"
-                      class="block text-sm font-medium text-gray-700"
-                      >County</label
-                    >
-                    <input
-                      type="text"
-                      id="time_period"
-                      name="county"
-                      placeholder="County"
-                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      for="subcounty"
-                      class="block text-sm font-medium text-gray-700"
-                      >Sub County</label
-                    >
-                    <input
-                      type="text"
-                      id="subcounty"
-                      name="sub_county"
-                      placeholder="County"
-                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    />
-                  </div>
+                  <!-- County and Sub County removed from this form -->
 
                   <div>
                     <label

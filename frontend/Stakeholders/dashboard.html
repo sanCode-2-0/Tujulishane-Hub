@@ -422,10 +422,7 @@
 
               <!-- Modal body -->
               <div class="relative p-4">
-                <form
-                  id="newProjectForm"
-                  onsubmit="handleProjectSubmission(event)"
-                >
+                <form id="newProjectForm">
                   <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     <!-- Map Picker for Location -->
                     <div class="col-span-2 lg:col-span-4">
@@ -460,15 +457,23 @@
                         id="project_longitude"
                         name="longitude"
                       />
+                      <input type="hidden" id="project_county" name="county" />
+                      <input
+                        type="hidden"
+                        id="project_subcounty"
+                        name="subcounty"
+                      />
                       <div
                         class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
                       >
-                        <strong>Selected Coordinates:</strong>
+                        <strong>Selected Location:</strong>
                         <span
                           id="selectedLatLng"
                           class="font-mono text-blue-600"
                           >Click on map to select location</span
                         >
+                        <br />
+                        <span id="selectedCounty" class="text-gray-600"></span>
                       </div>
                     </div>
                     <!-- Title -->
@@ -557,86 +562,7 @@
                       ></textarea>
                     </div>
 
-                    <!-- Location -->
-                    <div>
-                      <label
-                        for="location"
-                        class="block text-sm font-medium text-gray-700"
-                      >
-                        County *
-                      </label>
-                      <select
-                        required
-                        id="time_period"
-                        name="county"
-                        placeholder="County"
-                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      >
-                        <option value="">-- Select County --</option>
-                        <option value="baringo">Baringo</option>
-                        <option value="bomet">Bomet</option>
-                        <option value="bungoma">Bungoma</option>
-                        <option value="busia">Busia</option>
-                        <option value="elgeyo-marakwet">Elgeyo-Marakwet</option>
-                        <option value="embu">Embu</option>
-                        <option value="garissa">Garissa</option>
-                        <option value="homa-bay">Homa Bay</option>
-                        <option value="isiolo">Isiolo</option>
-                        <option value="kajiado">Kajiado</option>
-                        <option value="kakamega">Kakamega</option>
-                        <option value="kericho">Kericho</option>
-                        <option value="kiambu">Kiambu</option>
-                        <option value="kilifi">Kilifi</option>
-                        <option value="kirinyaga">Kirinyaga</option>
-                        <option value="kisii">Kisii</option>
-                        <option value="kisumu">Kisumu</option>
-                        <option value="kitui">Kitui</option>
-                        <option value="kwale">Kwale</option>
-                        <option value="laikipia">Laikipia</option>
-                        <option value="lamu">Lamu</option>
-                        <option value="machakos">Machakos</option>
-                        <option value="makueni">Makueni</option>
-                        <option value="mandera">Mandera</option>
-                        <option value="marsabit">Marsabit</option>
-                        <option value="meru">Meru</option>
-                        <option value="migori">Migori</option>
-                        <option value="murang'a">Murang'a</option>
-                        <option value="nairobi">Nairobi</option>
-                        <option value="nakuru">Nakuru</option>
-                        <option value="nandi">Nandi</option>
-                        <option value="narok">Narok</option>
-                        <option value="nyamira">Nyamira</option>
-                        <option value="nyandarua">Nyandarua</option>
-                        <option value="nyeri">Nyeri</option>
-                        <option value="samburu">Samburu</option>
-                        <option value="siaya">Siaya</option>
-                        <option value="taita-taveta">Taita-Taveta</option>
-                        <option value="tana-river">Tana River</option>
-                        <option value="tharaka-nithi">Tharaka-Nithi</option>
-                        <option value="trans-nzoia">Trans Nzoia</option>
-                        <option value="turkana">Turkana</option>
-                        <option value="uasin-gishu">Uasin Gishu</option>
-                        <option value="vihiga">Vihiga</option>
-                        <option value="wajir">Wajir</option>
-                        <option value="west-pokot">West Pokot</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label
-                        for="subcounty"
-                        class="block text-sm font-medium text-gray-700"
-                        >Sub County
-                      </label>
-                      <input
-                        required
-                        type="text"
-                        id="subcounty"
-                        name="sub_county"
-                        placeholder="County"
-                        class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      />
-                    </div>
+                    <!-- County and Sub-county fields removed (not required) -->
 
                     <!-- Contact Person -->
                     <div>
@@ -1033,36 +959,7 @@
                     ></textarea>
                   </div>
 
-                  <!-- Location -->
-                  <div>
-                    <label
-                      for="location"
-                      class="block text-sm font-medium text-gray-700"
-                      >County</label
-                    >
-                    <input
-                      type="text"
-                      id="time_period"
-                      name="county"
-                      placeholder="County"
-                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      for="subcounty"
-                      class="block text-sm font-medium text-gray-700"
-                      >Sub County</label
-                    >
-                    <input
-                      type="text"
-                      id="subcounty"
-                      name="sub_county"
-                      placeholder="County"
-                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    />
-                  </div>
+                  <!-- County and Sub-county removed from stakeholder form -->
 
                   <div>
                     <label
@@ -1181,7 +1078,11 @@
                   const mapDiv = document.getElementById("newProjectMap");
                   let latInput = document.getElementById("project_latitude");
                   let lngInput = document.getElementById("project_longitude");
+                  let countyInput = document.getElementById("project_county");
+                  let subcountyInput =
+                    document.getElementById("project_subcounty");
                   let latLngDisplay = document.getElementById("selectedLatLng");
+                  let countyDisplay = document.getElementById("selectedCounty");
                   let mapInitialized = false;
 
                   // Mapbox access token
@@ -1284,7 +1185,7 @@
                       }
 
                       // Update coordinates in form and display
-                      function updateCoordinates(lng, lat) {
+                      async function updateCoordinates(lng, lat) {
                         latInput.value = lat.toFixed(6);
                         lngInput.value = lng.toFixed(6);
                         latLngDisplay.textContent = `${lat.toFixed(
@@ -1295,6 +1196,34 @@
                           lat: lat.toFixed(6),
                           lng: lng.toFixed(6),
                         });
+
+                        // Get county and subcounty from coordinates
+                        countyDisplay.textContent = "Loading location...";
+                        try {
+                          const locationInfo = await getLocationFromCoordinates(
+                            lng,
+                            lat
+                          );
+                          if (locationInfo.county) {
+                            countyInput.value = locationInfo.county;
+                            subcountyInput.value = locationInfo.subcounty || "";
+                            countyDisplay.textContent = `County: ${
+                              locationInfo.county
+                            }${
+                              locationInfo.subcounty
+                                ? ", " + locationInfo.subcounty
+                                : ""
+                            }`;
+                            console.log("Location info:", locationInfo);
+                          } else {
+                            countyDisplay.textContent =
+                              "Location info unavailable";
+                          }
+                        } catch (error) {
+                          console.error("Error getting location:", error);
+                          countyDisplay.textContent =
+                            "Could not determine location";
+                        }
                       }
 
                       mapInitialized = true;
@@ -1312,6 +1241,49 @@
                       alert(
                         "Failed to load map. Please refresh the page and try again."
                       );
+                    }
+                  }
+
+                  // Get county and subcounty from coordinates using Mapbox Geocoding
+                  async function getLocationFromCoordinates(lng, lat) {
+                    try {
+                      const response = await fetch(
+                        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=region,district,place&access_token=${mapboxgl.accessToken}`
+                      );
+                      const data = await response.json();
+
+                      let county = null;
+                      let subcounty = null;
+
+                      if (data.features && data.features.length > 0) {
+                        // Look for region (county) and district (subcounty)
+                        data.features.forEach((feature) => {
+                          if (feature.place_type.includes("region")) {
+                            county = feature.text;
+                          } else if (
+                            feature.place_type.includes("district") ||
+                            feature.place_type.includes("place")
+                          ) {
+                            if (!subcounty) subcounty = feature.text;
+                          }
+                        });
+
+                        // If we found a region in context
+                        if (!county && data.features[0].context) {
+                          const regionContext = data.features[0].context.find(
+                            (c) => c.id.startsWith("region")
+                          );
+                          if (regionContext) county = regionContext.text;
+                        }
+                      }
+
+                      return { county, subcounty };
+                    } catch (error) {
+                      console.error(
+                        "Error getting location from coordinates:",
+                        error
+                      );
+                      return { county: null, subcounty: null };
                     }
                   }
 
@@ -2500,8 +2472,8 @@
           startDate: formData.get("start_date"),
           endDate: formData.get("end_date"),
           activityType: formData.get("activity_type"),
-          county: capitalizeWords(formData.get("county")), // Capitalize county name
-          subCounty: formData.get("sub_county"),
+          county: formData.get("county") || null,
+          subCounty: formData.get("subcounty") || null,
           contactPersonName: formData.get("contact_person_name"),
           contactPersonRole: formData.get("contact_person_role"),
           contactPersonEmail: formData.get("contact_person_mail"),
@@ -2524,7 +2496,6 @@
           { field: "start_date", label: "Start Date" },
           { field: "end_date", label: "End Date" },
           { field: "activity_type", label: "Activity Type" },
-          { field: "county", label: "County" },
           { field: "contact_person_name", label: "Contact Person Name" },
           { field: "contact_person_role", label: "Contact Person Role" },
           { field: "contact_person_mail", label: "Contact Person Email" },
@@ -2651,17 +2622,6 @@
             // You can update user display elements here
             console.log(`Welcome, ${user.name}!`);
           }
-
-          // Automatically open the "New Project" modal when page loads
-          setTimeout(() => {
-            const modalTriggerButton = document.querySelector(
-              '[data-twe-target="#createNewProject"]'
-            );
-            if (modalTriggerButton) {
-              modalTriggerButton.click();
-              console.log("📝 New Project form opened automatically");
-            }
-          }, 500); // Small delay to ensure TW Elements is initialized
         } catch (error) {
           console.error("Error getting user info:", error);
         }
