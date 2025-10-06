@@ -200,11 +200,27 @@
             const email = document.getElementById("loginEmail").value;
             if (!email) return alert("Please enter your email");
 
-            // DEMO SIMULATION: Always proceed to OTP page, no backend check
-            alert("Demo: Use 123456 as your OTP. (No real code is sent in this simulation.)");
-            localStorage.setItem("pendingEmail", email);
-            localStorage.setItem("isLogin", "true");
-            window.location.href = "otp.html";
+            // Request OTP from backend
+            try {
+                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+                const res = await fetch(`${apiBase}/api/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Login failed");
+
+                alert("OTP sent to your email. Please check your inbox.");
+                localStorage.setItem("pendingEmail", email);
+                localStorage.setItem("isLogin", "true");
+                window.location.href = "otp.html";
+            } catch (err) {
+                alert(err.message || "Failed to send OTP");
+            }
         }
     </script>
     <script>
@@ -229,7 +245,7 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || "Registration failed");
 
-                alert("Demo: Account created! Use 123456 as your OTP. (No real code is sent in this simulation.)");
+                alert("Registration successful! Check your email for the OTP.");
                 localStorage.setItem("pendingEmail", email);
                 window.location.href = "otp.html";
             } catch (err) {
