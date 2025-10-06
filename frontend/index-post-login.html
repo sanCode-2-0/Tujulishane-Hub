@@ -101,7 +101,7 @@
           <a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">Home</a>
         </li>
         <li>
-          <a href="/frontend/all-projects.html" class="uppercase transition hover:text-blue-600">All Projects</a>
+          <a href="all-projects.html" class="uppercase transition hover:text-blue-600">All Projects</a>
         </li>
         <li id="myProjectsNav" class="hidden">
           <a href="#my-projects" onclick="showMyProjects()" class="uppercase transition hover:text-blue-600">My
@@ -1127,8 +1127,8 @@
         const btn = document.createElement("button");
         btn.textContent = i;
         btn.className = `px-3 py-1 rounded ${i === currentPage
-          ? "bg-blue-600 text-white"
-          : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+            ? "bg-blue-600 text-white"
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
           }`;
         btn.onclick = () => {
           currentPage = i;
