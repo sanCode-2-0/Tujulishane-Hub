@@ -25,8 +25,12 @@
 			},
 		};
 	</script>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
 	<link rel="stylesheet" href="styles/main.css" />
 	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<script type="module">
 		import { BASE_URL } from "./config.js";
 		window.BASE_URL = BASE_URL;
@@ -838,108 +842,132 @@
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<div class="container mx-auto px-4 py-8 mt-24">
-			<!-- Header with Create Button (Partners only) -->
-			<div class="flex justify-between items-center mb-6">
-				<div>
-					<h2 class="text-3xl font-bold text-gray-800">
-						Partnership Opportunities
+		<div class="container mx-auto px-4 py-8 mt-12">
+
+			<div class="flex flex-col md:flex-row justify-between md:items-end mb-6 border-b pb-4">
+				<div class="mt-12">
+					<h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+						Collaboration Opportunities 🤝
 					</h2>
-					<p class="text-gray-600 mt-2">
-						Discover projects looking for collaboration
+					<p class="text-lg text-gray-600 mt-1">
+						Discover projects actively seeking partnership and innovation.
 					</p>
 				</div>
 
-				<!-- Create Button for PARTNER users -->
-				<button x-show="userRole === 'PARTNER'" @click="showCreateModal = true"
-					class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-					<i class="fas fa-plus mr-2"></i>Create Announcement
-				</button>
+				<div class="mt-4 md:mt-0">
+					<button x-show="userRole === 'PARTNER'" @click="showCreateModal = true"
+						class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition w-full md:w-auto">
+						<i class="fas fa-plus mr-2"></i>Post New Opportunity
+					</button>
 
-				<!-- Login prompt for non-authenticated users -->
-				<div x-show="!userRole" class="text-center">
-					<a href="index.html"
-						class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition inline-block">
-						<i class="fas fa-sign-in-alt mr-2"></i>Login to Create
-						Announcements
+					<a x-show="!userRole" href="index.html"
+						class="bg-blue-200 text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-300 transition inline-block w-full text-center md:w-auto">
+						<i class="fas fa-sign-in-alt mr-2"></i>Login to Post
 					</a>
 				</div>
 			</div>
 
-			<!-- Loading State -->
-			<div x-show="loading" class="text-center py-12">
-				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
-				<p class="mt-4 text-gray-600">Loading announcements...</p>
+			<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+				<input type="text" placeholder="Search by title, project, or partner..." x-model="searchText"
+					class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" />
+
+				<select x-model="filterStatus"
+					class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full sm:w-48">
+					<option value="">Collaboratin Type</option>
+					<option value="financial">
+						Financial
+					</option>
+					<option value="skills">
+						Skills & Expertise
+					</option>
+				</select>
+
+				<select x-model="sortOrder"
+					class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full sm:w-48">
+					<option value="NEWEST">Newest First</option>
+					<option value="DEADLINE">Deadline Soonest</option>
+				</select>
 			</div>
 
-			<!-- Announcements Grid -->
-			<div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			<div x-show="loading" class="text-center py-12">
+				<i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+				<p class="mt-4 text-gray-600">Searching for announcements...</p>
+			</div>
+
+			<div x-show="!loading && announcements.length > 0" class="space-y-4">
 				<template x-for="announcement in announcements" :key="announcement.id">
-					<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
-						<!-- Status Badge -->
-						<div class="flex justify-between items-start mb-4">
-							<span :class="{
-                                'bg-green-100 text-green-800': announcement.status === 'ACTIVE',
-                                'bg-red-100 text-red-800': announcement.status === 'CLOSED'
-                            }" class="px-3 py-1 rounded-full text-sm font-semibold"
-								x-text="announcement.status"></span>
-							<span class="text-sm text-gray-500"
-								x-text="new Date(announcement.createdAt).toLocaleDateString()"></span>
-						</div>
+					<div
+						class="bg-white rounded-xl shadow-lg border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between hover:shadow-xl transition transform hover:-translate-y-0.5">
 
-						<!-- Title & Content -->
-						<h3 class="text-xl font-bold text-gray-800 mb-2" x-text="announcement.title"></h3>
-						<p class="text-gray-600 mb-4 line-clamp-3" x-text="announcement.content"></p>
+						<div class="flex-grow min-w-0 mb-4 lg:mb-0">
+							<div class="flex items-center space-x-3 mb-1">
+								<span :class="{
+                            'bg-green-100 text-green-800 border border-green-300': announcement.status === 'ACTIVE',
+                            'bg-red-100 text-red-800 border border-red-300': announcement.status === 'CLOSED'
+                        }" class="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+									<i :class="{'fa-light fa-circle-dot': announcement.status === 'ACTIVE', 'fa-light fa-lock': announcement.status === 'CLOSED'}"
+										class="mr-1"></i>
+									<span x-text="announcement.status"></span>
+								</span>
 
-						<!-- Project Info -->
-						<div class="border-t pt-4 mb-4">
-							<p class="text-sm text-gray-500">Project:</p>
-							<p class="font-semibold text-gray-800" x-text="announcement.project?.title"></p>
-							<p class="text-sm text-gray-600" x-text="announcement.project?.partner"></p>
-						</div>
-
-						<!-- Deadline -->
-						<div x-show="announcement.deadline" class="flex items-center text-sm text-gray-500 mb-4">
-							<i class="fas fa-calendar-alt mr-2"></i>
-							<span>Deadline:
-								<span x-text="new Date(announcement.deadline).toLocaleDateString()"></span></span>
-						</div>
-
-						<!-- Actions -->
-						<div class="flex space-x-2">
-							<button @click="viewDetails(announcement)"
-								class="flex-1 bg-blue-50 text-primary px-4 py-2 rounded-lg hover:bg-blue-100 transition">
-								<i class="fas fa-eye mr-2"></i>View Details
-							</button>
-							<!-- Request button - only show if user can request -->
-							<button
-								x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && !hasAlreadyRequested(announcement)"
-								@click="requestCollaboration(announcement)"
-								class="flex-1 bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition">
-								<i class="fas fa-handshake mr-2"></i>Request
-							</button>
-							<!-- Already requested indicator -->
-							<div x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && hasAlreadyRequested(announcement)"
-								class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-center">
-								<i class="fas fa-check mr-2"></i>Requested
+								<h3 class="text-xl font-bold text-gray-900 truncate" x-text="announcement.title"></h3>
 							</div>
+
+							<div class="flex flex-col sm:flex-row sm:space-x-6 text-sm mt-2 text-gray-600">
+								<p class="flex items-center mb-1 sm:mb-0">
+									<i class="fas fa-project-diagram mr-2 text-blue-500"></i>
+									Project: <span class="font-medium ml-1 text-gray-800"
+										x-text="announcement.project?.title"></span>
+								</p>
+								<p class="flex items-center mb-1 sm:mb-0">
+									<i class="fas fa-building mr-2 text-indigo-500"></i>
+									Partner: <span class="font-medium ml-1 text-gray-800"
+										x-text="announcement.project?.partner"></span>
+								</p>
+								<p x-show="announcement.deadline" class="flex items-center"
+									:class="{'text-red-600 font-semibold': isDeadlineImminent(announcement.deadline)}">
+									<i class="fas fa-calendar-alt mr-2"
+										:class="{'text-red-500': isDeadlineImminent(announcement.deadline), 'text-gray-500': !isDeadlineImminent(announcement.deadline)}"></i>
+									Deadline: <span class="ml-1"
+										x-text="new Date(announcement.deadline).toLocaleDateString()"></span>
+								</p>
+							</div>
+						</div>
+
+						<div class="flex-shrink-0 flex space-x-2 w-full lg:w-48 mt-4 lg:mt-0">
+							<button @click="viewDetails(announcement)"
+								class="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-medium hover:bg-blue-100 transition text-sm">
+								<i class="fas fa-eye"></i> Details
+							</button>
+
+							<template
+								x-if="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement)">
+								<button x-show="!hasAlreadyRequested(announcement)"
+									@click="requestCollaboration(announcement)"
+									class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg font-medium hover:bg-green-600 transition text-sm shadow-md">
+									<i class="fas fa-handshake"></i> Request
+								</button>
+								<div x-show="hasAlreadyRequested(announcement)"
+									class="flex-1 bg-gray-100 text-gray-500 px-3 py-2 rounded-lg text-center font-medium text-sm">
+									<i class="fas fa-check"></i> Requested
+								</div>
+							</template>
 						</div>
 					</div>
 				</template>
 			</div>
 
-			<!-- Empty State -->
-			<div x-show="!loading && announcements.length === 0" class="text-center py-12">
-				<i class="fas fa-bullhorn text-6xl text-gray-300 mb-4"></i>
-				<h3 class="text-xl font-semibold text-gray-600 mb-2">
-					No announcements yet
+			<div x-show="!loading && announcements.length === 0"
+				class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 mt-8">
+				<i class="fas fa-search text-6xl text-gray-400 mb-4"></i>
+				<h3 class="text-2xl font-semibold text-gray-700 mb-2">
+					No Collaboration Opportunities Found
 				</h3>
 				<p class="text-gray-500">
-					Check back later for partnership opportunities
+					Try adjusting your search filters or check back later for new projects.
 				</p>
 			</div>
 		</div>
-
 		<!-- Create Announcement Modal -->
 		<div x-show="showCreateModal" x-cloak
 			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
