@@ -1,451 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Enter OTP</title>
 
-    <!-- Tailwind CDN for quick demo (replace with your compiled Tailwind in production) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Enter OTP</title>
 
-    <style>
-      /* small extra polish for input focus ring */
-      .otp-input:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-        border-color: rgb(59 130 246);
-      }
+  <!-- Tailwind CDN for quick demo (replace with your compiled Tailwind in production) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-      /* smooth transition for button states */
-      .btn {
-        transition: transform 0.06s, box-shadow 0.06s, opacity 0.12s;
-      }
+  <style>
+    /* small extra polish for input focus ring */
+    .otp-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+      border-color: rgb(59 130 246);
+    }
 
-      .btn:active {
-        transform: translateY(1px);
-      }
-    </style>
-  </head>
+    /* smooth transition for button states */
+    .btn {
+      transition: transform 0.06s, box-shadow 0.06s, opacity 0.12s;
+    }
 
-  <body
-    class="flex items-center justify-center min-h-screen px-4 bg-gradient-to-b from-slate-50 via-white to-indigo-50"
-  >
-    <main
-      class="w-full max-w-xl p-8 border shadow-lg bg-white/60 backdrop-blur-md border-white/60 rounded-2xl md:p-12"
-    >
-      <a
-        href="/frontend/index.html"
-        class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase"
-      >
-        <img
-          src="resources/images/moh.jpg"
-          class="object-contain h-8"
-          alt="Site Logo"
-        />
-        <img
-          src="resources/images/log2.jpg"
-          class="object-contain h-8"
-          alt="Site Logo"
-        />
-      </a>
-      <header class="my-6 text-center">
-        <h1 class="text-2xl font-semibold md:text-3xl text-slate-800">
-          Enter verification code
-        </h1>
-        <p class="mt-2 text-sm text-slate-600">
-          <strong>Demo:</strong> Use
-          <span class="text-indigo-600 font-bold">123456</span> as your OTP.<br />
-          (No real code is sent in this simulation.)
-        </p>
-      </header>
+    .btn:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
 
-      <form id="otpForm" class="space-y-6" onsubmit="return false;">
-        <div class="flex items-center justify-center gap-3 md:gap-4">
-          <!-- 6 inputs -->
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 1"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 2"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 3"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 4"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 5"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
-          <input
-            autocomplete="off"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            aria-label="Digit 6"
-            class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0"
-          />
+<body class="flex items-center justify-center min-h-screen px-4 bg-gradient-to-b from-slate-50 via-white to-indigo-50">
+  <main class="w-full max-w-xl p-8 border shadow-lg bg-white/60 backdrop-blur-md border-white/60 rounded-2xl md:p-12">
+    <a href="/frontend/index.html"
+      class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+      <img src="resources/images/moh.jpg" class="object-contain h-8" alt="Site Logo" />
+      <img src="resources/images/log2.jpg" class="object-contain h-8" alt="Site Logo" />
+    </a>
+    <header class="my-6 text-center">
+      <h1 class="text-2xl font-semibold md:text-3xl text-slate-800">
+        Enter verification code
+      </h1>
+      <p class="mt-2 text-sm text-slate-600">
+        <strong>Demo:</strong> Use
+        <span class="text-indigo-600 font-bold">123456</span> as your OTP.<br />
+        (No real code is sent in this simulation.)
+      </p>
+    </header>
+
+    <form id="otpForm" class="space-y-6" onsubmit="return false;">
+      <div class="flex items-center justify-center gap-3 md:gap-4">
+        <!-- 6 inputs -->
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 1"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 5"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+        <input autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 6"
+          class="w-12 h-12 text-lg font-medium text-center bg-white border rounded-lg shadow-sm otp-input md:w-14 md:h-14 md:text-xl border-slate-200 caret-transparent focus:ring-0" />
+      </div>
+
+      <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div class="text-sm text-slate-600">
+          <span id="timerText">Resend code in <span id="countdown">00:30</span></span>
+          <button id="resendBtn" class="hidden ml-2 text-sm font-medium text-indigo-600" type="button">
+            Resend
+          </button>
         </div>
 
-        <div
-          class="flex flex-col items-center justify-between gap-4 md:flex-row"
-        >
-          <div class="text-sm text-slate-600">
-            <span id="timerText"
-              >Resend code in <span id="countdown">00:30</span></span
-            >
-            <button
-              id="resendBtn"
-              class="hidden ml-2 text-sm font-medium text-indigo-600"
-              type="button"
-            >
-              Resend
-            </button>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <button
-              id="clearBtn"
-              type="button"
-              class="inline-flex items-center px-4 py-2 text-sm bg-white border rounded-lg btn border-slate-200 text-slate-700 hover:bg-slate-50"
-            >
-              Clear
-            </button>
-            <button
-              id="verifyBtn"
-              type="submit"
-              disabled
-              class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm btn disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Verify
-            </button>
-          </div>
+        <div class="flex items-center gap-3">
+          <button id="clearBtn" type="button"
+            class="inline-flex items-center px-4 py-2 text-sm bg-white border rounded-lg btn border-slate-200 text-slate-700 hover:bg-slate-50">
+            Clear
+          </button>
+          <button id="verifyBtn" type="submit" disabled
+            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm btn disabled:opacity-50 disabled:cursor-not-allowed">
+            Verify
+          </button>
         </div>
+      </div>
 
-        <div
-          id="message"
-          role="status"
-          class="min-h-[1.25rem] text-center text-sm"
-        ></div>
-      </form>
+      <div id="message" role="status" class="min-h-[1.25rem] text-center text-sm"></div>
+    </form>
 
-      <p class="mt-1 text-xs text-center opacity-70">RMNCAH Coordination Hub</p>
-    </main>
-    <script>
-      // Global showMessage function
-      function showMessage(text, type = "info") {
-        const message = document.getElementById("message");
-        message.textContent = text;
-        message.className =
-          type === "error"
-            ? "text-red-600"
-            : type === "success"
+    <p class="mt-1 text-xs text-center opacity-70">RMNCAH Coordination Hub</p>
+  </main>
+
+  <script>
+    // Global showMessage function
+    function showMessage(text, type = "info") {
+      const message = document.getElementById("message");
+      message.textContent = text;
+      message.className =
+        type === "error"
+          ? "text-red-600"
+          : type === "success"
             ? "text-green-600"
             : "text-blue-600";
+    }
+
+    async function verifyOtp() {
+      console.log("=== Starting verifyOtp() ===");
+
+      const email = localStorage.getItem("pendingEmail");
+      const isLogin = localStorage.getItem("isLogin") === "true";
+      const code = otpHelpers.getCode(); // from your OTP script
+
+      console.log("Email from localStorage:", email);
+      console.log("isLogin flag:", isLogin);
+      console.log("OTP code entered:", code);
+      console.log("Code length:", code ? code.length : "null");
+
+      if (!email) {
+        console.error("No email found in localStorage");
+        throw new Error("No email found. Please go back and try again.");
       }
 
-      async function verifyOtp() {
-        console.log("=== Starting verifyOtp() ===");
-
-        const email = localStorage.getItem("pendingEmail");
-        const isLogin = localStorage.getItem("isLogin") === "true";
-        const code = otpHelpers.getCode(); // from your OTP script
-
-        console.log("Email from localStorage:", email);
-        console.log("isLogin flag:", isLogin);
-        console.log("OTP code entered:", code);
-        console.log("Code length:", code ? code.length : "null");
-
-        if (!email) {
-          console.error("No email found in localStorage");
-          throw new Error("No email found. Please go back and try again.");
+      // Real backend OTP verification
+      try {
+        let endpoint, payload;
+        const baseUrl = window.authManager
+          ? window.authManager.baseUrl
+          : window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1"
+            ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+            : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+        if (isLogin) {
+          endpoint = `${baseUrl}/api/auth/verify/login`;
+          payload = { email, otp: code };
+        } else {
+          endpoint = `${baseUrl}/api/auth/verify-otp`;
+          payload = { email, otp: code };
         }
 
-        // Real backend OTP verification
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.data || !data.data.token) {
+          throw new Error(data.message || "OTP verification failed");
+        }
+
+        // Store the real JWT
+        if (window.authManager && window.authManager.setToken) {
+          window.authManager.setToken(data.data.token);
+          try {
+            await window.authManager.getCurrentUser();
+          } catch (e) {
+            console.error("Failed to fetch user profile after login:", e);
+          }
+        } else {
+          localStorage.setItem("accessToken", data.data.token);
+        }
+
+        localStorage.removeItem("isLogin");
+        localStorage.removeItem("pendingEmail");
+        showMessage("Login successful! Redirecting...", "success");
+        setTimeout(() => {
+          window.location.href = "index-post-login.html";
+        }, 1000);
+      } catch (err) {
+        showMessage(err.message || "OTP verification failed.", "error");
+      }
+    }
+  </script>
+  <script>
+    (function () {
+      const inputs = Array.from(document.querySelectorAll(".otp-input"));
+      const verifyBtn = document.getElementById("verifyBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const message = document.getElementById("message");
+      const resendBtn = document.getElementById("resendBtn");
+      const timerText = document.getElementById("timerText");
+      const countdownEl = document.getElementById("countdown");
+
+      // Config
+      const RESEND_SECONDS = 30;
+      let timer = RESEND_SECONDS;
+      let countdownInterval = null;
+
+      // Focus first input on load
+      inputs[0].focus();
+
+      // Helpers
+      function updateVerifyState() {
+        const filled = inputs.every((i) => i.value.trim().length === 1);
+        verifyBtn.disabled = !filled;
+      }
+
+      function clearAll() {
+        inputs.forEach((i) => (i.value = ""));
+        inputs[0].focus();
+        updateVerifyState();
+        message.textContent = "";
+      }
+
+      function getCode() {
+        return inputs.map((i) => i.value.trim()).join("");
+      }
+
+      // Input events
+      inputs.forEach((input, idx) => {
+        input.addEventListener("input", (e) => {
+          const c = e.target.value;
+          // allow only digits
+          if (!/^\d$/.test(c)) {
+            e.target.value = c.replace(/\D/g, "");
+            // if nothing numeric left, stop
+            if (e.target.value === "") return;
+          }
+          // move to next if present
+          if (e.target.value.length === 1 && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+            inputs[idx + 1].select();
+          }
+          updateVerifyState();
+        });
+
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Backspace" && e.target.value === "" && idx > 0) {
+            inputs[idx - 1].focus();
+            inputs[idx - 1].select();
+          } else if (e.key === "ArrowLeft" && idx > 0) {
+            inputs[idx - 1].focus();
+          } else if (e.key === "ArrowRight" && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        // handle paste on each input to support paste into any box
+        input.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const paste =
+            (e.clipboardData || window.clipboardData).getData("text") || "";
+          const digits = paste.replace(/\D/g, "").slice(0, inputs.length);
+          if (!digits) return;
+          // fill inputs sequentially
+          for (let i = 0; i < inputs.length; i++) {
+            inputs[i].value = digits[i] || "";
+          }
+          // focus next empty or last
+          const firstEmpty = inputs.find((i) => i.value === "");
+          (firstEmpty || inputs[inputs.length - 1]).focus();
+          updateVerifyState();
+        });
+
+        // select content on focus to make replacing easy
+        input.addEventListener("focus", (e) => e.target.select());
+      });
+
+      // Clear button
+      clearBtn.addEventListener("click", clearAll);
+
+      // Verify action - calls real API
+      verifyBtn.addEventListener("click", async () => {
+        console.log("=== Verify button clicked ===");
+
+        const code = getCode();
+        console.log("Code from getCode():", code);
+        console.log("Required length:", inputs.length);
+
+        if (code.length !== inputs.length) {
+          console.log("Code length validation failed");
+          showMessage("Please enter the full 6-digit code.", "error");
+          return;
+        }
+
+        console.log("Disabling verify button and showing verifying message");
+        verifyBtn.disabled = true;
+        showMessage("Verifying...", "info");
+
         try {
-          let endpoint, payload;
+          console.log("Calling verifyOtp()...");
+          await verifyOtp();
+          console.log("verifyOtp() completed successfully");
+        } catch (error) {
+          console.error("verifyOtp() threw error:", error);
+          showMessage(
+            error.message || "Verification failed. Please try again.",
+            "error"
+          );
+          verifyBtn.disabled = false;
+          inputs[0].focus();
+          inputs[0].select();
+        }
+      });
+
+      // Resend timer
+      function startCountdown() {
+        timer = RESEND_SECONDS;
+        countdownEl.textContent = formatTime(timer);
+        resendBtn.classList.add("hidden");
+        timerText.classList.remove("hidden");
+        countdownInterval = setInterval(() => {
+          timer--;
+          if (timer <= 0) {
+            clearInterval(countdownInterval);
+            countdownEl.textContent = "00:00";
+            timerText.textContent = "";
+            resendBtn.classList.remove("hidden");
+          } else {
+            countdownEl.textContent = formatTime(timer);
+          }
+        }, 1000);
+      }
+
+      function formatTime(s) {
+        const mm = String(Math.floor(s / 60)).padStart(2, "0");
+        const ss = String(s % 60).padStart(2, "0");
+        return mm + ":" + ss;
+      }
+
+      // Resend logic
+      resendBtn.addEventListener("click", async () => {
+        const email = localStorage.getItem("pendingEmail");
+        const isLogin = localStorage.getItem("isLogin") === "true";
+
+        if (!email) {
+          showMessage(
+            "No email found. Please go back and try again.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          let endpoint;
           const baseUrl = window.authManager
             ? window.authManager.baseUrl
             : window.location.hostname === "localhost" ||
               window.location.hostname === "127.0.0.1"
-            ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-            : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+              ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+              : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
           if (isLogin) {
-            endpoint = `${baseUrl}/api/auth/verify/login`;
-            payload = { email, otp: code };
+            // For login, resend using login endpoint
+            endpoint = `${baseUrl}/api/auth/send-login-otp`;
           } else {
-            endpoint = `${baseUrl}/api/auth/verify-otp`;
-            payload = { email, otp: code };
+            // For registration, we'd need to re-register (not ideal, but current API structure)
+            // For now, just show a message to contact support
+            showMessage(
+              "Please contact support to resend registration OTP.",
+              "error"
+            );
+            return;
           }
 
           const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ email }),
           });
 
-          const data = await res.json();
-          if (!res.ok || !data.data || !data.data.token) {
-            throw new Error(data.message || "OTP verification failed");
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || "Failed to resend OTP");
           }
 
-          // Store the real JWT
-          if (window.authManager && window.authManager.setToken) {
-            window.authManager.setToken(data.data.token);
-            try {
-              await window.authManager.getCurrentUser();
-            } catch (e) {
-              console.error("Failed to fetch user profile after login:", e);
-            }
-          } else {
-            localStorage.setItem("accessToken", data.data.token);
-          }
-
-          localStorage.removeItem("isLogin");
-          localStorage.removeItem("pendingEmail");
-          showMessage("Login successful! Redirecting...", "success");
-          setTimeout(() => {
-            window.location.href = "index-post-login.html";
-          }, 1000);
-        } catch (err) {
-          showMessage(err.message || "OTP verification failed.", "error");
+          showMessage("A new code has been sent to your email.", "success");
+          startCountdown();
+          clearAll();
+        } catch (error) {
+          showMessage(error.message, "error");
         }
-      }
-    </script>
-    <script>
-      (function () {
-        const inputs = Array.from(document.querySelectorAll(".otp-input"));
-        const verifyBtn = document.getElementById("verifyBtn");
-        const clearBtn = document.getElementById("clearBtn");
-        const message = document.getElementById("message");
-        const resendBtn = document.getElementById("resendBtn");
-        const timerText = document.getElementById("timerText");
-        const countdownEl = document.getElementById("countdown");
+      });
 
-        // Config
-        const RESEND_SECONDS = 30;
-        let timer = RESEND_SECONDS;
-        let countdownInterval = null;
+      // start initial countdown
+      startCountdown();
 
-        // Focus first input on load
-        inputs[0].focus();
+      // expose some functions to window (optional)
+      window.otpHelpers = {
+        getCode,
+        clearAll,
+      };
+    })();
+  </script>
+</body>
 
-        // Helpers
-        function updateVerifyState() {
-          const filled = inputs.every((i) => i.value.trim().length === 1);
-          verifyBtn.disabled = !filled;
-        }
-
-        function clearAll() {
-          inputs.forEach((i) => (i.value = ""));
-          inputs[0].focus();
-          updateVerifyState();
-          message.textContent = "";
-        }
-
-        function getCode() {
-          return inputs.map((i) => i.value.trim()).join("");
-        }
-
-        // Input events
-        inputs.forEach((input, idx) => {
-          input.addEventListener("input", (e) => {
-            const c = e.target.value;
-            // allow only digits
-            if (!/^\d$/.test(c)) {
-              e.target.value = c.replace(/\D/g, "");
-              // if nothing numeric left, stop
-              if (e.target.value === "") return;
-            }
-            // move to next if present
-            if (e.target.value.length === 1 && idx < inputs.length - 1) {
-              inputs[idx + 1].focus();
-              inputs[idx + 1].select();
-            }
-            updateVerifyState();
-          });
-
-          input.addEventListener("keydown", (e) => {
-            if (e.key === "Backspace" && e.target.value === "" && idx > 0) {
-              inputs[idx - 1].focus();
-              inputs[idx - 1].select();
-            } else if (e.key === "ArrowLeft" && idx > 0) {
-              inputs[idx - 1].focus();
-            } else if (e.key === "ArrowRight" && idx < inputs.length - 1) {
-              inputs[idx + 1].focus();
-            }
-          });
-
-          // handle paste on each input to support paste into any box
-          input.addEventListener("paste", (e) => {
-            e.preventDefault();
-            const paste =
-              (e.clipboardData || window.clipboardData).getData("text") || "";
-            const digits = paste.replace(/\D/g, "").slice(0, inputs.length);
-            if (!digits) return;
-            // fill inputs sequentially
-            for (let i = 0; i < inputs.length; i++) {
-              inputs[i].value = digits[i] || "";
-            }
-            // focus next empty or last
-            const firstEmpty = inputs.find((i) => i.value === "");
-            (firstEmpty || inputs[inputs.length - 1]).focus();
-            updateVerifyState();
-          });
-
-          // select content on focus to make replacing easy
-          input.addEventListener("focus", (e) => e.target.select());
-        });
-
-        // Clear button
-        clearBtn.addEventListener("click", clearAll);
-
-        // Verify action - calls real API
-        verifyBtn.addEventListener("click", async () => {
-          console.log("=== Verify button clicked ===");
-
-          const code = getCode();
-          console.log("Code from getCode():", code);
-          console.log("Required length:", inputs.length);
-
-          if (code.length !== inputs.length) {
-            console.log("Code length validation failed");
-            showMessage("Please enter the full 6-digit code.", "error");
-            return;
-          }
-
-          console.log("Disabling verify button and showing verifying message");
-          verifyBtn.disabled = true;
-          showMessage("Verifying...", "info");
-
-          try {
-            console.log("Calling verifyOtp()...");
-            await verifyOtp();
-            console.log("verifyOtp() completed successfully");
-          } catch (error) {
-            console.error("verifyOtp() threw error:", error);
-            showMessage(
-              error.message || "Verification failed. Please try again.",
-              "error"
-            );
-            verifyBtn.disabled = false;
-            inputs[0].focus();
-            inputs[0].select();
-          }
-        });
-
-        // Resend timer
-        function startCountdown() {
-          timer = RESEND_SECONDS;
-          countdownEl.textContent = formatTime(timer);
-          resendBtn.classList.add("hidden");
-          timerText.classList.remove("hidden");
-          countdownInterval = setInterval(() => {
-            timer--;
-            if (timer <= 0) {
-              clearInterval(countdownInterval);
-              countdownEl.textContent = "00:00";
-              timerText.textContent = "";
-              resendBtn.classList.remove("hidden");
-            } else {
-              countdownEl.textContent = formatTime(timer);
-            }
-          }, 1000);
-        }
-
-        function formatTime(s) {
-          const mm = String(Math.floor(s / 60)).padStart(2, "0");
-          const ss = String(s % 60).padStart(2, "0");
-          return mm + ":" + ss;
-        }
-
-        // Resend logic
-        resendBtn.addEventListener("click", async () => {
-          const email = localStorage.getItem("pendingEmail");
-          const isLogin = localStorage.getItem("isLogin") === "true";
-
-          if (!email) {
-            showMessage(
-              "No email found. Please go back and try again.",
-              "error"
-            );
-            return;
-          }
-
-          try {
-            let endpoint;
-            const baseUrl = window.authManager
-              ? window.authManager.baseUrl
-              : window.location.hostname === "localhost" ||
-                window.location.hostname === "127.0.0.1"
-              ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-              : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-            if (isLogin) {
-              // For login, resend using login endpoint
-              endpoint = `${baseUrl}/api/auth/send-login-otp`;
-            } else {
-              // For registration, we'd need to re-register (not ideal, but current API structure)
-              // For now, just show a message to contact support
-              showMessage(
-                "Please contact support to resend registration OTP.",
-                "error"
-              );
-              return;
-            }
-
-            const res = await fetch(endpoint, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email }),
-            });
-
-            if (!res.ok) {
-              const data = await res.json();
-              throw new Error(data.message || "Failed to resend OTP");
-            }
-
-            showMessage("A new code has been sent to your email.", "success");
-            startCountdown();
-            clearAll();
-          } catch (error) {
-            showMessage(error.message, "error");
-          }
-        });
-
-        // start initial countdown
-        startCountdown();
-
-        // expose some functions to window (optional)
-        window.otpHelpers = {
-          getCode,
-          clearAll,
-        };
-      })();
-    </script>
-  </body>
 </html>
