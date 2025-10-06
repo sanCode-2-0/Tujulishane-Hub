@@ -109,12 +109,12 @@
         </li>
 
         <!-- SUPER_ADMIN Nav -->
-        <li id="adminNav" class="hidden relative" x-data="{ showDropdown: false }">
+        <li id="adminNav" class="hidden relative" x-data="{ showprojectDropdown: false }">
           <button @click="showprojectDropdown = !showprojectDropdown"
             class="inline-flex items-center font-medium uppercase transition focus:outline-none">
             Projects <i class="ml-2 fal fa-chevron-down"></i>
           </button>
-          <div x-show="showprojectDropdown" @click.outside="showDropdown = false" x-transition
+          <div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
             class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
             style="display: none">
             <ul class="py-2 text-sm text-left text-blue-800">
