@@ -1,520 +1,678 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Collaborations - RMNCAH</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af",
-              secondary: "#f59e0b",
-              accent: "#10b981",
-              dark: "#1f2937",
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
-      rel="stylesheet"
-    />
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script type="module">
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
-    </script>
-    <script src="auth.js"></script>
-  </head>
 
-  <body class="bg-gray-50">
-    <div x-data="collaborationsApp()" x-init="init()">
-      <!-- Navigation matching site design -->
-      <nav
-        x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
-      >
-        <div class="flex items-center justify-between px-6 py-4">
-          <a
-            href="index.html"
-            class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase"
-          >
-            <img
-              src="resources/images/moh.png"
-              class="object-contain h-12"
-              alt="MOH Logo"
-            />
-            <img
-              src="resources/images/log2.png"
-              class="object-contain h-12"
-              alt="Site Logo"
-            />
-          </a>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>My Collaborations - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af",
+						secondary: "#f59e0b",
+						accent: "#10b981",
+						dark: "#1f2937",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<script type="module">
+		import { BASE_URL } from "./config.js";
+		window.BASE_URL = BASE_URL;
+	</script>
+	<script src="auth.js"></script>
+</head>
 
-          <button
-            @click="open = !open"
-            class="text-xl lg:hidden focus:outline-none"
-          >
-            <i class="fas fa-bars" x-show="!open"></i>
-            <i class="fas fa-times" x-show="open" x-cloak></i>
-          </button>
+<body class="bg-gray-50">
+	<div x-data="collaborationsApp()" x-init="init()">
+		<!-- Navigation matching site design -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<!-- Modal title -->
+						<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
+							New Project
+						</h5>
+						<!-- Close button -->
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
 
-          <ul
-            class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex"
-          >
-            <li>
-              <a
-                href="index.html"
-                class="uppercase transition hover:text-blue-600"
-                >Home</a
-              >
-            </li>
-            <li>
-              <a
-                href="projects.html"
-                class="uppercase transition hover:text-blue-600"
-                >All Projects</a
-              >
-            </li>
-            <li>
-              <a
-                href="members.html"
-                class="uppercase transition hover:text-blue-600"
-                >Stakeholders</a
-              >
-            </li>
-            <li class="relative" x-data="{ showDropdown: false }">
-              <button
-                @click="showDropdown = !showDropdown"
-                class="inline-flex items-center font-bold uppercase text-blue-700 hover:text-pink-500 transition focus:outline-none"
-              >
-                Collaboration <i class="ml-2 fas fa-chevron-down text-xs"></i>
-              </button>
-              <div
-                x-show="showDropdown"
-                @click.outside="showDropdown = false"
-                x-transition
-                class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-                style="display: none"
-              >
-                <ul class="py-2 text-sm text-left text-gray-700">
-                  <li class="px-4 py-2 transition hover:bg-blue-50">
-                    <a href="announcements.html" class="flex items-center">
-                      <i class="fas fa-bullhorn mr-2 text-blue-600"></i
-                      >Announcements
-                    </a>
-                  </li>
-                  <li class="px-4 py-2 transition hover:bg-blue-50">
-                    <a
-                      href="my-collaborations.html"
-                      class="flex items-center font-semibold text-green-700"
-                    >
-                      <i class="fas fa-users mr-2"></i>My Collaborations
-                    </a>
-                  </li>
-                  <li
-                    class="px-4 py-2 transition hover:bg-blue-50"
-                    id="admin-collab-menu"
-                    style="display: none"
-                  >
-                    <a
-                      href="Forms/Admin/collaboration-requests.html"
-                      class="flex items-center"
-                    >
-                      <i class="fas fa-handshake mr-2 text-purple-600"></i
-                      >Manage Requests
-                      <span
-                        id="pending-count"
-                        class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
-                        style="display: none"
-                      ></span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </div>
+					<!-- Modal body -->
+					<div class="relative p-4">
+						<form id="newProjectForm">
+							<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+								<!-- Map Picker for Location -->
+								<div class="col-span-2 lg:col-span-4">
+									<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+										Map</label>
+									<div class="text-xs text-gray-600 mb-2">
+										Search for a location or click on the map to select the
+										project coordinates.
+									</div>
+									<div id="newProjectMap" style="
+                          height: 400px;
+                          width: 100%;
+                          border-radius: 8px;
+                          margin-bottom: 8px;
+                          border: 1px solid #e5e7eb;
+                          background-color: #f3f4f6;
+                          position: relative;
+                          overflow: hidden;
+                        "></div>
+									<input type="hidden" id="project_latitude" name="latitude" />
+									<input type="hidden" id="project_longitude" name="longitude" />
+									<input type="hidden" id="project_county" name="county" />
+									<input type="hidden" id="project_subcounty" name="subcounty" />
+									<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+										<strong>Selected Location:</strong>
+										<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
+											location</span>
+										<br />
+										<span id="selectedCounty" class="text-gray-600"></span>
+									</div>
+								</div>
+								<!-- Title -->
+								<div>
+									<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+									<input required type="text" id="title" name="title"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
 
-        <div x-show="open" x-transition class="px-6 pb-6 lg:hidden">
-          <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-            <li>
-              <a href="index.html" class="block transition hover:text-blue-600"
-                >Home</a
-              >
-            </li>
-            <li>
-              <a
-                href="projects.html"
-                class="block transition hover:text-blue-600"
-                >Projects</a
-              >
-            </li>
-            <li>
-              <a
-                href="members.html"
-                class="block transition hover:text-blue-600"
-                >Stakeholders</a
-              >
-            </li>
-            <li>
-              <a
-                href="announcements.html"
-                class="block transition hover:text-blue-600"
-                ><i class="fas fa-bullhorn mr-2"></i>Announcements</a
-              >
-            </li>
-            <li>
-              <a
-                href="my-collaborations.html"
-                class="block transition hover:text-blue-600 font-bold text-green-700"
-                ><i class="fas fa-users mr-2"></i>My Collaborations</a
-              >
-            </li>
-            <li id="admin-collab-mobile" style="display: none">
-              <a
-                href="Forms/Admin/collaboration-requests.html"
-                class="block transition hover:text-blue-600"
-                ><i class="fas fa-handshake mr-2"></i>Manage Requests</a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
+								<!-- Project Theme -->
+								<div>
+									<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
+										*</label>
+									<select id="theme" name="theme"
+										class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+										<option value="">Select Theme</option>
+										<option value="GBV">Gender based violence</option>
+										<option value="AYPSRH">
+											Adolescent and Young People Sexual and Reproductive
+											Health
+										</option>
+										<option value="MNH">Maternal and Newborn Health</option>
+										<option value="FP">Family planning</option>
+										<option value="CH">Child Health</option>
+										<option value="AH">Adolescent Health</option>
+									</select>
+								</div>
 
-      <!-- Main Content -->
-      <div class="container mx-auto px-4 py-8 mt-24">
-        <div class="mb-6">
-          <h2 class="text-3xl font-bold text-gray-800">
-            Projects I'm Collaborating On
-          </h2>
-          <p class="text-gray-600 mt-2">
-            View and manage your collaborative projects
-          </p>
-        </div>
+								<!-- Time Period -->
+								<div>
+									<label for="starttime_period" class="block text-sm font-medium text-gray-700">
+										Start *
+									</label>
+									<input required type="date" id="starttime_period" name="start_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+										*</label>
+									<input type="date" id="endtime_period" name="end_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<!-- Activity Type -->
+								<div class="col-span-2 md:col-span-4">
+									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
+										Type
+										(Description) *
+									</label>
+									<textarea required id="activity_type" name="activity_type" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
 
-        <!-- Loading State -->
-        <div x-show="loading" class="text-center py-12">
-          <i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
-          <p class="mt-4 text-gray-600">Loading your collaborations...</p>
-        </div>
+								<!-- County and Sub-county fields removed (not required) -->
 
-        <!-- Collaborations List -->
-        <div x-show="!loading" class="space-y-4">
-          <template x-for="collab in collaborations" :key="collab.id">
-            <div
-              class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
-            >
-              <div class="flex justify-between items-start">
-                <div class="flex-1">
-                  <!-- Project Info -->
-                  <div class="flex items-center mb-2">
-                    <h3
-                      class="text-xl font-bold text-gray-800"
-                      x-text="collab.project?.title"
-                    ></h3>
-                    <span
-                      :class="{
+								<!-- Contact Person -->
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Name *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_name"
+										placeholder="Name"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Role *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_role"
+										placeholder="Role"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Email *
+									</label>
+									<input required type="email" id="contact_person" name="contact_person_mail"
+										placeholder="Email"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="budget" class="block text-sm font-medium text-gray-700">
+										Budget in KES
+									</label>
+									<input required type="number" id="budget" name="budget" placeholder="amount"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<!-- Gaps -->
+								<div class="col-span-2 lg:col-span-4">
+									<label for="gaps" class="block text-sm font-medium text-gray-700">
+										Objectives *
+									</label>
+									<textarea required id="gaps" name="gaps" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
+							</div>
+
+							<!-- Button -->
+							<div class="mt-3">
+								<button type="submit"
+									class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+									Submit Project
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<nav x-data="{ open: false }"
+			class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+			<div class="flex items-center justify-between px-6 py-4">
+				<!-- Logo -->
+				<a href="/frontend/index.html"
+					class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+					<img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo" />
+					<img src="resources/images/moh.png" class="object-contain h-12" alt="Site Logo" />
+				</a>
+
+				<!-- Mobile Menu Toggle -->
+				<button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+					<i class="fas fa-bars" x-show="!open"></i>
+					<i class="fas fa-times" x-show="open" x-cloak></i>
+				</button>
+
+				<!-- Nav Links - Desktop -->
+				<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+					<li>
+						<a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">Home</a>
+					</li>
+
+					<!-- SUPER_ADMIN Nav -->
+					<li id="projnav" class="relative" x-data="{ showprojectDropdown: false }">
+						<button @click="showprojectDropdown = !showprojectDropdown"
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+							Projects <i class="ml-2 fal fa-chevron-down"></i>
+						</button>
+						<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
+							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+							style="display: none">
+							<ul class="py-2 text-sm text-left text-black-800">
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+										<i class="far fa-plus mr-3 "></i>
+										New Project
+									</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="projects.html">
+										<i class="far fa-user-check mr-2 "></i>
+										My Projects
+									</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="all-projects.html">
+										<i class="far fa-folder-open mr-2 "></i>
+										All projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li id="adminNav" class="hidden relative" x-data="{ showDropdown: false }">
+						<button @click="showDropdown = !showDropdown"
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+							Admin <i class="ml-2 fal fa-chevron-down"></i>
+						</button>
+						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+							style="display: none">
+							<ul class="py-2 text-sm text-left text-gray-800">
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="dashboard.html">Dashboard</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="projects.html">Project Management</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="members.html">Stakeholder Management</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li id="" class=" relative" x-data="{ collapboarationDD: false }">
+						<button @click="collapboarationDD = !collapboarationDD"
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+							Collaborations <i class="ml-2 fal fa-chevron-down"></i>
+						</button>
+						<div x-show="collapboarationDD" @click.outside="collapboarationDD = false" x-transition
+							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+							style="display: none">
+							<ul class="py-2 text-sm text-left text-gray-800">
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="my-collaborations.html">
+										<i class="far fa-users-crown mr-2 "></i>
+										My Collaborations
+									</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+									<a href="my-collaborations.html">
+										<i class="far fa-search mr-2 "></i>
+										Find Projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li id="adminNav" class="hidden">
+						<a href="Stakeholders/dashboard.html"
+							class="uppercase transition hover:text-blue-600">Dashboard</a>
+					</li>
+
+
+					<!-- User Profile Dropdown -->
+					<li class="relative" x-data="{ showUserDropdown: false }">
+						<button @click="showUserDropdown = !showUserDropdown"
+							class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition rounded-lg hover:bg-gray-100 focus:outline-none">
+							<i class="mr-2 fas fa-user-circle"></i>
+							<span id="userDisplayName">User</span>
+							<i class="ml-2 fal fa-chevron-down"></i>
+						</button>
+						<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+							class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+							style="display: none">
+							<div class="px-4 py-3">
+								<div class="text-sm font-medium text-gray-900" id="userNameDisplay">
+									Loading...
+								</div>
+								<div class="text-sm text-gray-500" id="userEmailDisplay"></div>
+								<div class="text-xs text-gray-400 mt-1">
+									Role: <span id="userRoleDisplay"></span> | Status:
+									<span id="userStatusDisplay"></span>
+								</div>
+							</div>
+							<ul class="py-2 text-sm text-gray-700">
+								<li>
+									<a href="/frontend/profile.html"
+										class="block px-4 py-2 transition hover:bg-gray-100"><i
+											class="mr-2 fas fa-user"></i>Profile</a>
+								</li>
+								<li>
+									<a href="/frontend/settings.html"
+										class="block px-4 py-2 transition hover:bg-gray-100"><i
+											class="mr-2 fas fa-cog"></i>Settings</a>
+								</li>
+							</ul>
+							<div class="py-2">
+								<button onclick="authManager.logout()"
+									class="block w-full px-4 py-2 text-left text-sm text-red-600 transition hover:bg-red-50">
+									<i class="mr-2 fas fa-sign-out-alt"></i>Logout
+								</button>
+							</div>
+						</div>
+					</li>
+
+				</ul>
+			</div>
+
+			<!-- Nav Links - Mobile -->
+			<div x-show="open" x-transition:enter="transition ease-out duration-200"
+				x-transition:enter-start="opacity-0 transform -translate-y-2"
+				x-transition:enter-end="opacity-100 transform translate-y-0"
+				x-transition:leave="transition ease-in duration-150"
+				x-transition:leave-start="opacity-100 transform translate-y-0"
+				x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+				<ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+					<li>
+						<a href="/" class="block transition hover:text-blue-600">Home</a>
+					</li>
+					<li>
+						<a href="#about" class="block transition hover:text-blue-600">About</a>
+					</li>
+					<li>
+						<a href="#why-us" class="block transition hover:text-blue-600">Why Us</a>
+					</li>
+					<li>
+						<a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a>
+					</li>
+					<!-- Collaboration Links -->
+					<li>
+						<a href="announcements.html" class="block transition hover:text-blue-600">
+							<i class="fas fa-bullhorn mr-2"></i>Announcements
+						</a>
+					</li>
+					<li>
+						<a href="my-collaborations.html" class="block transition hover:text-blue-600">
+							<i class="fas fa-users mr-2"></i>My Collaborations
+						</a>
+					</li>
+					<li id="admin-collab-mobile" class="block transition hover:text-blue-600" style="display: none">
+						<a href="Forms/Admin/collaboration-requests.html">
+							<i class="fas fa-handshake mr-2"></i>Manage Requests
+						</a>
+					</li>
+				</ul>
+
+				<!-- CTA Button -->
+				<div class="mt-6">
+					<a href="/contact"
+						class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
+						<span
+							class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
+						<span class="relative z-10 group-hover:text-white">Collaborate</span>
+					</a>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Main Content -->
+		<div class="container mx-auto px-4 py-8 mt-24">
+			<div class="mb-6">
+				<h2 class="text-3xl font-bold text-gray-800">
+					Projects I'm Collaborating On
+				</h2>
+				<p class="text-gray-600 mt-2">
+					View and manage your collaborative projects
+				</p>
+			</div>
+
+			<!-- Loading State -->
+			<div x-show="loading" class="text-center py-12">
+				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+				<p class="mt-4 text-gray-600">Loading your collaborations...</p>
+			</div>
+
+			<!-- Collaborations List -->
+			<div x-show="!loading" class="space-y-4">
+				<template x-for="collab in collaborations" :key="collab.id">
+					<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+						<div class="flex justify-between items-start">
+							<div class="flex-1">
+								<!-- Project Info -->
+								<div class="flex items-center mb-2">
+									<h3 class="text-xl font-bold text-gray-800" x-text="collab.project?.title"></h3>
+									<span :class="{
                                         'bg-blue-100 text-blue-800': collab.role === 'VIEWER',
                                         'bg-green-100 text-green-800': collab.role === 'EDITOR',
                                         'bg-purple-100 text-purple-800': collab.role === 'CO_OWNER'
-                                    }"
-                      class="ml-3 px-3 py-1 rounded-full text-sm font-semibold"
-                      x-text="collab.role"
-                    ></span>
-                  </div>
+                                    }" class="ml-3 px-3 py-1 rounded-full text-sm font-semibold"
+										x-text="collab.role"></span>
+								</div>
 
-                  <p
-                    class="text-gray-600 mb-2"
-                    x-text="collab.project?.partner"
-                  ></p>
+								<p class="text-gray-600 mb-2" x-text="collab.project?.partner"></p>
 
-                  <!-- Project Details -->
-                  <div
-                    class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm"
-                  >
-                    <div>
-                      <span class="text-gray-500">Theme:</span>
-                      <p
-                        class="font-semibold"
-                        x-text="collab.project?.projectTheme"
-                      ></p>
-                    </div>
-                    <div>
-                      <span class="text-gray-500">Location:</span>
-                      <p
-                        class="font-semibold"
-                        x-text="collab.project?.county"
-                      ></p>
-                    </div>
-                    <div>
-                      <span class="text-gray-500">Added:</span>
-                      <p
-                        class="font-semibold"
-                        x-text="new Date(collab.addedAt).toLocaleDateString()"
-                      ></p>
-                    </div>
-                    <div>
-                      <span class="text-gray-500">Added By:</span>
-                      <p
-                        class="font-semibold"
-                        x-text="collab.addedBy?.name"
-                      ></p>
-                    </div>
-                  </div>
+								<!-- Project Details -->
+								<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+									<div>
+										<span class="text-gray-500">Theme:</span>
+										<p class="font-semibold" x-text="collab.project?.projectTheme"></p>
+									</div>
+									<div>
+										<span class="text-gray-500">Location:</span>
+										<p class="font-semibold" x-text="collab.project?.county"></p>
+									</div>
+									<div>
+										<span class="text-gray-500">Added:</span>
+										<p class="font-semibold" x-text="new Date(collab.addedAt).toLocaleDateString()">
+										</p>
+									</div>
+									<div>
+										<span class="text-gray-500">Added By:</span>
+										<p class="font-semibold" x-text="collab.addedBy?.name"></p>
+									</div>
+								</div>
 
-                  <!-- Last Modified Info -->
-                  <div
-                    x-show="collab.project?.lastModifiedBy"
-                    class="mt-4 pt-4 border-t border-gray-200 text-sm"
-                  >
-                    <span class="text-gray-500">Last modified by:</span>
-                    <span
-                      class="font-semibold text-gray-700 ml-2"
-                      x-text="collab.project?.lastModifiedBy"
-                    ></span>
-                    <span class="text-gray-500 ml-2">on</span>
-                    <span
-                      class="text-gray-700 ml-1"
-                      x-text="collab.project?.lastModifiedAt ? new Date(collab.project.lastModifiedAt).toLocaleString() : ''"
-                    ></span>
-                  </div>
+								<!-- Last Modified Info -->
+								<div x-show="collab.project?.lastModifiedBy"
+									class="mt-4 pt-4 border-t border-gray-200 text-sm">
+									<span class="text-gray-500">Last modified by:</span>
+									<span class="font-semibold text-gray-700 ml-2"
+										x-text="collab.project?.lastModifiedBy"></span>
+									<span class="text-gray-500 ml-2">on</span>
+									<span class="text-gray-700 ml-1"
+										x-text="collab.project?.lastModifiedAt ? new Date(collab.project.lastModifiedAt).toLocaleString() : ''"></span>
+								</div>
 
-                  <!-- Notes -->
-                  <div
-                    x-show="collab.notes"
-                    class="mt-3 bg-blue-50 p-3 rounded"
-                  >
-                    <p class="text-sm text-gray-600">
-                      <i class="fas fa-sticky-note mr-2"></i
-                      ><span x-text="collab.notes"></span>
-                    </p>
-                  </div>
-                </div>
+								<!-- Notes -->
+								<div x-show="collab.notes" class="mt-3 bg-blue-50 p-3 rounded">
+									<p class="text-sm text-gray-600">
+										<i class="fas fa-sticky-note mr-2"></i><span x-text="collab.notes"></span>
+									</p>
+								</div>
+							</div>
 
-                <!-- Actions -->
-                <div class="ml-4 flex flex-col space-y-2">
-                  <a
-                    :href="`projects.html?id=${collab.project?.id}`"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center transition"
-                  >
-                    <i class="fas fa-eye mr-2"></i>View Project
-                  </a>
-                  <button
-                    x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
-                    @click="editProject(collab.project)"
-                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-                  >
-                    <i class="fas fa-edit mr-2"></i>Edit Project
-                  </button>
-                </div>
-              </div>
+							<!-- Actions -->
+							<div class="ml-4 flex flex-col space-y-2">
+								<a :href="`projects.html?id=${collab.project?.id}`"
+									class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center transition">
+									<i class="fas fa-eye mr-2"></i>View Project
+								</a>
+								<button x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
+									@click="editProject(collab.project)"
+									class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+									<i class="fas fa-edit mr-2"></i>Edit Project
+								</button>
+							</div>
+						</div>
 
-              <!-- Role Permissions Info -->
-              <div class="mt-4 pt-4 border-t">
-                <p class="text-sm text-gray-600 font-semibold mb-2">
-                  Your Permissions:
-                </p>
-                <div class="flex flex-wrap gap-2">
-                  <span
-                    class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
-                  >
-                    <i class="fas fa-eye mr-1"></i>View Project
-                  </span>
-                  <span
-                    x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
-                    class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full"
-                  >
-                    <i class="fas fa-edit mr-1"></i>Edit Project
-                  </span>
-                  <span
-                    x-show="collab.role === 'CO_OWNER'"
-                    class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full"
-                  >
-                    <i class="fas fa-users-cog mr-1"></i>Manage Collaborators
-                  </span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+						<!-- Role Permissions Info -->
+						<div class="mt-4 pt-4 border-t">
+							<p class="text-sm text-gray-600 font-semibold mb-2">
+								Your Permissions:
+							</p>
+							<div class="flex flex-wrap gap-2">
+								<span class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+									<i class="fas fa-eye mr-1"></i>View Project
+								</span>
+								<span x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
+									class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+									<i class="fas fa-edit mr-1"></i>Edit Project
+								</span>
+								<span x-show="collab.role === 'CO_OWNER'"
+									class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+									<i class="fas fa-users-cog mr-1"></i>Manage Collaborators
+								</span>
+							</div>
+						</div>
+					</div>
+				</template>
+			</div>
 
-        <!-- Empty State -->
-        <div
-          x-show="!loading && collaborations.length === 0"
-          class="text-center py-12 bg-white rounded-lg shadow"
-        >
-          <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
-          <h3 class="text-xl font-semibold text-gray-600 mb-2">
-            No Collaborations Yet
-          </h3>
-          <p class="text-gray-500 mb-6">
-            You haven't been added as a collaborator on any projects
-          </p>
-          <a
-            href="announcements.html"
-            class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-          >
-            <i class="fas fa-search mr-2"></i>Browse Collaboration Opportunities
-          </a>
-        </div>
+			<!-- Empty State -->
+			<div x-show="!loading && collaborations.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+				<i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+				<h3 class="text-xl font-semibold text-gray-600 mb-2">
+					No Collaborations Yet
+				</h3>
+				<p class="text-gray-500 mb-6">
+					You haven't been added as a collaborator on any projects
+				</p>
+				<a href="announcements.html"
+					class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+					<i class="fas fa-search mr-2"></i>Browse Collaboration Opportunities
+				</a>
+			</div>
 
-        <!-- Statistics Card -->
-        <div
-          x-show="!loading && collaborations.length > 0"
-          class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm">Total Collaborations</p>
-                <p
-                  class="text-3xl font-bold text-gray-800"
-                  x-text="collaborations.length"
-                ></p>
-              </div>
-              <i class="fas fa-handshake text-4xl text-blue-500"></i>
-            </div>
-          </div>
+			<!-- Statistics Card -->
+			<div x-show="!loading && collaborations.length > 0" class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">Total Collaborations</p>
+							<p class="text-3xl font-bold text-gray-800" x-text="collaborations.length"></p>
+						</div>
+						<i class="fas fa-handshake text-4xl text-blue-500"></i>
+					</div>
+				</div>
 
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm">As Editor</p>
-                <p
-                  class="text-3xl font-bold text-gray-800"
-                  x-text="collaborations.filter(c => c.role === 'EDITOR').length"
-                ></p>
-              </div>
-              <i class="fas fa-edit text-4xl text-green-500"></i>
-            </div>
-          </div>
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">As Editor</p>
+							<p class="text-3xl font-bold text-gray-800"
+								x-text="collaborations.filter(c => c.role === 'EDITOR').length"></p>
+						</div>
+						<i class="fas fa-edit text-4xl text-green-500"></i>
+					</div>
+				</div>
 
-          <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-gray-500 text-sm">As Co-Owner</p>
-                <p
-                  class="text-3xl font-bold text-gray-800"
-                  x-text="collaborations.filter(c => c.role === 'CO_OWNER').length"
-                ></p>
-              </div>
-              <i class="fas fa-crown text-4xl text-purple-500"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">As Co-Owner</p>
+							<p class="text-3xl font-bold text-gray-800"
+								x-text="collaborations.filter(c => c.role === 'CO_OWNER').length"></p>
+						</div>
+						<i class="fas fa-crown text-4xl text-purple-500"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script type="module">
-      import { BASE_URL } from "./config.js";
+	<script type="module">
+		import { BASE_URL } from "./config.js";
 
-      // Make BASE_URL available globally
-      window.BASE_URL = BASE_URL;
+		// Make BASE_URL available globally
+		window.BASE_URL = BASE_URL;
 
-      // Define and expose collaborationsApp to global scope for Alpine.js
-      window.collaborationsApp = function collaborationsApp() {
-        return {
-          collaborations: [],
-          loading: true,
+		// Define and expose collaborationsApp to global scope for Alpine.js
+		window.collaborationsApp = function collaborationsApp() {
+			return {
+				collaborations: [],
+				loading: true,
 
-          async init() {
-            await this.loadCollaborations();
-          },
+				async init() {
+					await this.loadCollaborations();
+				},
 
-          async loadCollaborations() {
-            try {
-              const token = localStorage.getItem("accessToken");
-              const response = await fetch(
-                `${BASE_URL}/api/projects/collaborations/my-projects`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              const data = await response.json();
+				async loadCollaborations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${BASE_URL}/api/projects/collaborations/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+						const data = await response.json();
 
-              if (data.status === 200) {
-                this.collaborations = data.data;
-              } else {
-                console.error("Error:", data.message);
-              }
-            } catch (error) {
-              console.error("Error loading collaborations:", error);
-              alert("Failed to load your collaborations");
-            } finally {
-              this.loading = false;
-            }
-          },
+						if (data.status === 200) {
+							this.collaborations = data.data;
+						} else {
+							console.error("Error:", data.message);
+						}
+					} catch (error) {
+						console.error("Error loading collaborations:", error);
+						alert("Failed to load your collaborations");
+					} finally {
+						this.loading = false;
+					}
+				},
 
-          editProject(project) {
-            // Redirect to project edit page or open edit modal
-            window.location.href = `Forms/Admin/new-project.html?id=${project.id}&mode=edit`;
-          },
-        };
-      };
+				editProject(project) {
+					// Redirect to project edit page or open edit modal
+					window.location.href = `Forms/Admin/new-project.html?id=${project.id}&mode=edit`;
+				},
+			};
+		};
 
-      // Show/hide admin menu items and load pending count
-      document.addEventListener("DOMContentLoaded", function () {
-        let userRole = null;
-        const userStr = localStorage.getItem("user");
-        if (userStr) {
-          try {
-            const user = JSON.parse(userStr);
-            userRole = user.role;
-          } catch (e) {
-            userRole = localStorage.getItem("userRole"); // Fallback
-          }
-        }
+		// Show/hide admin menu items and load pending count
+		document.addEventListener("DOMContentLoaded", function () {
+			let userRole = null;
+			const userStr = localStorage.getItem("user");
+			if (userStr) {
+				try {
+					const user = JSON.parse(userStr);
+					userRole = user.role;
+				} catch (e) {
+					userRole = localStorage.getItem("userRole"); // Fallback
+				}
+			}
 
-        if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
-          const adminMenu = document.getElementById("admin-collab-menu");
-          const adminMobile = document.getElementById("admin-collab-mobile");
-          if (adminMenu) adminMenu.style.display = "block";
-          if (adminMobile) adminMobile.style.display = "block";
+			if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+				const adminMenu = document.getElementById("admin-collab-menu");
+				const adminMobile = document.getElementById("admin-collab-mobile");
+				if (adminMenu) adminMenu.style.display = "block";
+				if (adminMobile) adminMobile.style.display = "block";
 
-          loadPendingCount();
-        }
-      });
+				loadPendingCount();
+			}
+		});
 
-      async function loadPendingCount() {
-        try {
-          const token = localStorage.getItem("token");
-          const response = await fetch(
-            `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          const data = await response.json();
+		async function loadPendingCount() {
+			try {
+				const token = localStorage.getItem("token");
+				const response = await fetch(
+					`${window.BASE_URL}/api/collaboration-requests/admin/pending`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				);
+				const data = await response.json();
 
-          if (data.status === 200 && data.data.length > 0) {
-            const badge = document.getElementById("pending-count");
-            if (badge) {
-              badge.textContent = data.data.length;
-              badge.style.display = "inline-block";
-            }
-          }
-        } catch (error) {
-          console.error("Error loading pending count:", error);
-        }
-      }
-    </script>
-  </body>
+				if (data.status === 200 && data.data.length > 0) {
+					const badge = document.getElementById("pending-count");
+					if (badge) {
+						badge.textContent = data.data.length;
+						badge.style.display = "inline-block";
+					}
+				}
+			} catch (error) {
+				console.error("Error loading pending count:", error);
+			}
+		}
+	</script>
+</body>
+
 </html>

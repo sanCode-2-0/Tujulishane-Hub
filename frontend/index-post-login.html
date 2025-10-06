@@ -79,6 +79,172 @@
 </head>
 
 <body class="text-gray-800">
+	<div data-twe-modal-init
+		class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+		id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+		<div data-twe-modal-dialog-ref
+			class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+			<div
+				class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+				<div
+					class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+					<!-- Modal title -->
+					<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
+						New Project
+					</h5>
+					<!-- Close button -->
+					<button type="button"
+						class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+						data-twe-modal-dismiss aria-label="Close">
+						<span class="[&>svg]:h-6 [&>svg]:w-6">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+								stroke-width="1.5" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</span>
+					</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="relative p-4">
+					<form id="newProjectForm">
+						<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+							<!-- Map Picker for Location -->
+							<div class="col-span-2 lg:col-span-4">
+								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+									Map</label>
+								<div class="text-xs text-gray-600 mb-2">
+									Search for a location or click on the map to select the
+									project coordinates.
+								</div>
+								<div id="newProjectMap" style="
+                          height: 400px;
+                          width: 100%;
+                          border-radius: 8px;
+                          margin-bottom: 8px;
+                          border: 1px solid #e5e7eb;
+                          background-color: #f3f4f6;
+                          position: relative;
+                          overflow: hidden;
+                        "></div>
+								<input type="hidden" id="project_latitude" name="latitude" />
+								<input type="hidden" id="project_longitude" name="longitude" />
+								<input type="hidden" id="project_county" name="county" />
+								<input type="hidden" id="project_subcounty" name="subcounty" />
+								<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+									<strong>Selected Location:</strong>
+									<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
+										location</span>
+									<br />
+									<span id="selectedCounty" class="text-gray-600"></span>
+								</div>
+							</div>
+							<!-- Title -->
+							<div>
+								<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+								<input required type="text" id="title" name="title"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+
+							<!-- Project Theme -->
+							<div>
+								<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
+									*</label>
+								<select id="theme" name="theme"
+									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+									<option value="">Select Theme</option>
+									<option value="GBV">Gender based violence</option>
+									<option value="AYPSRH">
+										Adolescent and Young People Sexual and Reproductive
+										Health
+									</option>
+									<option value="MNH">Maternal and Newborn Health</option>
+									<option value="FP">Family planning</option>
+									<option value="CH">Child Health</option>
+									<option value="AH">Adolescent Health</option>
+								</select>
+							</div>
+
+							<!-- Time Period -->
+							<div>
+								<label for="starttime_period" class="block text-sm font-medium text-gray-700">
+									Start *
+								</label>
+								<input required type="date" id="starttime_period" name="start_date"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+									*</label>
+								<input type="date" id="endtime_period" name="end_date"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<!-- Activity Type -->
+							<div class="col-span-2 md:col-span-4">
+								<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
+									(Description) *
+								</label>
+								<textarea required id="activity_type" name="activity_type" rows="3"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+							</div>
+
+							<!-- County and Sub-county fields removed (not required) -->
+
+							<!-- Contact Person -->
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Name *
+								</label>
+								<input required type="text" id="contact_person" name="contact_person_name"
+									placeholder="Name"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Role *
+								</label>
+								<input required type="text" id="contact_person" name="contact_person_role"
+									placeholder="Role"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Email *
+								</label>
+								<input required type="email" id="contact_person" name="contact_person_mail"
+									placeholder="Email"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="budget" class="block text-sm font-medium text-gray-700">
+									Budget in KES
+								</label>
+								<input required type="number" id="budget" name="budget" placeholder="amount"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+
+							<!-- Gaps -->
+							<div class="col-span-2 lg:col-span-4">
+								<label for="gaps" class="block text-sm font-medium text-gray-700">
+									Objectives *
+								</label>
+								<textarea required id="gaps" name="gaps" rows="3"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+							</div>
+						</div>
+
+						<!-- Button -->
+						<div class="mt-3">
+							<button type="submit"
+								class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+								Submit Project
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 	<nav x-data="{ open: false }"
 		class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
 		<div class="flex items-center justify-between px-6 py-4">
@@ -112,31 +278,24 @@
 						style="display: none">
 						<ul class="py-2 text-sm text-left text-black-800">
 							<li
-								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 uppercase text-xs hover:bg-blue-100">
-								<a href="all-projects.html">
-									<i class="fad fa-folder-open mr-2 "></i>
-									All projects
-								</a>
-							</li>
-							<li
-								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 uppercase text-xs hover:bg-blue-100">
-								<a href="projects.html">
-									<i class="fad fa-user-check mr-2 "></i>
-									My Projects
-								</a>
-							</li>
-							<li
-								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 uppercase text-xs hover:bg-blue-100">
-								<a href="members.html">
-									<i class="fad fa-plus mr-2 "></i>
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+									<i class="far fa-plus mr-3 "></i>
 									New Project
 								</a>
 							</li>
 							<li
-								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 uppercase text-xs hover:bg-blue-100">
-								<a href="my-collaborations.html">
-									<i class="fad fa-handshake mr-2 "></i>
-									My Collaborations
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+								<a href="projects.html">
+									<i class="far fa-user-check mr-2 "></i>
+									My Projects
+								</a>
+							</li>
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+								<a href="all-projects.html">
+									<i class="far fa-folder-open mr-2 "></i>
+									All projects
 								</a>
 							</li>
 						</ul>
@@ -151,15 +310,45 @@
 					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
 						class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
 						style="display: none">
-						<ul class="py-2 text-sm text-left text-blue-800">
-							<li class="px-4 py-2 transition hover:bg-blue-100">
+						<ul class="py-2 text-sm text-left text-gray-800">
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
 								<a href="dashboard.html">Dashboard</a>
 							</li>
-							<li class="px-4 py-2 transition hover:bg-blue-100">
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
 								<a href="projects.html">Project Management</a>
 							</li>
-							<li class="px-4 py-2 transition hover:bg-blue-100">
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
 								<a href="members.html">Stakeholder Management</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<li id="" class=" relative" x-data="{ collapboarationDD: false }">
+					<button @click="collapboarationDD = !collapboarationDD"
+						class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+						Collaborations <i class="ml-2 fal fa-chevron-down"></i>
+					</button>
+					<div x-show="collapboarationDD" @click.outside="collapboarationDD = false" x-transition
+						class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+						style="display: none">
+						<ul class="py-2 text-sm text-left text-gray-800">
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+								<a href="my-collaborations.html">
+									<i class="far fa-users-crown mr-2 "></i>
+									My Collaborations
+								</a>
+							</li>
+							<li
+								class="px-4 py-2 transition hover:text-blue-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-blue-100">
+								<a href="my-collaborations.html">
+									<i class="far fa-search mr-2 "></i>
+									Find Projects
+								</a>
 							</li>
 						</ul>
 					</div>
@@ -169,12 +358,6 @@
 					<a href="Stakeholders/dashboard.html" class="uppercase transition hover:text-blue-600">Dashboard</a>
 				</li>
 
-				<!-- Collaboration Dropdown -->
-				<li>
-					<a href="announcements.html" class="uppercase transition hover:text-blue-600">
-						Announcements
-					</a>
-				</li>
 
 				<!-- User Profile Dropdown -->
 				<li class="relative" x-data="{ showUserDropdown: false }">
