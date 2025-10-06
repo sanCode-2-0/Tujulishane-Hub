@@ -1,1168 +1,931 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Collaboration Announcements - RMNCAH</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af",
-              secondary: "#f59e0b",
-              accent: "#10b981",
-              dark: "#1f2937",
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
-      rel="stylesheet"
-    />
-    <script type="module">
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
-    </script>
-    <script src="auth.js"></script>
-    <!-- Load Alpine.js after function definitions -->
-    <script
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
-    ></script>
-  </head>
 
-  <body class="bg-gray-50">
-    <!-- Define announcementsApp before Alpine initializes -->
-    <script>
-      window.announcementsApp = function announcementsApp() {
-        return {
-          announcements: [],
-          myProjects: [],
-          organizations: [],
-          myCollaborationRequests: [], // Track user's submitted requests
-          loading: true,
-          creating: false,
-          submitting: false,
-          showCreateModal: false,
-          showDetailsModal: false,
-          showRequestModal: false,
-          selectedAnnouncement: null,
-          userRole: null, // Will be set in init from user object
-          currentUser: null, // Store current user data including email
-          newAnnouncement: {
-            projectId: "",
-            title: "",
-            content: "",
-            deadline: "",
-          },
-          collaborationRequest: {
-            organizationId: "",
-            proposedContribution: "",
-          },
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Collaboration Announcements - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af",
+						secondary: "#f59e0b",
+						accent: "#10b981",
+						dark: "#1f2937",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<script type="module">
+		import { BASE_URL } from "./config.js";
+		window.BASE_URL = BASE_URL;
+	</script>
+	<script src="auth.js"></script>
+	<!-- Load Alpine.js after function definitions -->
+	<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
 
-          async init() {
-            // Wait for auth.js to load user data and get it directly
-            const user = await this.waitForAuth();
+<body class="bg-gray-50">
+	<!-- Define announcementsApp before Alpine initializes -->
+	<script>
+		window.announcementsApp = function announcementsApp() {
+			return {
+				announcements: [],
+				myProjects: [],
+				organizations: [],
+				myCollaborationRequests: [], // Track user's submitted requests
+				loading: true,
+				creating: false,
+				submitting: false,
+				showCreateModal: false,
+				showDetailsModal: false,
+				showRequestModal: false,
+				selectedAnnouncement: null,
+				userRole: null, // Will be set in init from user object
+				currentUser: null, // Store current user data including email
+				newAnnouncement: {
+					projectId: "",
+					title: "",
+					content: "",
+					deadline: "",
+				},
+				collaborationRequest: {
+					organizationId: "",
+					proposedContribution: "",
+				},
 
-            // Set user role and store user data from the returned user object
-            if (user && user.role) {
-              this.userRole = user.role;
-              this.currentUser = user; // Store full user object
-            } else {
-              // Fallback: try to read from localStorage
-              const userStr = localStorage.getItem("currentUser");
-              if (userStr) {
-                try {
-                  const parsedUser = JSON.parse(userStr);
-                  this.userRole = parsedUser.role;
-                  this.currentUser = parsedUser;
-                } catch (e) {
-                  console.error("Error parsing user data:", e);
-                }
-              }
-              // Final fallback to userRole if it exists
-              if (!this.userRole) {
-                this.userRole = localStorage.getItem("userRole");
-              }
-            }
-            console.log("🔍 User Role:", this.userRole); // Debug log
-            console.log("🔍 Current User:", this.currentUser); // Debug log
+				async init() {
+					// Wait for auth.js to load user data and get it directly
+					const user = await this.waitForAuth();
 
-            await this.loadAnnouncements();
+					// Set user role and store user data from the returned user object
+					if (user && user.role) {
+						this.userRole = user.role;
+						this.currentUser = user; // Store full user object
+					} else {
+						// Fallback: try to read from localStorage
+						const userStr = localStorage.getItem("currentUser");
+						if (userStr) {
+							try {
+								const parsedUser = JSON.parse(userStr);
+								this.userRole = parsedUser.role;
+								this.currentUser = parsedUser;
+							} catch (e) {
+								console.error("Error parsing user data:", e);
+							}
+						}
+						// Final fallback to userRole if it exists
+						if (!this.userRole) {
+							this.userRole = localStorage.getItem("userRole");
+						}
+					}
+					console.log("🔍 User Role:", this.userRole); // Debug log
+					console.log("🔍 Current User:", this.currentUser); // Debug log
 
-            // Always try to load projects if user is authenticated
-            // The backend will handle authorization
-            const token = localStorage.getItem("accessToken");
-            if (token) {
-              console.log("🔍 User authenticated, loading projects...");
-              await this.loadMyProjects();
-              await this.loadOrganizations();
-              // Load user's collaboration requests to prevent duplicates
-              await this.loadMyCollaborationRequests();
-            } else {
-              console.warn("⚠️ No access token found, skipping project load");
-            }
-          },
+					await this.loadAnnouncements();
 
-          async waitForAuth() {
-            // Wait for AuthManager to be available and initialized
-            let attempts = 0;
-            while (attempts < 50) {
-              // Max 5 seconds
-              if (
-                window.authManager &&
-                typeof window.authManager.getCurrentUser === "function"
-              ) {
-                // Try to get current user and return it directly
-                try {
-                  const user = await window.authManager.getCurrentUser();
-                  return user; // Return the user object
-                } catch (e) {
-                  // User not logged in or error
-                  return null;
-                }
-              }
-              await new Promise((resolve) => setTimeout(resolve, 100));
-              attempts++;
-            }
-            return null; // Timeout - no auth available
-          },
+					// Always try to load projects if user is authenticated
+					// The backend will handle authorization
+					const token = localStorage.getItem("accessToken");
+					if (token) {
+						console.log("🔍 User authenticated, loading projects...");
+						await this.loadMyProjects();
+						await this.loadOrganizations();
+						// Load user's collaboration requests to prevent duplicates
+						await this.loadMyCollaborationRequests();
+					} else {
+						console.warn("⚠️ No access token found, skipping project load");
+					}
+				},
 
-          async loadAnnouncements() {
-            try {
-              const response = await fetch(
-                `${window.BASE_URL}/api/announcements`
-              );
-              const data = await response.json();
-              if (data.status === 200) {
-                this.announcements = data.data;
-              }
-            } catch (error) {
-              console.error("Error loading announcements:", error);
-              alert("Failed to load announcements");
-            } finally {
-              this.loading = false;
-            }
-          },
+				async waitForAuth() {
+					// Wait for AuthManager to be available and initialized
+					let attempts = 0;
+					while (attempts < 50) {
+						// Max 5 seconds
+						if (
+							window.authManager &&
+							typeof window.authManager.getCurrentUser === "function"
+						) {
+							// Try to get current user and return it directly
+							try {
+								const user = await window.authManager.getCurrentUser();
+								return user; // Return the user object
+							} catch (e) {
+								// User not logged in or error
+								return null;
+							}
+						}
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						attempts++;
+					}
+					return null; // Timeout - no auth available
+				},
 
-          async loadMyProjects() {
-            try {
-              const token = localStorage.getItem("accessToken");
-              console.log(
-                "🔍 Loading my projects with token:",
-                token ? "Present" : "Missing"
-              );
+				async loadAnnouncements() {
+					try {
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`
+						);
+						const data = await response.json();
+						if (data.status === 200) {
+							this.announcements = data.data;
+						}
+					} catch (error) {
+						console.error("Error loading announcements:", error);
+						alert("Failed to load announcements");
+					} finally {
+						this.loading = false;
+					}
+				},
 
-              const response = await fetch(
-                `${window.BASE_URL}/api/projects/my-projects`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+				async loadMyProjects() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						console.log(
+							"🔍 Loading my projects with token:",
+							token ? "Present" : "Missing"
+						);
 
-              console.log("🔍 My projects response status:", response.status);
+						const response = await fetch(
+							`${window.BASE_URL}/api/projects/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
 
-              if (!response.ok) {
-                console.error(
-                  "❌ Failed to load projects. Status:",
-                  response.status
-                );
-                if (response.status === 403) {
-                  console.error(
-                    "❌ 403 Forbidden - You may not have PARTNER role"
-                  );
-                } else if (response.status === 401) {
-                  console.error(
-                    "❌ 401 Unauthorized - Token may be invalid or expired"
-                  );
-                }
-                this.myProjects = [];
-                return;
-              }
+						console.log("🔍 My projects response status:", response.status);
 
-              const data = await response.json();
-              console.log("🔍 My projects response data:", data);
+						if (!response.ok) {
+							console.error(
+								"❌ Failed to load projects. Status:",
+								response.status
+							);
+							if (response.status === 403) {
+								console.error(
+									"❌ 403 Forbidden - You may not have PARTNER role"
+								);
+							} else if (response.status === 401) {
+								console.error(
+									"❌ 401 Unauthorized - Token may be invalid or expired"
+								);
+							}
+							this.myProjects = [];
+							return;
+						}
 
-              if (data.status === 200) {
-                this.myProjects = data.data || [];
-                console.log(
-                  "✅ Loaded projects:",
-                  this.myProjects.length,
-                  "projects"
-                );
-                console.log("📋 Projects:", this.myProjects);
-              } else {
-                console.warn("⚠️ Unexpected response status:", data.status);
-                this.myProjects = [];
-              }
-            } catch (error) {
-              console.error("❌ Error loading projects:", error);
-              this.myProjects = [];
-            }
-          },
+						const data = await response.json();
+						console.log("🔍 My projects response data:", data);
 
-          async loadOrganizations() {
-            try {
-              const token = localStorage.getItem("accessToken");
-              const response = await fetch(
-                `${window.BASE_URL}/api/organizations`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+						if (data.status === 200) {
+							this.myProjects = data.data || [];
+							console.log(
+								"✅ Loaded projects:",
+								this.myProjects.length,
+								"projects"
+							);
+							console.log("📋 Projects:", this.myProjects);
+						} else {
+							console.warn("⚠️ Unexpected response status:", data.status);
+							this.myProjects = [];
+						}
+					} catch (error) {
+						console.error("❌ Error loading projects:", error);
+						this.myProjects = [];
+					}
+				},
 
-              // Check if response is OK before parsing JSON
-              if (!response.ok) {
-                // Silently handle 403 - organizations endpoint may be restricted
-                this.organizations = []; // Set empty array
-                return;
-              }
+				async loadOrganizations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/organizations`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
 
-              const data = await response.json();
-              if (data.status === 200) {
-                this.organizations = data.data;
-              }
-            } catch (error) {
-              // Silently handle errors - organizations are optional
-              this.organizations = []; // Set empty array on error
-            }
-          },
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							// Silently handle 403 - organizations endpoint may be restricted
+							this.organizations = []; // Set empty array
+							return;
+						}
 
-          async loadMyCollaborationRequests() {
-            try {
-              const token = localStorage.getItem("accessToken");
-              const response = await fetch(
-                `${window.BASE_URL}/api/collaboration-requests/my-requests`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+						const data = await response.json();
+						if (data.status === 200) {
+							this.organizations = data.data;
+						}
+					} catch (error) {
+						// Silently handle errors - organizations are optional
+						this.organizations = []; // Set empty array on error
+					}
+				},
 
-              if (!response.ok) {
-                console.warn(
-                  "Could not load collaboration requests:",
-                  response.status
-                );
-                this.myCollaborationRequests = [];
-                return;
-              }
+				async loadMyCollaborationRequests() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/my-requests`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
 
-              const data = await response.json();
-              if (data.status === 200) {
-                this.myCollaborationRequests = data.data || [];
-                console.log(
-                  "✅ Loaded collaboration requests:",
-                  this.myCollaborationRequests.length
-                );
-              } else {
-                this.myCollaborationRequests = [];
-              }
-            } catch (error) {
-              console.error("Error loading collaboration requests:", error);
-              this.myCollaborationRequests = [];
-            }
-          },
+						if (!response.ok) {
+							console.warn(
+								"Could not load collaboration requests:",
+								response.status
+							);
+							this.myCollaborationRequests = [];
+							return;
+						}
 
-          async createAnnouncement() {
-            this.creating = true;
-            try {
-              const token = localStorage.getItem("accessToken");
-              const response = await fetch(
-                `${window.BASE_URL}/api/announcements`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify(this.newAnnouncement),
-                }
-              );
+						const data = await response.json();
+						if (data.status === 200) {
+							this.myCollaborationRequests = data.data || [];
+							console.log(
+								"✅ Loaded collaboration requests:",
+								this.myCollaborationRequests.length
+							);
+						} else {
+							this.myCollaborationRequests = [];
+						}
+					} catch (error) {
+						console.error("Error loading collaboration requests:", error);
+						this.myCollaborationRequests = [];
+					}
+				},
 
-              // Check if response is OK before parsing JSON
-              if (!response.ok) {
-                if (response.status === 403) {
-                  alert(
-                    "Permission denied. You may not have access to create announcements."
-                  );
-                } else if (response.status === 401) {
-                  alert("You must be logged in to create announcements.");
-                } else {
-                  alert(`Error: Server returned status ${response.status}`);
-                }
-                return;
-              }
+				async createAnnouncement() {
+					this.creating = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(this.newAnnouncement),
+							}
+						);
 
-              const data = await response.json();
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							if (response.status === 403) {
+								alert(
+									"Permission denied. You may not have access to create announcements."
+								);
+							} else if (response.status === 401) {
+								alert("You must be logged in to create announcements.");
+							} else {
+								alert(`Error: Server returned status ${response.status}`);
+							}
+							return;
+						}
 
-              if (data.status === 201) {
-                alert("Announcement created successfully!");
-                this.showCreateModal = false;
-                this.newAnnouncement = {
-                  projectId: "",
-                  title: "",
-                  content: "",
-                  deadline: "",
-                };
-                await this.loadAnnouncements();
-              } else {
-                alert("Error: " + (data.message || "Unknown error occurred"));
-              }
-            } catch (error) {
-              console.error("Error creating announcement:", error);
-              alert("Failed to create announcement. Please try again.");
-            } finally {
-              this.creating = false;
-            }
-          },
+						const data = await response.json();
 
-          viewDetails(announcement) {
-            this.selectedAnnouncement = announcement;
-            this.showDetailsModal = true;
-          },
+						if (data.status === 201) {
+							alert("Announcement created successfully!");
+							this.showCreateModal = false;
+							this.newAnnouncement = {
+								projectId: "",
+								title: "",
+								content: "",
+								deadline: "",
+							};
+							await this.loadAnnouncements();
+						} else {
+							alert("Error: " + (data.message || "Unknown error occurred"));
+						}
+					} catch (error) {
+						console.error("Error creating announcement:", error);
+						alert("Failed to create announcement. Please try again.");
+					} finally {
+						this.creating = false;
+					}
+				},
 
-          requestCollaboration(announcement) {
-            this.selectedAnnouncement = announcement;
-            this.showRequestModal = true;
-            this.showDetailsModal = false;
-          },
+				viewDetails(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showDetailsModal = true;
+				},
 
-          async submitRequest() {
-            this.submitting = true;
-            try {
-              const token = localStorage.getItem("accessToken");
+				requestCollaboration(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showRequestModal = true;
+					this.showDetailsModal = false;
+				},
 
-              // Prepare request payload - only include organizationId if it's not empty
-              const payload = {
-                proposedContribution:
-                  this.collaborationRequest.proposedContribution,
-              };
+				async submitRequest() {
+					this.submitting = true;
+					try {
+						const token = localStorage.getItem("accessToken");
 
-              // Only add organizationId if it's set (not empty string)
-              if (this.collaborationRequest.organizationId) {
-                payload.organizationId = parseInt(
-                  this.collaborationRequest.organizationId
-                );
-              }
+						// Prepare request payload - only include organizationId if it's not empty
+						const payload = {
+							proposedContribution:
+								this.collaborationRequest.proposedContribution,
+						};
 
-              const response = await fetch(
-                `${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify(payload),
-                }
-              );
+						// Only add organizationId if it's set (not empty string)
+						if (this.collaborationRequest.organizationId) {
+							payload.organizationId = parseInt(
+								this.collaborationRequest.organizationId
+							);
+						}
 
-              // Always try to parse JSON to get the error message
-              const data = await response.json();
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(payload),
+							}
+						);
 
-              // Check if response is OK
-              if (!response.ok) {
-                if (response.status === 403) {
-                  alert(
-                    "Permission denied: " +
-                      (data.message ||
-                        "You may not have access to submit collaboration requests.")
-                  );
-                } else if (response.status === 401) {
-                  alert(
-                    "Authentication required: " +
-                      (data.message ||
-                        "You must be logged in to submit a collaboration request.")
-                  );
-                } else if (response.status === 400) {
-                  alert(
-                    "Invalid request: " +
-                      (data.message || "Please check your input and try again.")
-                  );
-                } else {
-                  alert(
-                    `Error: ${
-                      data.message ||
-                      "Server returned status " + response.status
-                    }`
-                  );
-                }
-                return;
-              }
+						// Always try to parse JSON to get the error message
+						const data = await response.json();
 
-              if (data.status === 201) {
-                alert(
-                  "Collaboration request submitted successfully! The Ministry of Health will review your request."
-                );
-                this.showRequestModal = false;
-                this.collaborationRequest = {
-                  organizationId: "",
-                  proposedContribution: "",
-                };
-                // Reload collaboration requests to update the UI
-                await this.loadMyCollaborationRequests();
-              } else {
-                alert("Error: " + (data.message || "Unknown error occurred"));
-              }
-            } catch (error) {
-              console.error("Error submitting request:", error);
-              alert(
-                "Failed to submit collaboration request. Please try again."
-              );
-            } finally {
-              this.submitting = false;
-            }
-          },
+						// Check if response is OK
+						if (!response.ok) {
+							if (response.status === 403) {
+								alert(
+									"Permission denied: " +
+									(data.message ||
+										"You may not have access to submit collaboration requests.")
+								);
+							} else if (response.status === 401) {
+								alert(
+									"Authentication required: " +
+									(data.message ||
+										"You must be logged in to submit a collaboration request.")
+								);
+							} else if (response.status === 400) {
+								alert(
+									"Invalid request: " +
+									(data.message || "Please check your input and try again.")
+								);
+							} else {
+								alert(
+									`Error: ${data.message ||
+									"Server returned status " + response.status
+									}`
+								);
+							}
+							return;
+						}
 
-          // Helper method to check if announcement was created by current user
-          isOwnAnnouncement(announcement) {
-            if (!this.currentUser || !announcement || !announcement.createdBy) {
-              console.log("🔍 isOwnAnnouncement: Missing data", {
-                hasCurrentUser: !!this.currentUser,
-                hasAnnouncement: !!announcement,
-                hasCreatedBy: !!(announcement && announcement.createdBy),
-              });
-              return false;
-            }
-            // Compare by email as it's unique
-            const isOwn =
-              this.currentUser.email === announcement.createdBy.email;
-            console.log("🔍 isOwnAnnouncement:", {
-              currentUserEmail: this.currentUser.email,
-              createdByEmail: announcement.createdBy.email,
-              isOwn: isOwn,
-            });
-            return isOwn;
-          },
+						if (data.status === 201) {
+							alert(
+								"Collaboration request submitted successfully! The Ministry of Health will review your request."
+							);
+							this.showRequestModal = false;
+							this.collaborationRequest = {
+								organizationId: "",
+								proposedContribution: "",
+							};
+							// Reload collaboration requests to update the UI
+							await this.loadMyCollaborationRequests();
+						} else {
+							alert("Error: " + (data.message || "Unknown error occurred"));
+						}
+					} catch (error) {
+						console.error("Error submitting request:", error);
+						alert(
+							"Failed to submit collaboration request. Please try again."
+						);
+					} finally {
+						this.submitting = false;
+					}
+				},
 
-          // Helper method to check if user has already requested collaboration for this announcement
-          hasAlreadyRequested(announcement) {
-            if (!announcement || !this.myCollaborationRequests) {
-              return false;
-            }
+				// Helper method to check if announcement was created by current user
+				isOwnAnnouncement(announcement) {
+					if (!this.currentUser || !announcement || !announcement.createdBy) {
+						console.log("🔍 isOwnAnnouncement: Missing data", {
+							hasCurrentUser: !!this.currentUser,
+							hasAnnouncement: !!announcement,
+							hasCreatedBy: !!(announcement && announcement.createdBy),
+						});
+						return false;
+					}
+					// Compare by email as it's unique
+					const isOwn =
+						this.currentUser.email === announcement.createdBy.email;
+					console.log("🔍 isOwnAnnouncement:", {
+						currentUserEmail: this.currentUser.email,
+						createdByEmail: announcement.createdBy.email,
+						isOwn: isOwn,
+					});
+					return isOwn;
+				},
 
-            const hasRequested = this.myCollaborationRequests.some(
-              (request) =>
-                request.announcement &&
-                request.announcement.id === announcement.id
-            );
+				// Helper method to check if user has already requested collaboration for this announcement
+				hasAlreadyRequested(announcement) {
+					if (!announcement || !this.myCollaborationRequests) {
+						return false;
+					}
 
-            console.log("🔍 hasAlreadyRequested:", {
-              announcementId: announcement.id,
-              totalRequests: this.myCollaborationRequests.length,
-              hasRequested: hasRequested,
-            });
+					const hasRequested = this.myCollaborationRequests.some(
+						(request) =>
+							request.announcement &&
+							request.announcement.id === announcement.id
+					);
 
-            return hasRequested;
-          },
-        };
-      };
-    </script>
+					console.log("🔍 hasAlreadyRequested:", {
+						announcementId: announcement.id,
+						totalRequests: this.myCollaborationRequests.length,
+						hasRequested: hasRequested,
+					});
 
-    <div x-data="announcementsApp()" x-init="init()">
-      <!-- Navigation matching site design -->
-      <nav
-        x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
-      >
-        <div class="flex items-center justify-between px-6 py-4">
-          <!-- Logo -->
-          <a
-            href="index.html"
-            class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase"
-          >
-            <img
-              src="resources/images/moh.png"
-              class="object-contain h-12"
-              alt="MOH Logo"
-            />
-            <img
-              src="resources/images/log2.png"
-              class="object-contain h-12"
-              alt="Site Logo"
-            />
-          </a>
+					return hasRequested;
+				},
+			};
+		};
+	</script>
 
-          <!-- Mobile Menu Toggle -->
-          <button
-            @click="open = !open"
-            class="text-xl lg:hidden focus:outline-none"
-          >
-            <i class="fas fa-bars" x-show="!open"></i>
-            <i class="fas fa-times" x-show="open" x-cloak></i>
-          </button>
+	<div x-data="announcementsApp()" x-init="init()">
+		<!-- Navigation matching site design -->
+		<nav x-data="{ open: false }"
+			class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+			<div class="flex items-center justify-between px-6 py-4">
+				<!-- Logo -->
+				<a href="index-post-login.html"
+					class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+					<img src="resources/images/moh.png" class="object-contain h-12" alt="MOH Logo" />
+					<img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo" />
+				</a>
 
-          <!-- Nav Links - Desktop -->
-          <ul
-            class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex"
-          >
-            <li>
-              <a
-                href="index.html"
-                class="uppercase transition hover:text-blue-600"
-              >
-                Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="projects.html"
-                class="uppercase transition hover:text-blue-600"
-              >
-                All Projects
-              </a>
-            </li>
-            <li>
-              <a
-                href="members.html"
-                class="uppercase transition hover:text-blue-600"
-              >
-                Stakeholders
-              </a>
-            </li>
-            <li class="relative" x-data="{ showDropdown: false }">
-              <button
-                @click="showDropdown = !showDropdown"
-                class="inline-flex items-center font-bold uppercase text-blue-700 hover:text-pink-500 transition focus:outline-none"
-              >
-                Collaboration <i class="ml-2 fas fa-chevron-down text-xs"></i>
-              </button>
-              <div
-                x-show="showDropdown"
-                @click.outside="showDropdown = false"
-                x-transition
-                class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-                style="display: none"
-              >
-                <ul class="py-2 text-sm text-left text-gray-700">
-                  <li class="px-4 py-2 transition hover:bg-blue-50">
-                    <a
-                      href="announcements.html"
-                      class="flex items-center font-semibold text-blue-700"
-                    >
-                      <i class="fas fa-bullhorn mr-2"></i>
-                      Announcements
-                    </a>
-                  </li>
-                  <li class="px-4 py-2 transition hover:bg-blue-50">
-                    <a href="my-collaborations.html" class="flex items-center">
-                      <i class="fas fa-users mr-2 text-green-600"></i>
-                      My Collaborations
-                    </a>
-                  </li>
-                  <li
-                    class="px-4 py-2 transition hover:bg-blue-50"
-                    id="admin-collab-menu"
-                    style="display: none"
-                  >
-                    <a
-                      href="Forms/Admin/collaboration-requests.html"
-                      class="flex items-center"
-                    >
-                      <i class="fas fa-handshake mr-2 text-purple-600"></i>
-                      Manage Requests
-                      <span
-                        id="pending-count"
-                        class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
-                        style="display: none"
-                      ></span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </div>
+				<!-- Mobile Menu Toggle -->
+				<button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+					<i class="fas fa-bars" x-show="!open"></i>
+					<i class="fas fa-times" x-show="open" x-cloak></i>
+				</button>
 
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition class="px-6 pb-6 lg:hidden">
-          <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-            <li>
-              <a href="index.html" class="block transition hover:text-blue-600"
-                >Home</a
-              >
-            </li>
-            <li>
-              <a
-                href="projects.html"
-                class="block transition hover:text-blue-600"
-                >Projects</a
-              >
-            </li>
-            <li>
-              <a
-                href="members.html"
-                class="block transition hover:text-blue-600"
-                >Stakeholders</a
-              >
-            </li>
-            <li>
-              <a
-                href="announcements.html"
-                class="block transition hover:text-blue-600 font-bold text-blue-700"
-                ><i class="fas fa-bullhorn mr-2"></i>Announcements</a
-              >
-            </li>
-            <li>
-              <a
-                href="my-collaborations.html"
-                class="block transition hover:text-blue-600"
-                ><i class="fas fa-users mr-2"></i>My Collaborations</a
-              >
-            </li>
-            <li id="admin-collab-mobile" style="display: none">
-              <a
-                href="Forms/Admin/collaboration-requests.html"
-                class="block transition hover:text-blue-600"
-                ><i class="fas fa-handshake mr-2"></i>Manage Requests</a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
+				<!-- Nav Links - Desktop -->
+				<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+					<li>
+						<a href="index-post-login.html" class="uppercase transition hover:text-blue-600">
+							Home
+						</a>
+					</li>
+					<li>
+						<a href="projects.html" class="uppercase transition hover:text-blue-600">
+							All Projects
+						</a>
+					</li>
+					<li>
+						<a href="members.html" class="uppercase transition hover:text-blue-600">
+							Stakeholders
+						</a>
+					</li>
+					<li class="relative" x-data="{ showDropdown: false }">
+						<button @click="showDropdown = !showDropdown"
+							class="inline-flex items-center font-bold uppercase text-blue-700 hover:text-pink-500 transition focus:outline-none">
+							Collaboration <i class="ml-2 fas fa-chevron-down text-xs"></i>
+						</button>
+						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+							style="display: none">
+							<ul class="py-2 text-sm text-left text-gray-700">
+								<li class="px-4 py-2 transition hover:bg-blue-50">
+									<a href="announcements.html" class="flex items-center font-semibold text-blue-700">
+										<i class="fas fa-bullhorn mr-2"></i>
+										Announcements
+									</a>
+								</li>
+								<li class="px-4 py-2 transition hover:bg-blue-50">
+									<a href="my-collaborations.html" class="flex items-center">
+										<i class="fas fa-users mr-2 text-green-600"></i>
+										My Collaborations
+									</a>
+								</li>
+								<li class="px-4 py-2 transition hover:bg-blue-50" id="admin-collab-menu"
+									style="display: none">
+									<a href="Forms/Admin/collaboration-requests.html" class="flex items-center">
+										<i class="fas fa-handshake mr-2 text-purple-600"></i>
+										Manage Requests
+										<span id="pending-count"
+											class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
+											style="display: none"></span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
 
-      <!-- Main Content -->
-      <div class="container mx-auto px-4 py-8 mt-24">
-        <!-- Header with Create Button (Partners only) -->
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-3xl font-bold text-gray-800">
-              Partnership Opportunities
-            </h2>
-            <p class="text-gray-600 mt-2">
-              Discover projects looking for collaboration
-            </p>
-          </div>
+			<!-- Nav Links - Mobile -->
+			<div x-show="open" x-transition class="px-6 pb-6 lg:hidden">
+				<ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+					<li>
+						<a href="index.html" class="block transition hover:text-blue-600">Home</a>
+					</li>
+					<li>
+						<a href="projects.html" class="block transition hover:text-blue-600">Projects</a>
+					</li>
+					<li>
+						<a href="members.html" class="block transition hover:text-blue-600">Stakeholders</a>
+					</li>
+					<li>
+						<a href="announcements.html"
+							class="block transition hover:text-blue-600 font-bold text-blue-700"><i
+								class="fas fa-bullhorn mr-2"></i>Announcements</a>
+					</li>
+					<li>
+						<a href="my-collaborations.html" class="block transition hover:text-blue-600"><i
+								class="fas fa-users mr-2"></i>My Collaborations</a>
+					</li>
+					<li id="admin-collab-mobile" style="display: none">
+						<a href="Forms/Admin/collaboration-requests.html"
+							class="block transition hover:text-blue-600"><i class="fas fa-handshake mr-2"></i>Manage
+							Requests</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
 
-          <!-- Create Button for PARTNER users -->
-          <button
-            x-show="userRole === 'PARTNER'"
-            @click="showCreateModal = true"
-            class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-          >
-            <i class="fas fa-plus mr-2"></i>Create Announcement
-          </button>
+		<!-- Main Content -->
+		<div class="container mx-auto px-4 py-8 mt-24">
+			<!-- Header with Create Button (Partners only) -->
+			<div class="flex justify-between items-center mb-6">
+				<div>
+					<h2 class="text-3xl font-bold text-gray-800">
+						Partnership Opportunities
+					</h2>
+					<p class="text-gray-600 mt-2">
+						Discover projects looking for collaboration
+					</p>
+				</div>
 
-          <!-- Login prompt for non-authenticated users -->
-          <div x-show="!userRole" class="text-center">
-            <a
-              href="index.html"
-              class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition inline-block"
-            >
-              <i class="fas fa-sign-in-alt mr-2"></i>Login to Create
-              Announcements
-            </a>
-          </div>
-        </div>
+				<!-- Create Button for PARTNER users -->
+				<button x-show="userRole === 'PARTNER'" @click="showCreateModal = true"
+					class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+					<i class="fas fa-plus mr-2"></i>Create Announcement
+				</button>
 
-        <!-- Loading State -->
-        <div x-show="loading" class="text-center py-12">
-          <i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
-          <p class="mt-4 text-gray-600">Loading announcements...</p>
-        </div>
+				<!-- Login prompt for non-authenticated users -->
+				<div x-show="!userRole" class="text-center">
+					<a href="index.html"
+						class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition inline-block">
+						<i class="fas fa-sign-in-alt mr-2"></i>Login to Create
+						Announcements
+					</a>
+				</div>
+			</div>
 
-        <!-- Announcements Grid -->
-        <div
-          x-show="!loading"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <template
-            x-for="announcement in announcements"
-            :key="announcement.id"
-          >
-            <div
-              class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition"
-            >
-              <!-- Status Badge -->
-              <div class="flex justify-between items-start mb-4">
-                <span
-                  :class="{
+			<!-- Loading State -->
+			<div x-show="loading" class="text-center py-12">
+				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+				<p class="mt-4 text-gray-600">Loading announcements...</p>
+			</div>
+
+			<!-- Announcements Grid -->
+			<div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<template x-for="announcement in announcements" :key="announcement.id">
+					<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
+						<!-- Status Badge -->
+						<div class="flex justify-between items-start mb-4">
+							<span :class="{
                                 'bg-green-100 text-green-800': announcement.status === 'ACTIVE',
                                 'bg-red-100 text-red-800': announcement.status === 'CLOSED'
-                            }"
-                  class="px-3 py-1 rounded-full text-sm font-semibold"
-                  x-text="announcement.status"
-                ></span>
-                <span
-                  class="text-sm text-gray-500"
-                  x-text="new Date(announcement.createdAt).toLocaleDateString()"
-                ></span>
-              </div>
+                            }" class="px-3 py-1 rounded-full text-sm font-semibold"
+								x-text="announcement.status"></span>
+							<span class="text-sm text-gray-500"
+								x-text="new Date(announcement.createdAt).toLocaleDateString()"></span>
+						</div>
 
-              <!-- Title & Content -->
-              <h3
-                class="text-xl font-bold text-gray-800 mb-2"
-                x-text="announcement.title"
-              ></h3>
-              <p
-                class="text-gray-600 mb-4 line-clamp-3"
-                x-text="announcement.content"
-              ></p>
+						<!-- Title & Content -->
+						<h3 class="text-xl font-bold text-gray-800 mb-2" x-text="announcement.title"></h3>
+						<p class="text-gray-600 mb-4 line-clamp-3" x-text="announcement.content"></p>
 
-              <!-- Project Info -->
-              <div class="border-t pt-4 mb-4">
-                <p class="text-sm text-gray-500">Project:</p>
-                <p
-                  class="font-semibold text-gray-800"
-                  x-text="announcement.project?.title"
-                ></p>
-                <p
-                  class="text-sm text-gray-600"
-                  x-text="announcement.project?.partner"
-                ></p>
-              </div>
+						<!-- Project Info -->
+						<div class="border-t pt-4 mb-4">
+							<p class="text-sm text-gray-500">Project:</p>
+							<p class="font-semibold text-gray-800" x-text="announcement.project?.title"></p>
+							<p class="text-sm text-gray-600" x-text="announcement.project?.partner"></p>
+						</div>
 
-              <!-- Deadline -->
-              <div
-                x-show="announcement.deadline"
-                class="flex items-center text-sm text-gray-500 mb-4"
-              >
-                <i class="fas fa-calendar-alt mr-2"></i>
-                <span
-                  >Deadline:
-                  <span
-                    x-text="new Date(announcement.deadline).toLocaleDateString()"
-                  ></span
-                ></span>
-              </div>
+						<!-- Deadline -->
+						<div x-show="announcement.deadline" class="flex items-center text-sm text-gray-500 mb-4">
+							<i class="fas fa-calendar-alt mr-2"></i>
+							<span>Deadline:
+								<span x-text="new Date(announcement.deadline).toLocaleDateString()"></span></span>
+						</div>
 
-              <!-- Actions -->
-              <div class="flex space-x-2">
-                <button
-                  @click="viewDetails(announcement)"
-                  class="flex-1 bg-blue-50 text-primary px-4 py-2 rounded-lg hover:bg-blue-100 transition"
-                >
-                  <i class="fas fa-eye mr-2"></i>View Details
-                </button>
-                <!-- Request button - only show if user can request -->
-                <button
-                  x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && !hasAlreadyRequested(announcement)"
-                  @click="requestCollaboration(announcement)"
-                  class="flex-1 bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition"
-                >
-                  <i class="fas fa-handshake mr-2"></i>Request
-                </button>
-                <!-- Already requested indicator -->
-                <div
-                  x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && hasAlreadyRequested(announcement)"
-                  class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-center"
-                >
-                  <i class="fas fa-check mr-2"></i>Requested
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+						<!-- Actions -->
+						<div class="flex space-x-2">
+							<button @click="viewDetails(announcement)"
+								class="flex-1 bg-blue-50 text-primary px-4 py-2 rounded-lg hover:bg-blue-100 transition">
+								<i class="fas fa-eye mr-2"></i>View Details
+							</button>
+							<!-- Request button - only show if user can request -->
+							<button
+								x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && !hasAlreadyRequested(announcement)"
+								@click="requestCollaboration(announcement)"
+								class="flex-1 bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition">
+								<i class="fas fa-handshake mr-2"></i>Request
+							</button>
+							<!-- Already requested indicator -->
+							<div x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && hasAlreadyRequested(announcement)"
+								class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-center">
+								<i class="fas fa-check mr-2"></i>Requested
+							</div>
+						</div>
+					</div>
+				</template>
+			</div>
 
-        <!-- Empty State -->
-        <div
-          x-show="!loading && announcements.length === 0"
-          class="text-center py-12"
-        >
-          <i class="fas fa-bullhorn text-6xl text-gray-300 mb-4"></i>
-          <h3 class="text-xl font-semibold text-gray-600 mb-2">
-            No announcements yet
-          </h3>
-          <p class="text-gray-500">
-            Check back later for partnership opportunities
-          </p>
-        </div>
-      </div>
+			<!-- Empty State -->
+			<div x-show="!loading && announcements.length === 0" class="text-center py-12">
+				<i class="fas fa-bullhorn text-6xl text-gray-300 mb-4"></i>
+				<h3 class="text-xl font-semibold text-gray-600 mb-2">
+					No announcements yet
+				</h3>
+				<p class="text-gray-500">
+					Check back later for partnership opportunities
+				</p>
+			</div>
+		</div>
 
-      <!-- Create Announcement Modal -->
-      <div
-        x-show="showCreateModal"
-        x-cloak
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        @click.self="showCreateModal = false"
-      >
-        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
-          <h3 class="text-2xl font-bold mb-6">
-            Create Collaboration Announcement
-          </h3>
+		<!-- Create Announcement Modal -->
+		<div x-show="showCreateModal" x-cloak
+			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+			@click.self="showCreateModal = false">
+			<div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
+				<h3 class="text-2xl font-bold mb-6">
+					Create Collaboration Announcement
+				</h3>
 
-          <form @submit.prevent="createAnnouncement()">
-            <!-- Project Selection -->
-            <div class="mb-4">
-              <label class="block text-gray-700 font-semibold mb-2"
-                >Select Project *</label
-              >
-              <select
-                x-model="newAnnouncement.projectId"
-                required
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-                :disabled="myProjects.length === 0"
-              >
-                <option value="">
-                  <template x-if="myProjects.length === 0">
-                    -- No projects available. Create a project first --
-                  </template>
-                  <template x-if="myProjects.length > 0">
-                    -- Select a project --
-                  </template>
-                </option>
-                <template x-for="project in myProjects" :key="project.id">
-                  <option
-                    :value="project.id"
-                    x-text="`${project.title} (${project.partner || 'Your Organization'})`"
-                  ></option>
-                </template>
-              </select>
-              <p
-                x-show="myProjects.length === 0"
-                class="mt-2 text-sm text-amber-600"
-              >
-                <i class="fas fa-info-circle mr-1"></i>
-                You need to create a project before you can create an
-                announcement.
-                <a
-                  href="Forms/Admin/new-project.html"
-                  class="underline font-semibold"
-                  >Create a project now</a
-                >
-              </p>
-              <p
-                x-show="myProjects.length > 0"
-                class="mt-1 text-sm text-gray-500"
-              >
-                <i class="fas fa-info-circle mr-1"></i>
-                <span
-                  x-text="`${myProjects.length} project(s) available`"
-                ></span>
-              </p>
-            </div>
+				<form @submit.prevent="createAnnouncement()">
+					<!-- Project Selection -->
+					<div class="mb-4">
+						<label class="block text-gray-700 font-semibold mb-2">Select Project *</label>
+						<select x-model="newAnnouncement.projectId" required
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+							:disabled="myProjects.length === 0">
+							<option value="">
+								<template x-if="myProjects.length === 0">
+									-- No projects available. Create a project first --
+								</template>
+								<template x-if="myProjects.length > 0">
+									-- Select a project --
+								</template>
+							</option>
+							<template x-for="project in myProjects" :key="project.id">
+								<option :value="project.id"
+									x-text="`${project.title} (${project.partner || 'Your Organization'})`"></option>
+							</template>
+						</select>
+						<p x-show="myProjects.length === 0" class="mt-2 text-sm text-amber-600">
+							<i class="fas fa-info-circle mr-1"></i>
+							You need to create a project before you can create an
+							announcement.
+							<a href="Forms/Admin/new-project.html" class="underline font-semibold">Create a project
+								now</a>
+						</p>
+						<p x-show="myProjects.length > 0" class="mt-1 text-sm text-gray-500">
+							<i class="fas fa-info-circle mr-1"></i>
+							<span x-text="`${myProjects.length} project(s) available`"></span>
+						</p>
+					</div>
 
-            <!-- Title -->
-            <div class="mb-4">
-              <label class="block text-gray-700 font-semibold mb-2"
-                >Title *</label
-              >
-              <input
-                type="text"
-                x-model="newAnnouncement.title"
-                required
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-                placeholder="e.g., Looking for technical partners"
-              />
-            </div>
+					<!-- Title -->
+					<div class="mb-4">
+						<label class="block text-gray-700 font-semibold mb-2">Title *</label>
+						<input type="text" x-model="newAnnouncement.title" required
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+							placeholder="e.g., Looking for technical partners" />
+					</div>
 
-            <!-- Content -->
-            <div class="mb-4">
-              <label class="block text-gray-700 font-semibold mb-2"
-                >Description *</label
-              >
-              <textarea
-                x-model="newAnnouncement.content"
-                required
-                rows="4"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-                placeholder="Describe what kind of collaboration you're looking for..."
-              ></textarea>
-            </div>
+					<!-- Content -->
+					<div class="mb-4">
+						<label class="block text-gray-700 font-semibold mb-2">Description *</label>
+						<textarea x-model="newAnnouncement.content" required rows="4"
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+							placeholder="Describe what kind of collaboration you're looking for..."></textarea>
+					</div>
 
-            <!-- Deadline -->
-            <div class="mb-6">
-              <label class="block text-gray-700 font-semibold mb-2"
-                >Application Deadline</label
-              >
-              <input
-                type="date"
-                x-model="newAnnouncement.deadline"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-              />
-            </div>
+					<!-- Deadline -->
+					<div class="mb-6">
+						<label class="block text-gray-700 font-semibold mb-2">Application Deadline</label>
+						<input type="date" x-model="newAnnouncement.deadline"
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary" />
+					</div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                @click="showCreateModal = false"
-                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                :disabled="creating"
-                class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                <span x-show="!creating">Create Announcement</span>
-                <span x-show="creating"
-                  ><i class="fas fa-spinner fa-spin mr-2"></i>Creating...</span
-                >
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+					<!-- Buttons -->
+					<div class="flex justify-end space-x-3">
+						<button type="button" @click="showCreateModal = false"
+							class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+							Cancel
+						</button>
+						<button type="submit" :disabled="creating"
+							class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+							<span x-show="!creating">Create Announcement</span>
+							<span x-show="creating"><i class="fas fa-spinner fa-spin mr-2"></i>Creating...</span>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
 
-      <!-- View Details Modal -->
-      <div
-        x-show="showDetailsModal"
-        x-cloak
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        @click.self="showDetailsModal = false"
-      >
-        <div
-          class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-        >
-          <div class="flex justify-between items-start mb-6">
-            <h3
-              class="text-2xl font-bold"
-              x-text="selectedAnnouncement?.title"
-            ></h3>
-            <button
-              @click="showDetailsModal = false"
-              class="text-gray-500 hover:text-gray-700"
-            >
-              <i class="fas fa-times text-2xl"></i>
-            </button>
-          </div>
+		<!-- View Details Modal -->
+		<div x-show="showDetailsModal" x-cloak
+			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+			@click.self="showDetailsModal = false">
+			<div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+				<div class="flex justify-between items-start mb-6">
+					<h3 class="text-2xl font-bold" x-text="selectedAnnouncement?.title"></h3>
+					<button @click="showDetailsModal = false" class="text-gray-500 hover:text-gray-700">
+						<i class="fas fa-times text-2xl"></i>
+					</button>
+				</div>
 
-          <div class="space-y-4">
-            <!-- Status & Date -->
-            <div class="flex justify-between items-center pb-4 border-b">
-              <span
-                :class="{
+				<div class="space-y-4">
+					<!-- Status & Date -->
+					<div class="flex justify-between items-center pb-4 border-b">
+						<span :class="{
                             'bg-green-100 text-green-800': selectedAnnouncement?.status === 'ACTIVE',
                             'bg-red-100 text-red-800': selectedAnnouncement?.status === 'CLOSED'
-                        }"
-                class="px-3 py-1 rounded-full text-sm font-semibold"
-                x-text="selectedAnnouncement?.status"
-              ></span>
-              <span
-                class="text-sm text-gray-500"
-                x-text="'Posted: ' + new Date(selectedAnnouncement?.createdAt).toLocaleDateString()"
-              ></span>
-            </div>
+                        }" class="px-3 py-1 rounded-full text-sm font-semibold"
+							x-text="selectedAnnouncement?.status"></span>
+						<span class="text-sm text-gray-500"
+							x-text="'Posted: ' + new Date(selectedAnnouncement?.createdAt).toLocaleDateString()"></span>
+					</div>
 
-            <!-- Content -->
-            <div>
-              <h4 class="font-semibold text-gray-700 mb-2">Description</h4>
-              <p
-                class="text-gray-600"
-                x-text="selectedAnnouncement?.content"
-              ></p>
-            </div>
+					<!-- Content -->
+					<div>
+						<h4 class="font-semibold text-gray-700 mb-2">Description</h4>
+						<p class="text-gray-600" x-text="selectedAnnouncement?.content"></p>
+					</div>
 
-            <!-- Project Details -->
-            <div class="bg-blue-50 p-4 rounded-lg">
-              <h4 class="font-semibold text-gray-700 mb-2">
-                Project Information
-              </h4>
-              <p
-                class="font-semibold text-gray-800"
-                x-text="selectedAnnouncement?.project?.title"
-              ></p>
-              <p
-                class="text-sm text-gray-600"
-                x-text="selectedAnnouncement?.project?.partner"
-              ></p>
-              <p
-                class="text-sm text-gray-600 mt-2"
-                x-text="selectedAnnouncement?.project?.county"
-              ></p>
-            </div>
+					<!-- Project Details -->
+					<div class="bg-blue-50 p-4 rounded-lg">
+						<h4 class="font-semibold text-gray-700 mb-2">
+							Project Information
+						</h4>
+						<p class="font-semibold text-gray-800" x-text="selectedAnnouncement?.project?.title"></p>
+						<p class="text-sm text-gray-600" x-text="selectedAnnouncement?.project?.partner"></p>
+						<p class="text-sm text-gray-600 mt-2" x-text="selectedAnnouncement?.project?.county"></p>
+					</div>
 
-            <!-- Posted By -->
-            <div>
-              <h4 class="font-semibold text-gray-700 mb-2">Posted By</h4>
-              <p
-                class="text-gray-600"
-                x-text="selectedAnnouncement?.createdBy?.name"
-              ></p>
-              <p
-                class="text-sm text-gray-500"
-                x-text="selectedAnnouncement?.createdBy?.email"
-              ></p>
-            </div>
+					<!-- Posted By -->
+					<div>
+						<h4 class="font-semibold text-gray-700 mb-2">Posted By</h4>
+						<p class="text-gray-600" x-text="selectedAnnouncement?.createdBy?.name"></p>
+						<p class="text-sm text-gray-500" x-text="selectedAnnouncement?.createdBy?.email"></p>
+					</div>
 
-            <!-- Deadline -->
-            <div x-show="selectedAnnouncement?.deadline">
-              <h4 class="font-semibold text-gray-700 mb-2">
-                Application Deadline
-              </h4>
-              <p
-                class="text-gray-600"
-                x-text="selectedAnnouncement?.deadline ? new Date(selectedAnnouncement.deadline).toLocaleDateString() : 'No deadline'"
-              ></p>
-            </div>
+					<!-- Deadline -->
+					<div x-show="selectedAnnouncement?.deadline">
+						<h4 class="font-semibold text-gray-700 mb-2">
+							Application Deadline
+						</h4>
+						<p class="text-gray-600"
+							x-text="selectedAnnouncement?.deadline ? new Date(selectedAnnouncement.deadline).toLocaleDateString() : 'No deadline'">
+						</p>
+					</div>
 
-            <!-- Action Button for Partners -->
-            <button
-              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && !hasAlreadyRequested(selectedAnnouncement)"
-              @click="requestCollaboration(selectedAnnouncement)"
-              class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition mt-4"
-            >
-              <i class="fas fa-handshake mr-2"></i>Request Collaboration
-            </button>
+					<!-- Action Button for Partners -->
+					<button
+						x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && !hasAlreadyRequested(selectedAnnouncement)"
+						@click="requestCollaboration(selectedAnnouncement)"
+						class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition mt-4">
+						<i class="fas fa-handshake mr-2"></i>Request Collaboration
+					</button>
 
-            <!-- Already requested message -->
-            <div
-              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && hasAlreadyRequested(selectedAnnouncement)"
-              class="mt-4 p-4 bg-green-50 rounded-lg"
-            >
-              <p class="text-green-700 text-sm">
-                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                You have already submitted a collaboration request for this
-                announcement. Check your
-                <a href="my-collaborations.html" class="underline font-semibold"
-                  >collaboration status</a
-                >
-                for updates.
-              </p>
-            </div>
+					<!-- Already requested message -->
+					<div x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && !isOwnAnnouncement(selectedAnnouncement) && hasAlreadyRequested(selectedAnnouncement)"
+						class="mt-4 p-4 bg-green-50 rounded-lg">
+						<p class="text-green-700 text-sm">
+							<i class="fas fa-check-circle text-green-500 mr-2"></i>
+							You have already submitted a collaboration request for this
+							announcement. Check your
+							<a href="my-collaborations.html" class="underline font-semibold">collaboration status</a>
+							for updates.
+						</p>
+					</div>
 
-            <!-- Message for own announcements -->
-            <div
-              x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && isOwnAnnouncement(selectedAnnouncement)"
-              class="mt-4 p-4 bg-gray-50 rounded-lg"
-            >
-              <p class="text-gray-700 text-sm">
-                <i class="fas fa-info-circle text-gray-500 mr-2"></i>
-                This is your announcement. You cannot request collaboration on
-                your own posts.
-              </p>
-            </div>
+					<!-- Message for own announcements -->
+					<div x-show="userRole === 'PARTNER' && selectedAnnouncement?.status === 'ACTIVE' && isOwnAnnouncement(selectedAnnouncement)"
+						class="mt-4 p-4 bg-gray-50 rounded-lg">
+						<p class="text-gray-700 text-sm">
+							<i class="fas fa-info-circle text-gray-500 mr-2"></i>
+							This is your announcement. You cannot request collaboration on
+							your own posts.
+						</p>
+					</div>
 
-            <!-- Login prompt for non-authenticated users -->
-            <div
-              x-show="!userRole && selectedAnnouncement?.status === 'ACTIVE'"
-              class="mt-4 text-center p-4 bg-blue-50 rounded-lg"
-            >
-              <p class="text-gray-700 mb-3">
-                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                You must be logged in as a Partner to request collaboration
-              </p>
-              <a
-                href="index.html"
-                class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-              >
-                <i class="fas fa-sign-in-alt mr-2"></i>Login Now
-              </a>
-            </div>
+					<!-- Login prompt for non-authenticated users -->
+					<div x-show="!userRole && selectedAnnouncement?.status === 'ACTIVE'"
+						class="mt-4 text-center p-4 bg-blue-50 rounded-lg">
+						<p class="text-gray-700 mb-3">
+							<i class="fas fa-info-circle text-blue-500 mr-2"></i>
+							You must be logged in as a Partner to request collaboration
+						</p>
+						<a href="index.html"
+							class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+							<i class="fas fa-sign-in-alt mr-2"></i>Login Now
+						</a>
+					</div>
 
-            <!-- Info for Admin users -->
-            <div
-              x-show="(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && selectedAnnouncement?.status === 'ACTIVE'"
-              class="mt-4 p-4 bg-purple-50 rounded-lg"
-            >
-              <p class="text-gray-700 text-sm">
-                <i class="fas fa-shield-alt text-purple-500 mr-2"></i>
-                As an admin, you manage collaboration requests but cannot create
-                them. Only Partner users can request collaboration.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+					<!-- Info for Admin users -->
+					<div x-show="(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && selectedAnnouncement?.status === 'ACTIVE'"
+						class="mt-4 p-4 bg-purple-50 rounded-lg">
+						<p class="text-gray-700 text-sm">
+							<i class="fas fa-shield-alt text-purple-500 mr-2"></i>
+							As an admin, you manage collaboration requests but cannot create
+							them. Only Partner users can request collaboration.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
 
-      <!-- Request Collaboration Modal -->
-      <div
-        x-show="showRequestModal"
-        x-cloak
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        @click.self="showRequestModal = false"
-      >
-        <div class="bg-white rounded-lg p-8 max-w-xl w-full mx-4">
-          <h3 class="text-2xl font-bold mb-6">Request Collaboration</h3>
+		<!-- Request Collaboration Modal -->
+		<div x-show="showRequestModal" x-cloak
+			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+			@click.self="showRequestModal = false">
+			<div class="bg-white rounded-lg p-8 max-w-xl w-full mx-4">
+				<h3 class="text-2xl font-bold mb-6">Request Collaboration</h3>
 
-          <div class="mb-4 bg-blue-50 p-4 rounded-lg">
-            <p class="text-sm text-gray-600">Project:</p>
-            <p
-              class="font-semibold text-gray-800"
-              x-text="selectedAnnouncement?.project?.title"
-            ></p>
-          </div>
+				<div class="mb-4 bg-blue-50 p-4 rounded-lg">
+					<p class="text-sm text-gray-600">Project:</p>
+					<p class="font-semibold text-gray-800" x-text="selectedAnnouncement?.project?.title"></p>
+				</div>
 
-          <form @submit.prevent="submitRequest()">
-            <!-- Organization Selection (Optional) -->
-            <div
-              class="mb-4"
-              x-show="organizations && organizations.length > 0"
-            >
-              <label class="block text-gray-700 font-semibold mb-2"
-                >Your Organization (Optional)</label
-              >
-              <select
-                x-model="collaborationRequest.organizationId"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-              >
-                <option value="">-- Select your organization --</option>
-                <template
-                  x-for="(org, index) in organizations"
-                  :key="org && org.id ? org.id : `org-${index}`"
-                >
-                  <option :value="org.id" x-text="org.name"></option>
-                </template>
-              </select>
-            </div>
+				<form @submit.prevent="submitRequest()">
+					<!-- Organization Selection (Optional) -->
+					<div class="mb-4" x-show="organizations && organizations.length > 0">
+						<label class="block text-gray-700 font-semibold mb-2">Your Organization (Optional)</label>
+						<select x-model="collaborationRequest.organizationId"
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary">
+							<option value="">-- Select your organization --</option>
+							<template x-for="(org, index) in organizations"
+								:key="org && org.id ? org.id : `org-${index}`">
+								<option :value="org.id" x-text="org.name"></option>
+							</template>
+						</select>
+					</div>
 
-            <!-- Proposed Contribution -->
-            <div class="mb-6">
-              <label class="block text-gray-700 font-semibold mb-2"
-                >What can you contribute? *</label
-              >
-              <textarea
-                x-model="collaborationRequest.proposedContribution"
-                required
-                rows="4"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
-                placeholder="Describe your expertise, resources, or support you can offer..."
-              ></textarea>
-            </div>
+					<!-- Proposed Contribution -->
+					<div class="mb-6">
+						<label class="block text-gray-700 font-semibold mb-2">What can you contribute? *</label>
+						<textarea x-model="collaborationRequest.proposedContribution" required rows="4"
+							class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+							placeholder="Describe your expertise, resources, or support you can offer..."></textarea>
+					</div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                @click="showRequestModal = false"
-                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                :disabled="submitting"
-                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                <span x-show="!submitting">Submit Request</span>
-                <span x-show="submitting"
-                  ><i class="fas fa-spinner fa-spin mr-2"></i
-                  >Submitting...</span
-                >
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+					<!-- Buttons -->
+					<div class="flex justify-end space-x-3">
+						<button type="button" @click="showRequestModal = false"
+							class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+							Cancel
+						</button>
+						<button type="submit" :disabled="submitting"
+							class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50">
+							<span x-show="!submitting">Submit Request</span>
+							<span x-show="submitting"><i class="fas fa-spinner fa-spin mr-2"></i>Submitting...</span>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
-    <style>
-      [x-cloak] {
-        display: none !important;
-      }
-      .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    </style>
-  </body>
+	<style>
+		[x-cloak] {
+			display: none !important;
+		}
+
+		.line-clamp-3 {
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+	</style>
+</body>
+
 </html>
