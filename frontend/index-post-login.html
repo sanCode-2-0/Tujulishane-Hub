@@ -101,12 +101,10 @@
           <a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">Home</a>
         </li>
 
-        <li>
-          <a href="all-projects.html" class="uppercase transition hover:text-blue-600">All Projects</a>
-        </li>
+
 
         <!-- SUPER_ADMIN Nav -->
-        <li id="projnav" class="hidden relative" x-data="{ showprojectDropdown: false }">
+        <li id="projnav" class="relative" x-data="{ showprojectDropdown: false }">
           <button @click="showprojectDropdown = !showprojectDropdown"
             class="inline-flex items-center font-medium uppercase transition focus:outline-none">
             Projects <i class="ml-2 fal fa-chevron-down"></i>
