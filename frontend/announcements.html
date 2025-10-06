@@ -25,8 +25,12 @@
 			},
 		};
 	</script>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
 	<link rel="stylesheet" href="styles/main.css" />
 	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<script type="module">
 		import { BASE_URL } from "./config.js";
 		window.BASE_URL = BASE_URL;
@@ -465,48 +469,223 @@
 
 	<div x-data="announcementsApp()" x-init="init()">
 		<!-- Navigation matching site design -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<!-- Modal title -->
+						<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
+							New Project
+						</h5>
+						<!-- Close button -->
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="relative p-4">
+						<form id="newProjectForm">
+							<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+								<!-- Map Picker for Location -->
+								<div class="col-span-2 lg:col-span-4">
+									<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+										Map</label>
+									<div class="text-xs text-gray-600 mb-2">
+										Search for a location or click on the map to select the
+										project coordinates.
+									</div>
+									<div id="newProjectMap" style="
+                          height: 400px;
+                          width: 100%;
+                          border-radius: 8px;
+                          margin-bottom: 8px;
+                          border: 1px solid #e5e7eb;
+                          background-color: #f3f4f6;
+                          position: relative;
+                          overflow: hidden;
+                        "></div>
+									<input type="hidden" id="project_latitude" name="latitude" />
+									<input type="hidden" id="project_longitude" name="longitude" />
+									<input type="hidden" id="project_county" name="county" />
+									<input type="hidden" id="project_subcounty" name="subcounty" />
+									<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+										<strong>Selected Location:</strong>
+										<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
+											location</span>
+										<br />
+										<span id="selectedCounty" class="text-gray-600"></span>
+									</div>
+								</div>
+								<!-- Title -->
+								<div>
+									<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+									<input required type="text" id="title" name="title"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<!-- Project Theme -->
+								<div>
+									<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
+										*</label>
+									<select id="theme" name="theme"
+										class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+										<option value="">Select Theme</option>
+										<option value="GBV">Gender based violence</option>
+										<option value="AYPSRH">
+											Adolescent and Young People Sexual and Reproductive
+											Health
+										</option>
+										<option value="MNH">Maternal and Newborn Health</option>
+										<option value="FP">Family planning</option>
+										<option value="CH">Child Health</option>
+										<option value="AH">Adolescent Health</option>
+									</select>
+								</div>
+
+								<!-- Time Period -->
+								<div>
+									<label for="starttime_period" class="block text-sm font-medium text-gray-700">
+										Start *
+									</label>
+									<input required type="date" id="starttime_period" name="start_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+										*</label>
+									<input type="date" id="endtime_period" name="end_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<!-- Activity Type -->
+								<div class="col-span-2 md:col-span-4">
+									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
+										Type
+										(Description) *
+									</label>
+									<textarea required id="activity_type" name="activity_type" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
+
+								<!-- County and Sub-county fields removed (not required) -->
+
+								<!-- Contact Person -->
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Name *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_name"
+										placeholder="Name"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Role *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_role"
+										placeholder="Role"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Email *
+									</label>
+									<input required type="email" id="contact_person" name="contact_person_mail"
+										placeholder="Email"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="budget" class="block text-sm font-medium text-gray-700">
+										Budget in KES
+									</label>
+									<input required type="number" id="budget" name="budget" placeholder="amount"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<!-- Gaps -->
+								<div class="col-span-2 lg:col-span-4">
+									<label for="gaps" class="block text-sm font-medium text-gray-700">
+										Objectives *
+									</label>
+									<textarea required id="gaps" name="gaps" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
+							</div>
+
+							<!-- Button -->
+							<div class="mt-3">
+								<button type="submit"
+									class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+									Submit Project
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<nav x-data="{ open: false }"
 			class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
 			<div class="flex items-center justify-between px-6 py-4">
-				<!-- Logo -->
 				<a href="/frontend/index.html"
-					class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
+					class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
 					<img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo" />
 					<img src="resources/images/moh.png" class="object-contain h-12" alt="Site Logo" />
 				</a>
 
-				<!-- Mobile Menu Toggle -->
-				<button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
+				<button @click="open = !open"
+					class="text-xl lg:hidden focus:outline-none text-lime-600 hover:text-teal-800">
 					<i class="fas fa-bars" x-show="!open"></i>
 					<i class="fas fa-times" x-show="open" x-cloak></i>
 				</button>
 
-				<!-- Nav Links - Desktop -->
-				<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+				<ul class="items-center hidden space-x-8 text-sm font-medium text-teal-700 lg:flex">
 					<li>
-						<a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">Home</a>
+						<a href="/frontend/index.html" class="uppercase transition hover:text-lime-600">Home</a>
 					</li>
 
-
-
-					<!-- SUPER_ADMIN Nav -->
 					<li id="projnav" class="relative" x-data="{ showprojectDropdown: false }">
 						<button @click="showprojectDropdown = !showprojectDropdown"
-							class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none hover:text-lime-600">
 							Projects <i class="ml-2 fal fa-chevron-down"></i>
 						</button>
 						<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
 							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
 							style="display: none">
-							<ul class="py-2 text-sm text-left text-blue-800">
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="dashboard.html">All projects</a>
+							<ul class="py-2 text-sm text-left text-teal-800">
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+										<i class="far fa-plus mr-3 text-emerald-500"></i>
+										New Project
+									</a>
 								</li>
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="projects.html">My Projects</a>
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/projects.html">
+										<i class="far fa-user-check mr-2 text-sky-500"></i>
+										My Projects
+									</a>
 								</li>
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="members.html">New Project</a>
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/all-projects.html">
+										<i class="far fa-folder-open mr-2 text-yellow-600"></i>
+										All projects
+									</a>
 								</li>
 							</ul>
 						</div>
@@ -514,71 +693,65 @@
 
 					<li id="adminNav" class="hidden relative" x-data="{ showDropdown: false }">
 						<button @click="showDropdown = !showDropdown"
-							class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none hover:text-lime-600">
 							Admin <i class="ml-2 fal fa-chevron-down"></i>
 						</button>
 						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
 							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
 							style="display: none">
-							<ul class="py-2 text-sm text-left text-blue-800">
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="dashboard.html">Dashboard</a>
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/dashboard.html">Dashboard</a>
 								</li>
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="projects.html">Project Management</a>
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/projects.html">Project Management</a>
 								</li>
-								<li class="px-4 py-2 transition hover:bg-blue-100">
-									<a href="members.html">Stakeholder Management</a>
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/members.html">Stakeholder Management</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li id="" class=" relative" x-data="{ collapboarationDD: false }">
+						<button @click="collapboarationDD = !collapboarationDD"
+							class="inline-flex items-center font-medium uppercase transition focus:outline-none hover:text-lime-600">
+							Collaborations <i class="ml-2 fal fa-chevron-down"></i>
+						</button>
+						<div x-show="collapboarationDD" @click.outside="collapboarationDD = false" x-transition
+							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+							style="display: none">
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/my-collaborations.html">
+										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i>
+										My Collaborations
+									</a>
+								</li>
+								<li
+									class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50">
+									<a href="/frontend/announcements.html">
+										<i class="far fa-search mr-2 text-cyan-500"></i>
+										Find Projects
+									</a>
 								</li>
 							</ul>
 						</div>
 					</li>
 
 					<li id="adminNav" class="hidden">
-						<a href="Stakeholders/dashboard.html"
-							class="uppercase transition hover:text-blue-600">Dashboard</a>
+						<a href="dashboard.html" class="uppercase transition hover:text-lime-600">Dashboard</a>
 					</li>
 
-					<!-- Collaboration Dropdown -->
-					<li class="relative" x-data="{ showDropdown: false }">
-						<button @click="showDropdown = !showDropdown"
-							class="inline-flex items-center font-medium uppercase transition focus:outline-none hover:text-blue-600">
-							Collaboration <i class="ml-2 fal fa-chevron-down"></i>
-						</button>
-						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-							class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-							style="display: none">
-							<ul class="py-2 text-sm text-left text-gray-700">
-								<li class="px-4 py-2 transition hover:bg-blue-50">
-									<a href="announcements.html" class="flex items-center">
-										<i class="fas fa-bullhorn mr-2 text-blue-600"></i>Announcements
-									</a>
-								</li>
-								<li class="px-4 py-2 transition hover:bg-blue-50">
-									<a href="my-collaborations.html" class="flex items-center">
-										<i class="fas fa-users mr-2 text-green-600"></i>My
-										Collaborations
-									</a>
-								</li>
-								<li id="admin-collab-requests" class="px-4 py-2 transition hover:bg-purple-50"
-									style="display: none">
-									<a href="Forms/Admin/collaboration-requests.html" class="flex items-center">
-										<i class="fas fa-handshake mr-2 text-purple-600"></i>Manage
-										Requests
-										<span id="pending-badge"
-											class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
-											style="display: none"></span>
-									</a>
-								</li>
-							</ul>
-						</div>
-					</li>
 
-					<!-- User Profile Dropdown -->
 					<li class="relative" x-data="{ showUserDropdown: false }">
 						<button @click="showUserDropdown = !showUserDropdown"
-							class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition rounded-lg hover:bg-gray-100 focus:outline-none">
-							<i class="mr-2 fas fa-user-circle"></i>
+							class="inline-flex items-center px-3 py-2 text-sm font-medium text-teal-700 transition rounded-lg hover:bg-gray-100 focus:outline-none">
+							<i class="mr-2 fas fa-user-circle text-lime-600"></i>
 							<span id="userDisplayName">User</span>
 							<i class="ml-2 fal fa-chevron-down"></i>
 						</button>
@@ -586,35 +759,36 @@
 							class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
 							style="display: none">
 							<div class="px-4 py-3">
-								<div class="text-sm font-medium text-gray-900" id="userNameDisplay">
+								<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
 									Loading...
 								</div>
-								<div class="text-sm text-gray-500" id="userEmailDisplay"></div>
-								<div class="text-xs text-gray-400 mt-1">
-									Role: <span id="userRoleDisplay"></span> | Status:
-									<span id="userStatusDisplay"></span>
+								<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+								<div class="text-xs text-slate-400 mt-1">
+									Role: <span id="userRoleDisplay" class="font-medium text-teal-600"></span> | Status:
+									<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
 								</div>
 							</div>
-							<ul class="py-2 text-sm text-gray-700">
+							<ul class="py-2 text-sm text-teal-700">
 								<li>
 									<a href="/frontend/profile.html"
-										class="block px-4 py-2 transition hover:bg-gray-100"><i
+										class="block px-4 py-2 transition hover:bg-lime-50 hover:text-lime-600"><i
 											class="mr-2 fas fa-user"></i>Profile</a>
 								</li>
 								<li>
 									<a href="/frontend/settings.html"
-										class="block px-4 py-2 transition hover:bg-gray-100"><i
+										class="block px-4 py-2 transition hover:bg-lime-50 hover:text-lime-600"><i
 											class="mr-2 fas fa-cog"></i>Settings</a>
 								</li>
 							</ul>
 							<div class="py-2">
 								<button onclick="authManager.logout()"
-									class="block w-full px-4 py-2 text-left text-sm text-red-600 transition hover:bg-red-50">
+									class="block w-full px-4 py-2 text-left text-sm text-red-700 transition hover:bg-red-100">
 									<i class="mr-2 fas fa-sign-out-alt"></i>Logout
 								</button>
 							</div>
 						</div>
 					</li>
+
 				</ul>
 			</div>
 
@@ -667,110 +841,133 @@
 				</div>
 			</div>
 		</nav>
-
 		<!-- Main Content -->
-		<div class="container mx-auto px-4 py-8 mt-24">
-			<!-- Header with Create Button (Partners only) -->
-			<div class="flex justify-between items-center mb-6">
-				<div>
-					<h2 class="text-3xl font-bold text-gray-800">
-						Partnership Opportunities
+		<div class="container mx-auto px-4 py-8 mt-12">
+
+			<div class="flex flex-col md:flex-row justify-between md:items-end mb-6 border-b pb-4">
+				<div class="mt-12">
+					<h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+						Collaboration Opportunities 🤝
 					</h2>
-					<p class="text-gray-600 mt-2">
-						Discover projects looking for collaboration
+					<p class="text-lg text-gray-600 mt-1">
+						Discover projects actively seeking partnership and innovation.
 					</p>
 				</div>
 
-				<!-- Create Button for PARTNER users -->
-				<button x-show="userRole === 'PARTNER'" @click="showCreateModal = true"
-					class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-					<i class="fas fa-plus mr-2"></i>Create Announcement
-				</button>
+				<div class="mt-4 md:mt-0">
+					<button x-show="userRole === 'PARTNER'" @click="showCreateModal = true"
+						class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition w-full md:w-auto">
+						<i class="fas fa-plus mr-2"></i>Post New Opportunity
+					</button>
 
-				<!-- Login prompt for non-authenticated users -->
-				<div x-show="!userRole" class="text-center">
-					<a href="index.html"
-						class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition inline-block">
-						<i class="fas fa-sign-in-alt mr-2"></i>Login to Create
-						Announcements
+					<a x-show="!userRole" href="index.html"
+						class="bg-blue-200 text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-300 transition inline-block w-full text-center md:w-auto">
+						<i class="fas fa-sign-in-alt mr-2"></i>Login to Post
 					</a>
 				</div>
 			</div>
 
-			<!-- Loading State -->
-			<div x-show="loading" class="text-center py-12">
-				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
-				<p class="mt-4 text-gray-600">Loading announcements...</p>
+			<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+				<input type="text" placeholder="Search by title, project, or partner..." x-model="searchText"
+					class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" />
+
+				<select x-model="filterStatus"
+					class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full sm:w-48">
+					<option value="">Collaboratin Type</option>
+					<option value="financial">
+						Financial
+					</option>
+					<option value="skills">
+						Skills & Expertise
+					</option>
+				</select>
+
+				<select x-model="sortOrder"
+					class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full sm:w-48">
+					<option value="NEWEST">Newest First</option>
+					<option value="DEADLINE">Deadline Soonest</option>
+				</select>
 			</div>
 
-			<!-- Announcements Grid -->
-			<div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			<div x-show="loading" class="text-center py-12">
+				<i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+				<p class="mt-4 text-gray-600">Searching for announcements...</p>
+			</div>
+
+			<div x-show="!loading && announcements.length > 0" class="space-y-4">
 				<template x-for="announcement in announcements" :key="announcement.id">
-					<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
-						<!-- Status Badge -->
-						<div class="flex justify-between items-start mb-4">
-							<span :class="{
-                                'bg-green-100 text-green-800': announcement.status === 'ACTIVE',
-                                'bg-red-100 text-red-800': announcement.status === 'CLOSED'
-                            }" class="px-3 py-1 rounded-full text-sm font-semibold"
-								x-text="announcement.status"></span>
-							<span class="text-sm text-gray-500"
-								x-text="new Date(announcement.createdAt).toLocaleDateString()"></span>
-						</div>
+					<div
+						class="bg-white rounded-xl shadow-lg border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between hover:shadow-xl transition transform hover:-translate-y-0.5">
 
-						<!-- Title & Content -->
-						<h3 class="text-xl font-bold text-gray-800 mb-2" x-text="announcement.title"></h3>
-						<p class="text-gray-600 mb-4 line-clamp-3" x-text="announcement.content"></p>
+						<div class="flex-grow min-w-0 mb-4 lg:mb-0">
+							<div class="flex items-center space-x-3 mb-1">
+								<span :class="{
+                            'bg-green-100 text-green-800 border border-green-300': announcement.status === 'ACTIVE',
+                            'bg-red-100 text-red-800 border border-red-300': announcement.status === 'CLOSED'
+                        }" class="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+									<i :class="{'fa-light fa-circle-dot': announcement.status === 'ACTIVE', 'fa-light fa-lock': announcement.status === 'CLOSED'}"
+										class="mr-1"></i>
+									<span x-text="announcement.status"></span>
+								</span>
 
-						<!-- Project Info -->
-						<div class="border-t pt-4 mb-4">
-							<p class="text-sm text-gray-500">Project:</p>
-							<p class="font-semibold text-gray-800" x-text="announcement.project?.title"></p>
-							<p class="text-sm text-gray-600" x-text="announcement.project?.partner"></p>
-						</div>
-
-						<!-- Deadline -->
-						<div x-show="announcement.deadline" class="flex items-center text-sm text-gray-500 mb-4">
-							<i class="fas fa-calendar-alt mr-2"></i>
-							<span>Deadline:
-								<span x-text="new Date(announcement.deadline).toLocaleDateString()"></span></span>
-						</div>
-
-						<!-- Actions -->
-						<div class="flex space-x-2">
-							<button @click="viewDetails(announcement)"
-								class="flex-1 bg-blue-50 text-primary px-4 py-2 rounded-lg hover:bg-blue-100 transition">
-								<i class="fas fa-eye mr-2"></i>View Details
-							</button>
-							<!-- Request button - only show if user can request -->
-							<button
-								x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && !hasAlreadyRequested(announcement)"
-								@click="requestCollaboration(announcement)"
-								class="flex-1 bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition">
-								<i class="fas fa-handshake mr-2"></i>Request
-							</button>
-							<!-- Already requested indicator -->
-							<div x-show="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement) && hasAlreadyRequested(announcement)"
-								class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-center">
-								<i class="fas fa-check mr-2"></i>Requested
+								<h3 class="text-xl font-bold text-gray-900 truncate" x-text="announcement.title"></h3>
 							</div>
+
+							<div class="flex flex-col sm:flex-row sm:space-x-6 text-sm mt-2 text-gray-600">
+								<p class="flex items-center mb-1 sm:mb-0">
+									<i class="fas fa-project-diagram mr-2 text-blue-500"></i>
+									Project: <span class="font-medium ml-1 text-gray-800"
+										x-text="announcement.project?.title"></span>
+								</p>
+								<p class="flex items-center mb-1 sm:mb-0">
+									<i class="fas fa-building mr-2 text-indigo-500"></i>
+									Partner: <span class="font-medium ml-1 text-gray-800"
+										x-text="announcement.project?.partner"></span>
+								</p>
+								<p x-show="announcement.deadline" class="flex items-center"
+									:class="{'text-red-600 font-semibold': isDeadlineImminent(announcement.deadline)}">
+									<i class="fas fa-calendar-alt mr-2"
+										:class="{'text-red-500': isDeadlineImminent(announcement.deadline), 'text-gray-500': !isDeadlineImminent(announcement.deadline)}"></i>
+									Deadline: <span class="ml-1"
+										x-text="new Date(announcement.deadline).toLocaleDateString()"></span>
+								</p>
+							</div>
+						</div>
+
+						<div class="flex-shrink-0 flex space-x-2 w-full lg:w-48 mt-4 lg:mt-0">
+							<button @click="viewDetails(announcement)"
+								class="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-medium hover:bg-blue-100 transition text-sm">
+								<i class="fas fa-eye"></i> Details
+							</button>
+
+							<template
+								x-if="userRole === 'PARTNER' && announcement.status === 'ACTIVE' && !isOwnAnnouncement(announcement)">
+								<button x-show="!hasAlreadyRequested(announcement)"
+									@click="requestCollaboration(announcement)"
+									class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg font-medium hover:bg-green-600 transition text-sm shadow-md">
+									<i class="fas fa-handshake"></i> Request
+								</button>
+								<div x-show="hasAlreadyRequested(announcement)"
+									class="flex-1 bg-gray-100 text-gray-500 px-3 py-2 rounded-lg text-center font-medium text-sm">
+									<i class="fas fa-check"></i> Requested
+								</div>
+							</template>
 						</div>
 					</div>
 				</template>
 			</div>
 
-			<!-- Empty State -->
-			<div x-show="!loading && announcements.length === 0" class="text-center py-12">
-				<i class="fas fa-bullhorn text-6xl text-gray-300 mb-4"></i>
-				<h3 class="text-xl font-semibold text-gray-600 mb-2">
-					No announcements yet
+			<div x-show="!loading && announcements.length === 0"
+				class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 mt-8">
+				<i class="fas fa-search text-6xl text-gray-400 mb-4"></i>
+				<h3 class="text-2xl font-semibold text-gray-700 mb-2">
+					No Collaboration Opportunities Found
 				</h3>
 				<p class="text-gray-500">
-					Check back later for partnership opportunities
+					Try adjusting your search filters or check back later for new projects.
 				</p>
 			</div>
 		</div>
-
 		<!-- Create Announcement Modal -->
 		<div x-show="showCreateModal" x-cloak
 			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
