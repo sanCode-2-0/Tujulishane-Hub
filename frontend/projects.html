@@ -188,11 +188,14 @@
                                     My Collaborations
                                 </a>
                             </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-50" id="admin-collab-menu" style="display: none;">
+                            <li class="px-4 py-2 transition hover:bg-blue-50" id="admin-collab-menu"
+                                style="display: none;">
                                 <a href="Forms/Admin/collaboration-requests.html" class="flex items-center">
                                     <i class="fas fa-handshake mr-2 text-purple-600"></i>
                                     Manage Requests
-                                    <span id="pending-count" class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs" style="display: none;"></span>
+                                    <span id="pending-count"
+                                        class="ml-auto bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs"
+                                        style="display: none;"></span>
                                 </a>
                             </li>
                         </ul>
@@ -364,9 +367,6 @@
             </div>
         </div>
 
-        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
-        </div>
-
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
@@ -534,41 +534,41 @@
                                     <table class="min-w-full leading-normal">
                                         <thead>
                                             <tr>
-                                                <tbody id="tbody-stalled"></tbody>
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Partner A
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Education
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Nairobi, Langata
-                                                    <br>
-                                                    <span class="text-xs">St. Marys Hospital</span>
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-01-01
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    2025-12-31
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                                    Jane Doe
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
+                                        <tbody id="tbody-stalled"></tbody>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            Partner A
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            Education
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            Nairobi, Langata
+                                            <br>
+                                            <span class="text-xs">St. Marys Hospital</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            2025-01-01
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            2025-12-31
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
+                                            Jane Doe
+                                        </td>
+                                        <td
+                                            class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
 
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
-                                                        Re-activate
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600">
-                                                        Is Completed
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                            <button
+                                                class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
+                                                Re-activate
+                                            </button>
+                                            <button
+                                                class="px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600">
+                                                Is Completed
+                                            </button>
+                                        </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -614,131 +614,131 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tbody-completed"></tbody>
-</div>
+                        </div>
 
-<!-- Dynamic Project List, Info, and Pagination Controls -->
-<div id="projectAccordion"></div>
-<div id="projectInfo" class="hidden"></div>
-<div id="paginationControls" class="my-4"></div>
-<script src="config.js"></script>
-<script>
-let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
-  ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api' 
-  : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
+                        <!-- Dynamic Project List, Info, and Pagination Controls -->
+                        <div id="projectAccordion"></div>
+                        <div id="projectInfo" class="hidden"></div>
+                        <div id="paginationControls" class="my-4"></div>
+                        <script src="config.js"></script>
+                        <script>
+                            let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                                ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
+                                : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
 
-// Fetch and display project statistics
-async function loadProjectStats() {
-    try {
-        const res = await fetch(`${API_BASE}/projects/statistics`);
-        console.log('[API] GET /projects/statistics response:', res);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        console.log('[API] /projects/statistics data:', data);
-        if (data.status === 200) {
-            let stats = data.data.statusCounts;
-            console.log('[Stats] FULL API RESPONSE:', data);
-            console.log('[Stats] statusCounts:', stats);
-            // Show raw statusCounts for debugging
-            let debugDiv = document.getElementById('debug-statuscounts');
-            if (!debugDiv) {
-                debugDiv = document.createElement('div');
-                debugDiv.id = 'debug-statuscounts';
-                debugDiv.style.background = '#ffe';
-                debugDiv.style.fontSize = '12px';
-                debugDiv.style.padding = '4px';
-                debugDiv.style.margin = '8px 0';
-                document.body.insertBefore(debugDiv, document.body.firstChild);
-            }
-            debugDiv.textContent = 'Raw statusCounts: ' + JSON.stringify(stats);
+                            // Fetch and display project statistics
+                            async function loadProjectStats() {
+                                try {
+                                    const res = await fetch(`${API_BASE}/projects/statistics`);
+                                    console.log('[API] GET /projects/statistics response:', res);
+                                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                                    const data = await res.json();
+                                    console.log('[API] /projects/statistics data:', data);
+                                    if (data.status === 200) {
+                                        let stats = data.data.statusCounts;
+                                        console.log('[Stats] FULL API RESPONSE:', data);
+                                        console.log('[Stats] statusCounts:', stats);
+                                        // Show raw statusCounts for debugging
+                                        let debugDiv = document.getElementById('debug-statuscounts');
+                                        if (!debugDiv) {
+                                            debugDiv = document.createElement('div');
+                                            debugDiv.id = 'debug-statuscounts';
+                                            debugDiv.style.background = '#ffe';
+                                            debugDiv.style.fontSize = '12px';
+                                            debugDiv.style.padding = '4px';
+                                            debugDiv.style.margin = '8px 0';
+                                            document.body.insertBefore(debugDiv, document.body.firstChild);
+                                        }
+                                        debugDiv.textContent = 'Raw statusCounts: ' + JSON.stringify(stats);
 
-            // If statusCounts is an array of arrays (e.g. [['pending', 1]]), convert to object
-            if (Array.isArray(stats)) {
-                const obj = {};
-                stats.forEach(s => {
-                    if (Array.isArray(s) && s.length === 2) {
-                        obj[String(s[0]).toLowerCase()] = s[1];
-                    } else if (s && typeof s === 'object' && s.status && s.count !== undefined) {
-                        obj[s.status.toLowerCase()] = s.count;
-                    }
-                });
-                stats = obj;
-            }
-            document.getElementById('count-active').textContent = stats.active || 0;
-            document.getElementById('count-pending').textContent = stats.pending || 0;
-            document.getElementById('count-stalled').textContent = stats.stalled || 0;
-            document.getElementById('count-completed').textContent = stats.completed || 0;
-        }
-    } catch (e) {
-        console.error('Failed to load project stats', e);
-    }
-}
+                                        // If statusCounts is an array of arrays (e.g. [['pending', 1]]), convert to object
+                                        if (Array.isArray(stats)) {
+                                            const obj = {};
+                                            stats.forEach(s => {
+                                                if (Array.isArray(s) && s.length === 2) {
+                                                    obj[String(s[0]).toLowerCase()] = s[1];
+                                                } else if (s && typeof s === 'object' && s.status && s.count !== undefined) {
+                                                    obj[s.status.toLowerCase()] = s.count;
+                                                }
+                                            });
+                                            stats = obj;
+                                        }
+                                        document.getElementById('count-active').textContent = stats.active || 0;
+                                        document.getElementById('count-pending').textContent = stats.pending || 0;
+                                        document.getElementById('count-stalled').textContent = stats.stalled || 0;
+                                        document.getElementById('count-completed').textContent = stats.completed || 0;
+                                    }
+                                } catch (e) {
+                                    console.error('Failed to load project stats', e);
+                                }
+                            }
 
-// Helper to render action buttons
-function renderActions(project, status) {
-    let html = '';
-    if (status === 'pending') {
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"editProject(${project.id})\">Edit</button> `;
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"approveProject(${project.id})\">Approve</button> `;
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600\" onclick=\"dismissProject(${project.id})\">Dismiss</button>`;
-    } else if (status === 'active') {
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600\" onclick=\"stalledProject(${project.id})\">Has Stalled</button>`;
-    } else if (status === 'stalled') {
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"reactivateProject(${project.id})\">Re-activate</button> `;
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600\" disabled>Is Completed</button>`;
-    } else if (status === 'completed') {
-        html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"submitReport(${project.id})\">Submit Report</button>`;
-    }
+                            // Helper to render action buttons
+                            function renderActions(project, status) {
+                                let html = '';
+                                if (status === 'pending') {
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"editProject(${project.id})\">Edit</button> `;
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"approveProject(${project.id})\">Approve</button> `;
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600\" onclick=\"dismissProject(${project.id})\">Dismiss</button>`;
+                                } else if (status === 'active') {
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600\" onclick=\"stalledProject(${project.id})\">Has Stalled</button>`;
+                                } else if (status === 'stalled') {
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"reactivateProject(${project.id})\">Re-activate</button> `;
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600\" disabled>Is Completed</button>`;
+                                } else if (status === 'completed') {
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600\" onclick=\"submitReport(${project.id})\">Submit Report</button>`;
+                                }
 
-// Mark project as stalled (exposed globally)
-window.stalledProject = async function(id) {
-    if (!confirm('Mark this project as stalled?')) return;
-    try {
-        const headers = {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
-        };
-        // Assuming your backend supports a PATCH or POST endpoint for this action
-        const res = await fetch(`${API_BASE}/projects/admin/stall/${id}`, {
-            method: 'POST',
-            credentials: 'include',
-            headers
-        });
-        let data = null;
-        try {
-            data = await res.json();
-        } catch (jsonErr) {
-            console.error('[stalledProject] Failed to parse JSON:', jsonErr);
-        }
-        if (res.ok && data && data.message) {
-            alert(data.message || 'Project marked as stalled');
-        } else {
-            alert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status));
-        }
-        loadProjectStats();
-        loadProjectsByStatus('active', 'tbody-active');
-        loadProjectsByStatus('stalled', 'tbody-stalled');
-    } catch (e) {
-        console.error('[stalledProject] Exception:', e);
-        alert('Failed to mark project as stalled: ' + e);
-    }
-}
-    return html;
-}
+                                // Mark project as stalled (exposed globally)
+                                window.stalledProject = async function (id) {
+                                    if (!confirm('Mark this project as stalled?')) return;
+                                    try {
+                                        const headers = {
+                                            'Content-Type': 'application/json',
+                                            Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+                                        };
+                                        // Assuming your backend supports a PATCH or POST endpoint for this action
+                                        const res = await fetch(`${API_BASE}/projects/admin/stall/${id}`, {
+                                            method: 'POST',
+                                            credentials: 'include',
+                                            headers
+                                        });
+                                        let data = null;
+                                        try {
+                                            data = await res.json();
+                                        } catch (jsonErr) {
+                                            console.error('[stalledProject] Failed to parse JSON:', jsonErr);
+                                        }
+                                        if (res.ok && data && data.message) {
+                                            alert(data.message || 'Project marked as stalled');
+                                        } else {
+                                            alert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status));
+                                        }
+                                        loadProjectStats();
+                                        loadProjectsByStatus('active', 'tbody-active');
+                                        loadProjectsByStatus('stalled', 'tbody-stalled');
+                                    } catch (e) {
+                                        console.error('[stalledProject] Exception:', e);
+                                        alert('Failed to mark project as stalled: ' + e);
+                                    }
+                                }
+                                return html;
+                            }
 
-// Fetch and render projects by status
-async function loadProjectsByStatus(status, tableBodyId) {
-    try {
-        const res = await fetch(`${API_BASE}/projects/status/${status}`);
-        console.log(`[API] GET /projects/status/${status} response:`, res);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        console.log(`[API] /projects/status/${status} data:`, data);
-        if (data.status === 200) {
-            const projects = data.data;
-            const tbody = document.getElementById(tableBodyId);
-            tbody.innerHTML = '';
-            projects.forEach(project => {
-                tbody.innerHTML += `
+                            // Fetch and render projects by status
+                            async function loadProjectsByStatus(status, tableBodyId) {
+                                try {
+                                    const res = await fetch(`${API_BASE}/projects/status/${status}`);
+                                    console.log(`[API] GET /projects/status/${status} response:`, res);
+                                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                                    const data = await res.json();
+                                    console.log(`[API] /projects/status/${status} data:`, data);
+                                    if (data.status === 200) {
+                                        const projects = data.data;
+                                        const tbody = document.getElementById(tableBodyId);
+                                        tbody.innerHTML = '';
+                                        projects.forEach(project => {
+                                            tbody.innerHTML += `
                     <tr>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
@@ -750,99 +750,99 @@ async function loadProjectsByStatus(status, tableBodyId) {
                         <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
                     </tr>
                 `;
-            });
-        }
-    } catch (e) {
-        console.error(`Failed to load projects for status ${status}`, e);
-    }
-}
+                                        });
+                                    }
+                                } catch (e) {
+                                    console.error(`Failed to load projects for status ${status}`, e);
+                                }
+                            }
 
-// Action handlers
-async function approveProject(id) {
-    if (!confirm('Approve this project?')) return;
-    try {
-        console.log('[approveProject] Sending POST to', `${API_BASE}/projects/admin/approve/${id}`);
-        const headers = {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
-        };
-        const res = await fetch(`${API_BASE}/projects/admin/approve/${id}`, {
-            method: 'POST',
-            credentials: 'include',
-            headers
-        });
-        console.log('[approveProject] Response:', res);
-        let data = null;
-        try {
-            data = await res.json();
-        } catch (jsonErr) {
-            console.error('[approveProject] Failed to parse JSON:', jsonErr);
-        }
-        console.log('[approveProject] Response data:', data);
-        if (res.ok && data && data.message) {
-            alert(data.message || 'Project approved');
-        } else {
-            alert('Failed to approve project: ' + (data && data.message ? data.message : res.status));
-        }
-        loadProjectStats();
-        loadProjectsByStatus('pending', 'tbody-pending');
-        loadProjectsByStatus('active', 'tbody-active');
-    } catch (e) {
-        console.error('[approveProject] Exception:', e);
-        alert('Failed to approve project: ' + e);
-    }
-}
+                            // Action handlers
+                            async function approveProject(id) {
+                                if (!confirm('Approve this project?')) return;
+                                try {
+                                    console.log('[approveProject] Sending POST to', `${API_BASE}/projects/admin/approve/${id}`);
+                                    const headers = {
+                                        'Content-Type': 'application/json',
+                                        Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+                                    };
+                                    const res = await fetch(`${API_BASE}/projects/admin/approve/${id}`, {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers
+                                    });
+                                    console.log('[approveProject] Response:', res);
+                                    let data = null;
+                                    try {
+                                        data = await res.json();
+                                    } catch (jsonErr) {
+                                        console.error('[approveProject] Failed to parse JSON:', jsonErr);
+                                    }
+                                    console.log('[approveProject] Response data:', data);
+                                    if (res.ok && data && data.message) {
+                                        alert(data.message || 'Project approved');
+                                    } else {
+                                        alert('Failed to approve project: ' + (data && data.message ? data.message : res.status));
+                                    }
+                                    loadProjectStats();
+                                    loadProjectsByStatus('pending', 'tbody-pending');
+                                    loadProjectsByStatus('active', 'tbody-active');
+                                } catch (e) {
+                                    console.error('[approveProject] Exception:', e);
+                                    alert('Failed to approve project: ' + e);
+                                }
+                            }
 
-async function dismissProject(id) {
-    const reason = prompt('Enter reason for rejection:');
-    if (!reason) return;
-    try {
-        const res = await fetch(`${API_BASE}/projects/admin/reject/${id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ reason })
-        });
-        const data = await res.json();
-        alert(data.message || 'Project dismissed');
-        loadProjectStats();
-        loadProjectsByStatus('pending', 'tbody-pending');
-    } catch (e) {
-        alert('Failed to dismiss project');
-    }
-}
+                            async function dismissProject(id) {
+                                const reason = prompt('Enter reason for rejection:');
+                                if (!reason) return;
+                                try {
+                                    const res = await fetch(`${API_BASE}/projects/admin/reject/${id}`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        credentials: 'include',
+                                        body: JSON.stringify({ reason })
+                                    });
+                                    const data = await res.json();
+                                    alert(data.message || 'Project dismissed');
+                                    loadProjectStats();
+                                    loadProjectsByStatus('pending', 'tbody-pending');
+                                } catch (e) {
+                                    alert('Failed to dismiss project');
+                                }
+                            }
 
-function editProject(id) {
-    // Redirect to edit page or open modal (implement as needed)
-    alert('Edit project ' + id);
-}
+                            function editProject(id) {
+                                // Redirect to edit page or open modal (implement as needed)
+                                alert('Edit project ' + id);
+                            }
 
-function reactivateProject(id) {
-    // Implement re-activation logic as needed
-    alert('Re-activate project ' + id);
-}
+                            function reactivateProject(id) {
+                                // Implement re-activation logic as needed
+                                alert('Re-activate project ' + id);
+                            }
 
-function submitReport(id) {
-    // Implement report submission logic as needed
-    alert('Submit report for project ' + id);
-}
+                            function submitReport(id) {
+                                // Implement report submission logic as needed
+                                alert('Submit report for project ' + id);
+                            }
 
-// On page load
-document.addEventListener('DOMContentLoaded', () => {
-    loadProjectStats();
-    loadProjectsByStatus('active', 'tbody-active');
-    loadProjectsByStatus('pending', 'tbody-pending');
-    loadProjectsByStatus('stalled', 'tbody-stalled');
-    loadProjectsByStatus('completed', 'tbody-completed');
-});
-</script>
-                            </table>
-                        </div>
+                            // On page load
+                            document.addEventListener('DOMContentLoaded', () => {
+                                loadProjectStats();
+                                loadProjectsByStatus('active', 'tbody-active');
+                                loadProjectsByStatus('pending', 'tbody-pending');
+                                loadProjectsByStatus('stalled', 'tbody-stalled');
+                                loadProjectsByStatus('completed', 'tbody-completed');
+                            });
+                        </script>
+                        </table>
                     </div>
                 </div>
-
             </div>
+
         </div>
+    </div>
     </div>
     <script src="styles/effects.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
@@ -1168,14 +1168,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Show/hide admin collaboration menu and load pending count
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const userRole = localStorage.getItem('userRole');
-            
+
             // Show admin menu items if user is admin or super admin
             if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
                 const adminMenuItem = document.getElementById('admin-collab-menu');
                 if (adminMenuItem) adminMenuItem.style.display = 'block';
-                
+
                 // Load pending collaboration requests count
                 loadPendingCount();
             }
@@ -1188,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                
+
                 if (data.status === 200 && data.data.length > 0) {
                     const badge = document.getElementById('pending-count');
                     if (badge) {

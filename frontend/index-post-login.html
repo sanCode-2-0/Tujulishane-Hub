@@ -125,33 +125,16 @@
                 <a href="Forms/Admin/new-project.html">New Project</a>
               </li>
               <li class="px-4 py-2 transition hover:bg-blue-100">
-                <a href="Forms/Admin/requests/projects.html">Project Requests</a>
+                <a href="projects.html">Project Requests</a>
               </li>
               <li class="px-4 py-2 transition hover:bg-blue-100">
-                <a href="Forms/Admin/requests/stakeholders.html">Stakeholder Requests</a>
+                <a href="members.html">Stakeholder Requests</a>
               </li>
             </ul>
           </div>
         </li>
-
-        <!-- PARTNER Nav -->
-        <li id="partnerNav" class="hidden relative" x-data="{ showDropdown: false }">
-          <button @click="showDropdown = !showDropdown"
-            class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-            Stakeholder <i class="ml-2 fal fa-chevron-down"></i>
-          </button>
-          <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-            class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            style="display: none">
-            <ul class="py-2 text-sm text-left text-blue-800">
-              <li class="px-4 py-2 transition hover:bg-blue-100">
-                <a href="/frontend/Stakeholders/access.html">Login / Registration</a>
-              </li>
-              <li class="px-4 py-2 transition hover:bg-blue-100">
-                <a href="Stakeholders/dashboard.html">Dashboard</a>
-              </li>
-            </ul>
-          </div>
+        <li>
+          <a href="Stakeholders/dashboard.html" class="uppercase transition hover:text-blue-600">Dashboard</a>
         </li>
 
         <!-- Collaboration Dropdown -->
@@ -1127,8 +1110,8 @@
         const btn = document.createElement("button");
         btn.textContent = i;
         btn.className = `px-3 py-1 rounded ${i === currentPage
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+          ? "bg-blue-600 text-white"
+          : "bg-gray-100 text-gray-800 hover:bg-gray-200"
           }`;
         btn.onclick = () => {
           currentPage = i;
