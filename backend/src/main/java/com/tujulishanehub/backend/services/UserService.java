@@ -27,7 +27,7 @@ public class UserService {
         // Check if user already exists
         Optional<User> existing = userRepository.findByEmail(email);
         if (existing.isPresent()) {
-            return; // User already exists, do nothing
+            throw new RuntimeException("User with this email already exists");
         }
         User user = new User();
         user.setName(name);
@@ -35,14 +35,29 @@ public class UserService {
         user.setStatus("INACTIVE");
         user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
         user.setRole(com.tujulishanehub.backend.models.User.Role.PARTNER);
-        user.setOtp(generateOtp());
+        String otp = generateOtp();
+        user.setOtp(otp);
         user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
         if (organizationId != null) {
             organizationService.getOrganizationById(organizationId)
                 .ifPresent(user::setOrganization);
         }
         userRepository.save(user);
-        // For demo: skip sending real email, but you could call emailService.sendEmail(email, ...)
+        
+        // Send OTP via email
+        String subject = "Tujulishane Hub - Email Verification";
+        String body = String.format(
+            "Hello %s,\n\n" +
+            "Thank you for registering with Tujulishane Hub!\n\n" +
+            "Your verification OTP is: %s\n\n" +
+            "This OTP will expire in 10 minutes.\n\n" +
+            "Please note: Your account is pending approval by the MOH administrator. " +
+            "You will receive another email once your account is approved.\n\n" +
+            "Best regards,\n" +
+            "Tujulishane Hub Team",
+            name, otp
+        );
+        emailService.sendEmail(email, subject, body);
     }
     
     // Backward compatibility method
@@ -50,33 +65,49 @@ public class UserService {
         registerUser(name, email, null);
     }
 
-    // Verify OTP and activate user
+    // Verify OTP and mark email as verified (but user still needs admin approval)
     public boolean verifyOtp(String email, String otp) {
-        // DEMO: Only accept 123456 as valid OTP
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) return false;
+        
         User user = userOpt.get();
-        if ("123456".equals(otp) && user.getOtpExpiry() != null && user.getOtpExpiry().isAfter(java.time.LocalDateTime.now())) {
-            user.setStatus("ACTIVE");
-            user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED);
+        
+        // Check if OTP matches and hasn't expired
+        if (otp != null && otp.equals(user.getOtp()) && 
+            user.getOtpExpiry() != null && 
+            user.getOtpExpiry().isAfter(java.time.LocalDateTime.now())) {
+            
+            // Mark email as verified but keep account INACTIVE until admin approves
+            user.setEmailVerified(true);
+            user.setVerified(true);
             user.setOtp(null);
             user.setOtpExpiry(null);
-            user.setEmailVerified(true);
             userRepository.save(user);
             return true;
         }
         return false;
     }
 
-    // Login using email + otp. User must be ACTIVE.
+    // Login using email + otp. User must be ACTIVE and APPROVED.
     public boolean loginWithOtp(String email, String otp) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) return false;
+        
         User user = userOpt.get();
-        if (!"ACTIVE".equals(user.getStatus())) return false;
-        // DEMO: Only accept 123456 as valid OTP
-        if ("123456".equals(otp)) {
+        
+        // User must be ACTIVE and APPROVED
+        if (!"ACTIVE".equals(user.getStatus()) || !user.isApproved()) {
+            return false;
+        }
+        
+        // Verify OTP matches and hasn't expired
+        if (otp != null && otp.equals(user.getOtp()) && 
+            user.getOtpExpiry() != null && 
+            user.getOtpExpiry().isAfter(java.time.LocalDateTime.now())) {
+            
             user.setLastLogin(java.time.LocalDateTime.now());
+            user.setOtp(null);
+            user.setOtpExpiry(null);
             userRepository.save(user);
             return true;
         }
@@ -84,8 +115,10 @@ public class UserService {
     }
 
     private String generateOtp() {
-    // Simulate: Always return '123456' for demo
-    return "123456";
+        // Generate a random 6-digit OTP
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
     }
 
     public Optional<User> findByEmail(String email) {
@@ -103,10 +136,42 @@ public class UserService {
         return user;
     }
 
-    // Helper to (re)send login OTP for ACTIVE users if needed
+    // Helper to (re)send login OTP for ACTIVE and APPROVED users
     public void sendLoginOtp(String email) {
-        // DEMO: Do nothing
-        return;
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        
+        User user = userOpt.get();
+        
+        // User must be ACTIVE and APPROVED to receive login OTP
+        if (!"ACTIVE".equals(user.getStatus())) {
+            throw new RuntimeException("Account not active");
+        }
+        
+        if (!user.isApproved()) {
+            throw new RuntimeException("Account not approved by administrator");
+        }
+        
+        // Generate and save new OTP
+        String otp = generateOtp();
+        user.setOtp(otp);
+        user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+        
+        // Send OTP via email
+        String subject = "Tujulishane Hub - Login OTP";
+        String body = String.format(
+            "Hello %s,\n\n" +
+            "Your login OTP is: %s\n\n" +
+            "This OTP will expire in 10 minutes.\n\n" +
+            "If you did not request this, please ignore this email.\n\n" +
+            "Best regards,\n" +
+            "Tujulishane Hub Team",
+            user.getName(), otp
+        );
+        emailService.sendEmail(email, subject, body);
     }
 
     // ========== ADMIN METHODS ==========
@@ -151,6 +216,7 @@ public class UserService {
             user.setApprovedAt(java.time.LocalDateTime.now());
             user.setRejectionReason(null);
             user.setStatus("ACTIVE"); // Activate user when approved
+            user.setEmailVerified(true); // Email is considered verified when manually approved by admin
             
             userRepository.save(user);
             

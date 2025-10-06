@@ -38,6 +38,7 @@ public class SecurityConfig {
                         // Avoid path patterns that PathPatternParser rejects (like /**/*.html). Permit common static locations instead.
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users/verify-otp", "/api/users/resend-otp").permitAll()  // Public user registration and OTP endpoints
                         .requestMatchers("/api/projects/**").permitAll()  // Allow public access to projects API
                         .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
                         .requestMatchers("/api/organizations", "/api/organizations/**").permitAll()  // Allow public access to organizations
