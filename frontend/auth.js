@@ -167,22 +167,22 @@ class AuthManager {
     this.removeToken();
     // Redirect to frontend index in a way that works when the site is served
     // from a repo subpath (e.g. GitHub Pages: /<owner>/<repo>/frontend)
-    const frontendSegment = "/frontend";
-    const pathname = window.location.pathname;
-    const idx = pathname.indexOf(frontendSegment);
-    if (idx !== -1) {
-      // build origin + up to /frontend then append index.html
-      window.location.href =
-        window.location.origin +
-        pathname.slice(0, idx + frontendSegment.length) +
-        "/index.html";
-    } else {
-      // fallback: go to index.html in the current directory (or site root)
-      const baseDir = pathname.endsWith("/")
-        ? pathname
-        : pathname.substring(0, pathname.lastIndexOf("/") + 1);
-      window.location.href = window.location.origin + baseDir + "index.html";
-    }
+    // const frontendSegment = "/frontend";
+    // const pathname = window.location.pathname;
+    // const idx = pathname.indexOf(frontendSegment);
+    // if (idx !== -1) {
+    //   // build origin + up to /frontend then append index.html
+    //   window.location.href =
+    //     window.location.origin +
+    //     pathname.slice(0, idx + frontendSegment.length) +
+    //     "/index.html";
+    // } else {
+    //   // fallback: go to index.html in the current directory (or site root)
+    //   const baseDir = pathname.endsWith("/")
+    //     ? pathname
+    //     : pathname.substring(0, pathname.lastIndexOf("/") + 1);
+    //   window.location.href = window.location.origin + baseDir + "index.html";
+    // }
   }
 
   /**
