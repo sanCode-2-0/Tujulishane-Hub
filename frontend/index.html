@@ -129,8 +129,8 @@
             <div class="flex flex-col items-center justify-center min-h-screen py-10">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                    <img src="/resources/images/moh.jpg" class="object-contain h-12" alt="Site Logo">
-                    <img src="/resources/images/log2.jpg" class="object-contain h-12" alt="Site Logo">
+                    <img src="resources/images/moh.jpg" class="object-contain h-12" alt="Site Logo">
+                    <img src="resources/images/log2.jpg" class="object-contain h-12" alt="Site Logo">
                 </div>
                 <p class="mt-1 text-sm opacity-70">
                     RMNCAH Coordination Hub
@@ -145,9 +145,13 @@
                             class="w-full py-2 text-center text-white transition bg-blue-600 rounded-md hover:bg-blue-700">
                             <span id="loginBtnText">Get OTP</span>
                             <span id="loginBtnSpinner" class="hidden">
-                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                                 Sending...
                             </span>
@@ -194,9 +198,13 @@
                             class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">
                             <span id="registerBtnText">Create Account</span>
                             <span id="registerBtnSpinner" class="hidden">
-                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                                 Creating...
                             </span>
@@ -218,7 +226,7 @@
             const btn = document.getElementById("loginBtn");
             const btnText = document.getElementById("loginBtnText");
             const btnSpinner = document.getElementById("loginBtnSpinner");
-            
+
             btn.disabled = true;
             btn.classList.add("opacity-75", "cursor-not-allowed");
             btnText.classList.add("hidden");
@@ -244,7 +252,7 @@
                 window.location.href = "otp.html";
             } catch (err) {
                 alert(err.message || "Failed to send OTP");
-                
+
                 // Reset button state on error
                 btn.disabled = false;
                 btn.classList.remove("opacity-75", "cursor-not-allowed");
@@ -264,7 +272,7 @@
             const btn = document.getElementById("registerBtn");
             const btnText = document.getElementById("registerBtnText");
             const btnSpinner = document.getElementById("registerBtnSpinner");
-            
+
             btn.disabled = true;
             btn.classList.add("opacity-75", "cursor-not-allowed");
             btnText.classList.add("hidden");
@@ -290,7 +298,7 @@
                 window.location.href = "otp.html";
             } catch (err) {
                 alert(err.message);
-                
+
                 // Reset button state on error
                 btn.disabled = false;
                 btn.classList.remove("opacity-75", "cursor-not-allowed");
