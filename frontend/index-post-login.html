@@ -110,6 +110,27 @@
 
         <!-- SUPER_ADMIN Nav -->
         <li id="adminNav" class="hidden relative" x-data="{ showDropdown: false }">
+          <button @click="showprojectDropdown = !showprojectDropdown"
+            class="inline-flex items-center font-medium uppercase transition focus:outline-none">
+            Projects <i class="ml-2 fal fa-chevron-down"></i>
+          </button>
+          <div x-show="showprojectDropdown" @click.outside="showDropdown = false" x-transition
+            class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            style="display: none">
+            <ul class="py-2 text-sm text-left text-blue-800">
+              <li class="px-4 py-2 transition hover:bg-blue-100">
+                <a href="dashboard.html">All projects</a>
+              </li>
+              <li class="px-4 py-2 transition hover:bg-blue-100">
+                <a href="projects.html">My Projects</a>
+              </li>
+              <li class="px-4 py-2 transition hover:bg-blue-100">
+                <a href="members.html">New Project</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li id="adminNav" class="hidden relative" x-data="{ showDropdown: false }">
           <button @click="showDropdown = !showDropdown"
             class="inline-flex items-center font-medium uppercase transition focus:outline-none">
             Admin <i class="ml-2 fal fa-chevron-down"></i>
