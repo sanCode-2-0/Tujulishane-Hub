@@ -81,7 +81,7 @@
         <div class="flex items-center justify-between px-6 py-4">
             <!-- Logo -->
             <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/resources/gov.png" class="object-contain h-12" alt="Site Logo">
+                <img src="resources/gov.png" class="object-contain h-12" alt="Site Logo">
             </a>
 
             <!-- Mobile Menu Toggle -->
@@ -622,8 +622,8 @@
 
         const markers = [];
         const icons = {
-            default: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [40, 40] })
+            default: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
+            selected: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] })
         };
 
         const bgColors = {
