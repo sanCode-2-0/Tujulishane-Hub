@@ -622,7 +622,9 @@
 <div id="paginationControls" class="my-4"></div>
 <script src="config.js"></script>
 <script>
-let API_BASE = 'http://localhost:8080/api';
+let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+  ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api' 
+  : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
 
 // Fetch and display project statistics
 async function loadProjectStats() {

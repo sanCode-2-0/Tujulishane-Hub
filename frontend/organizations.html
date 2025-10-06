@@ -218,7 +218,11 @@
     </section>
 
     <script>
-      const API_BASE = "http://localhost:8080/api/organizations";
+      const API_BASE =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+          ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/organizations"
+          : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/organizations";
       const messageDiv = document.getElementById("org-message");
       const orgList = document.getElementById("orgList");
       const orgSearchResults = document.getElementById("orgSearchResults");

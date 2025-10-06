@@ -217,7 +217,10 @@
             try {
                 // For now, just send name and email as the API expects
                 // TODO: Later add organization selection/creation functionality
-                const res = await fetch("http://localhost:8080/api/auth/register", {
+                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+                const res = await fetch(`${apiBase}/api/auth/register`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, email })
