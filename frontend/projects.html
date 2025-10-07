@@ -1528,8 +1528,68 @@
         }
 
         // Show/hide admin collaboration menu and load pending count
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
             const userRole = localStorage.getItem('userRole');
+            
+            // Populate user dropdown
+            let user = null;
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    user = JSON.parse(userStr);
+                } catch (e) {
+                    console.error("Error parsing user data:", e);
+                }
+            }
+            
+            // Populate user dropdown if user data exists
+            if (user) {
+                console.log("👤 Populating user dropdown...");
+                const userDisplayName = document.getElementById("userDisplayName");
+                const userNameDisplay = document.getElementById("userNameDisplay");
+                const userEmailDisplay = document.getElementById("userEmailDisplay");
+                const userRoleDisplay = document.getElementById("userRoleDisplay");
+                const userStatusDisplay = document.getElementById("userStatusDisplay");
+                
+                if (userDisplayName) userDisplayName.textContent = user.name || "User";
+                if (userNameDisplay) userNameDisplay.textContent = user.name || "Loading...";
+                if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+                if (userRoleDisplay) userRoleDisplay.textContent = user.role || "N/A";
+                if (userStatusDisplay) {
+                    userStatusDisplay.textContent = user.status || "N/A";
+                    userStatusDisplay.className = user.status === "ACTIVE" 
+                        ? "font-medium text-green-600" 
+                        : "font-medium text-gray-600";
+                }
+                console.log("✅ User dropdown populated!");
+            } else {
+                // Try to get user from authManager if available
+                if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+                    try {
+                        user = await window.authManager.getCurrentUser();
+                        if (user) {
+                            const userDisplayName = document.getElementById("userDisplayName");
+                            const userNameDisplay = document.getElementById("userNameDisplay");
+                            const userEmailDisplay = document.getElementById("userEmailDisplay");
+                            const userRoleDisplay = document.getElementById("userRoleDisplay");
+                            const userStatusDisplay = document.getElementById("userStatusDisplay");
+                            
+                            if (userDisplayName) userDisplayName.textContent = user.name || "User";
+                            if (userNameDisplay) userNameDisplay.textContent = user.name || "Loading...";
+                            if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+                            if (userRoleDisplay) userRoleDisplay.textContent = user.role || "N/A";
+                            if (userStatusDisplay) {
+                                userStatusDisplay.textContent = user.status || "N/A";
+                                userStatusDisplay.className = user.status === "ACTIVE" 
+                                    ? "font-medium text-green-600" 
+                                    : "font-medium text-gray-600";
+                            }
+                        }
+                    } catch (e) {
+                        console.log("⚠️ Could not load user from authManager:", e);
+                    }
+                }
+            }
 
             // Show admin menu items if user is admin or super admin
             if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
