@@ -584,7 +584,7 @@
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-                    Projects Overview
+                    Your Projects Overview
                 </h2>
                 <div class="flex flex-col gap-2">
                     <!-- <label class="text-sm font-medium text-gray-700">Status:</label>
@@ -835,6 +835,8 @@
                         <div id="projectInfo" class="hidden"></div>
                         <div id="paginationControls" class="my-4"></div>
                         <script src="config.js"></script>
+                        <!-- Ensure authManager is available for user-specific views -->
+                        <script src="auth.js"></script>
                         <script>
                             let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
                                 ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
@@ -863,7 +865,7 @@
                                             debugDiv.style.margin = '8px 0';
                                             document.body.insertBefore(debugDiv, document.body.firstChild);
                                         }
-                                        debugDiv.textContent = 'Raw statusCounts: ' + JSON.stringify(stats);
+                                        // debugDiv.textContent = 'Raw statusCounts: ' + JSON.stringify(stats);
 
                                         // If statusCounts is an array of arrays (e.g. [['pending', 1]]), convert to object
                                         if (Array.isArray(stats)) {
@@ -939,6 +941,44 @@
                                 return html;
                             }
 
+                            // Small helpers for rendering partner and contact safely
+                            function isEmail(value) {
+                                return typeof value === 'string' && /\S+@\S+\.\S+/.test(value);
+                            }
+
+                            function escapeHtml(str) {
+                                if (!str && str !== 0) return '';
+                                return String(str)
+                                    .replace(/&/g, '&amp;')
+                                    .replace(/</g, '&lt;')
+                                    .replace(/>/g, '&gt;')
+                                    .replace(/"/g, '&quot;')
+                                    .replace(/'/g, '&#39;');
+                            }
+
+                            function renderPartnerField(project) {
+                                // Prefer explicit organization name
+                                const orgName = project && project.organization && project.organization.name ? project.organization.name : (project && (project.organizationName || project.organization));
+                                if (orgName) return escapeHtml(orgName);
+
+                                // Try partner/sponsor but avoid showing an email there
+                                const partner = project && (project.partner || project.sponsor || '');
+                                if (partner && !isEmail(partner)) return escapeHtml(partner);
+
+                                // Fallback to contact person name (if organization missing)
+                                return escapeHtml(project && (project.contactPersonName || project.contactPerson || ''));
+                            }
+
+                            function renderContactField(project) {
+                                const email = project && (project.contactPersonEmail || project.contactEmail || project.contact_person_mail || project.contact_person || project.contact);
+                                if (email && isEmail(email)) {
+                                    return `<a class="text-blue-600 underline" href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>`;
+                                }
+                                // Fallback to name
+                                const name = project && (project.contactPersonName || project.contactPerson || project.contact || '');
+                                return escapeHtml(name);
+                            }
+
                             // Fetch and render projects by status
                             async function loadProjectsByStatus(status, tableBodyId) {
                                 try {
@@ -955,12 +995,12 @@
                                             tbody.innerHTML += `
                     <tr>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${renderPartnerField(project)}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.projectTheme || ''}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.county || ''}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${renderContactField(project)}</td>
                         <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
                     </tr>
                 `;
@@ -968,6 +1008,94 @@
                                     }
                                 } catch (e) {
                                     console.error(`Failed to load projects for status ${status}`, e);
+                                }
+                            }
+
+                            // Return true when the page should show only the current user's projects
+                            function isMyProjectsView() {
+                                return window.location.hash === '#my-projects';
+                            }
+
+                            // Load projects for the current authenticated user and populate the status tables
+                            async function loadMyProjects() {
+                                // Ensure authManager exists
+                                if (!window.authManager) {
+                                    console.error('authManager is not available. Cannot load user projects.');
+                                    return;
+                                }
+
+                                // Require authentication; show friendly message if not authenticated
+                                if (!authManager.isAuthenticated()) {
+                                    const msg = '<tr><td colspan="8" class="px-4 py-3 text-sm text-gray-700">Please log in to view your projects.</td></tr>';
+                                    document.getElementById('tbody-active').innerHTML = msg;
+                                    document.getElementById('tbody-pending').innerHTML = msg;
+                                    document.getElementById('tbody-stalled').innerHTML = msg;
+                                    document.getElementById('tbody-completed').innerHTML = msg;
+                                    document.getElementById('count-active').textContent = 0;
+                                    document.getElementById('count-pending').textContent = 0;
+                                    document.getElementById('count-stalled').textContent = 0;
+                                    document.getElementById('count-completed').textContent = 0;
+                                    return;
+                                }
+
+                                try {
+                                    const res = await authManager.apiCall('/api/projects/my-projects', 'GET');
+                                    if (!res.ok) {
+                                        console.error('Failed to fetch my-projects', res);
+                                        return;
+                                    }
+                                    const json = await res.json();
+                                    const projects = json.data || [];
+
+                                    // Clear tables
+                                    const tbActive = document.getElementById('tbody-active');
+                                    const tbPending = document.getElementById('tbody-pending');
+                                    const tbStalled = document.getElementById('tbody-stalled');
+                                    const tbCompleted = document.getElementById('tbody-completed');
+                                    tbActive.innerHTML = '';
+                                    tbPending.innerHTML = '';
+                                    tbStalled.innerHTML = '';
+                                    tbCompleted.innerHTML = '';
+
+                                    const counts = { active: 0, pending: 0, stalled: 0, completed: 0 };
+
+                                    projects.forEach(project => {
+                                        const status = (project.status || project.projectStatus || (project.tag && project.tag.toLowerCase()) || 'active').toLowerCase();
+                                        const row = `
+                    <tr>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.title || project.name || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${renderPartnerField(project)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectTheme || project.theme || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.county || project.location || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || project.start_date || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || project.end_date || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${renderContactField(project)}</td>
+                        <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
+                    </tr>
+                `;
+
+                                        if (status === 'pending') {
+                                            tbPending.innerHTML += row;
+                                            counts.pending++;
+                                        } else if (status === 'stalled') {
+                                            tbStalled.innerHTML += row;
+                                            counts.stalled++;
+                                        } else if (status === 'completed') {
+                                            tbCompleted.innerHTML += row;
+                                            counts.completed++;
+                                        } else {
+                                            tbActive.innerHTML += row;
+                                            counts.active++;
+                                        }
+                                    });
+
+                                    document.getElementById('count-active').textContent = counts.active;
+                                    document.getElementById('count-pending').textContent = counts.pending;
+                                    document.getElementById('count-stalled').textContent = counts.stalled;
+                                    document.getElementById('count-completed').textContent = counts.completed;
+
+                                } catch (e) {
+                                    console.error('Error loading my projects', e);
                                 }
                             }
 
@@ -1041,13 +1169,31 @@
                                 alert('Submit report for project ' + id);
                             }
 
-                            // On page load
+                            // On page load: choose between global view and "My Projects" view
                             document.addEventListener('DOMContentLoaded', () => {
                                 loadProjectStats();
-                                loadProjectsByStatus('active', 'tbody-active');
-                                loadProjectsByStatus('pending', 'tbody-pending');
-                                loadProjectsByStatus('stalled', 'tbody-stalled');
-                                loadProjectsByStatus('completed', 'tbody-completed');
+                                if (isMyProjectsView()) {
+                                    // load only current user's projects
+                                    loadMyProjects();
+                                } else {
+                                    // default - load public/global projects by status
+                                    loadProjectsByStatus('active', 'tbody-active');
+                                    loadProjectsByStatus('pending', 'tbody-pending');
+                                    loadProjectsByStatus('stalled', 'tbody-stalled');
+                                    loadProjectsByStatus('completed', 'tbody-completed');
+                                }
+                            });
+
+                            // React to hash changes so linking to #my-projects works without reload
+                            window.addEventListener('hashchange', () => {
+                                if (isMyProjectsView()) {
+                                    loadMyProjects();
+                                } else {
+                                    loadProjectsByStatus('active', 'tbody-active');
+                                    loadProjectsByStatus('pending', 'tbody-pending');
+                                    loadProjectsByStatus('stalled', 'tbody-stalled');
+                                    loadProjectsByStatus('completed', 'tbody-completed');
+                                }
                             });
                         </script>
                         </table>
