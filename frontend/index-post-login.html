@@ -1247,16 +1247,37 @@
             }
 
             // Show admin nav if user is admin
+            console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
             if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+              console.log(
+                "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+              );
+
               const adminNavItems = document.querySelectorAll("#adminNav");
               adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+              // Show admin collaboration menu item
+              const adminCollabItem =
+                document.getElementById("admin-collab-item");
+              if (adminCollabItem) {
+                adminCollabItem.style.display = "block";
+                console.log(
+                  "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+                );
+              }
 
               const adminCollabMobile = document.getElementById(
                 "admin-collab-mobile"
               );
               if (adminCollabMobile) {
                 adminCollabMobile.style.display = "block";
+                console.log(
+                  "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+                );
               }
+
+              // Load pending requests count
+              loadPendingRequestsCount();
             }
           } else {
             console.warn("[DEBUG] No user data found in cache");
@@ -2767,14 +2788,27 @@
         }
 
         // Show admin collaboration menu for ADMIN or SUPER_ADMIN
+        console.log("[DEBUG] User role:", user.role);
         if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+          console.log("[DEBUG] User is admin, showing admin collab menu");
           const adminCollabItem = document.getElementById("admin-collab-item");
           const adminCollabMobile = document.getElementById(
             "admin-collab-mobile"
           );
-          if (adminCollabItem) adminCollabItem.style.display = "block";
-          if (adminCollabMobile) adminCollabMobile.style.display = "block";
+          console.log("[DEBUG] adminCollabItem found:", adminCollabItem);
+          console.log("[DEBUG] adminCollabMobile found:", adminCollabMobile);
+
+          if (adminCollabItem) {
+            adminCollabItem.style.display = "block";
+            console.log("[DEBUG] Set adminCollabItem display to block");
+          }
+          if (adminCollabMobile) {
+            adminCollabMobile.style.display = "block";
+            console.log("[DEBUG] Set adminCollabMobile display to block");
+          }
           loadPendingRequestsCount();
+        } else {
+          console.log("[DEBUG] User is NOT admin, role is:", user.role);
         }
         // Optionally, show/hide other navs for other roles as needed
       }
