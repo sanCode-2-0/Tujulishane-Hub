@@ -1807,8 +1807,30 @@
 						const projectsResponse = await authManager.apiCall("/api/projects?size=1000", "GET");
 						if (projectsResponse.ok) {
 							const projectsData = await projectsResponse.json();
-							const projects = projectsData.data?.content || projectsData.data || [];
-							console.log("📦 Fetched projects:", projects.length);
+							console.log("📦 Raw projects response:", projectsData);
+							
+							// Extract projects array with multiple fallback paths
+							let projects = [];
+							if (projectsData.data) {
+								if (Array.isArray(projectsData.data)) {
+									projects = projectsData.data;
+								} else if (projectsData.data.content && Array.isArray(projectsData.data.content)) {
+									projects = projectsData.data.content;
+								} else if (projectsData.data.projects && Array.isArray(projectsData.data.projects)) {
+									projects = projectsData.data.projects;
+								}
+							} else if (Array.isArray(projectsData)) {
+								projects = projectsData;
+							}
+							
+							console.log("📦 Extracted projects array:", projects.length, "projects");
+							console.log("📦 First project sample:", projects[0]);
+							
+							// Ensure projects is an array
+							if (!Array.isArray(projects)) {
+								console.error("❌ Projects is not an array:", typeof projects, projects);
+								projects = [];
+							}
 							
 							// Count by theme
 							const themeMap = {};
@@ -1824,6 +1846,8 @@
 								categories.push(theme);
 								seriesData.push(count);
 							});
+						} else {
+							console.error("❌ Projects API failed:", projectsResponse.status);
 						}
 					}
 					
