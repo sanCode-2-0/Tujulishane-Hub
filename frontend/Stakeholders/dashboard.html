@@ -29,7 +29,7 @@
 	<link rel="stylesheet" href="../styles/main.css" />
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-	<script src="styles/main.js"></script>
+	<script src="../styles/effects.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
 		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
@@ -1595,6 +1595,7 @@
 		const authManager = window.authManager || new window.AuthManager();
 
 		async function fetchStatsAndProjects() {
+			console.log("📊 Fetching stats and projects for status tabs...");
 			try {
 				// Fetch statistics
 				const statsRes = await authManager.apiCall(
@@ -1610,106 +1611,183 @@
 					counties: 0,
 					members: 0,
 				};
+				
 				if (statsRes.ok) {
 					const data = await statsRes.json();
-					stats = data.data || stats;
+					const apiStats = data.data || data;
+					console.log("✅ Statistics loaded:", apiStats);
+					
+					// Extract status counts from the API response
+					if (apiStats.statusCounts && Array.isArray(apiStats.statusCounts)) {
+						const statusMap = Object.fromEntries(apiStats.statusCounts);
+						stats.active = statusMap.ACTIVE || 0;
+						stats.pending = statusMap.PENDING || 0;
+						stats.stalled = statusMap.STALLED || 0;
+						stats.completed = statusMap.COMPLETED || 0;
+					}
+					
+					stats.total = apiStats.totalProjects || 0;
+					stats.counties = apiStats.countyCounts?.length || 0;
+					stats.members = apiStats.totalStakeholders || 0;
 				}
+				
+				console.log("📊 Processed stats:", stats);
+				
+				// Update status counts in the tabs (these are already handled by loadDashboardStatistics)
+				// But we'll update them here too for redundancy
 				document.getElementById("stat-active").textContent = stats.active;
 				document.getElementById("stat-pending").textContent = stats.pending;
 				document.getElementById("stat-stalled").textContent = stats.stalled;
-				document.getElementById("stat-completed").textContent =
-					stats.completed;
-				document.getElementById("stat-projects").textContent = stats.total;
-				document.getElementById("stat-counties").textContent = stats.counties;
-				document.getElementById("stat-members").textContent = stats.members;
+				document.getElementById("stat-completed").textContent = stats.completed;
 
-				// Fetch latest projects
+				// Fetch latest active projects for accordion
+				console.log("📦 Fetching latest active projects...");
 				const projectsRes = await authManager.apiCall(
-					"/api/projects?size=3&sort=createdAt,desc",
+					"/api/projects?status=ACTIVE&size=3&sort=createdAt,desc",
 					"GET"
 				);
 				let projects = [];
 				if (projectsRes.ok) {
 					const data = await projectsRes.json();
-					projects = data.data?.content || data.data || [];
+					console.log("📦 Projects response:", data);
+					
+					// Extract projects array
+					if (data.data) {
+						if (Array.isArray(data.data)) {
+							projects = data.data;
+						} else if (data.data.content && Array.isArray(data.data.content)) {
+							projects = data.data.content;
+						}
+					} else if (Array.isArray(data)) {
+						projects = data;
+					}
+					
+					console.log("✅ Extracted projects:", projects.length);
 				}
+				
 				// Latest project accordion
 				const latest = projects[0];
 				document.getElementById("latest-project-content").innerHTML = latest
 					? `
             <strong>${latest.title}</strong><br>
-            Theme: ${latest.projectTheme}<br>
-            Status: ${latest.status}<br>
-            County: ${latest.county}<br>
-            Start: ${latest.startDate}<br>
-            End: ${latest.endDate || "-"}<br>
-            <small>${latest.activityType || ""}</small>
+            <span class="inline-block px-2 py-1 mt-2 text-xs rounded ${getStatusBadgeClass(latest.status)}">${latest.status}</span><br>
+            <div class="mt-2">
+              <strong>Theme:</strong> ${latest.projectTheme || "N/A"}<br>
+              <strong>County:</strong> ${latest.county || "N/A"}<br>
+              <strong>Partner:</strong> ${latest.partner || "N/A"}<br>
+              <strong>Start Date:</strong> ${formatDate(latest.startDate)}<br>
+              <strong>End Date:</strong> ${formatDate(latest.endDate) || "Ongoing"}<br>
+              ${latest.activityType ? `<strong>Activity:</strong> ${latest.activityType}<br>` : ""}
+            </div>
           `
-					: "No recent projects.";
+					: "No recent active projects.";
+					
 				// Project #2 and #3
 				document.getElementById("project-2-content").innerHTML = projects[1]
 					? `
             <strong>${projects[1].title}</strong><br>
-            Theme: ${projects[1].projectTheme}<br>
-            Status: ${projects[1].status}<br>
-            County: ${projects[1].county}<br>
-            Start: ${projects[1].startDate}<br>
-            End: ${projects[1].endDate || "-"}<br>
-            <small>${projects[1].activityType || ""}</small>
+            <span class="inline-block px-2 py-1 mt-2 text-xs rounded ${getStatusBadgeClass(projects[1].status)}">${projects[1].status}</span><br>
+            <div class="mt-2">
+              <strong>Theme:</strong> ${projects[1].projectTheme || "N/A"}<br>
+              <strong>County:</strong> ${projects[1].county || "N/A"}<br>
+              <strong>Partner:</strong> ${projects[1].partner || "N/A"}<br>
+              <strong>Start Date:</strong> ${formatDate(projects[1].startDate)}<br>
+              <strong>End Date:</strong> ${formatDate(projects[1].endDate) || "Ongoing"}<br>
+            </div>
           `
 					: "No data.";
+					
 				document.getElementById("project-3-content").innerHTML = projects[2]
 					? `
             <strong>${projects[2].title}</strong><br>
-            Theme: ${projects[2].projectTheme}<br>
-            Status: ${projects[2].status}<br>
-            County: ${projects[2].county}<br>
-            Start: ${projects[2].startDate}<br>
-            End: ${projects[2].endDate || "-"}<br>
-            <small>${projects[2].activityType || ""}</small>
+            <span class="inline-block px-2 py-1 mt-2 text-xs rounded ${getStatusBadgeClass(projects[2].status)}">${projects[2].status}</span><br>
+            <div class="mt-2">
+              <strong>Theme:</strong> ${projects[2].projectTheme || "N/A"}<br>
+              <strong>County:</strong> ${projects[2].county || "N/A"}<br>
+              <strong>Partner:</strong> ${projects[2].partner || "N/A"}<br>
+              <strong>Start Date:</strong> ${formatDate(projects[2].startDate)}<br>
+              <strong>End Date:</strong> ${formatDate(projects[2].endDate) || "Ongoing"}<br>
+            </div>
           `
 					: "No data.";
 
 				// Pending, Stalled, Completed tables
-				await fillProjectsTable("pending", "pending-projects-table");
-				await fillProjectsTable("stalled", "stalled-projects-table");
-				await fillProjectsTable("completed", "completed-projects-table");
+				console.log("📊 Loading project tables...");
+				await fillProjectsTable("PENDING", "pending-projects-table");
+				await fillProjectsTable("STALLED", "stalled-projects-table");
+				await fillProjectsTable("COMPLETED", "completed-projects-table");
+				
+				console.log("✅ All status tabs populated!");
 			} catch (e) {
-				console.error("Failed to load dashboard data", e);
+				console.error("❌ Failed to load dashboard data", e);
+			}
+		}
+
+		// Helper function to get status badge class
+		function getStatusBadgeClass(status) {
+			const statusClasses = {
+				ACTIVE: "bg-green-100 text-green-800",
+				PENDING: "bg-yellow-100 text-yellow-800",
+				STALLED: "bg-red-100 text-red-800",
+				COMPLETED: "bg-blue-100 text-blue-800",
+			};
+			return statusClasses[status] || "bg-gray-100 text-gray-800";
+		}
+
+		// Helper function to format dates
+		function formatDate(dateString) {
+			if (!dateString) return null;
+			try {
+				const date = new Date(dateString);
+				return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+			} catch (e) {
+				return dateString;
 			}
 		}
 
 		async function fillProjectsTable(status, tableId) {
+			console.log(`📊 Filling ${status} projects table...`);
 			const res = await authManager.apiCall(
-				`/api/projects?status=${status}&size=5&sort=createdAt,desc`,
+				`/api/projects?status=${status}&size=10&sort=createdAt,desc`,
 				"GET"
 			);
 			let projects = [];
 			if (res.ok) {
 				const data = await res.json();
-				projects = data.data?.content || data.data || [];
+				console.log(`📦 ${status} projects response:`, data);
+				
+				// Extract projects array
+				if (data.data) {
+					if (Array.isArray(data.data)) {
+						projects = data.data;
+					} else if (data.data.content && Array.isArray(data.data.content)) {
+						projects = data.data.content;
+					}
+				} else if (Array.isArray(data)) {
+					projects = data;
+				}
+				
+				console.log(`✅ Found ${projects.length} ${status} projects`);
 			}
+			
 			const table = document.getElementById(tableId);
 			if (!projects.length) {
-				table.innerHTML = `<tr><td colspan="8">No ${status} projects.</td></tr>`;
+				table.innerHTML = `<tr><td colspan="8" class="px-4 py-4 text-center text-gray-500">No ${status.toLowerCase()} projects.</td></tr>`;
 				return;
 			}
 			table.innerHTML = projects
 				.map(
 					(p) => `
-          <tr>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.title}</td>
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm text-gray-700">${p.title || "Untitled"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${p.partner || "-"}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.projectTheme || "-"
-						}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.members || "-"}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.startDate || "-"
-						}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.endDate || "-"}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${p.contactPersonName || "-"
-						}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${p.projectTheme || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${p.county || p.region || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${formatDate(p.startDate) || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${formatDate(p.endDate) || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${p.contactPersonName || "-"}</td>
             ${tableId === "completed-projects-table"
-							? `<td><button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600">Submit Report</button></td>`
+							? `<td class="px-4 py-3"><button class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600">View Report</button></td>`
 							: ""
 						}
           </tr>
@@ -1725,6 +1803,14 @@
 		let barChartInstance = null;
 		
 		function initializeBarChart() {
+			const chartElement = document.querySelector("#barChart");
+			if (!chartElement) {
+				console.error("❌ Chart element #barChart not found!");
+				return;
+			}
+			
+			console.log("📊 Initializing bar chart...");
+			
 			const options = {
 				chart: {
 					type: "bar",
@@ -1773,8 +1859,13 @@
 				},
 			};
 
-			barChartInstance = new ApexCharts(document.querySelector("#barChart"), options);
-			barChartInstance.render();
+			try {
+				barChartInstance = new ApexCharts(chartElement, options);
+				barChartInstance.render();
+				console.log("✅ Bar chart initialized successfully!");
+			} catch (error) {
+				console.error("❌ Failed to initialize chart:", error);
+			}
 		}
 
 		// Load chart data from API
@@ -2015,6 +2106,32 @@
 				// Load current user data
 				const user = await authManager.getCurrentUser();
 				console.log("User session initialized:", user);
+				
+				// Populate user dropdown with user data
+				if (user) {
+					console.log("👤 Populating user dropdown...");
+					
+					// Update all user display elements
+					const userDisplayName = document.getElementById("userDisplayName");
+					const userNameDisplay = document.getElementById("userNameDisplay");
+					const userEmailDisplay = document.getElementById("userEmailDisplay");
+					const userRoleDisplay = document.getElementById("userRoleDisplay");
+					const userStatusDisplay = document.getElementById("userStatusDisplay");
+					
+					if (userDisplayName) userDisplayName.textContent = user.name || "User";
+					if (userNameDisplay) userNameDisplay.textContent = user.name || "Loading...";
+					if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+					if (userRoleDisplay) userRoleDisplay.textContent = user.role || "N/A";
+					if (userStatusDisplay) {
+						userStatusDisplay.textContent = user.status || "N/A";
+						// Update status color based on status
+						userStatusDisplay.className = user.status === "ACTIVE" 
+							? "font-medium text-green-600" 
+							: "font-medium text-gray-600";
+					}
+					
+					console.log("✅ User dropdown populated successfully!");
+				}
 				
 				// Load dashboard statistics if needed
 				await loadDashboardStatistics();
