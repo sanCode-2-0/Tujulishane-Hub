@@ -6,7 +6,12 @@ plugins {
 
 group = 'com.tujulishanehub'
 version = '1.0.0'
-sourceCompatibility = '21'
+// sourceCompatibility = '21'
+java {
+    toolchain {
+        languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+    }
+}
 
 configurations {
     compileOnly {
