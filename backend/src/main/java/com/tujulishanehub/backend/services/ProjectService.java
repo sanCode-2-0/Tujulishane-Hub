@@ -401,6 +401,7 @@ public class ProjectService {
         // Project counts by status
         stats.put("totalProjects", projectRepository.count());
         stats.put("pendingProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING));
+        stats.put("submittedProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.SUBMITTED));
         stats.put("approvedProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED));
         stats.put("rejectedProjects", projectRepository.countByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.REJECTED));
         

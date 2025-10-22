@@ -103,6 +103,10 @@ public class Organization {
         return approvalStatus == ApprovalStatus.PENDING;
     }
     
+    public boolean isSubmitted() {
+        return approvalStatus == ApprovalStatus.SUBMITTED;
+    }
+    
     public boolean isRejected() {
         return approvalStatus == ApprovalStatus.REJECTED;
     }
