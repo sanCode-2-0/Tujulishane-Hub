@@ -3,6 +3,7 @@ package com.tujulishanehub.backend.controllers;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.payload.ApiResponse;
+import com.tujulishanehub.backend.payload.UserProfileDTO;
 import com.tujulishanehub.backend.services.UserService;
 import com.tujulishanehub.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -453,21 +454,23 @@ public class UserController {
      */
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<User>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getCurrentUser() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
             User user = userService.getUserByEmail(email);
             
-            ApiResponse<User> response = new ApiResponse<>(
+            UserProfileDTO userProfile = new UserProfileDTO(user);
+            
+            ApiResponse<UserProfileDTO> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "User profile retrieved successfully", 
-                user
+                userProfile
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error retrieving user profile: {}", e.getMessage(), e);
-            ApiResponse<User> response = new ApiResponse<>(
+            ApiResponse<UserProfileDTO> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve user profile", 
                 null

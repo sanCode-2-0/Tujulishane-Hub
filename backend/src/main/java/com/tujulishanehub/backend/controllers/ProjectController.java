@@ -1,6 +1,7 @@
 package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.payload.ApiResponse;
@@ -667,6 +668,155 @@ public class ProjectController {
             ApiResponse<List<Project>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Archive a completed project to past projects repository (Admin only)
+     */
+    @PostMapping("/{projectId}/archive")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<PastProject>> archiveProject(
+            @PathVariable Long projectId,
+            @RequestBody Map<String, String> archivalData) {
+        
+        try {
+            String archivedBy = "admin"; // TODO: Get from authentication context
+            String lessonsLearned = archivalData.get("lessonsLearned");
+            String successFactors = archivalData.get("successFactors");
+            String challenges = archivalData.get("challenges");
+            String recommendations = archivalData.get("recommendations");
+            
+            PastProject pastProject = projectService.archiveProject(
+                projectId, archivedBy, lessonsLearned, successFactors, challenges, recommendations);
+            
+            ApiResponse<PastProject> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Project archived successfully", 
+                pastProject
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error archiving project: {}", e.getMessage(), e);
+            ApiResponse<PastProject> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to archive project: " + e.getMessage(), 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Mark project as completed (Owner, Admin, or Collaborator with EDITOR/CO_OWNER role)
+     */
+    @PostMapping("/admin/complete/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Project>> completeProject(@PathVariable Long id) {
+        try {
+            // Get authenticated user
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+
+            // Check if user is admin, super admin, owner, or collaborator with edit permission
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+            boolean isOwner = projectService.isProjectOwner(id, userEmail);
+            boolean canEdit = projectCollaboratorService.canEditProject(id, userEmail);
+
+            if (!isAdmin && !isOwner && !canEdit) {
+                logger.warn("User {} attempted to complete project {} without permission", userEmail, id);
+                ApiResponse<Project> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "You don't have permission to complete this project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+
+            // Mark project as completed
+            Project completedProject = projectService.completeProject(id, userEmail);
+
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Project marked as completed successfully",
+                completedProject
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            logger.error("Error completing project {}: {}", id, e.getMessage());
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            logger.error("Error completing project {}: {}", id, e.getMessage(), e);
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to complete project: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Mark project as stalled (Owner, Admin, or Collaborator with EDITOR/CO_OWNER role)
+     */
+    @PostMapping("/admin/stall/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Project>> stallProject(@PathVariable Long id) {
+        try {
+            // Get authenticated user
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+
+            // Check if user is admin, super admin, owner, or collaborator with edit permission
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+            boolean isOwner = projectService.isProjectOwner(id, userEmail);
+            boolean canEdit = projectCollaboratorService.canEditProject(id, userEmail);
+
+            if (!isAdmin && !isOwner && !canEdit) {
+                logger.warn("User {} attempted to stall project {} without permission", userEmail, id);
+                ApiResponse<Project> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "You don't have permission to stall this project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+
+            // Mark project as stalled
+            Project stalledProject = projectService.stallProject(id, userEmail);
+
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Project marked as stalled successfully",
+                stalledProject
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            logger.error("Error stalling project {}: {}", id, e.getMessage());
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            logger.error("Error stalling project {}: {}", id, e.getMessage(), e);
+            ApiResponse<Project> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to stall project: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

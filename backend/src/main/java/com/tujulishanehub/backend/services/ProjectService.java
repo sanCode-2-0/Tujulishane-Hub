@@ -1,5 +1,6 @@
 package com.tujulishanehub.backend.services;
 
+import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.repositories.ProjectRepository;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,9 @@ public class ProjectService {
     
     @Autowired
     private GeocodingService geocodingService;
+    
+    @Autowired
+    private PastProjectService pastProjectService;
     
     /**
      * Create a new project with automatic coordinate extraction
@@ -98,7 +103,14 @@ public class ProjectService {
     public Page<Project> getProjects(Pageable pageable) {
         return projectRepository.findAll(pageable);
     }
-    
+
+    /**
+     * Get past projects (completed and stalled) with pagination
+     */
+    public Page<Project> getPastProjects(Pageable pageable) {
+        return projectRepository.findByStatusIn(Arrays.asList("completed", "stalled"), pageable);
+    }
+
     /**
      * Delete project
      */
@@ -204,6 +216,43 @@ public class ProjectService {
         long projectsWithCoordinates = projectRepository.findProjectsWithCoordinates().size();
         
         return new ProjectStatistics(statusCounts, countyCounts, totalProjects, projectsWithCoordinates);
+    }
+    
+    /**
+     * Archive a completed project to past projects repository
+     */
+    public PastProject archiveProject(Long projectId, String archivedBy, String lessonsLearned,
+                                    String successFactors, String challenges, String recommendations) {
+        logger.info("Archiving project with ID: {}", projectId);
+        
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (!projectOpt.isPresent()) {
+            throw new RuntimeException("Project not found with ID: " + projectId);
+        }
+        
+        Project project = projectOpt.get();
+        
+        // Validate that project is completed
+        if (!"completed".equalsIgnoreCase(project.getStatus())) {
+            throw new RuntimeException("Only completed projects can be archived");
+        }
+        
+        // Archive the project
+        PastProject pastProject = pastProjectService.archiveProject(
+            project, archivedBy, lessonsLearned, successFactors, challenges, recommendations);
+        
+        // Remove the project from active projects (optional - could keep for history)
+        // projectRepository.delete(project);
+        
+        return pastProject;
+    }
+    
+    /**
+     * Get projects eligible for archival (completed and older than specified years)
+     */
+    public List<Project> getProjectsEligibleForArchival(int yearsOld) {
+        LocalDate cutoffDate = LocalDate.now().minusYears(yearsOld);
+        return projectRepository.findByEndDateBeforeAndStatus(cutoffDate, "completed");
     }
     
     /**
@@ -361,7 +410,49 @@ public class ProjectService {
         
         return stats;
     }
-    
+
+    /**
+     * Mark a project as completed
+     */
+    public Project completeProject(Long projectId, String completedBy) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isEmpty()) {
+            throw new RuntimeException("Project not found");
+        }
+
+        Project project = projectOpt.get();
+        if (!"active".equalsIgnoreCase(project.getStatus())) {
+            throw new RuntimeException("Only active projects can be marked as completed");
+        }
+
+        project.markAsCompleted();
+        projectRepository.save(project);
+
+        logger.info("Project {} marked as completed by {}", projectId, completedBy);
+        return project;
+    }
+
+    /**
+     * Mark a project as stalled
+     */
+    public Project stallProject(Long projectId, String stalledBy) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isEmpty()) {
+            throw new RuntimeException("Project not found");
+        }
+
+        Project project = projectOpt.get();
+        if (!"active".equalsIgnoreCase(project.getStatus())) {
+            throw new RuntimeException("Only active projects can be marked as stalled");
+        }
+
+        project.setStatus("stalled");
+        projectRepository.save(project);
+
+        logger.info("Project {} marked as stalled by {}", projectId, stalledBy);
+        return project;
+    }
+
     /**
      * Statistics class for project data
      */

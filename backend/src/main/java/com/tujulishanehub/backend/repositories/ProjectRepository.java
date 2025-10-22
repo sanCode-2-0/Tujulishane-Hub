@@ -3,6 +3,8 @@ package com.tujulishanehub.backend.repositories;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.ProjectTheme;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +28,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     
     // Find projects by status
     List<Project> findByStatus(String status);
+    Page<Project> findByStatus(String status, Pageable pageable);
+    Page<Project> findByStatusIn(List<String> statuses, Pageable pageable);
     
     // Find projects by county
     List<Project> findByCountyContainingIgnoreCase(String county);
@@ -46,8 +50,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // Find projects by date range
     List<Project> findByStartDateBetween(LocalDate startDate, LocalDate endDate);
     
-    // Find projects that end after a specific date
-    List<Project> findByEndDateAfter(LocalDate date);
+    // Find projects that end before a date and have a specific status
+    List<Project> findByEndDateBeforeAndStatus(LocalDate endDate, String status);
     
     // Find projects that are currently active (started but not ended)
     @Query("SELECT p FROM Project p WHERE p.startDate <= :currentDate AND (p.endDate IS NULL OR p.endDate >= :currentDate)")

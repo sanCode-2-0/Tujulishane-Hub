@@ -23,6 +23,10 @@ public class ProjectReport {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "past_project_id", nullable = true)
+    private PastProject pastProject;
+    
     @Column(nullable = false)
     private String title;
     

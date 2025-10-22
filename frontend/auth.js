@@ -148,16 +148,38 @@ class AuthManager {
     }
 
     try {
+      console.log(`[auth.js] apiCall: Making ${method} request to ${url}`);
       const response = await fetch(url, config);
+      console.log(
+        `[auth.js] apiCall: Response status: ${response.status}, ok: ${response.ok}`
+      );
+
       // If unauthorized, redirect to login
       if (response.status === 401) {
+        console.log("[auth.js] apiCall: Unauthorized, logging out");
         this.logout();
         // window.location.href = "/frontend/index.html";
         return response;
       }
+
+      // Log response details for debugging
+      if (!response.ok) {
+        console.log(`[auth.js] apiCall: Error response details:`, {
+          status: response.status,
+          statusText: response.statusText,
+          url: url,
+        });
+        try {
+          const errorText = await response.text();
+          console.log(`[auth.js] apiCall: Error response body:`, errorText);
+        } catch (e) {
+          console.log("[auth.js] apiCall: Could not read error response body");
+        }
+      }
+
       return response;
     } catch (error) {
-      console.error("API call error:", error);
+      console.error("[auth.js] apiCall: Network or other error:", error);
       throw error;
     }
   }

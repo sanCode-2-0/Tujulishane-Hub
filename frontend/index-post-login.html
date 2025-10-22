@@ -474,6 +474,14 @@
                     All projects
                   </a>
                 </li>
+                <li
+                  class="px-4 py-2 transition hover:text-lime-600 transition ease-in-out duration-200 text-[12px] uppercase hover:bg-lime-50"
+                >
+                  <a href="past-projects.html">
+                    <i class="far fa-archive mr-2 text-purple-600"></i>
+                    Past Projects
+                  </a>
+                </li>
               </ul>
             </div>
           </li>
@@ -1953,8 +1961,13 @@
 
       // User session initialization
       async function initializeUserSession() {
+        console.log(
+          "[DEBUG] initializeUserSession: Starting user session initialization"
+        );
+
         // Check if user is authenticated
         if (!authManager.isAuthenticated()) {
+          console.log("[DEBUG] initializeUserSession: User not authenticated");
           alert(
             "You must be logged in to access this page. (See console for details)"
           );
@@ -1962,11 +1975,14 @@
           throw new Error("Not authenticated");
         }
 
+        console.log("[DEBUG] initializeUserSession: User is authenticated");
+
         // Check for demo token
         const demoToken =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vQGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk1ODQwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dummysignature";
         const token = authManager.getToken();
         if (token === demoToken) {
+          console.log("[DEBUG] initializeUserSession: Using demo token");
           // Use a fake user object for demo
           const user = {
             id: 1,
@@ -1981,21 +1997,41 @@
         }
 
         try {
+          console.log(
+            "[DEBUG] initializeUserSession: Attempting to load current user data"
+          );
           // Load current user data
           const user = await authManager.getCurrentUser();
+          console.log(
+            "[DEBUG] initializeUserSession: User data loaded successfully",
+            user
+          );
 
           // Update UI with user information
           updateUserDisplay(user);
 
           // Check if user is approved
           if (user.approvalStatus !== "APPROVED") {
+            console.log(
+              "[DEBUG] initializeUserSession: User not approved, status:",
+              user.approvalStatus
+            );
             showApprovalPendingMessage(user);
+          } else {
+            console.log("[DEBUG] initializeUserSession: User is approved");
           }
 
           // Load dashboard data
+          console.log("[DEBUG] initializeUserSession: Loading dashboard data");
           await loadDashboardData();
+          console.log(
+            "[DEBUG] initializeUserSession: Initialization completed successfully"
+          );
         } catch (error) {
-          console.error("Failed to load user session:", error);
+          console.error(
+            "[DEBUG] initializeUserSession: Failed to load user session:",
+            error
+          );
           alert("Failed to load user session. Please log in again.");
           authManager.logout();
         }

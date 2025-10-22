@@ -909,6 +909,7 @@
                                     html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"approveProject(${project.id})\">Approve</button> `;
                                     html += `<button class=\"px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600\" onclick=\"dismissProject(${project.id})\">Dismiss</button>`;
                                 } else if (status === 'active') {
+                                    html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"completeProject(${project.id})\">Complete</button> `;
                                     html += `<button class=\"px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600\" onclick=\"stalledProject(${project.id})\">Has Stalled</button>`;
                                 } else if (status === 'stalled') {
                                     html += `<button class=\"px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600\" onclick=\"reactivateProject(${project.id})\">Re-activate</button> `;
@@ -951,6 +952,39 @@
                                     }
                                 }
                                 return html;
+                            }
+
+                            // Mark project as completed (exposed globally)
+                            window.completeProject = async function (id) {
+                                if (!confirm('Mark this project as completed?')) return;
+                                try {
+                                    const headers = {
+                                        'Content-Type': 'application/json',
+                                        Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+                                    };
+                                    const res = await fetch(`${API_BASE}/projects/admin/complete/${id}`, {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers
+                                    });
+                                    let data = null;
+                                    try {
+                                        data = await res.json();
+                                    } catch (jsonErr) {
+                                        console.error('[completeProject] Failed to parse JSON:', jsonErr);
+                                    }
+                                    if (res.ok && data && data.message) {
+                                        alert(data.message || 'Project marked as completed');
+                                    } else {
+                                        alert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status));
+                                    }
+                                    loadProjectStats();
+                                    loadProjectsByStatus('active', 'tbody-active');
+                                    loadProjectsByStatus('completed', 'tbody-completed');
+                                } catch (e) {
+                                    console.error('[completeProject] Exception:', e);
+                                    alert('Failed to mark project as completed: ' + e);
+                                }
                             }
 
                             // Small helpers for rendering partner and contact safely
