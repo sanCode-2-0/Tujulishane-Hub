@@ -259,7 +259,10 @@ public class ProjectService {
     public Project createProjectByPartner(Project project, String userEmail) {
         logger.info("Creating project by partner: {} for email: {}", project.getTitle(), userEmail);
         
-        // Set partner email
+        // Set partner email for tracking ownership
+        project.setPartner(userEmail);
+        
+        // Set contact person email if not provided
         if (project.getContactPersonEmail() == null) {
             project.setContactPersonEmail(userEmail);
         }
@@ -315,7 +318,20 @@ public class ProjectService {
      * Get projects by partner email
      */
     public List<Project> getProjectsByPartnerEmail(String email) {
-        return projectRepository.findByContactPersonEmail(email);
+        logger.info("Fetching projects for partner email: {}", email);
+        
+        // Try both partner field and contactPersonEmail for backward compatibility
+        List<Project> projectsByPartner = projectRepository.findByPartner(email);
+        List<Project> projectsByContact = projectRepository.findByContactPersonEmail(email);
+        
+        // Combine and deduplicate
+        java.util.Set<Project> combinedProjects = new java.util.HashSet<>(projectsByPartner);
+        combinedProjects.addAll(projectsByContact);
+        
+        List<Project> result = new java.util.ArrayList<>(combinedProjects);
+        logger.info("Found {} projects for email: {}", result.size(), email);
+        
+        return result;
     }
     
     /**

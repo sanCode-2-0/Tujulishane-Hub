@@ -18,6 +18,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // Find projects by partner
     List<Project> findByPartnerContainingIgnoreCase(String partner);
     
+    // Find projects by partner email (exact match)
+    List<Project> findByPartner(String partnerEmail);
+    
     // Find projects by title
     List<Project> findByTitleContainingIgnoreCase(String title);
     
