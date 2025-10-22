@@ -28,10 +28,6 @@ public class Project {
     private String title;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "project_theme")
-    private ProjectTheme projectTheme;
-    
-    @Enumerated(EnumType.STRING)
     @Column(name = "project_category")
     private ProjectCategory projectCategory;
     
@@ -44,13 +40,13 @@ public class Project {
     @Column(name = "activity_type")
     private String activityType;
     
-    private String county;
+    // Multiple themes relationship
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProjectThemeAssignment> themes = new HashSet<>();
     
-    @Column(name = "sub_county")
-    private String subCounty;
-    
-    @Column(name = "maps_address", columnDefinition = "TEXT")
-    private String mapsAddress;
+    // Multiple locations relationship
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProjectLocation> locations = new HashSet<>();
     
     @Column(name = "contact_person_name")
     private String contactPersonName;
@@ -66,11 +62,6 @@ public class Project {
     
     @Column(precision = 15, scale = 2)
     private java.math.BigDecimal budget;
-    
-    // New latitude and longitude fields extracted from maps_address
-    private Double latitude;
-    
-    private Double longitude;
     
     // Additional metadata fields
     @Column(name = "created_at", updatable = false)
@@ -127,15 +118,31 @@ public class Project {
         lastModifiedAt = LocalDateTime.now();
     }
     
-    // Helper method to check if coordinates are available
+    // Helper method to check if any location has coordinates
     public boolean hasCoordinates() {
-        return latitude != null && longitude != null;
+        return locations != null && locations.stream().anyMatch(ProjectLocation::hasCoordinates);
     }
-    
-    // Helper method to get formatted coordinate string
-    public String getCoordinatesString() {
-        if (hasCoordinates()) {
-            return String.format("%.6f,%.6f", latitude, longitude);
+
+    // Helper method to get formatted coordinate strings for all locations
+    public Set<String> getCoordinatesStrings() {
+        Set<String> coords = new HashSet<>();
+        if (locations != null) {
+            locations.stream()
+                .map(ProjectLocation::getCoordinatesString)
+                .filter(coord -> coord != null)
+                .forEach(coords::add);
+        }
+        return coords;
+    }
+
+    // Helper method to get primary location coordinates (first location with coordinates)
+    public String getPrimaryCoordinatesString() {
+        if (locations != null) {
+            return locations.stream()
+                .filter(ProjectLocation::hasCoordinates)
+                .findFirst()
+                .map(ProjectLocation::getCoordinatesString)
+                .orElse(null);
         }
         return null;
     }
@@ -205,30 +212,6 @@ public class Project {
         this.status = status;
     }
 
-    public String getMapsAddress() {
-        return mapsAddress;
-    }
-
-    public void setMapsAddress(String mapsAddress) {
-        this.mapsAddress = mapsAddress;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -236,19 +219,11 @@ public class Project {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    
-    public ProjectTheme getProjectTheme() {
-        return projectTheme;
-    }
-    
-    public void setProjectTheme(ProjectTheme projectTheme) {
-        this.projectTheme = projectTheme;
-    }
-    
+
     public ProjectCategory getProjectCategory() {
         return projectCategory;
     }
-    
+
     public void setProjectCategory(ProjectCategory projectCategory) {
         this.projectCategory = projectCategory;
     }
@@ -305,5 +280,73 @@ public class Project {
     public void setReports(Set<ProjectReport> reports) {
         this.reports = reports;
         this.hasReports = reports != null && !reports.isEmpty();
+    }
+
+    // Helper methods for multiple themes
+    public void addTheme(ProjectTheme theme) {
+        if (themes == null) {
+            themes = new HashSet<>();
+        }
+        ProjectThemeAssignment assignment = new ProjectThemeAssignment();
+        assignment.setProject(this);
+        assignment.setProjectTheme(theme);
+        themes.add(assignment);
+    }
+
+    public void removeTheme(ProjectTheme theme) {
+        if (themes != null) {
+            themes.removeIf(assignment -> assignment.getProjectTheme() == theme);
+        }
+    }
+
+    public Set<ProjectTheme> getProjectThemes() {
+        Set<ProjectTheme> themeSet = new HashSet<>();
+        if (themes != null) {
+            themes.forEach(assignment -> themeSet.add(assignment.getProjectTheme()));
+        }
+        return themeSet;
+    }
+
+    // Helper methods for multiple locations
+    public void addLocation(String county, String subCounty, String mapsAddress, Double latitude, Double longitude) {
+        if (locations == null) {
+            locations = new HashSet<>();
+        }
+        ProjectLocation location = new ProjectLocation();
+        location.setProject(this);
+        location.setCounty(county);
+        location.setSubCounty(subCounty);
+        location.setMapsAddress(mapsAddress);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        locations.add(location);
+    }
+
+    public void removeLocation(ProjectLocation location) {
+        if (locations != null) {
+            locations.remove(location);
+        }
+    }
+
+    // Get primary location (first one)
+    public ProjectLocation getPrimaryLocation() {
+        if (locations != null && !locations.isEmpty()) {
+            return locations.iterator().next();
+        }
+        return null;
+    }
+
+    // Get all location strings
+    public Set<String> getLocationStrings() {
+        Set<String> locationStrings = new HashSet<>();
+        if (locations != null) {
+            locations.forEach(location -> {
+                String locStr = location.getFullLocationString();
+                if (locStr != null && !locStr.isEmpty()) {
+                    locationStrings.add(locStr);
+                }
+            });
+        }
+        return locationStrings;
     }
 }

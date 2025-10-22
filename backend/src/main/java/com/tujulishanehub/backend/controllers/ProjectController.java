@@ -1,9 +1,6 @@
 package com.tujulishanehub.backend.controllers;
 
-import com.tujulishanehub.backend.models.ApprovalStatus;
-import com.tujulishanehub.backend.models.PastProject;
-import com.tujulishanehub.backend.models.Project;
-import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.payload.ProjectCreateRequest;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.services.ProjectService;
 import com.tujulishanehub.backend.services.ProjectCollaboratorService;
@@ -50,15 +47,15 @@ public class ProjectController {
      */
     @PostMapping
     @PreAuthorize("hasRole('PARTNER') and @userService.canUserCreateProjects(authentication.name)")
-    public ResponseEntity<ApiResponse<Project>> createProject(@Valid @RequestBody Project project) {
+    public ResponseEntity<ApiResponse<Project>> createProject(@Valid @RequestBody ProjectCreateRequest request) {
         try {
-            logger.info("Creating new project: {}", project.getTitle());
+            logger.info("Creating new project: {}", request.getTitle());
             
             // Get the authenticated user and associate with project
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
             
-            Project createdProject = projectService.createProjectByPartner(project, userEmail);
+            Project createdProject = projectService.createProjectFromRequest(request, userEmail);
             
             ApiResponse<Project> response = new ApiResponse<>(
                 HttpStatus.CREATED.value(), 

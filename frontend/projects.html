@@ -103,35 +103,24 @@
                 <div class="relative p-4">
                     <form id="newProjectForm">
                         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                            <!-- Map Picker for Location -->
+                            <!-- Project Locations (Multiple) -->
                             <div class="col-span-2 lg:col-span-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
-                                    Map</label>
-                                <div class="text-xs text-gray-600 mb-2">
-                                    Search for a location or click on the map to select the
-                                    project coordinates.
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-sm font-medium text-gray-700">Project Locations *
+                                        <span class="text-xs text-gray-500">(Add all project locations)</span>
+                                    </label>
+                                    <button type="button" id="addLocationBtn"
+                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Add Location
+                                    </button>
                                 </div>
-                                <div id="newProjectMap" style="
-                          height: 400px;
-                          width: 100%;
-                          border-radius: 8px;
-                          margin-bottom: 8px;
-                          border: 1px solid #e5e7eb;
-                          background-color: #f3f4f6;
-                          position: relative;
-                          overflow: hidden;
-                        "></div>
-                                <input type="hidden" id="project_latitude" name="latitude" />
-                                <input type="hidden" id="project_longitude" name="longitude" />
-                                <input type="hidden" id="project_county" name="county" />
-                                <input type="hidden" id="project_subcounty" name="subcounty" />
-                                <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-                                    <strong>Selected Location:</strong>
-                                    <span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-                                        location</span>
-                                    <br />
-                                    <span id="selectedCounty" class="text-gray-600"></span>
+                                <div id="locationsContainer" class="space-y-4">
+                                    <!-- Location entries will be added here dynamically -->
                                 </div>
+                                <div id="locationsError" class="text-red-500 text-sm mt-1 hidden">Please add at least one location</div>
                             </div>
                             <!-- Title -->
                             <div>
@@ -140,23 +129,44 @@
                                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
                             </div>
 
-                            <!-- Project Theme -->
-                            <div>
-                                <label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-                                    *</label>
-                                <select id="theme" name="theme"
-                                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                    <option value="">Select Theme</option>
-                                    <option value="GBV">Gender based violence</option>
-                                    <option value="AYPSRH">
-                                        Adolescent and Young People Sexual and Reproductive
-                                        Health
-                                    </option>
-                                    <option value="MNH">Maternal and Newborn Health</option>
-                                    <option value="FP">Family planning</option>
-                                    <option value="CH">Child Health</option>
-                                    <option value="AH">Adolescent Health</option>
-                                </select>
+                            <!-- Project Themes (Multiple Selection) -->
+                            <div class="col-span-2 md:col-span-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Project Themes *
+                                    <span class="text-xs text-gray-500">(Select all that apply)</span>
+                                </label>
+                                <div id="themesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_GBV" name="themes" value="GBV"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_GBV" class="ml-2 text-sm text-gray-700">Gender Based Violence</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_AYPSRH" name="themes" value="AYPSRH"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_AYPSRH" class="ml-2 text-sm text-gray-700">Adolescent and Young People Sexual and Reproductive Health</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_MNH" name="themes" value="MNH"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_MNH" class="ml-2 text-sm text-gray-700">Maternal and Newborn Health</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_FP" name="themes" value="FP"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_FP" class="ml-2 text-sm text-gray-700">Family Planning</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_CH" name="themes" value="CH"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_CH" class="ml-2 text-sm text-gray-700">Child Health</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="theme_AH" name="themes" value="AH"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="theme_AH" class="ml-2 text-sm text-gray-700">Adolescent Health</label>
+                                    </div>
+                                </div>
+                                <div id="themesError" class="text-red-500 text-sm mt-1 hidden">Please select at least one theme</div>
                             </div>
 
                             <!-- Project Category -->
@@ -1665,7 +1675,261 @@
             } catch (error) {
                 console.error('Error loading pending requests count:', error);
             }
-        }
+    </script>
+    <script>
+        // Project creation form handling
+        document.addEventListener('DOMContentLoaded', function() {
+            let locationCounter = 0;
+            const locationsContainer = document.getElementById('locationsContainer');
+            const addLocationBtn = document.getElementById('addLocationBtn');
+            const newProjectForm = document.getElementById('newProjectForm');
+
+            // Initialize with one location
+            addLocationEntry();
+
+            // Add location button handler
+            addLocationBtn.addEventListener('click', function() {
+                addLocationEntry();
+            });
+
+            // Form submission handler
+            newProjectForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Validate themes
+                const selectedThemes = Array.from(document.querySelectorAll('input[name="themes"]:checked')).map(cb => cb.value);
+                if (selectedThemes.length === 0) {
+                    document.getElementById('themesError').classList.remove('hidden');
+                    return;
+                } else {
+                    document.getElementById('themesError').classList.add('hidden');
+                }
+
+                // Validate locations
+                const locationEntries = document.querySelectorAll('.location-entry');
+                if (locationEntries.length === 0) {
+                    document.getElementById('locationsError').classList.remove('hidden');
+                    return;
+                } else {
+                    document.getElementById('locationsError').classList.add('hidden');
+                }
+
+                // Collect locations data
+                const locations = [];
+                locationEntries.forEach(entry => {
+                    const county = entry.querySelector('input[name*="county"]').value;
+                    const subCounty = entry.querySelector('input[name*="subcounty"]').value;
+                    const mapsAddress = entry.querySelector('input[name*="maps_address"]').value;
+                    const latitude = entry.querySelector('input[name*="latitude"]').value;
+                    const longitude = entry.querySelector('input[name*="longitude"]').value;
+
+                    if (county.trim()) {
+                        locations.push({
+                            county: county,
+                            subCounty: subCounty || null,
+                            mapsAddress: mapsAddress || null,
+                            latitude: latitude ? parseFloat(latitude) : null,
+                            longitude: longitude ? parseFloat(longitude) : null
+                        });
+                    }
+                });
+
+                if (locations.length === 0) {
+                    document.getElementById('locationsError').classList.remove('hidden');
+                    return;
+                }
+
+                // Prepare form data
+                const formData = {
+                    title: document.getElementById('title').value,
+                    partner: document.getElementById('title').value, // Will be overridden by backend
+                    themes: selectedThemes,
+                    projectCategory: document.getElementById('category').value,
+                    startDate: document.getElementById('starttime_period').value,
+                    endDate: document.getElementById('endtime_period').value,
+                    activityType: document.getElementById('activity_type').value,
+                    locations: locations,
+                    contactPersonName: document.getElementById('contact_person').value,
+                    contactPersonRole: document.querySelector('input[name="contact_person_role"]').value,
+                    contactPersonEmail: document.querySelector('input[name="contact_person_mail"]').value,
+                    objectives: document.getElementById('gaps').value,
+                    budget: parseFloat(document.getElementById('budget').value)
+                };
+
+                try {
+                    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                    const response = await fetch(`${window.BASE_URL || 'http://localhost:8080'}/api/projects`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Project created successfully!');
+                        // Close modal and refresh page
+                        const modal = document.getElementById('createNewProject');
+                        if (modal) {
+                            modal.classList.add('hidden');
+                        }
+                        location.reload();
+                    } else {
+                        alert('Error creating project: ' + (result.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error creating project. Please try again.');
+                }
+            });
+
+            function addLocationEntry() {
+                locationCounter++;
+                const locationId = `location_${locationCounter}`;
+
+                const locationEntry = document.createElement('div');
+                locationEntry.className = 'location-entry border border-gray-200 rounded-lg p-4 bg-gray-50';
+                locationEntry.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-sm font-medium text-gray-700">Location ${locationCounter}</h4>
+                        <button type="button" class="remove-location text-red-600 hover:text-red-800 text-sm" data-location-id="${locationId}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 011-1V4z"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">County *</label>
+                            <input type="text" name="county_${locationId}" required
+                                class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                placeholder="Enter county name" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Sub-County</label>
+                            <input type="text" name="subcounty_${locationId}"
+                                class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                placeholder="Enter sub-county (optional)" />
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location on Map</label>
+                        <div class="text-xs text-gray-600 mb-2">
+                            Search for a location or click on the map to select coordinates.
+                        </div>
+                        <div id="map_${locationId}" style="
+                            height: 300px;
+                            width: 100%;
+                            border-radius: 8px;
+                            margin-bottom: 8px;
+                            border: 1px solid #e5e7eb;
+                            background-color: #f3f4f6;
+                            position: relative;
+                            overflow: hidden;
+                        "></div>
+                        <input type="hidden" name="latitude_${locationId}" />
+                        <input type="hidden" name="longitude_${locationId}" />
+                        <input type="hidden" name="maps_address_${locationId}" />
+                        <div class="text-sm text-gray-700 mt-2 p-2 bg-white rounded border">
+                            <strong>Selected Location:</strong>
+                            <span id="selectedLatLng_${locationId}" class="font-mono text-blue-600">Click on map to select location</span>
+                            <br />
+                            <span id="selectedCounty_${locationId}" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                `;
+
+                locationsContainer.appendChild(locationEntry);
+
+                // Initialize map for this location
+                initializeLocationMap(locationId);
+
+                // Add remove handler
+                locationEntry.querySelector('.remove-location').addEventListener('click', function() {
+                    locationEntry.remove();
+                    updateLocationNumbers();
+                });
+
+                updateLocationNumbers();
+            }
+
+            function updateLocationNumbers() {
+                const entries = document.querySelectorAll('.location-entry');
+                entries.forEach((entry, index) => {
+                    const title = entry.querySelector('h4');
+                    if (title) {
+                        title.textContent = `Location ${index + 1}`;
+                    }
+                });
+            }
+
+            function initializeLocationMap(locationId) {
+                const mapElement = document.getElementById(`map_${locationId}`);
+                const latLngElement = document.getElementById(`selectedLatLng_${locationId}`);
+                const countyElement = document.getElementById(`selectedCounty_${locationId}`);
+                const latInput = document.querySelector(`input[name="latitude_${locationId}"]`);
+                const lngInput = document.querySelector(`input[name="longitude_${locationId}"]`);
+                const addressInput = document.querySelector(`input[name="maps_address_${locationId}"]`);
+
+                // Initialize Leaflet map
+                const map = L.map(mapElement).setView([-1.2864, 36.8172], 10); // Default to Nairobi
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                let marker;
+
+                map.on('click', function(e) {
+                    const { lat, lng } = e.latlng;
+
+                    // Remove existing marker
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    // Add new marker
+                    marker = L.marker([lat, lng]).addTo(map);
+
+                    // Update display
+                    latLngElement.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    latInput.value = lat;
+                    lngInput.value = lng;
+
+                    // Reverse geocoding to get address
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const address = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                            addressInput.value = address;
+
+                            // Try to extract county information
+                            const county = extractCountyFromAddress(data);
+                            countyElement.textContent = county ? `County: ${county}` : '';
+                            const countyInput = document.querySelector(`input[name="county_${locationId}"]`);
+                            if (countyInput && !countyInput.value) {
+                                countyInput.value = county || '';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error reverse geocoding:', error);
+                            addressInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        });
+                });
+            }
+
+            function extractCountyFromAddress(data) {
+                // Try to extract county from OpenStreetMap data
+                if (data.address) {
+                    return data.address.county || data.address.state || data.address.region || null;
+                }
+                return null;
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>

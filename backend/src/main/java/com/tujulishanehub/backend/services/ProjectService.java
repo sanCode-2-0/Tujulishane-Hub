@@ -32,14 +32,19 @@ public class ProjectService {
     private PastProjectService pastProjectService;
     
     /**
-     * Create a new project with automatic coordinate extraction
+     * Create a new project with automatic coordinate extraction for locations
      */
     public Project createProject(Project project) {
         logger.info("Creating new project: {}", project.getTitle());
         
-        // Extract coordinates from maps_address if provided
-        if (project.getMapsAddress() != null && !project.getMapsAddress().trim().isEmpty()) {
-            extractAndSetCoordinates(project);
+        // Extract coordinates for each location if maps_address is provided but coordinates are missing
+        if (project.getLocations() != null) {
+            for (com.tujulishanehub.backend.models.ProjectLocation location : project.getLocations()) {
+                if (location.getMapsAddress() != null && !location.getMapsAddress().trim().isEmpty() &&
+                    (location.getLatitude() == null || location.getLongitude() == null)) {
+                    extractAndSetCoordinatesForLocation(location);
+                }
+            }
         }
         
         // Set default status if not provided
@@ -72,11 +77,7 @@ public class ProjectService {
         // Update fields
         updateProjectFields(existingProject, updatedProject);
         
-        // Re-extract coordinates if maps_address has changed
-        if (updatedProject.getMapsAddress() != null && 
-            !updatedProject.getMapsAddress().equals(existingProject.getMapsAddress())) {
-            extractAndSetCoordinates(existingProject);
-        }
+        // Note: Coordinate extraction for locations is handled during location creation/update
         
         Project savedProject = projectRepository.save(existingProject);
         logger.info("Project updated successfully: {} by {}", savedProject.getId(), modifiedByEmail);
@@ -278,19 +279,40 @@ public class ProjectService {
     }
     
     /**
+     * Extract and set coordinates for a specific location
+     */
+    private void extractAndSetCoordinatesForLocation(com.tujulishanehub.backend.models.ProjectLocation location) {
+        try {
+            GeocodingService.CoordinateResult result = geocodingService.extractCoordinates(location.getMapsAddress());
+            
+            if (result.isValid()) {
+                location.setLatitude(result.getLatitude());
+                location.setLongitude(result.getLongitude());
+                logger.debug("Extracted coordinates for location '{}': {}", 
+                    location.getMapsAddress(), result);
+            } else {
+                logger.warn("Could not extract coordinates for location '{}': {}", 
+                    location.getMapsAddress(), result.getMessage());
+            }
+        } catch (Exception e) {
+            logger.error("Error extracting coordinates for location '{}': {}", 
+                location.getMapsAddress(), e.getMessage(), e);
+        }
+    }
+    
+    /**
      * Update project fields from another project object
+     * Note: Themes and locations are not updated here - they require separate handling
      */
     private void updateProjectFields(Project existing, Project updated) {
         if (updated.getPartner() != null) existing.setPartner(updated.getPartner());
         if (updated.getTitle() != null) existing.setTitle(updated.getTitle());
-        if (updated.getProjectTheme() != null) existing.setProjectTheme(updated.getProjectTheme());
+        // Note: projectTheme is now handled via ProjectThemeAssignment entities
         if (updated.getProjectCategory() != null) existing.setProjectCategory(updated.getProjectCategory());
         if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
         if (updated.getEndDate() != null) existing.setEndDate(updated.getEndDate());
         if (updated.getActivityType() != null) existing.setActivityType(updated.getActivityType());
-        if (updated.getCounty() != null) existing.setCounty(updated.getCounty());
-        if (updated.getSubCounty() != null) existing.setSubCounty(updated.getSubCounty());
-        if (updated.getMapsAddress() != null) existing.setMapsAddress(updated.getMapsAddress());
+        // Note: county, subCounty, mapsAddress, latitude, longitude are now in ProjectLocation entities
         if (updated.getContactPersonName() != null) existing.setContactPersonName(updated.getContactPersonName());
         if (updated.getContactPersonRole() != null) existing.setContactPersonRole(updated.getContactPersonRole());
         if (updated.getContactPersonEmail() != null) existing.setContactPersonEmail(updated.getContactPersonEmail());
@@ -298,9 +320,54 @@ public class ProjectService {
         if (updated.getBudget() != null) existing.setBudget(updated.getBudget());
         if (updated.getStatus() != null) existing.setStatus(updated.getStatus());
         
-        // Allow manual override of coordinates
-        if (updated.getLatitude() != null) existing.setLatitude(updated.getLatitude());
-        if (updated.getLongitude() != null) existing.setLongitude(updated.getLongitude());
+        // Note: Coordinate overrides are now handled at the ProjectLocation level
+    }
+    
+    /**
+     * Create a new project from ProjectCreateRequest DTO
+     */
+    public Project createProjectFromRequest(com.tujulishanehub.backend.payload.ProjectCreateRequest request, String userEmail) {
+        logger.info("Creating project from request: {} for email: {}", request.getTitle(), userEmail);
+        
+        Project project = new Project();
+        project.setTitle(request.getTitle());
+        project.setPartner(userEmail); // Override with authenticated user
+        project.setProjectCategory(request.getProjectCategory());
+        project.setStartDate(request.getStartDate());
+        project.setEndDate(request.getEndDate());
+        project.setActivityType(request.getActivityType());
+        project.setContactPersonName(request.getContactPersonName());
+        project.setContactPersonRole(request.getContactPersonRole());
+        project.setContactPersonEmail(request.getContactPersonEmail() != null ? request.getContactPersonEmail() : userEmail);
+        project.setObjectives(request.getObjectives());
+        project.setBudget(request.getBudget());
+        
+        // Set default status
+        project.setStatus("pending");
+        
+        // Add themes
+        for (String themeCode : request.getThemes()) {
+            try {
+                com.tujulishanehub.backend.models.ProjectTheme theme = 
+                    com.tujulishanehub.backend.models.ProjectTheme.fromCode(themeCode);
+                project.addTheme(theme);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid theme code: {}, skipping", themeCode);
+            }
+        }
+        
+        // Add locations
+        for (com.tujulishanehub.backend.payload.ProjectCreateRequest.LocationRequest locReq : request.getLocations()) {
+            project.addLocation(
+                locReq.getCounty(),
+                locReq.getSubCounty(),
+                locReq.getMapsAddress(),
+                locReq.getLatitude(),
+                locReq.getLongitude()
+            );
+        }
+        
+        return createProject(project);
     }
     
     /**
