@@ -914,7 +914,22 @@
                 </select>
               </div>
 
-              <!-- Export Button -->
+              <!-- Filter By Category -->
+              <div class="flex flex-col gap-2">
+                <label
+                  for="categorySelect"
+                  class="text-sm font-medium text-gray-700"
+                  >Category:</label
+                >
+                <select
+                  id="categorySelect"
+                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="IMPLEMENTING">Implementing Projects</option>
+                  <option value="RESEARCH">Research Projects</option>
+                </select>
+              </div>
               <button
                 onclick="exportCSV()"
                 class="flex items-center justify-center px-5 py-2 mt-6 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1170,6 +1185,7 @@
       const itemsPerPage = 5;
       let currentFilter = "all";
       let currentTheme = "all";
+      let currentCategory = "all";
       let searchQuery = "";
       let dateRangeFrom = null;
       let dateRangeTo = null;
@@ -1267,6 +1283,15 @@
           .getElementById("themeSelect")
           .addEventListener("change", (e) => {
             currentTheme = e.target.value;
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+          });
+
+        // Category filter
+        document
+          .getElementById("categorySelect")
+          .addEventListener("change", (e) => {
+            currentCategory = e.target.value;
             currentPage = 1;
             highlightMarkers(currentFilter);
           });
@@ -1506,6 +1531,25 @@
                         </div>
                     </div>
 
+                    <!-- Category -->
+                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 text-indigo-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Category</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${
+                              project.category === "IMPLEMENTING"
+                                ? "Implementing Project"
+                                : project.category === "RESEARCH"
+                                ? "Research Project"
+                                : "N/A"
+                            }</p>
+                        </div>
+                    </div>
+
                     <!-- Start Date -->
                     <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                         <div class="flex-shrink-0">
@@ -1605,6 +1649,13 @@
             .join(" ");
           activeFilters.push({ type: "Theme", value: themeName });
         }
+        if (currentCategory !== "all") {
+          const categoryName =
+            currentCategory === "IMPLEMENTING"
+              ? "Implementing Projects"
+              : "Research Projects";
+          activeFilters.push({ type: "Category", value: categoryName });
+        }
         if (searchQuery) {
           activeFilters.push({ type: "Search", value: searchQuery });
         }
@@ -1642,6 +1693,7 @@
       window.clearAllFilters = function () {
         currentFilter = "all";
         currentTheme = "all";
+        currentCategory = "all";
         searchQuery = "";
         dateRangeFrom = null;
         dateRangeTo = null;
@@ -1653,6 +1705,7 @@
         document.getElementById("dateTo").value = "";
         document.getElementById("status").value = "all";
         document.getElementById("themeSelect").value = "all";
+        document.getElementById("categorySelect").value = "all";
         document.getElementById("sortSelect").value = "name";
 
         sortBy = "name";
@@ -1684,6 +1737,9 @@
           if (tag !== "all" && marker.tag !== tag) return false;
           // Filter by theme
           if (currentTheme !== "all" && p.projectTheme !== currentTheme)
+            return false;
+          // Filter by category
+          if (currentCategory !== "all" && p.category !== currentCategory)
             return false;
           // Filter by search query
           if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
@@ -1776,6 +1832,13 @@
                         ${project.status || ""}
                     </span>
                 </p>
+                <p><strong>Category:</strong> ${
+                  project.projectCategory === "IMPLEMENTING"
+                    ? "Implementing Project"
+                    : project.projectCategory === "RESEARCH"
+                    ? "Research Project"
+                    : "N/A"
+                }</p>
                 <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                     Show on Map
                 </button>
@@ -1828,6 +1891,7 @@
           "Budget",
           "Partner",
           "Theme",
+          "Category",
           "Start Date",
           "Status",
         ];
@@ -1846,6 +1910,8 @@
               return false;
             if (currentTheme !== "all" && p.projectTheme !== currentTheme)
               return false;
+            if (currentCategory !== "all" && p.category !== currentCategory)
+              return false;
             return true;
           })
           .map((p) => [
@@ -1855,6 +1921,11 @@
             p.budget || "",
             p.partner || "",
             p.projectTheme || "",
+            p.category === "IMPLEMENTING"
+              ? "Implementing Project"
+              : p.category === "RESEARCH"
+              ? "Research Project"
+              : "",
             p.start_date ? new Date(p.start_date).toLocaleDateString() : "",
             p.status,
           ]);
