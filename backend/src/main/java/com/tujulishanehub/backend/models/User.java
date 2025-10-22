@@ -73,10 +73,16 @@ public class User {
     @JoinColumn(name = "organization_id")
     private Organization organization;
     
-    // Role enum - Two roles system
+    // Donor relationship - Partners can be linked to a parent donor account
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_donor_id")
+    private User parentDonor;
+    
+    // Role enum - Three roles system
     public enum Role {
         SUPER_ADMIN,    // MOH administrators with full system access
-        PARTNER         // Partner organizations and donors
+        DONOR,          // Donor organizations/funding agencies
+        PARTNER         // Partner organizations implementing projects
     }
     
     @PrePersist
@@ -109,7 +115,7 @@ public class User {
     }
     
     public boolean isPartner() {
-        return role == Role.PARTNER;
+        return role == Role.PARTNER || role == Role.DONOR;
     }
     
     // Convenience method for email verification

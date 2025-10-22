@@ -24,17 +24,48 @@ public class UserService {
 
     // Register user (name + email + optional organization). Create INACTIVE account and send OTP
     public void registerUser(String name, String email, Long organizationId) {
+        registerUser(name, email, organizationId, User.Role.PARTNER, null);
+    }
+    
+    // Register donor account
+    public void registerDonor(String name, String email, Long organizationId) {
+        registerUser(name, email, organizationId, User.Role.DONOR, null);
+    }
+    
+    // Register partner account with optional parent donor
+    public void registerPartner(String name, String email, Long organizationId, Long parentDonorId) {
+        registerUser(name, email, organizationId, User.Role.PARTNER, parentDonorId);
+    }
+    
+    // Main registration method with role and parent donor support
+    private void registerUser(String name, String email, Long organizationId, User.Role role, Long parentDonorId) {
         // Check if user already exists
         Optional<User> existing = userRepository.findByEmail(email);
         if (existing.isPresent()) {
             throw new RuntimeException("User with this email already exists");
         }
+        
+        // Validate parent donor if provided
+        if (parentDonorId != null) {
+            Optional<User> parentDonor = userRepository.findById(parentDonorId);
+            if (!parentDonor.isPresent() || parentDonor.get().getRole() != User.Role.DONOR) {
+                throw new RuntimeException("Invalid parent donor ID");
+            }
+        }
+        
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setStatus("INACTIVE");
         user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
-        user.setRole(com.tujulishanehub.backend.models.User.Role.PARTNER);
+        user.setRole(role);
+        
+        // Set parent donor for partners
+        if (role == User.Role.PARTNER && parentDonorId != null) {
+            User parentDonor = userRepository.findById(parentDonorId).orElse(null);
+            user.setParentDonor(parentDonor);
+        }
+        
         String otp = generateOtp();
         user.setOtp(otp);
         user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
@@ -45,17 +76,18 @@ public class UserService {
         userRepository.save(user);
         
         // Send OTP via email
-        String subject = "Tujulishane Hub - Email Verification";
+        String accountType = role == User.Role.DONOR ? "Donor" : "Partner";
+        String subject = "Tujulishane Hub - " + accountType + " Account Email Verification";
         String body = String.format(
             "Hello %s,\n\n" +
-            "Thank you for registering with Tujulishane Hub!\n\n" +
+            "Thank you for registering as a %s with Tujulishane Hub!\n\n" +
             "Your verification OTP is: %s\n\n" +
             "This OTP will expire in 10 minutes.\n\n" +
             "Please note: Your account is pending approval by the MOH administrator. " +
             "You will receive another email once your account is approved.\n\n" +
             "Best regards,\n" +
             "Tujulishane Hub Team",
-            name, otp
+            name, accountType.toLowerCase(), otp
         );
         emailService.sendEmail(email, subject, body);
     }
@@ -134,6 +166,10 @@ public class UserService {
             user.getOrganization().getName();
         }
         return user;
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     // Helper to (re)send login OTP for ACTIVE and APPROVED users
@@ -295,5 +331,105 @@ public class UserService {
      */
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+    
+    /**
+     * Get all partners linked to a specific donor
+     */
+    public java.util.List<User> getPartnersByDonor(Long donorId) {
+        return userRepository.findByParentDonorId(donorId);
+    }
+    
+    /**
+     * Get all partners linked to a specific donor email
+     */
+    public java.util.List<User> getPartnersByDonorEmail(String donorEmail) {
+        Optional<User> donor = userRepository.findByEmail(donorEmail);
+        if (donor.isPresent() && donor.get().getRole() == User.Role.DONOR) {
+            return getPartnersByDonor(donor.get().getId());
+        }
+        return java.util.Collections.emptyList();
+    }
+    
+    /**
+     * Link a partner to a donor
+     */
+    public boolean linkPartnerToDonor(Long partnerId, Long donorId) {
+        Optional<User> partnerOptional = userRepository.findById(partnerId);
+        Optional<User> donorOptional = userRepository.findById(donorId);
+        
+        if (partnerOptional.isPresent() && donorOptional.isPresent()) {
+            User partner = partnerOptional.get();
+            User donor = donorOptional.get();
+            
+            if (partner.getRole() == User.Role.PARTNER && donor.getRole() == User.Role.DONOR) {
+                partner.setParentDonor(donor);
+                userRepository.save(partner);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Unlink a partner from their donor
+     */
+    public boolean unlinkPartnerFromDonor(Long partnerId) {
+        Optional<User> partnerOptional = userRepository.findById(partnerId);
+        
+        if (partnerOptional.isPresent()) {
+            User partner = partnerOptional.get();
+            if (partner.getRole() == User.Role.PARTNER) {
+                partner.setParentDonor(null);
+                userRepository.save(partner);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Get all donors
+     */
+    public java.util.List<User> getAllDonors() {
+        return getUsersByRole(User.Role.DONOR);
+    }
+    
+    /**
+     * Get available partners (approved partners not linked to any donor)
+     */
+    public java.util.List<User> getAvailablePartners() {
+        return userRepository.findByRoleAndParentDonorIsNull(User.Role.PARTNER)
+                .stream()
+                .filter(user -> user.getApprovalStatus() == ApprovalStatus.APPROVED)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Check if user can manage partners (donors can manage their linked partners)
+     */
+    public boolean canUserManagePartner(String userEmail, Long partnerId) {
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if (!userOptional.isPresent()) {
+            return false;
+        }
+        
+        User user = userOptional.get();
+        
+        // Super admins can manage all partners
+        if (user.getRole() == User.Role.SUPER_ADMIN) {
+            return true;
+        }
+        
+        // Donors can manage their linked partners
+        if (user.getRole() == User.Role.DONOR) {
+            Optional<User> partnerOptional = userRepository.findById(partnerId);
+            if (partnerOptional.isPresent()) {
+                User partner = partnerOptional.get();
+                return partner.getParentDonor() != null && partner.getParentDonor().getId().equals(user.getId());
+            }
+        }
+        
+        return false;
     }
 }

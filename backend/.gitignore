@@ -1,5 +1,6 @@
 # Gradle files
 .gradle/
+gradle/
 build/
 
 # IDE files
@@ -26,3 +27,4 @@ TEST_OTP_CURL.md
 test_otp_flow.bat
 test_otp_workflow.bat
 TESTING_QUICK_GUIDE.md
+.gradle/file-system.probe
