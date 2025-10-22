@@ -159,6 +159,18 @@
                                 </select>
                             </div>
 
+                            <!-- Project Category -->
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700">Project Category
+                                    *</label>
+                                <select id="category" name="category"
+                                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option value="">Select Category</option>
+                                    <option value="IMPLEMENTING">Implementing Project</option>
+                                    <option value="RESEARCH">Research Project</option>
+                                </select>
+                            </div>
+
                             <!-- Time Period -->
                             <div>
                                 <label for="starttime_period" class="block text-sm font-medium text-gray-700">
@@ -839,8 +851,8 @@
                         <script src="auth.js"></script>
                         <script>
                             let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                                ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
-                                : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
+                                ? 'http://localhost:8080/api'
+                                : 'http://localhost:8080/api';
 
                             // Fetch and display project statistics
                             async function loadProjectStats() {

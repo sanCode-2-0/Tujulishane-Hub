@@ -235,6 +235,7 @@ public class ProjectService {
         if (updated.getPartner() != null) existing.setPartner(updated.getPartner());
         if (updated.getTitle() != null) existing.setTitle(updated.getTitle());
         if (updated.getProjectTheme() != null) existing.setProjectTheme(updated.getProjectTheme());
+        if (updated.getProjectCategory() != null) existing.setProjectCategory(updated.getProjectCategory());
         if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
         if (updated.getEndDate() != null) existing.setEndDate(updated.getEndDate());
         if (updated.getActivityType() != null) existing.setActivityType(updated.getActivityType());

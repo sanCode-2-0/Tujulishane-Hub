@@ -31,6 +31,10 @@ public class Project {
     @Column(name = "project_theme")
     private ProjectTheme projectTheme;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "project_category")
+    private ProjectCategory projectCategory;
+    
     @Column(name = "start_date")
     private LocalDate startDate;
     
@@ -239,6 +243,14 @@ public class Project {
     
     public void setProjectTheme(ProjectTheme projectTheme) {
         this.projectTheme = projectTheme;
+    }
+    
+    public ProjectCategory getProjectCategory() {
+        return projectCategory;
+    }
+    
+    public void setProjectCategory(ProjectCategory projectCategory) {
+        this.projectCategory = projectCategory;
     }
     
     // Helper methods for project completion

@@ -4,8 +4,8 @@
 const API_BASE =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
-    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+    ? "http://localhost:8080"
+    : "http://localhost:8080";
 
 document.addEventListener("DOMContentLoaded", () => {
   const projectList = document.getElementById("projectList");

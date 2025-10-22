@@ -186,7 +186,17 @@
 								</select>
 							</div>
 
-							<!-- Time Period -->
+							<!-- Project Category -->
+							<div>
+								<label for="category" class="block text-sm font-medium text-gray-700">Project Category
+									*</label>
+								<select id="category" name="category"
+									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+									<option value="">Select Category</option>
+									<option value="IMPLEMENTING">Implementing Project</option>
+									<option value="RESEARCH">Research Project</option>
+								</select>
+							</div>
 							<div>
 								<label for="starttime_period" class="block text-sm font-medium text-gray-700">
 									Start *
@@ -1782,6 +1792,7 @@
             <td class="px-4 py-3 text-sm text-gray-700">${p.title || "Untitled"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${p.partner || "-"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${p.projectTheme || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${p.projectCategory || "-"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${p.county || p.region || "-"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${formatDate(p.startDate) || "-"}</td>
             <td class="px-4 py-3 text-sm text-gray-700">${formatDate(p.endDate) || "-"}</td>
@@ -2252,6 +2263,7 @@
 							<p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(project.status?.toLowerCase())}">${project.status || "N/A"}</span></p>
 							<p style="margin: 4px 0;"><strong>County:</strong> ${project.county || project.region || "N/A"}</p>
 							<p style="margin: 4px 0;"><strong>Theme:</strong> ${project.projectTheme || "N/A"}</p>
+							<p style="margin: 4px 0;"><strong>Category:</strong> ${project.projectCategory || "N/A"}</p>
 						</div>
 					`);
 
@@ -2604,6 +2616,7 @@
 				partner: "TBD", // This should come from user's organization
 				title: formData.get("title"),
 				projectTheme: formData.get("theme"),
+				projectCategory: formData.get("category"),
 				startDate: formData.get("start_date"),
 				endDate: formData.get("end_date"),
 				activityType: formData.get("activity_type"),
@@ -2628,6 +2641,7 @@
 			const requiredFormFields = [
 				{ field: "title", label: "Title" },
 				{ field: "theme", label: "Project Theme" },
+				{ field: "category", label: "Project Category" },
 				{ field: "start_date", label: "Start Date" },
 				{ field: "end_date", label: "End Date" },
 				{ field: "activity_type", label: "Activity Type" },
