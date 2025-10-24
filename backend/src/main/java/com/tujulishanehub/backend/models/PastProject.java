@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "past_projects")
@@ -112,6 +113,7 @@ public class PastProject {
 
     // Bidirectional relationship with ProjectReports (archived reports)
     @OneToMany(mappedBy = "pastProject", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "pastproject-reports")
     private Set<ProjectReport> reports = new HashSet<>();
 
     @PrePersist

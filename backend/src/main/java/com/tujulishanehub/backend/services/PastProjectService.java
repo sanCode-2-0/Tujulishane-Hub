@@ -3,6 +3,8 @@ package com.tujulishanehub.backend.services;
 import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.ProjectReport;
+import com.tujulishanehub.backend.models.ProjectLocation;
+import com.tujulishanehub.backend.models.ProjectTheme;
 import com.tujulishanehub.backend.repositories.PastProjectRepository;
 import com.tujulishanehub.backend.repositories.ProjectReportRepository;
 import org.slf4j.Logger;
@@ -42,21 +44,33 @@ public class PastProjectService {
         // Copy all fields from Project to PastProject
         pastProject.setPartner(project.getPartner());
         pastProject.setTitle(project.getTitle());
-        pastProject.setProjectTheme(project.getProjectTheme());
+        
+        // Get primary theme (first theme from the set)
+        Set<ProjectTheme> themes = project.getProjectThemes();
+        if (themes != null && !themes.isEmpty()) {
+            pastProject.setProjectTheme(themes.iterator().next());
+        }
+        
         pastProject.setProjectCategory(project.getProjectCategory());
         pastProject.setStartDate(project.getStartDate());
         pastProject.setEndDate(project.getEndDate());
         pastProject.setActivityType(project.getActivityType());
-        pastProject.setCounty(project.getCounty());
-        pastProject.setSubCounty(project.getSubCounty());
-        pastProject.setMapsAddress(project.getMapsAddress());
+        
+        // Get primary location details
+        ProjectLocation primaryLocation = project.getPrimaryLocation();
+        if (primaryLocation != null) {
+            pastProject.setCounty(primaryLocation.getCounty());
+            pastProject.setSubCounty(primaryLocation.getSubCounty());
+            pastProject.setMapsAddress(primaryLocation.getMapsAddress());
+            pastProject.setLatitude(primaryLocation.getLatitude());
+            pastProject.setLongitude(primaryLocation.getLongitude());
+        }
+        
         pastProject.setContactPersonName(project.getContactPersonName());
         pastProject.setContactPersonRole(project.getContactPersonRole());
         pastProject.setContactPersonEmail(project.getContactPersonEmail());
         pastProject.setObjectives(project.getObjectives());
         pastProject.setBudget(project.getBudget());
-        pastProject.setLatitude(project.getLatitude());
-        pastProject.setLongitude(project.getLongitude());
         pastProject.setCreatedAt(project.getCreatedAt());
         pastProject.setUpdatedAt(project.getUpdatedAt());
         pastProject.setCompletedAt(project.getCompletedAt());

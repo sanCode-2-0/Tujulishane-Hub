@@ -110,7 +110,7 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
     /**
      * Find reports by project theme (through project relationship)
      */
-    @Query("SELECT r FROM ProjectReport r JOIN r.project p WHERE p.projectTheme = :projectTheme AND r.reportStatus = 'PUBLISHED'")
+    @Query("SELECT DISTINCT r FROM ProjectReport r JOIN r.project p JOIN p.themes pta WHERE pta.projectTheme = :projectTheme AND r.reportStatus = 'PUBLISHED'")
     List<ProjectReport> findPublishedReportsByProjectTheme(@Param("projectTheme") String projectTheme);
     
     /**

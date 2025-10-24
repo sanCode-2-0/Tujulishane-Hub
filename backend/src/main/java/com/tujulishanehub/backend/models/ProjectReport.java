@@ -1,12 +1,16 @@
 package com.tujulishanehub.backend.models;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "project_reports")
@@ -21,10 +25,16 @@ public class ProjectReport {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonBackReference(value = "project-reports")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Project project;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "past_project_id", nullable = true)
+    @JsonBackReference(value = "pastproject-reports")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private PastProject pastProject;
     
     @Column(nullable = false)

@@ -149,6 +149,21 @@ class AuthManager {
 
     try {
       console.log(`[auth.js] apiCall: Making ${method} request to ${url}`);
+      // Log outgoing payload for debugging (if present)
+      if (config.body) {
+        try {
+          console.log(
+            `[auth.js] apiCall: Outgoing request body:`,
+            JSON.parse(config.body)
+          );
+        } catch (e) {
+          console.log(
+            `[auth.js] apiCall: Outgoing request body (raw):`,
+            config.body
+          );
+        }
+      }
+      console.log(`[auth.js] apiCall: Request headers:`, config.headers);
       const response = await fetch(url, config);
       console.log(
         `[auth.js] apiCall: Response status: ${response.status}, ok: ${response.ok}`
@@ -170,8 +185,11 @@ class AuthManager {
           url: url,
         });
         try {
-          const errorText = await response.text();
+          // Clone response, read and store the body text for later use
+          const errorText = await response.clone().text();
           console.log(`[auth.js] apiCall: Error response body:`, errorText);
+          // Attach the raw error text to the Response object
+          response.errorText = errorText;
         } catch (e) {
           console.log("[auth.js] apiCall: Could not read error response body");
         }

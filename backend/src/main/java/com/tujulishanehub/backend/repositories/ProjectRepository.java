@@ -31,20 +31,23 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findByStatus(String status, Pageable pageable);
     Page<Project> findByStatusIn(List<String> statuses, Pageable pageable);
     
-    // Find projects by county
-    List<Project> findByCountyContainingIgnoreCase(String county);
+    // Find projects by county (searches in locations)
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE LOWER(loc.county) LIKE LOWER(CONCAT('%', :county, '%'))")
+    List<Project> findByCountyContainingIgnoreCase(@Param("county") String county);
     
-    // Find projects by sub-county
-    List<Project> findBySubCountyContainingIgnoreCase(String subCounty);
+    // Find projects by sub-county (searches in locations)
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE LOWER(loc.subCounty) LIKE LOWER(CONCAT('%', :subCounty, '%'))")
+    List<Project> findBySubCountyContainingIgnoreCase(@Param("subCounty") String subCounty);
     
     // Find projects by activity type
     List<Project> findByActivityTypeContainingIgnoreCase(String activityType);
     
-    // Find projects by project theme (enum)
-    List<Project> findByProjectTheme(ProjectTheme projectTheme);
+    // Find projects by project theme (searches in themes)
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.themes t WHERE t.projectTheme = :projectTheme")
+    List<Project> findByProjectTheme(@Param("projectTheme") ProjectTheme projectTheme);
     
     // Find projects by project theme with case-insensitive string search
-    @Query("SELECT p FROM Project p WHERE LOWER(CAST(p.projectTheme AS string)) LIKE LOWER(CONCAT('%', :theme, '%'))")
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.themes t WHERE LOWER(CAST(t.projectTheme AS string)) LIKE LOWER(CONCAT('%', :theme, '%'))")
     List<Project> findByProjectThemeContaining(@Param("theme") String theme);
     
     // Find projects by date range
@@ -58,11 +61,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findActiveProjects(@Param("currentDate") LocalDate currentDate);
     
     // Find projects with coordinates (for map display)
-    @Query("SELECT p FROM Project p WHERE p.latitude IS NOT NULL AND p.longitude IS NOT NULL")
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE loc.latitude IS NOT NULL AND loc.longitude IS NOT NULL")
     List<Project> findProjectsWithCoordinates();
     
     // Find projects without coordinates (need geocoding)
-    @Query("SELECT p FROM Project p WHERE (p.latitude IS NULL OR p.longitude IS NULL) AND p.mapsAddress IS NOT NULL")
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE (loc.latitude IS NULL OR loc.longitude IS NULL) AND loc.mapsAddress IS NOT NULL")
     List<Project> findProjectsNeedingGeocoding();
     
     // Find projects by contact person email
@@ -78,7 +81,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findTop10ByOrderByCreatedAtDesc();
     
     // Find projects within a geographic bounding box
-    @Query("SELECT p FROM Project p WHERE p.latitude BETWEEN :minLat AND :maxLat AND p.longitude BETWEEN :minLng AND :maxLng")
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE loc.latitude BETWEEN :minLat AND :maxLat AND loc.longitude BETWEEN :minLng AND :maxLng")
     List<Project> findProjectsInBoundingBox(
         @Param("minLat") Double minLatitude,
         @Param("maxLat") Double maxLatitude,
@@ -87,11 +90,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     );
     
     // Search projects by multiple criteria
-    @Query("SELECT p FROM Project p WHERE " +
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN p.locations loc WHERE " +
            "(:partner IS NULL OR :partner = '' OR LOWER(CAST(p.partner AS string)) LIKE LOWER(CONCAT('%', :partner, '%'))) AND " +
            "(:title IS NULL OR :title = '' OR LOWER(CAST(p.title AS string)) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
            "(:status IS NULL OR :status = '' OR p.status = :status) AND " +
-           "(:county IS NULL OR :county = '' OR LOWER(CAST(p.county AS string)) LIKE LOWER(CONCAT('%', :county, '%'))) AND " +
+           "(:county IS NULL OR :county = '' OR LOWER(CAST(loc.county AS string)) LIKE LOWER(CONCAT('%', :county, '%'))) AND " +
            "(:activityType IS NULL OR :activityType = '' OR LOWER(CAST(p.activityType AS string)) LIKE LOWER(CONCAT('%', :activityType, '%')))")
     List<Project> searchProjects(
         @Param("partner") String partner,
@@ -105,7 +108,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p.status, COUNT(p) FROM Project p GROUP BY p.status")
     List<Object[]> countProjectsByStatus();
     
-    // Count projects by county
-    @Query("SELECT p.county, COUNT(p) FROM Project p WHERE p.county IS NOT NULL GROUP BY p.county")
+    // Count projects by county (from locations)
+    @Query("SELECT loc.county, COUNT(DISTINCT p) FROM Project p JOIN p.locations loc WHERE loc.county IS NOT NULL GROUP BY loc.county")
     List<Object[]> countProjectsByCounty();
 }

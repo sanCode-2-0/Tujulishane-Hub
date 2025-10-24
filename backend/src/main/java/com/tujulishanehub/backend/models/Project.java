@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +19,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Project {
     
     @Id
@@ -42,10 +47,14 @@ public class Project {
     
     // Multiple themes relationship
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<ProjectThemeAssignment> themes = new HashSet<>();
     
     // Multiple locations relationship
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<ProjectLocation> locations = new HashSet<>();
     
     @Column(name = "contact_person_name")
@@ -81,7 +90,7 @@ public class Project {
     @Column(name = "has_reports")
     private Boolean hasReports = false;
     
-    @Enumerated(EnumType.STRING)
+    @jakarta.persistence.Convert(converter = com.tujulishanehub.backend.converters.ApprovalStatusConverter.class)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
     
@@ -103,6 +112,9 @@ public class Project {
     
     // Bidirectional relationship with ProjectReports
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "project-reports")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<ProjectReport> reports = new HashSet<>();
     
     @PrePersist

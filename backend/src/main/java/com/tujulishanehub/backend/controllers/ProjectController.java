@@ -1,12 +1,25 @@
 package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.payload.ProjectCreateRequest;
+import com.tujulishanehub.backend.payload.ProjectUpdateRequest;
+import com.tujulishanehub.backend.payload.ProjectResponse;
 import com.tujulishanehub.backend.payload.ApiResponse;
+import com.tujulishanehub.backend.models.Project;
+import com.tujulishanehub.backend.models.PastProject;
+import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.services.ProjectService;
 import com.tujulishanehub.backend.services.ProjectCollaboratorService;
 import com.tujulishanehub.backend.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -47,28 +61,79 @@ public class ProjectController {
      */
     @PostMapping
     @PreAuthorize("hasRole('PARTNER') and @userService.canUserCreateProjects(authentication.name)")
-    public ResponseEntity<ApiResponse<Project>> createProject(@Valid @RequestBody ProjectCreateRequest request) {
+    public ResponseEntity<ApiResponse<ProjectResponse>> createProject(@Valid @RequestBody ProjectCreateRequest request) {
         try {
-            logger.info("Creating new project: {}", request.getTitle());
-            
+            // Log brief info to console
+            logger.info("Controller: Creating new project: {}", request.getTitle());
+            logger.debug("Controller: Full request data - title: {}, themes: {}, locations: {}, partner: {}",
+                request.getTitle(), request.getThemes(), request.getLocations(), request.getPartner());
+
+            // Also append the raw request JSON to a dedicated file for debugging (non-blocking)
+            try {
+                ObjectMapper _om = new ObjectMapper();
+                // Support Java 8 date/time types (LocalDate, LocalDateTime)
+                _om.registerModule(new JavaTimeModule());
+                _om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+                String json = _om.writerWithDefaultPrettyPrinter().writeValueAsString(request);
+                Path logDir = Paths.get("logs");
+                if (!Files.exists(logDir)) {
+                    try { Files.createDirectories(logDir); } catch (Exception ignore) { }
+                }
+                Path logFile = logDir.resolve("api-projects-create.log");
+                String entry = String.format("%s - Incoming /api/projects POST:\n%s\n---\n", java.time.LocalDateTime.now(), json);
+                try {
+                    Files.writeString(logFile, entry, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                } catch (Exception ioe) {
+                    logger.warn("Could not write request log to {}: {}", logFile.toAbsolutePath(), ioe.getMessage());
+                }
+            } catch (Exception logEx) {
+                logger.warn("Failed to serialize ProjectCreateRequest for logging: {}", logEx.getMessage());
+            }
+            logger.debug("Controller: Request validation passed, user authenticated");
+
             // Get the authenticated user and associate with project
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
-            
+            logger.debug("Controller: Authenticated user: {}", userEmail);
+
+            logger.debug("Controller: Calling projectService.createProjectFromRequest");
             Project createdProject = projectService.createProjectFromRequest(request, userEmail);
-            
-            ApiResponse<Project> response = new ApiResponse<>(
-                HttpStatus.CREATED.value(), 
-                "Project created successfully", 
-                createdProject
+
+            logger.debug("Controller: Project created, converting to response");
+            ProjectResponse projectResponse = projectService.toProjectResponse(createdProject);
+            logger.debug("Controller: Response created successfully");
+
+            logger.debug("Controller: Creating API response");
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Project created successfully",
+                projectResponse
             );
+            logger.info("Controller: Project creation completed successfully");
+            logger.debug("Controller: About to return ResponseEntity");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            
+
         } catch (Exception e) {
-            logger.error("Error creating project: {}", e.getMessage(), e);
-            ApiResponse<Project> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                "Failed to create project: " + e.getMessage(), 
+            logger.error("Controller: Error creating project: {}", e.getMessage(), e);
+            // Attempt to append the stacktrace to a dedicated error log file for deeper inspection
+            try {
+                Path logDir = Paths.get("logs");
+                if (!Files.exists(logDir)) {
+                    try { Files.createDirectories(logDir); } catch (Exception ignore) { }
+                }
+                Path errFile = logDir.resolve("api-projects-errors.log");
+                java.io.StringWriter sw = new java.io.StringWriter();
+                java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+                e.printStackTrace(pw);
+                String entry = String.format("%s - Exception during /api/projects POST:\n%s\n---\n", java.time.LocalDateTime.now(), sw.toString());
+                try { Files.writeString(errFile, entry, StandardOpenOption.CREATE, StandardOpenOption.APPEND); } catch (Exception ioe) { logger.warn("Could not write error log: {}", ioe.getMessage()); }
+            } catch (Exception logErr) {
+                logger.warn("Failed to write exception to error log: {}", logErr.getMessage());
+            }
+
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to create project: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -90,10 +155,13 @@ public class ProjectController {
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
             
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<Project> projectPage = projectService.getProjects(pageable);
-            
+        Page<Project> projectPage = projectService.getProjects(pageable);
+        List<ProjectResponse> projectResponses = projectPage.getContent().stream()
+            .map(projectService::toProjectResponse)
+            .collect(Collectors.toList());
+
             Map<String, Object> data = new HashMap<>();
-            data.put("projects", projectPage.getContent());
+        data.put("projects", projectResponses);
             data.put("currentPage", projectPage.getNumber());
             data.put("totalItems", projectPage.getTotalElements());
             data.put("totalPages", projectPage.getTotalPages());
@@ -122,19 +190,19 @@ public class ProjectController {
      * Get project by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Project>> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(@PathVariable Long id) {
         try {
             Optional<Project> project = projectService.getProjectById(id);
             
             if (project.isPresent()) {
-                ApiResponse<Project> response = new ApiResponse<>(
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
                     HttpStatus.OK.value(), 
                     "Project found", 
-                    project.get()
+                    projectService.toProjectResponse(project.get())
                 );
                 return ResponseEntity.ok(response);
             } else {
-                ApiResponse<Project> response = new ApiResponse<>(
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
                     HttpStatus.NOT_FOUND.value(), 
                     "Project not found with ID: " + id, 
                     null
@@ -144,7 +212,7 @@ public class ProjectController {
             
         } catch (Exception e) {
             logger.error("Error retrieving project {}: {}", id, e.getMessage(), e);
-            ApiResponse<Project> response = new ApiResponse<>(
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve project: " + e.getMessage(), 
                 null
@@ -158,9 +226,9 @@ public class ProjectController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<Project>> updateProject(
+    public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
             @PathVariable Long id, 
-            @Valid @RequestBody Project project) {
+            @Valid @RequestBody ProjectUpdateRequest request) {
         
         try {
             // Get authenticated user
@@ -175,7 +243,7 @@ public class ProjectController {
             
             if (!isAdmin && !isOwner && !canEdit) {
                 logger.warn("User {} attempted to edit project {} without permission", userEmail, id);
-                ApiResponse<Project> response = new ApiResponse<>(
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
                     HttpStatus.FORBIDDEN.value(), 
                     "You don't have permission to edit this project", 
                     null
@@ -184,18 +252,19 @@ public class ProjectController {
             }
             
             // Update the project with tracking
-            Project updatedProject = projectService.updateProject(id, project, userEmail);
+            Project updatedProject = projectService.updateProject(id, request, userEmail);
+            ProjectResponse projectResponse = projectService.toProjectResponse(updatedProject);
             
-            ApiResponse<Project> response = new ApiResponse<>(
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Project updated successfully", 
-                updatedProject
+                projectResponse
             );
             return ResponseEntity.ok(response);
             
         } catch (RuntimeException e) {
             logger.error("Error updating project {}: {}", id, e.getMessage());
-            ApiResponse<Project> response = new ApiResponse<>(
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
                 HttpStatus.NOT_FOUND.value(), 
                 e.getMessage(), 
                 null
@@ -204,7 +273,7 @@ public class ProjectController {
             
         } catch (Exception e) {
             logger.error("Error updating project {}: {}", id, e.getMessage(), e);
-            ApiResponse<Project> response = new ApiResponse<>(
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to update project: " + e.getMessage(), 
                 null
@@ -252,7 +321,7 @@ public class ProjectController {
      * Search projects
      */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<Project>>> searchProjects(
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> searchProjects(
             @RequestParam(required = false) String partner,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String status,
@@ -262,16 +331,16 @@ public class ProjectController {
         try {
             List<Project> projects = projectService.searchProjects(partner, title, status, county, activityType);
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Search completed successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error searching projects: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to search projects: " + e.getMessage(), 
                 null
@@ -284,20 +353,20 @@ public class ProjectController {
      * Get projects by status
      */
     @GetMapping("/status/{status}")
-    public ResponseEntity<ApiResponse<List<Project>>> getProjectsByStatus(@PathVariable String status) {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsByStatus(@PathVariable String status) {
         try {
             List<Project> projects = projectService.getProjectsByStatus(status);
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Projects retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error retrieving projects by status {}: {}", status, e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects: " + e.getMessage(), 
                 null
@@ -310,20 +379,20 @@ public class ProjectController {
      * Get projects with coordinates (for map display)
      */
     @GetMapping("/with-coordinates")
-    public ResponseEntity<ApiResponse<List<Project>>> getProjectsWithCoordinates() {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsWithCoordinates() {
         try {
             List<Project> projects = projectService.getProjectsWithCoordinates();
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Projects with coordinates retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error retrieving projects with coordinates: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects: " + e.getMessage(), 
                 null
@@ -336,7 +405,7 @@ public class ProjectController {
      * Get projects within a geographic bounding box
      */
     @GetMapping("/in-bounds")
-    public ResponseEntity<ApiResponse<List<Project>>> getProjectsInBoundingBox(
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsInBoundingBox(
             @RequestParam Double minLat,
             @RequestParam Double maxLat,
             @RequestParam Double minLng,
@@ -345,16 +414,16 @@ public class ProjectController {
         try {
             List<Project> projects = projectService.getProjectsInBoundingBox(minLat, maxLat, minLng, maxLng);
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Projects in bounding box retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error retrieving projects in bounding box: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects: " + e.getMessage(), 
                 null
@@ -367,23 +436,23 @@ public class ProjectController {
      * Get projects by date range
      */
     @GetMapping("/date-range")
-    public ResponseEntity<ApiResponse<List<Project>>> getProjectsByDateRange(
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
         try {
             List<Project> projects = projectService.getProjectsByDateRange(startDate, endDate);
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Projects in date range retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error retrieving projects by date range: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects: " + e.getMessage(), 
                 null
@@ -396,20 +465,20 @@ public class ProjectController {
      * Get currently active projects
      */
     @GetMapping("/active")
-    public ResponseEntity<ApiResponse<List<Project>>> getActiveProjects() {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getActiveProjects() {
         try {
             List<Project> projects = projectService.getActiveProjects();
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Active projects retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Error retrieving active projects: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve active projects: " + e.getMessage(), 
                 null
@@ -563,18 +632,18 @@ public class ProjectController {
      */
     @GetMapping("/admin/approval-status/{status}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<ApiResponse<List<Project>>> getProjectsByApprovalStatus(@PathVariable String status) {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsByApprovalStatus(@PathVariable String status) {
         try {
             ApprovalStatus approvalStatus = ApprovalStatus.valueOf(status.toUpperCase());
             List<Project> projects = projectService.getProjectsByApprovalStatus(approvalStatus);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Projects retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.BAD_REQUEST.value(), 
                 "Invalid approval status. Valid values: PENDING, APPROVED, REJECTED", 
                 null
@@ -582,7 +651,7 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
             logger.error("Error retrieving projects by approval status {}: {}", status, e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects", 
                 null
@@ -621,21 +690,21 @@ public class ProjectController {
      */
     @GetMapping("/my-projects")
     @PreAuthorize("hasRole('PARTNER')")
-    public ResponseEntity<ApiResponse<List<Project>>> getMyProjects() {
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getMyProjects() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
             List<Project> projects = projectService.getProjectsByPartnerEmail(userEmail);
             
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "Your projects retrieved successfully", 
-                projects
+                mapProjects(projects)
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error retrieving user projects: {}", e.getMessage(), e);
-            ApiResponse<List<Project>> response = new ApiResponse<>(
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve your projects", 
                 null
@@ -818,5 +887,14 @@ public class ProjectController {
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    /**
+     * Helper method to map Project entities to ProjectResponse DTOs
+     */
+    private List<ProjectResponse> mapProjects(List<Project> projects) {
+        return projects.stream()
+                .map(projectService::toProjectResponse)
+                .collect(Collectors.toList());
     }
 }

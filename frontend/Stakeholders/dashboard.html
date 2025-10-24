@@ -54,6 +54,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<!-- Authentication utilities -->
 	<script src="../auth.js"></script>
+	<!-- Ensure global markers array exists for map pickers and submission code -->
+	<script>window.markers = window.markers || [];</script>
 	<!-- Optional: Google Font -->
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
@@ -132,10 +134,10 @@
 						<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 							<!-- Map Picker for Location -->
 							<div class="col-span-2 lg:col-span-4">
-								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Locations on
 									Map</label>
 								<div class="text-xs text-gray-600 mb-2">
-									Search for a location or click on the map to select the
+									Search for a location or click on the map to select multiple
 									project coordinates.
 								</div>
 								<div id="newProjectMap" style="
@@ -148,16 +150,14 @@
                           position: relative;
                           overflow: hidden;
                         "></div>
-								<input type="hidden" id="project_latitude" name="latitude" />
-								<input type="hidden" id="project_longitude" name="longitude" />
-								<input type="hidden" id="project_county" name="county" />
-								<input type="hidden" id="project_subcounty" name="subcounty" />
+								<div id="locationInputs">
+									<!-- Hidden inputs for locations will be added here by JS -->
+								</div>
 								<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-									<strong>Selected Location:</strong>
-									<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-										location</span>
-									<br />
-									<span id="selectedCounty" class="text-gray-600"></span>
+									<strong>Selected Locations:</strong>
+									<ul id="selectedLocations" class="list-disc list-inside mt-1">
+										<li class="text-gray-500">No locations selected yet</li>
+									</ul>
 								</div>
 							</div>
 							<!-- Title -->
@@ -169,21 +169,119 @@
 
 							<!-- Project Theme -->
 							<div>
-								<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-									*</label>
-								<select id="theme" name="theme"
-									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-									<option value="">Select Theme</option>
-									<option value="GBV">Gender based violence</option>
-									<option value="AYPSRH">
-										Adolescent and Young People Sexual and Reproductive
-										Health
-									</option>
-									<option value="MNH">Maternal and Newborn Health</option>
-									<option value="FP">Family planning</option>
-									<option value="CH">Child Health</option>
-									<option value="AH">Adolescent Health</option>
-								</select>
+								<label class="block text-sm font-medium text-gray-700 mb-3">Project Theme *</label>
+
+								<!-- Select All Option -->
+								<div class="mb-4">
+									<label class="inline-flex items-center cursor-pointer">
+										<input type="checkbox" id="theme_select_all" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+										<span class="ml-2 text-sm font-medium text-gray-700">Select All Themes</span>
+									</label>
+								</div>
+
+								<!-- Theme Grid -->
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+									<!-- Gender Based Violence -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="GBV" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-shield-alt text-red-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">Gender Based Violence</div>
+													<div class="text-xs text-gray-500">GBV prevention & support</div>
+												</div>
+											</div>
+										</label>
+									</div>
+
+									<!-- Adolescent and Young People Sexual and Reproductive Health -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="AYPSRH" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-heart text-blue-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">AYP Sexual & Reproductive Health</div>
+													<div class="text-xs text-gray-500">Adolescent health services</div>
+												</div>
+											</div>
+										</label>
+									</div>
+
+									<!-- Maternal and Newborn Health -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="MNH" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-baby text-pink-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">Maternal & Newborn Health</div>
+													<div class="text-xs text-gray-500">Maternity care & newborn support</div>
+												</div>
+											</div>
+										</label>
+									</div>
+
+									<!-- Family Planning -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="FP" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-users text-green-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">Family Planning</div>
+													<div class="text-xs text-gray-500">Contraception & family services</div>
+												</div>
+											</div>
+										</label>
+									</div>
+
+									<!-- Child Health -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="CH" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-child text-purple-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">Child Health</div>
+													<div class="text-xs text-gray-500">Pediatric care & development</div>
+												</div>
+											</div>
+										</label>
+									</div>
+
+									<!-- Adolescent Health -->
+									<div class="theme-card relative">
+										<label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200">
+											<input type="checkbox" name="theme[]" value="AH" class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+											<div class="ml-3 flex items-center flex-1">
+												<div class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+													<i class="fas fa-user-graduate text-orange-600 text-sm"></i>
+												</div>
+												<div class="ml-3">
+													<div class="text-sm font-medium text-gray-900">Adolescent Health</div>
+													<div class="text-xs text-gray-500">Teen health & wellness</div>
+												</div>
+											</div>
+										</label>
+									</div>
+								</div>
+
+								<!-- Selected Themes Counter -->
+								<div class="mt-3 text-xs text-gray-500">
+									<span id="selected-themes-count">0</span> theme(s) selected
+								</div>
 							</div>
 
 							<!-- Project Category -->
@@ -630,21 +728,33 @@
 
 									<!-- Project Theme -->
 									<div>
-										<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-											*</label>
-										<select id="theme" name="theme"
-											class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-											<option value="">Select Theme</option>
-											<option value="GBV">Gender based violence</option>
-											<option value="AYPSRH">
-												Adolescent and Young People Sexual and Reproductive
-												Health
-											</option>
-											<option value="MNH">Maternal and Newborn Health</option>
-											<option value="FP">Family planning</option>
-											<option value="CH">Child Health</option>
-											<option value="AH">Adolescent Health</option>
-										</select>
+										<label class="block text-sm font-medium text-gray-700 mb-2">Project Theme *</label>
+										<div class="space-y-2">
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="GBV" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Gender Based Violence</span>
+											</label>
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="AYPSRH" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Adolescent and Young People Sexual and Reproductive Health</span>
+											</label>
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="MNH" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Maternal and Newborn Health</span>
+											</label>
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="FP" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Family Planning</span>
+											</label>
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="CH" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Child Health</span>
+											</label>
+											<label class="flex items-center">
+												<input type="checkbox" name="theme[]" value="AH" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+												<span class="ml-2 text-sm text-gray-700">Adolescent Health</span>
+											</label>
+										</div>
 									</div>
 
 									<!-- Time Period -->
@@ -965,18 +1075,17 @@
 								);
 								if (!form) return;
 
-								// Mapbox map picker logic
-								let mapPicker, markerPicker;
+								// Mapbox map picker logic for multiple locations
+								let mapPicker;
 								const mapModal = document.getElementById("createNewProject");
 								const mapDiv = document.getElementById("newProjectMap");
-								let latInput = document.getElementById("project_latitude");
-								let lngInput = document.getElementById("project_longitude");
-								let countyInput = document.getElementById("project_county");
-								let subcountyInput =
-									document.getElementById("project_subcounty");
-								let latLngDisplay = document.getElementById("selectedLatLng");
-								let countyDisplay = document.getElementById("selectedCounty");
+								const locationInputsDiv = document.getElementById("locationInputs");
+								const selectedLocationsList = document.getElementById("selectedLocations");
 								let mapInitialized = false;
+								let locations = []; // Array to store multiple locations
+								// local alias to the global markers array (ensure global is used)
+								window.markers = window.markers || [];
+								markers = window.markers;
 
 								// Mapbox access token
 								mapboxgl.accessToken =
@@ -997,7 +1106,7 @@
 										return;
 									}
 
-									console.log("🗺️ Initializing Mapbox map picker...");
+									console.log("🗺️ Initializing Mapbox map picker for multiple locations...");
 
 									try {
 										// Initialize Mapbox map
@@ -1024,7 +1133,7 @@
 											mapboxgl: mapboxgl,
 											countries: "ke", // Restrict to Kenya
 											placeholder: "Search for location in Kenya...",
-											marker: false, // We'll add our own marker
+											marker: false, // We'll add our own markers
 										});
 
 										mapPicker.addControl(geocoder, "top-left");
@@ -1035,87 +1144,14 @@
 										geocoder.on("result", function (e) {
 											console.log("Geocoder result:", e.result);
 											const coords = e.result.geometry.coordinates;
-											addMarker(coords[0], coords[1]);
+											addLocation(coords[0], coords[1]);
 										});
 
-										// Click on map to place marker
+										// Click on map to add location
 										mapPicker.on("click", function (e) {
 											console.log("Map clicked:", e.lngLat);
-											addMarker(e.lngLat.lng, e.lngLat.lat);
+											addLocation(e.lngLat.lng, e.lngLat.lat);
 										});
-
-										// Function to add/update marker
-										function addMarker(lng, lat) {
-											console.log("Adding marker at:", lng, lat);
-											// Remove existing marker if any
-											if (markerPicker) {
-												markerPicker.remove();
-											}
-
-											// Create new marker
-											markerPicker = new mapboxgl.Marker({
-												color: "#3b82f6",
-												draggable: true,
-											})
-												.setLngLat([lng, lat])
-												.addTo(mapPicker);
-
-											// Update form inputs
-											updateCoordinates(lng, lat);
-
-											// Handle marker drag
-											markerPicker.on("dragend", function () {
-												const lngLat = markerPicker.getLngLat();
-												console.log("Marker dragged to:", lngLat);
-												updateCoordinates(lngLat.lng, lngLat.lat);
-											});
-
-											// Center map on marker
-											mapPicker.flyTo({
-												center: [lng, lat],
-												zoom: 12,
-											});
-										}
-
-										// Update coordinates in form and display
-										async function updateCoordinates(lng, lat) {
-											latInput.value = lat.toFixed(6);
-											lngInput.value = lng.toFixed(6);
-											latLngDisplay.textContent = `${lat.toFixed(
-												6
-											)}, ${lng.toFixed(6)}`;
-											latLngDisplay.classList.add("font-semibold");
-											console.log("Coordinates updated:", {
-												lat: lat.toFixed(6),
-												lng: lng.toFixed(6),
-											});
-
-											// Get county and subcounty from coordinates
-											countyDisplay.textContent = "Loading location...";
-											try {
-												const locationInfo = await getLocationFromCoordinates(
-													lng,
-													lat
-												);
-												if (locationInfo.county) {
-													countyInput.value = locationInfo.county;
-													subcountyInput.value = locationInfo.subcounty || "";
-													countyDisplay.textContent = `County: ${locationInfo.county
-														}${locationInfo.subcounty
-															? ", " + locationInfo.subcounty
-															: ""
-														}`;
-													console.log("Location info:", locationInfo);
-												} else {
-													countyDisplay.textContent =
-														"Location info unavailable";
-												}
-											} catch (error) {
-												console.error("Error getting location:", error);
-												countyDisplay.textContent =
-													"Could not determine location";
-											}
-										}
 
 										mapInitialized = true;
 										console.log("✓ Map initialization complete!");
@@ -1132,6 +1168,191 @@
 										alert(
 											"Failed to load map. Please refresh the page and try again."
 										);
+									}
+								}
+
+								// Function to add a new location
+								async function addLocation(lng, lat) {
+									console.log("Adding location at:", lng, lat);
+
+									// Create new marker
+									const marker = new mapboxgl.Marker({
+										color: "#3b82f6",
+										draggable: true,
+									})
+										.setLngLat([lng, lat])
+										.addTo(mapPicker);
+
+									// Add to markers array
+									markers.push(marker);
+
+									// Get location info
+									let locationInfo = { county: null, subcounty: null };
+									try {
+										locationInfo = await getLocationFromCoordinates(lng, lat);
+									} catch (error) {
+										console.error("Error getting location:", error);
+									}
+
+									// Create location object
+									const location = {
+										id: Date.now(), // Unique ID
+										lat: lat.toFixed(6),
+										lng: lng.toFixed(6),
+										county: locationInfo.county || "",
+										subcounty: locationInfo.subcounty || "",
+										marker: marker
+									};
+
+									// Add to locations array
+									locations.push(location);
+
+									// Create hidden inputs
+									createHiddenInputs(location);
+
+									// Update display
+									updateLocationsDisplay();
+
+									// Handle marker drag
+									marker.on("dragend", function () {
+										const lngLat = marker.getLngLat();
+										console.log("Marker dragged to:", lngLat);
+										updateLocation(location.id, lngLat.lng, lngLat.lat);
+									});
+
+									// Center map on new marker
+									mapPicker.flyTo({
+										center: [lng, lat],
+										zoom: 12,
+									});
+								}
+
+								// Function to update a location when marker is dragged
+								async function updateLocation(locationId, lng, lat) {
+									const location = locations.find(loc => loc.id === locationId);
+									if (!location) return;
+
+									location.lat = lat.toFixed(6);
+									location.lng = lng.toFixed(6);
+
+									// Update location info
+									try {
+										const locationInfo = await getLocationFromCoordinates(lng, lat);
+										location.county = locationInfo.county || "";
+										location.subcounty = locationInfo.subcounty || "";
+									} catch (error) {
+										console.error("Error updating location:", error);
+									}
+
+									// Update hidden inputs
+									updateHiddenInputs(location);
+
+									// Update display
+									updateLocationsDisplay();
+								}
+
+								// Function to remove a location
+								function removeLocation(locationId) {
+									const index = locations.findIndex(loc => loc.id === locationId);
+									if (index === -1) return;
+
+									// Remove marker from map
+									const location = locations[index];
+									location.marker.remove();
+
+									// Remove from arrays
+									locations.splice(index, 1);
+									markers.splice(index, 1);
+
+									// Remove hidden inputs
+									removeHiddenInputs(locationId);
+
+									// Update display
+									updateLocationsDisplay();
+								}
+
+								// Function to create hidden inputs for a location
+								function createHiddenInputs(location) {
+									const inputs = [
+										{ name: 'latitude[]', value: location.lat },
+										{ name: 'longitude[]', value: location.lng },
+										{ name: 'county[]', value: location.county },
+										{ name: 'subcounty[]', value: location.subcounty }
+									];
+
+									inputs.forEach(input => {
+										const hiddenInput = document.createElement('input');
+										hiddenInput.type = 'hidden';
+										hiddenInput.name = input.name;
+										hiddenInput.value = input.value;
+										hiddenInput.dataset.locationId = location.id;
+										locationInputsDiv.appendChild(hiddenInput);
+									});
+								}
+
+								// Function to update hidden inputs for a location
+								function updateHiddenInputs(location) {
+									const inputs = locationInputsDiv.querySelectorAll(`[data-location-id="${location.id}"]`);
+									inputs.forEach(input => {
+										if (input.name === 'latitude[]') input.value = location.lat;
+										else if (input.name === 'longitude[]') input.value = location.lng;
+										else if (input.name === 'county[]') input.value = location.county;
+										else if (input.name === 'subcounty[]') input.value = location.subcounty;
+									});
+								}
+
+								// Function to remove hidden inputs for a location
+								function removeHiddenInputs(locationId) {
+									const inputs = locationInputsDiv.querySelectorAll(`[data-location-id="${locationId}"]`);
+									inputs.forEach(input => input.remove());
+								}
+
+								// Function to update the locations display
+								function updateLocationsDisplay() {
+									// Clear current list except the default message
+									const listItems = selectedLocationsList.querySelectorAll('li');
+									listItems.forEach(item => {
+										if (!item.classList.contains('text-gray-500')) {
+											item.remove();
+										}
+									});
+
+									if (locations.length === 0) {
+										// Show default message
+										const defaultItem = selectedLocationsList.querySelector('.text-gray-500');
+										if (!defaultItem) {
+											const li = document.createElement('li');
+											li.className = 'text-gray-500';
+											li.textContent = 'No locations selected yet';
+											selectedLocationsList.appendChild(li);
+										}
+									} else {
+										// Hide default message
+										const defaultItem = selectedLocationsList.querySelector('.text-gray-500');
+										if (defaultItem) defaultItem.style.display = 'none';
+
+										// Add each location
+										locations.forEach(location => {
+											const li = document.createElement('li');
+											li.className = 'flex justify-between items-center py-1';
+
+											const locationText = document.createElement('span');
+											locationText.className = 'font-mono text-blue-600 text-sm';
+											locationText.textContent = `${location.lat}, ${location.lng}`;
+											if (location.county) {
+												locationText.textContent += ` (${location.county}${location.subcounty ? ', ' + location.subcounty : ''})`;
+											}
+
+											const removeBtn = document.createElement('button');
+											removeBtn.type = 'button';
+											removeBtn.className = 'text-red-500 hover:text-red-700 ml-2 text-sm';
+											removeBtn.textContent = 'Remove';
+											removeBtn.onclick = () => removeLocation(location.id);
+
+											li.appendChild(locationText);
+											li.appendChild(removeBtn);
+											selectedLocationsList.appendChild(li);
+										});
 									}
 								}
 
@@ -1241,16 +1462,71 @@
 											}
 										}, 300);
 									}
+									// Initialize theme selection
+									setTimeout(() => {
+										initThemeSelection();
+									}, 100);
 								});
 
-								// Strategy 4: Also try on shown event
-								modalElement.addEventListener("shown.twe.modal", function () {
-									console.log("Modal shown event fired!");
-									if (mapPicker && !mapInitialized) {
-										setTimeout(() => {
-											mapPicker.resize();
-										}, 100);
+								// Theme selection functionality
+								function initThemeSelection() {
+									const selectAllCheckbox = document.getElementById('theme_select_all');
+									const themeCheckboxes = document.querySelectorAll('input[name="theme[]"]');
+									const selectedCountElement = document.getElementById('selected-themes-count');
+
+									if (!selectAllCheckbox || !themeCheckboxes.length || !selectedCountElement) {
+										console.log('Theme selection elements not found');
+										return;
 									}
+
+									// Update counter function
+									function updateSelectedCount() {
+										const selectedCount = document.querySelectorAll('input[name="theme[]"]:checked').length;
+										selectedCountElement.textContent = selectedCount;
+									}
+
+									// Select All functionality
+									selectAllCheckbox.addEventListener('change', function() {
+										const isChecked = this.checked;
+										themeCheckboxes.forEach(checkbox => {
+											checkbox.checked = isChecked;
+										});
+										updateSelectedCount();
+									});
+
+									// Individual checkbox change handler
+									themeCheckboxes.forEach(checkbox => {
+										checkbox.addEventListener('change', function() {
+											updateSelectedCount();
+
+											// Update Select All state
+											const allChecked = Array.from(themeCheckboxes).every(cb => cb.checked);
+											const noneChecked = Array.from(themeCheckboxes).every(cb => !cb.checked);
+
+											selectAllCheckbox.checked = allChecked;
+											selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+										});
+									});
+
+									// Initialize counter
+									updateSelectedCount();
+								}
+
+								// Initialize theme selection when modal is shown
+								modalElement.addEventListener("show.twe.modal", function () {
+									console.log("Modal show event fired!");
+									if (!mapInitialized) {
+										setTimeout(() => {
+											initMapPicker();
+											if (mapPicker) {
+												mapPicker.resize();
+											}
+										}, 300);
+									}
+									// Initialize theme selection
+									setTimeout(() => {
+										initThemeSelection();
+									}, 100);
 								});
 
 								// Form submission - connect to handleProjectSubmission
@@ -2611,28 +2887,50 @@
 				console.log(`  ${key}: "${value}"`);
 			}
 
+			// Collect multiple themes
+			const selectedThemes = formData.getAll("theme[]");
+			console.log("🎨 Selected themes:", selectedThemes);
+
+			// Collect multiple locations
+			const latitudes = formData.getAll("latitude[]");
+			const longitudes = formData.getAll("longitude[]");
+			const counties = formData.getAll("county[]");
+			const subcounties = formData.getAll("subcounty[]");
+
+			const locations = [];
+			for (let i = 0; i < latitudes.length; i++) {
+				locations.push({
+					latitude: parseFloat(latitudes[i]),
+					longitude: parseFloat(longitudes[i]),
+					county: counties[i] || null,
+					subCounty: subcounties[i] || null,
+					mapsAddress: `${counties[i] || ''}${subcounties[i] ? ', ' + subcounties[i] : ''}, Kenya`.trim()
+				});
+			}
+			console.log("📍 Collected locations:", locations);
+
+				// Ensure global markers array exists and is usable here
+				if (typeof markers === 'undefined' || !Array.isArray(markers)) {
+					console.warn('markers not defined — initializing global markers array');
+					window.markers = window.markers || [];
+					markers = window.markers;
+				}
+
 			// Prepare project data according to API documentation
 			const projectData = {
 				partner: "TBD", // This should come from user's organization
 				title: formData.get("title"),
-				projectTheme: formData.get("theme"),
+				themes: selectedThemes,
 				projectCategory: formData.get("category"),
 				startDate: formData.get("start_date"),
 				endDate: formData.get("end_date"),
 				activityType: formData.get("activity_type"),
-				county: formData.get("county") || null,
-				subCounty: formData.get("subcounty") || null,
+				locations: locations,
 				contactPersonName: formData.get("contact_person_name"),
 				contactPersonRole: formData.get("contact_person_role"),
 				contactPersonEmail: formData.get("contact_person_mail"),
 				objectives: formData.get("gaps"),
 				budget: parseFloat(formData.get("budget")) || 0,
-				latitude: formData.get("latitude")
-					? parseFloat(formData.get("latitude"))
-					: null,
-				longitude: formData.get("longitude")
-					? parseFloat(formData.get("longitude"))
-					: null,
 			};
 
 			console.log("📝 Project data to submit:", projectData);
@@ -2640,7 +2938,6 @@
 			// Validate required fields by checking form data directly
 			const requiredFormFields = [
 				{ field: "title", label: "Title" },
-				{ field: "theme", label: "Project Theme" },
 				{ field: "category", label: "Project Category" },
 				{ field: "start_date", label: "Start Date" },
 				{ field: "end_date", label: "End Date" },
@@ -2655,6 +2952,16 @@
 				const value = formData.get(fieldObj.field);
 				return !value || value.trim() === "";
 			});
+
+			// Check for at least one theme
+			if (selectedThemes.length === 0) {
+				missingFields.push({ field: "theme", label: "At least one Project Theme" });
+			}
+
+			// Check for at least one location
+			if (locations.length === 0) {
+				missingFields.push({ field: "location", label: "At least one Project Location" });
+			}
 
 			if (missingFields.length > 0) {
 				const missingLabels = missingFields.map((f) => f.label);
@@ -2714,6 +3021,7 @@
 				}
 
 				console.log("📡 Submitting to API...");
+				console.log("📦 Final project data being sent:", JSON.stringify(projectData, null, 2));
 
 				// Submit to API
 				const response = await authManager.apiCall(
@@ -2734,6 +3042,21 @@
 					// Reset form
 					form.reset();
 
+					// Clear locations and markers
+					locations.forEach(location => {
+						if (location.marker) {
+							location.marker.remove();
+						}
+					});
+					locations.length = 0;
+					if (Array.isArray(markers)) markers.length = 0;
+
+					// Clear hidden inputs
+					locationInputsDiv.innerHTML = '';
+
+					// Update display
+					updateLocationsDisplay();
+
 					// Close modal (if using bootstrap/tw-elements modal)
 					const modal = document.querySelector("[data-twe-modal-show]");
 					if (modal) {
@@ -2753,15 +3076,116 @@
 						window.location.reload();
 					}, 2000);
 				} else {
-					const errorData = await response.json();
-					console.error("❌ API Error:", errorData);
-					alert(
-						`Failed to create project: ${errorData.message || "Unknown error"
-						}`
-					);
+					let errorMessage = "Failed to create project";
+					// Use stored raw error text from authManager.apiCall if available
+					const errorText = response.errorText || "";
+					if (errorText) console.error("❌ Raw error response:", errorText);
+					// Attempt to parse JSON error
+					try {
+						const errorData = JSON.parse(errorText);
+						errorMessage = errorData.message || errorMessage;
+						console.error("❌ API Error:", errorData);
+					} catch (_e) {
+						// Not JSON, skip
+					}
+					alert(`Failed to create project: ${errorMessage}`);
 				}
 			} catch (error) {
 				console.error("❌ Submission error:", error);
+				// Log everything to trace
+				try {
+					// Deep diagnostic logging to trace the error source
+					console.groupCollapsed("🚨 Project submission error trace");
+					console.error("Caught error:", error);
+					if (error && error.stack) console.error("Stack trace:", error.stack);
+
+					// Safe stringify helper to avoid circular reference crashes
+					const safeStringify = (obj) => {
+						try {
+							return JSON.stringify(obj, function (k, v) {
+								if (typeof v === "function") return `[Function ${v.name || "anonymous"}]`;
+								return v;
+							}, 2);
+						} catch (e) {
+							return String(obj);
+						}
+					};
+
+					// Form & payload diagnostics
+					try {
+						console.log("Form element:", form || "N/A");
+						// Collect FormData entries
+						const fd = {};
+						if (formData && typeof formData.entries === "function") {
+							for (const [k, v] of formData.entries()) {
+								if (!fd[k]) fd[k] = [];
+								fd[k].push(v);
+							}
+						}
+						console.log("FormData entries:", fd);
+					} catch (e) {
+						console.warn("Could not enumerate FormData:", e);
+					}
+
+					console.log("Project payload (projectData):", safeStringify(projectData));
+					console.log("Collected locations:", safeStringify(locations || []));
+					try {
+						// Provide marker positions summary if available
+						const markerSummary = (markers || []).map((m, i) => {
+							try {
+								const lngLat = m && typeof m.getLngLat === "function" ? m.getLngLat() : (m && (m.lng || m.longitude) ? { lng: m.lng || m.longitude, lat: m.lat || m.latitude } : null);
+								return { index: i, lng: lngLat ? lngLat.lng : null, lat: lngLat ? lngLat.lat : null };
+							} catch (e) {
+								return { index: i, error: String(e) };
+							}
+						});
+						console.log("Markers summary:", markerSummary);
+					} catch (e) {
+						console.warn("Could not summarize markers:", e);
+					}
+
+					// Auth & environment diagnostics
+					try {
+						if (typeof authManager !== "undefined") {
+							console.log("AuthManager (type):", typeof authManager);
+							if (typeof authManager.getToken === "function") {
+								try { console.log("Auth token (masked):", (authManager.getToken() || "").slice(0, 8) + "…(masked)"); } catch (e) { console.warn("Could not read token:", e); }
+							}
+							if (typeof authManager.getCurrentUser === "function") {
+								try { console.log("Current user (safe):", safeStringify(await (authManager.getCurrentUser().catch(e=>({error:String(e)})))) ); } catch(e){ console.warn("Could not read current user:", e); }
+							}
+						} else {
+							console.log("authManager is undefined");
+						}
+					} catch (e) {
+						console.warn("Auth diagnostics failed:", e);
+					}
+
+					// Browser / network info
+					try {
+						console.log("Navigator info:", {
+							online: navigator.onLine,
+							userAgent: navigator.userAgent,
+							platform: navigator.platform,
+							language: navigator.language,
+						});
+					} catch (e) {
+						console.warn("Navigator diagnostics failed:", e);
+					}
+
+					// Storage snapshot (keys only)
+					try {
+						console.log("LocalStorage keys:", typeof localStorage !== "undefined" ? Object.keys(localStorage) : "localStorage unavailable");
+						console.log("SessionStorage keys:", typeof sessionStorage !== "undefined" ? Object.keys(sessionStorage) : "sessionStorage unavailable");
+					} catch (e) {
+						console.warn("Storage diagnostics failed:", e);
+					}
+
+					console.groupEnd();
+				} catch (logErr) {
+					// Ensure logging itself does not break the submission flow
+					console.error("Error while collecting diagnostics:", logErr);
+				}
 				alert(
 					"Failed to create project. Please check your connection and try again."
 				);
