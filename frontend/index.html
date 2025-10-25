@@ -243,8 +243,8 @@
             // Request OTP from backend
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
+                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
                 const res = await fetch(`${apiBase}/api/auth/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -288,8 +288,8 @@
 
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
+                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
                 
                 const payload = { name, email, accountType };
                 if (accountType === "PARTNER" && parentDonorId) {

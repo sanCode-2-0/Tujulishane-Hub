@@ -1470,7 +1470,7 @@
         highlightMarkers("all");
       }
 
-      // Add markers to Mapbox map
+      // Add markers to Mapbox map (supports multiple locations per project)
       function addMarkersToMap(projectsData) {
         // Clear existing markers
         mapMarkers.forEach((marker) => marker.remove());
@@ -1478,7 +1478,19 @@
 
         // Add new markers
         projectsData.forEach((project) => {
-          if (project.latitude && project.longitude) {
+          // Determine location list: prefer project.locations array, fall back to single lat/lng
+          const locs =
+            Array.isArray(project.locations) && project.locations.length
+              ? project.locations
+              : project.latitude && project.longitude
+              ? [{ latitude: project.latitude, longitude: project.longitude }]
+              : [];
+
+          locs.forEach((loc, locIndex) => {
+            const lat = loc.latitude;
+            const lng = loc.longitude;
+            if (!lat || !lng) return;
+
             // Create marker element
             const el = document.createElement("div");
             el.className = "marker";
@@ -1490,17 +1502,21 @@
             el.style.cursor = "pointer";
             el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
 
-            // Create popup
-            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+            // Create popup — include location-specific info when available
+            const popupHtml = `
                 <div style="padding: 10px; min-width: 200px;">
                   <h3 style="font-weight: bold; margin-bottom: 8px;">${
-                    project.projectName || "Project"
+                    project.projectName || project.title || "Project"
                   }</h3>
                   <p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(
                     project.status?.toLowerCase()
                   )}">${project.status || "N/A"}</span></p>
-                  <p style="margin: 4px 0;"><strong>Region:</strong> ${
-                    project.region || "N/A"
+                  <p style="margin: 4px 0;"><strong>Region/County:</strong> ${
+                    loc.county ||
+                    loc.region ||
+                    project.region ||
+                    project.county ||
+                    "N/A"
                   }</p>
                   <p style="margin: 4px 0;"><strong>Budget:</strong> ${
                     project.budget || "N/A"
@@ -1508,41 +1524,47 @@
                   <button onclick="viewProject(${
                     project.id
                   })" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
-                </div>
-              `);
+                </div>`;
+
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupHtml);
 
             // Create and add marker
             const marker = new mapboxgl.Marker(el)
-              .setLngLat([project.longitude, project.latitude])
+              .setLngLat([lng, lat])
               .setPopup(popup)
               .addTo(map);
 
+            // Attach data for other UI code that expects marker.data
+            try {
+              marker.data = Object.assign({}, project, {
+                lat,
+                lng,
+                location: loc,
+                locationIndex: locIndex,
+              });
+            } catch (e) {
+              // ignore
+            }
+
             // Add click event
             el.addEventListener("click", async () => {
-              map.flyTo({
-                center: [project.longitude, project.latitude],
-                zoom: 12,
-              });
+              map.flyTo({ center: [lng, lat], zoom: 12 });
 
               // If county is missing, try to get it from coordinates
-              if (!project.county && !project.region) {
-                const countyName = await getCountyFromCoordinates(
-                  project.longitude,
-                  project.latitude
-                );
+              if (!project.county && !project.region && (!loc || !loc.county)) {
+                const countyName = await getCountyFromCoordinates(lng, lat);
                 if (countyName) {
-                  project.county = countyName;
-                  // Update the accordion item for this project
+                  if (loc) loc.county = countyName;
+                  else project.county = countyName;
                   const projectIndex = projects.indexOf(project);
-                  if (projectIndex !== -1) {
+                  if (projectIndex !== -1)
                     updateProjectAccordionItem(projectIndex);
-                  }
                 }
               }
             });
 
             mapMarkers.push(marker);
-          }
+          });
         });
       }
 

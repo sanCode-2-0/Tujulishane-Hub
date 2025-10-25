@@ -2513,54 +2513,58 @@
 		}
 
 		// Add markers to Mapbox map
-		function addMarkersToMap(projectsData) {
-			// Clear existing markers
-			mapMarkers.forEach((marker) => marker.remove());
-			mapMarkers.length = 0;
+			function addMarkersToMap(projectsData) {
+				// Clear existing markers
+				mapMarkers.forEach((marker) => marker.remove());
+				mapMarkers.length = 0;
 
-			// Add new markers
-			projectsData.forEach((project) => {
-				if (project.latitude && project.longitude) {
-					// Create marker element
-					const el = document.createElement("div");
-					el.className = "marker";
-					el.style.backgroundColor = getStatusColor(project.status);
-					el.style.width = "30px";
-					el.style.height = "30px";
-					el.style.borderRadius = "50%";
-					el.style.border = "2px solid white";
-					el.style.cursor = "pointer";
-					el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+				// Add new markers
+				projectsData.forEach((project) => {
+					const locs = Array.isArray(project.locations) && project.locations.length
+						? project.locations
+						: (project.latitude && project.longitude ? [{ latitude: project.latitude, longitude: project.longitude }] : []);
 
-					// Create popup
-					const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-						<div style="padding: 10px; min-width: 200px;">
-							<h3 style="font-weight: bold; margin-bottom: 8px;">${project.projectName || "Project"}</h3>
-							<p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(project.status?.toLowerCase())}">${project.status || "N/A"}</span></p>
-							<p style="margin: 4px 0;"><strong>County:</strong> ${project.county || project.region || "N/A"}</p>
-							<p style="margin: 4px 0;"><strong>Theme:</strong> ${project.projectTheme || "N/A"}</p>
-							<p style="margin: 4px 0;"><strong>Category:</strong> ${project.projectCategory || "N/A"}</p>
-						</div>
-					`);
+					locs.forEach((loc, locIndex) => {
+						const lat = loc.latitude;
+						const lng = loc.longitude;
+						if (!lat || !lng) return;
 
-					// Create and add marker
-					const marker = new mapboxgl.Marker(el)
-						.setLngLat([project.longitude, project.latitude])
-						.setPopup(popup)
-						.addTo(map);
+						// Create marker element
+						const el = document.createElement("div");
+						el.className = "marker";
+						el.style.backgroundColor = getStatusColor(project.status);
+						el.style.width = "30px";
+						el.style.height = "30px";
+						el.style.borderRadius = "50%";
+						el.style.border = "2px solid white";
+						el.style.cursor = "pointer";
+						el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
 
-				// Add click event
-				el.addEventListener("click", () => {
-					map.flyTo({
-						center: [project.longitude, project.latitude],
-						zoom: 12,
+						const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+							<div style="padding: 10px; min-width: 200px;">
+								<h3 style="font-weight: bold; margin-bottom: 8px;">${project.projectName || project.title || "Project"}</h3>
+								<p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(project.status?.toLowerCase())}">${project.status || "N/A"}</span></p>
+								<p style="margin: 4px 0;"><strong>Region/County:</strong> ${loc.county || loc.region || project.region || project.county || "N/A"}</p>
+								<p style="margin: 4px 0;"><strong>Theme:</strong> ${project.projectTheme || "N/A"}</p>
+								<p style="margin: 4px 0;"><strong>Category:</strong> ${project.projectCategory || "N/A"}</p>
+							</div>
+						`);
+
+						const marker = new mapboxgl.Marker(el)
+							.setLngLat([lng, lat])
+							.setPopup(popup)
+							.addTo(map);
+
+						try { marker.data = Object.assign({}, project, { lat, lng, location: loc, locationIndex: locIndex }); } catch(e) {}
+
+						el.addEventListener("click", () => {
+							map.flyTo({ center: [lng, lat], zoom: 12 });
+						});
+
+						mapMarkers.push(marker);
 					});
 				});
-
-				mapMarkers.push(marker);
 			}
-		});
-	}
 
 	// Get status color
 	function getStatusColor(status) {
