@@ -136,6 +136,17 @@
     </div>
 
     <!-- Authentication & Authorization Scripts -->
+    <script>
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+    </script>
     <script type="module">
       import { BASE_URL } from "./config.js";
 

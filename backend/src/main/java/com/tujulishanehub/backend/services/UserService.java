@@ -56,7 +56,7 @@ public class UserService {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setStatus("INACTIVE");
+        user.setStatus("ACTIVE");  // Set to ACTIVE for new registrations
         user.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
         user.setRole(role);
         

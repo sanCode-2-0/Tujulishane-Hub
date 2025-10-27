@@ -2,6 +2,16 @@
 <html lang="en" class="scroll-smooth">
   <head>
     <script type="module">
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+
       import { BASE_URL } from "./config.js";
       window.BASE_URL = BASE_URL;
     </script>

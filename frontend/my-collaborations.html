@@ -37,6 +37,17 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+    <script>
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+    </script>
     <script type="module">
       import { BASE_URL } from "./config.js";
       window.BASE_URL = BASE_URL;
@@ -877,6 +888,17 @@
       </div>
     </div>
 
+    <script>
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+    </script>
     <script type="module">
       import { BASE_URL } from "./config.js";
 

@@ -32,7 +32,8 @@
       };
     </script>
     <!-- WARNING: cdn.tailwindcss.com should not be used in production. Use PostCSS or CLI for production builds. -->
-    <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <script src="./set-base-url.js"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
@@ -582,7 +583,7 @@
               );
 
               const response = await fetch(
-                `https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/past-projects?page=${this.currentPage}&size=${this.size}`,
+                `http://localhost:8080/api/past-projects?page=${this.currentPage}&size=${this.size}`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,

@@ -29,6 +29,7 @@
     </script>
     <!-- WARNING: cdn.tailwindcss.com should not be used in production. Use PostCSS or CLI for production builds. -->
     <link rel="stylesheet" href="styles/main.css">
+    <script src="./set-base-url.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -861,8 +862,8 @@
                         <script src="auth.js"></script>
                         <script>
                             let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                                ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
-                                : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
+                                ? 'http://localhost:8080/api'
+                                : 'http://localhost:8080/api';
 
                             // Fetch and display project statistics
                             async function loadProjectStats() {
@@ -1758,7 +1759,7 @@
 
                 try {
                     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                    const response = await fetch(`${window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com'}/api/projects`, {
+                    const response = await fetch(`${window.BASE_URL || 'http://localhost:8080'}/api/projects`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
