@@ -3,6 +3,16 @@
 
 <head>
 	<script type="module">
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+
 		import { BASE_URL } from "./config.js";
 		window.BASE_URL = BASE_URL;
 	</script>
@@ -93,7 +103,7 @@
 		document.addEventListener("DOMContentLoaded", async function () {
 			if (!authManager.isAuthenticated()) {
 				alert("You must be logged in to access the dashboard.");
-				window.location.href = "/frontend/index.html";
+				window.location.href = "frontend/index.html";
 				return;
 			}
 			try {
@@ -274,15 +284,15 @@
 									project coordinates.
 								</div>
 								<div id="newProjectMap" style="
-                          height: 400px;
-                          width: 100%;
-                          border-radius: 8px;
-                          margin-bottom: 8px;
-                          border: 1px solid #e5e7eb;
-                          background-color: #f3f4f6;
-                          position: relative;
-                          overflow: hidden;
-                        "></div>
+                      height: 400px;
+                      width: 100%;
+                      border-radius: 8px;
+                      margin-bottom: 8px;
+                      border: 1px solid #e5e7eb;
+                      background-color: #f3f4f6;
+                      position: relative;
+                      overflow: hidden;
+                    "></div>
 								<input type="hidden" id="project_latitude" name="latitude" />
 								<input type="hidden" id="project_longitude" name="longitude" />
 								<input type="hidden" id="project_county" name="county" />
@@ -311,8 +321,7 @@
 									<option value="">Select Theme</option>
 									<option value="GBV">Gender based violence</option>
 									<option value="AYPSRH">
-										Adolescent and Young People Sexual and Reproductive
-										Health
+										Adolescent and Young People Sexual and Reproductive Health
 									</option>
 									<option value="MNH">Maternal and Newborn Health</option>
 									<option value="FP">Family planning</option>
@@ -879,8 +888,7 @@
 								<!-- Activity Type -->
 								<div class="col-span-2 md:col-span-4">
 									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
-										Type
-										(Description)</label>
+										Type (Description)</label>
 									<textarea id="activity_type" name="activity_type" rows="3"
 										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
 								</div>
@@ -1577,8 +1585,8 @@
 				const btn = document.createElement("button");
 				btn.textContent = i;
 				btn.className = `px-3 py-1 rounded ${i === currentPage
-					? "bg-blue-600 text-white"
-					: "bg-gray-100 text-gray-800 hover:bg-gray-200"
+						? "bg-blue-600 text-white"
+						: "bg-gray-100 text-gray-800 hover:bg-gray-200"
 					}`;
 				btn.onclick = () => {
 					currentPage = i;

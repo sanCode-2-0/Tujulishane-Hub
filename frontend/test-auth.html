@@ -44,7 +44,7 @@
       <input
         id="baseUrl"
         type="text"
-        value="https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+        value="http://localhost:8080"
         style="width: 100%"
       />
       <div style="margin-top: 8px">
@@ -83,6 +83,23 @@
       <input id="reg_username" type="text" style="width: 100%" />
       <label for="reg_email">Email</label>
       <input id="reg_email" type="email" style="width: 100%" />
+      <label for="reg_accountType">Account Type</label>
+      <select id="reg_accountType" style="width: 100%">
+        <option value="PARTNER">Partner Organization</option>
+        <option value="DONOR">Donor Organization</option>
+      </select>
+      <div id="parentDonorSection" style="display: none">
+        <label for="reg_parentDonorId">Parent Donor ID (Optional)</label>
+        <input
+          id="reg_parentDonorId"
+          type="number"
+          placeholder="Enter donor ID if linking to existing donor"
+          style="width: 100%"
+        />
+        <small class="text-gray-600"
+          >Leave empty if this is a standalone partner account</small
+        >
+      </div>
       <div>
         <button id="confirmRegister">Confirm Register</button>
         <button id="cancelRegister">Cancel</button>
@@ -199,9 +216,28 @@
       by("openRegister").addEventListener("click", () => {
         by("reg_username").value = by("username").value || "";
         by("reg_email").value = by("email").value || "";
+        by("reg_accountType").value = "PARTNER";
+        by("reg_parentDonorId").value = "";
+        toggleParentDonorSection();
         by("registerPanel").classList.remove("hidden");
         by("registerPanel").setAttribute("aria-hidden", "false");
       });
+
+      // Handle account type change
+      by("reg_accountType").addEventListener(
+        "change",
+        toggleParentDonorSection
+      );
+
+      function toggleParentDonorSection() {
+        const accountType = by("reg_accountType").value;
+        const parentDonorSection = by("parentDonorSection");
+        if (accountType === "PARTNER") {
+          parentDonorSection.style.display = "block";
+        } else {
+          parentDonorSection.style.display = "none";
+        }
+      }
       by("cancelRegister").addEventListener("click", () => {
         by("registerPanel").classList.add("hidden");
         by("registerPanel").setAttribute("aria-hidden", "true");
@@ -298,6 +334,8 @@
       by("confirmRegister").addEventListener("click", async () => {
         const name = by("reg_username").value.trim();
         const email = by("reg_email").value.trim();
+        const accountType = by("reg_accountType").value;
+        const parentDonorId = by("reg_parentDonorId").value.trim();
         const emailRe = /^\S+@\S+\.\S+$/;
         if (!name || name.length < 2) {
           by("regResp").textContent =
@@ -309,7 +347,10 @@
           return;
         }
         by("regResp").textContent = "Sending...";
-        const payload = { name, email };
+        const payload = { name, email, accountType };
+        if (accountType === "PARTNER" && parentDonorId) {
+          payload.parentDonorId = parseInt(parentDonorId);
+        }
         const result = await sendJson("/api/auth/register", "POST", payload);
         by("regResp").textContent =
           result.status +

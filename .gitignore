@@ -125,3 +125,6 @@ frontend/INTEGRATION_GUIDE.md
 frontend/TESTING_GUIDE.md
 frontend/MEMBERS_PAGE_INTEGRATION.md
 frontend/TEST_MEMBERS_INTEGRATION.md
+GUIDELINES_SOPS_PLAN.md
+# Local frontend config override
+frontend/config.local.js

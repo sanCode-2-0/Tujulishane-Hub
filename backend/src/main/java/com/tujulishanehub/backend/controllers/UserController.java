@@ -3,6 +3,7 @@ package com.tujulishanehub.backend.controllers;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.payload.ApiResponse;
+import com.tujulishanehub.backend.payload.UserProfileDTO;
 import com.tujulishanehub.backend.services.UserService;
 import com.tujulishanehub.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,13 +51,30 @@ public class UserController {
             String email = (String) payload.get("email");
             Long organizationId = payload.get("organizationId") != null ? 
                 Long.valueOf(payload.get("organizationId").toString()) : null;
+            String accountType = (String) payload.get("accountType"); // "DONOR" or "PARTNER"
+            Long parentDonorId = payload.get("parentDonorId") != null ? 
+                Long.valueOf(payload.get("parentDonorId").toString()) : null;
             
             if (name == null || name.isEmpty() || email == null || email.isEmpty()) {
                 ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Name and email are required.", null);
                 return ResponseEntity.badRequest().body(response);
             }
             
-            userService.registerUser(name, email, organizationId);
+            // Default to PARTNER if accountType not specified (backward compatibility)
+            if (accountType == null) {
+                accountType = "PARTNER";
+            }
+            
+            // Register based on account type
+            if ("DONOR".equalsIgnoreCase(accountType)) {
+                userService.registerDonor(name, email, organizationId);
+            } else if ("PARTNER".equalsIgnoreCase(accountType)) {
+                userService.registerPartner(name, email, organizationId, parentDonorId);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Invalid account type. Must be DONOR or PARTNER.", null);
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Registration received. Check your email for the verification OTP.", null);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
@@ -436,21 +454,23 @@ public class UserController {
      */
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<User>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getCurrentUser() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
             User user = userService.getUserByEmail(email);
             
-            ApiResponse<User> response = new ApiResponse<>(
+            UserProfileDTO userProfile = new UserProfileDTO(user);
+            
+            ApiResponse<UserProfileDTO> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "User profile retrieved successfully", 
-                user
+                userProfile
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error retrieving user profile: {}", e.getMessage(), e);
-            ApiResponse<User> response = new ApiResponse<>(
+            ApiResponse<UserProfileDTO> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve user profile", 
                 null
@@ -489,6 +509,234 @@ public class UserController {
             ApiResponse<List<User>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve users", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    // Donor-Partner Management Endpoints
+    
+    @GetMapping("/donors")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<User>>> getAllDonors() {
+        try {
+            List<User> donors = userService.getAllDonors();
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Donors retrieved successfully", 
+                donors
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving donors: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve donors", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get available partners for linking (approved partners not linked to any donor)
+     */
+    @GetMapping("/partners/available")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    public ResponseEntity<ApiResponse<List<User>>> getAvailablePartners() {
+        try {
+            List<User> availablePartners = userService.getAvailablePartners();
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Available partners retrieved successfully", 
+                availablePartners
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving available partners: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Error retrieving available partners", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @GetMapping("/donor/{donorId}/partners")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    public ResponseEntity<ApiResponse<List<User>>> getPartnersByDonor(@PathVariable Long donorId) {
+        try {
+            // Check if donor can access this endpoint
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            // Super admins can see all, donors can only see their own partners
+            if (currentUser.getRole() != User.Role.SUPER_ADMIN && !currentUser.getId().equals(donorId)) {
+                ApiResponse<List<User>> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(), 
+                    "You can only view your own partners", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            List<User> partners = userService.getPartnersByDonor(donorId);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Partners retrieved successfully", 
+                partners
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving partners for donor {}: {}", donorId, e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve partners", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @PostMapping("/partner/{partnerId}/link-donor/{donorId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    public ResponseEntity<ApiResponse<String>> linkPartnerToDonor(
+            @PathVariable Long partnerId, 
+            @PathVariable Long donorId) {
+        try {
+            // Check if donor can link this partner
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            // Super admins can link any partner to any donor
+            // Donors can only link partners to themselves
+            if (currentUser.getRole() != User.Role.SUPER_ADMIN && !currentUser.getId().equals(donorId)) {
+                ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(), 
+                    "Access denied. You can only link partners to your own account.", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            boolean success = userService.linkPartnerToDonor(partnerId, donorId);
+            if (success) {
+                ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.OK.value(), 
+                    "Partner linked to donor successfully", 
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Failed to link partner to donor. Check IDs and roles.", 
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error linking partner {} to donor {}: {}", partnerId, donorId, e.getMessage(), e);
+            ApiResponse<String> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to link partner to donor", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @PostMapping("/partner/{partnerId}/unlink-donor")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    public ResponseEntity<ApiResponse<String>> unlinkPartnerFromDonor(@PathVariable Long partnerId) {
+        try {
+            // Check if donor can unlink this partner
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            // For donors, check if they own this partner
+            if (currentUser.getRole() == User.Role.DONOR) {
+                User partner = userService.getUserById(partnerId);
+                if (partner == null) {
+                    ApiResponse<String> response = new ApiResponse<>(
+                        HttpStatus.NOT_FOUND.value(), 
+                        "Partner not found", 
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }
+                
+                if (partner.getParentDonor() == null || !partner.getParentDonor().getId().equals(currentUser.getId())) {
+                    ApiResponse<String> response = new ApiResponse<>(
+                        HttpStatus.FORBIDDEN.value(), 
+                        "Access denied. You can only unlink your own partners.", 
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            }
+            
+            boolean success = userService.unlinkPartnerFromDonor(partnerId);
+            if (success) {
+                ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.OK.value(), 
+                    "Partner unlinked from donor successfully", 
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(), 
+                    "Failed to unlink partner from donor", 
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error unlinking partner {} from donor: {}", partnerId, e.getMessage(), e);
+            ApiResponse<String> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to unlink partner from donor", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @GetMapping("/me/donor")
+    @PreAuthorize("hasRole('PARTNER')")
+    public ResponseEntity<ApiResponse<User>> getMyDonor() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            if (currentUser.getParentDonor() == null) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(), 
+                    "You are not linked to any donor", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            User donor = currentUser.getParentDonor();
+            ApiResponse<User> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Donor retrieved successfully", 
+                donor
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving donor for current user: {}", e.getMessage(), e);
+            ApiResponse<User> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve donor", 
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

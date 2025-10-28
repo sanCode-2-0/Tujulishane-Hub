@@ -31,6 +31,20 @@
 	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
 		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<script>
+		// Try to load a local config override (frontend/config.local.js) if present.
+		// This is optional and safe to 404 — it won't break page load.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) {
+				/* ignore */
+			}
+		})();
+	</script>
 	<script type="module">
 		import { BASE_URL } from "./config.js";
 		window.BASE_URL = BASE_URL;
@@ -97,6 +111,12 @@
 					console.log("🔍 User Role:", this.userRole); // Debug log
 					console.log("🔍 Current User:", this.currentUser); // Debug log
 
+					// Populate user dropdown in navigation
+					if (this.currentUser) {
+						console.log("👤 Populating user dropdown...");
+						this.populateUserDropdown(this.currentUser);
+					}
+
 					await this.loadAnnouncements();
 
 					// Always try to load projects if user is authenticated
@@ -110,6 +130,43 @@
 						await this.loadMyCollaborationRequests();
 					} else {
 						console.warn("⚠️ No access token found, skipping project load");
+					}
+				},
+
+				// Populate user dropdown with current user data
+				populateUserDropdown(user) {
+					try {
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+
+						if (userDisplayName)
+							userDisplayName.textContent = user.name || "User";
+						if (userNameDisplay)
+							userNameDisplay.textContent = user.name || "Loading...";
+						if (userEmailDisplay)
+							userEmailDisplay.textContent = user.email || "";
+						if (userRoleDisplay)
+							userRoleDisplay.textContent = user.role || "N/A";
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent = user.status || "N/A";
+							// Update status color based on status
+							userStatusDisplay.className =
+								user.status === "ACTIVE"
+									? "font-medium text-green-600"
+									: "font-medium text-gray-600";
+						}
+
+						console.log("✅ User dropdown populated successfully!");
+					} catch (error) {
+						console.error("❌ Error populating user dropdown:", error);
 					}
 				},
 
@@ -508,15 +565,15 @@
 										project coordinates.
 									</div>
 									<div id="newProjectMap" style="
-                          height: 400px;
-                          width: 100%;
-                          border-radius: 8px;
-                          margin-bottom: 8px;
-                          border: 1px solid #e5e7eb;
-                          background-color: #f3f4f6;
-                          position: relative;
-                          overflow: hidden;
-                        "></div>
+                        height: 400px;
+                        width: 100%;
+                        border-radius: 8px;
+                        margin-bottom: 8px;
+                        border: 1px solid #e5e7eb;
+                        background-color: #f3f4f6;
+                        position: relative;
+                        overflow: hidden;
+                      "></div>
 									<input type="hidden" id="project_latitude" name="latitude" />
 									<input type="hidden" id="project_longitude" name="longitude" />
 									<input type="hidden" id="project_county" name="county" />
@@ -572,8 +629,7 @@
 								<!-- Activity Type -->
 								<div class="col-span-2 md:col-span-4">
 									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
-										Type
-										(Description) *
+										Type (Description) *
 									</label>
 									<textarea required id="activity_type" name="activity_type" rows="3"
 										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
@@ -636,7 +692,6 @@
 				</div>
 			</div>
 		</div>
-
 
 		<nav x-data="{ open: false }"
 			class="fixed z-50 border px-2 py-6  bg-white/70 top-0 left-0 right-0 backdrop-blur-md border-white/10">
@@ -844,7 +899,6 @@
 		</nav>
 		<!-- Main Content -->
 		<div class="container mx-auto px-4 py-8 mt-12">
-
 			<div class="flex flex-col md:flex-row justify-between md:items-end mb-6 border-b pb-4">
 				<div class="mt-12">
 					<h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -875,12 +929,8 @@
 				<select x-model="filterStatus"
 					class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm w-full sm:w-48">
 					<option value="">Collaboratin Type</option>
-					<option value="financial">
-						Financial
-					</option>
-					<option value="skills">
-						Skills & Expertise
-					</option>
+					<option value="financial">Financial</option>
+					<option value="skills">Skills & Expertise</option>
 				</select>
 
 				<select x-model="sortOrder"
@@ -899,7 +949,6 @@
 				<template x-for="announcement in announcements" :key="announcement.id">
 					<div
 						class="bg-white rounded-xl shadow-lg border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between hover:shadow-xl transition transform hover:-translate-y-0.5">
-
 						<div class="flex-grow min-w-0 mb-4 lg:mb-0">
 							<div class="flex items-center space-x-3 mb-1">
 								<span :class="{
@@ -917,19 +966,22 @@
 							<div class="flex flex-col sm:flex-row sm:space-x-6 text-sm mt-2 text-gray-600">
 								<p class="flex items-center mb-1 sm:mb-0">
 									<i class="fas fa-project-diagram mr-2 text-blue-500"></i>
-									Project: <span class="font-medium ml-1 text-gray-800"
+									Project:
+									<span class="font-medium ml-1 text-gray-800"
 										x-text="announcement.project?.title"></span>
 								</p>
 								<p class="flex items-center mb-1 sm:mb-0">
 									<i class="fas fa-building mr-2 text-indigo-500"></i>
-									Partner: <span class="font-medium ml-1 text-gray-800"
+									Partner:
+									<span class="font-medium ml-1 text-gray-800"
 										x-text="announcement.project?.partner"></span>
 								</p>
 								<p x-show="announcement.deadline" class="flex items-center"
 									:class="{'text-red-600 font-semibold': isDeadlineImminent(announcement.deadline)}">
 									<i class="fas fa-calendar-alt mr-2"
 										:class="{'text-red-500': isDeadlineImminent(announcement.deadline), 'text-gray-500': !isDeadlineImminent(announcement.deadline)}"></i>
-									Deadline: <span class="ml-1"
+									Deadline:
+									<span class="ml-1"
 										x-text="new Date(announcement.deadline).toLocaleDateString()"></span>
 								</p>
 							</div>
@@ -965,7 +1017,8 @@
 					No Collaboration Opportunities Found
 				</h3>
 				<p class="text-gray-500">
-					Try adjusting your search filters or check back later for new projects.
+					Try adjusting your search filters or check back later for new
+					projects.
 				</p>
 			</div>
 		</div>

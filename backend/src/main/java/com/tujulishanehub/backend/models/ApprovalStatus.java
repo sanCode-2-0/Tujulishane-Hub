@@ -5,6 +5,7 @@ package com.tujulishanehub.backend.models;
  */
 public enum ApprovalStatus {
     PENDING,    // Waiting for MOH approval
+    SUBMITTED,  // Submitted for approval
     APPROVED,   // Approved by MOH
     REJECTED    // Rejected by MOH
 }

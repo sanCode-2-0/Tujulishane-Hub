@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +23,12 @@ public class EmailService {
     
     @Value("${app.email.enabled:false}")
     private boolean emailEnabled;
+
+    @Value("${spring.mail.host:}")
+    private String mailHost;
+
+    @Value("${spring.mail.username:}")
+    private String mailUsername;
 
     public void sendEmail(String to, String subject, String body) {
         logger.info("Sending email to {} with subject={}", to, subject);
@@ -51,6 +58,18 @@ public class EmailService {
             logger.warn("📧 Subject: {}", subject);
             logger.warn("📧 Body: {}", body);
             // Don't throw exception - just log it so login can continue
+        }
+    }
+
+    @PostConstruct
+    private void logMailConfiguration() {
+        try {
+            logger.info("Mail startup: app.email.enabled={} mailSenderConfigured={} host={} usernamePresent={}",
+                    emailEnabled, mailSender != null, mailHost == null || mailHost.isEmpty() ? "(none)" : mailHost,
+                    (mailUsername == null || mailUsername.isEmpty()) ? false : true);
+        } catch (Exception e) {
+            // don't let logging cause startup failure
+            logger.warn("Unable to log mail configuration: {}", e.getMessage());
         }
     }
 }

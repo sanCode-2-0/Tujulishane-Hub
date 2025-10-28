@@ -97,6 +97,17 @@
     </div>
 
     <!-- Authentication & Authorization Scripts -->
+    <script>
+        // Try to load a local config override (frontend/config.local.js) if present.
+        (function () {
+            try {
+                var s = document.createElement("script");
+                s.src = "./config.local.js";
+                s.async = false;
+                document.head.appendChild(s);
+            } catch (e) { }
+        })();
+    </script>
     <script type="module">
         import { BASE_URL } from "./config.js";
 
@@ -110,7 +121,7 @@
             if (!token) {
                 showToast("Please log in to access this page", "error");
                 setTimeout(() => {
-                    window.location.href = "/frontend/index.html";
+                    window.location.href = "frontend/index.html";
                 }, 2000);
                 return;
             }
@@ -135,7 +146,7 @@
                 if (user.role !== "SUPER_ADMIN") {
                     showToast("Access denied. Super Admin role required.", "error");
                     setTimeout(() => {
-                        window.location.href = "/frontend/dashboard.html";
+                        window.location.href = "frontend/dashboard.html";
                     }, 2000);
                     return;
                 }
@@ -144,7 +155,7 @@
                 if (user.approvalStatus !== "APPROVED") {
                     showToast("Your account is pending approval", "error");
                     setTimeout(() => {
-                        window.location.href = "/frontend/dashboard.html";
+                        window.location.href = "frontend/dashboard.html";
                     }, 2000);
                     return;
                 }
@@ -160,7 +171,7 @@
                 console.error("Auth error:", error);
                 showToast("Authentication error. Please log in again.", "error");
                 setTimeout(() => {
-                    window.location.href = "/frontend/index.html";
+                    window.location.href = "frontend/index.html";
                 }, 2000);
             }
         });
@@ -205,15 +216,15 @@
                                     project coordinates.
                                 </div>
                                 <div id="newProjectMap" style="
-                          height: 400px;
-                          width: 100%;
-                          border-radius: 8px;
-                          margin-bottom: 8px;
-                          border: 1px solid #e5e7eb;
-                          background-color: #f3f4f6;
-                          position: relative;
-                          overflow: hidden;
-                        "></div>
+                      height: 400px;
+                      width: 100%;
+                      border-radius: 8px;
+                      margin-bottom: 8px;
+                      border: 1px solid #e5e7eb;
+                      background-color: #f3f4f6;
+                      position: relative;
+                      overflow: hidden;
+                    "></div>
                                 <input type="hidden" id="project_latitude" name="latitude" />
                                 <input type="hidden" id="project_longitude" name="longitude" />
                                 <input type="hidden" id="project_county" name="county" />
@@ -242,8 +253,7 @@
                                     <option value="">Select Theme</option>
                                     <option value="GBV">Gender based violence</option>
                                     <option value="AYPSRH">
-                                        Adolescent and Young People Sexual and Reproductive
-                                        Health
+                                        Adolescent and Young People Sexual and Reproductive Health
                                     </option>
                                     <option value="MNH">Maternal and Newborn Health</option>
                                     <option value="FP">Family planning</option>

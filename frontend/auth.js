@@ -3,23 +3,25 @@
  * Handles JWT token management, API calls with authentication, and user session
  */
 
+// PROD URL: http://localhost:8080
+
 // Allow switching between dev and prod base URLs
 function getBaseUrl() {
   // 1. Check for ?env=dev or ?env=prod in URL
   const params = new URLSearchParams(window.location.search);
   const env = params.get("env") || localStorage.getItem("apiEnv");
   if (env === "dev") {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+    return "http://localhost:8080";
   }
   // 2. Production: Use Heroku backend
   if (
     window.location.hostname !== "localhost" &&
     window.location.hostname !== "127.0.0.1"
   ) {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+    return "http://localhost:8080";
   }
   // 3. Development: Use local backend
-  return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+  return "http://localhost:8080";
 }
 
 const AUTH_CONFIG = {
@@ -146,16 +148,56 @@ class AuthManager {
     }
 
     try {
+      console.log(`[auth.js] apiCall: Making ${method} request to ${url}`);
+      // Log outgoing payload for debugging (if present)
+      if (config.body) {
+        try {
+          console.log(
+            `[auth.js] apiCall: Outgoing request body:`,
+            JSON.parse(config.body)
+          );
+        } catch (e) {
+          console.log(
+            `[auth.js] apiCall: Outgoing request body (raw):`,
+            config.body
+          );
+        }
+      }
+      console.log(`[auth.js] apiCall: Request headers:`, config.headers);
       const response = await fetch(url, config);
+      console.log(
+        `[auth.js] apiCall: Response status: ${response.status}, ok: ${response.ok}`
+      );
+
       // If unauthorized, redirect to login
       if (response.status === 401) {
+        console.log("[auth.js] apiCall: Unauthorized, logging out");
         this.logout();
         // window.location.href = "/frontend/index.html";
         return response;
       }
+
+      // Log response details for debugging
+      if (!response.ok) {
+        console.log(`[auth.js] apiCall: Error response details:`, {
+          status: response.status,
+          statusText: response.statusText,
+          url: url,
+        });
+        try {
+          // Clone response, read and store the body text for later use
+          const errorText = await response.clone().text();
+          console.log(`[auth.js] apiCall: Error response body:`, errorText);
+          // Attach the raw error text to the Response object
+          response.errorText = errorText;
+        } catch (e) {
+          console.log("[auth.js] apiCall: Could not read error response body");
+        }
+      }
+
       return response;
     } catch (error) {
-      console.error("API call error:", error);
+      console.error("[auth.js] apiCall: Network or other error:", error);
       throw error;
     }
   }

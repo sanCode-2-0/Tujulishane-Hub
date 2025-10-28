@@ -27,6 +27,7 @@
 		};
 	</script>
 	<link rel="stylesheet" href="styles/main.css" />
+	<script src="./set-base-url.js"></script>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
 	<script src="styles/main.js"></script>
@@ -99,15 +100,15 @@
 									project coordinates.
 								</div>
 								<div id="newProjectMap" style="
-                          height: 400px;
-                          width: 100%;
-                          border-radius: 8px;
-                          margin-bottom: 8px;
-                          border: 1px solid #e5e7eb;
-                          background-color: #f3f4f6;
-                          position: relative;
-                          overflow: hidden;
-                        "></div>
+                      height: 400px;
+                      width: 100%;
+                      border-radius: 8px;
+                      margin-bottom: 8px;
+                      border: 1px solid #e5e7eb;
+                      background-color: #f3f4f6;
+                      position: relative;
+                      overflow: hidden;
+                    "></div>
 								<input type="hidden" id="project_latitude" name="latitude" />
 								<input type="hidden" id="project_longitude" name="longitude" />
 								<input type="hidden" id="project_county" name="county" />
@@ -136,8 +137,7 @@
 									<option value="">Select Theme</option>
 									<option value="GBV">Gender based violence</option>
 									<option value="AYPSRH">
-										Adolescent and Young People Sexual and Reproductive
-										Health
+										Adolescent and Young People Sexual and Reproductive Health
 									</option>
 									<option value="MNH">Maternal and Newborn Health</option>
 									<option value="FP">Family planning</option>
@@ -516,8 +516,8 @@
 		const API_BASE =
 			window.location.hostname === "localhost" ||
 				window.location.hostname === "127.0.0.1"
-				? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/organizations"
-				: "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/organizations";
+				? "http://localhost:8080/api/organizations"
+				: "http://localhost:8080/api/organizations";
 		const messageDiv = document.getElementById("org-message");
 		const orgList = document.getElementById("orgList");
 		const orgSearchResults = document.getElementById("orgSearchResults");
