@@ -123,10 +123,10 @@
     </nav>
 
     <div class="">
-        <div class="relative w-full max-w-4xl mx-auto">
+        <div class="relative w-full max-w-4xl h-screen mx-auto flex items-center">
             <!-- Login Card -->
 
-            <div class="flex flex-col items-center justify-center min-h-screen py-10">
+            <div class="flex flex-col shadow-lg w-full max-w-lg p-4 mx-auto items-center justify-center ">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
                     <img src="resources/images/moh.jpg" class="object-contain h-12" alt="Site Logo">
@@ -136,13 +136,13 @@
                     RMNCAH Coordination Hub
                 </p>
                 <div id="loginCard"
-                    class="max-w-md p-8 mx-auto mt-4 space-y-4 transition-all duration-500 ease-in-out bg-white shadow-lg rounded-xl">
+                    class="py-8 mx-auto w-full mt-4 space-y-4 transition-all duration-500 ease-in-out bg-white rounded-xl">
                     <h2 class="text-2xl font-semibold text-center text-gray-700">Welcome Back</h2>
                     <input id="loginEmail" type="email" required placeholder="Email"
-                        class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500">
-                    <div class="flex">
+                        class="w-full px-4 py-2 border text-sm rounded-md focus:ring-2 focus:ring-blue-500">
+                    <div class="flex w-full">
                         <button type="button" onclick="requestOtp()" id="loginBtn"
-                            class="w-full py-2 text-center text-white transition bg-blue-600 rounded-md hover:bg-blue-700">
+                            class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
                             <span id="loginBtnText">Get OTP</span>
                             <span id="loginBtnSpinner" class="hidden">
                                 <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
@@ -156,6 +156,7 @@
                                 Sending...
                             </span>
                         </button>
+
                     </div>
                     <div class="pt-4 text-center">
                         <button onclick="showRegister()" class="text-blue-600 hover:underline">Create a new
@@ -312,49 +313,39 @@
     </script>
 
     <script>
-        function showRegister() {
-            const login = document.getElementById("loginCard");
-            const register = document.getElementById("registerCard");
+        const emailInput = document.getElementById("loginEmail");
+        const login = document.getElementById("loginCard");
+        const register = document.getElementById("registerCard");
 
+        emailInput.addEventListener("input", () => {
+            const currentLength = emailInput.value.length;
+            emailInput.style.width = `${Math.max(100, currentLength * 8)}px`;
+        });
+
+        function showRegister() {
             login.classList.add('fade-slide-leave');
-            login.classList.add('fade-slide-leave-active');
             setTimeout(() => {
                 login.style.display = "none";
-                login.classList.remove('fade-slide-leave', 'fade-slide-leave-active');
-
                 register.style.display = "block";
                 register.classList.add('fade-slide-enter');
                 requestAnimationFrame(() => {
                     register.classList.add('fade-slide-enter-active');
                 });
-
-                setTimeout(() => {
-                    register.classList.remove('fade-slide-enter', 'fade-slide-enter-active');
-                }, 400);
             }, 300);
         }
 
         function hideRegister() {
-            const login = document.getElementById("loginCard");
-            const register = document.getElementById("registerCard");
-
             register.classList.add('fade-slide-leave');
-            register.classList.add('fade-slide-leave-active');
             setTimeout(() => {
                 register.style.display = "none";
-                register.classList.remove('fade-slide-leave', 'fade-slide-leave-active');
-
                 login.style.display = "block";
                 login.classList.add('fade-slide-enter');
                 requestAnimationFrame(() => {
                     login.classList.add('fade-slide-enter-active');
                 });
-
-                setTimeout(() => {
-                    login.classList.remove('fade-slide-enter', 'fade-slide-enter-active');
-                }, 400);
             }, 300);
         }
+
     </script>
 
     </div>
