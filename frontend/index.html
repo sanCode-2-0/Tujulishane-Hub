@@ -292,8 +292,8 @@
 
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+                    ? "http://localhost:8080"
+                    : "http://localhost:8080";
 
                 const payload = { name, email, accountType };
                 if (accountType === "PARTNER" && parentDonorId) {
