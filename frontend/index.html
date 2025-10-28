@@ -79,156 +79,149 @@
 </head>
 
 <body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
+    <div class="relative h-screen bg-fixed bg-cover bg-center" id="heroSection">
+        <div class="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
 
+        <div class="relative z-10 flex justify-center items-center h-full">
 
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
-            </button>
-
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
-
-            </ul>
-        </div>
-
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
-
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="">
-        <div class="relative w-full max-w-4xl h-screen mx-auto flex items-center">
-            <!-- Login Card -->
-
-            <div class="flex flex-col shadow-lg w-full max-w-lg p-4 mx-auto items-center justify-center ">
-                <!-- Logo -->
+            <div
+                class="flex flex-col w-full rounded-xl bg-white/90 backdrop-blur-xl shadow-lg max-w-3xl p-4 mx-auto items-center justify-center rounded-xl">
                 <div class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                    <img src="resources/images/moh.jpg" class="object-contain h-12" alt="Site Logo">
-                    <img src="resources/images/log2.jpg" class="object-contain h-12" alt="Site Logo">
+                    <img src="resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
+                    <img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
                 </div>
                 <p class="mt-1 text-sm opacity-70">
                     RMNCAH Coordination Hub
                 </p>
-                <div id="loginCard"
-                    class="py-8 mx-auto w-full mt-4 space-y-4 transition-all duration-500 ease-in-out bg-white rounded-xl">
-                    <h2 class="text-2xl font-semibold text-center text-gray-700">Welcome Back</h2>
-                    <input id="loginEmail" type="email" required placeholder="Email"
-                        class="w-full px-4 py-2 border text-sm rounded-md focus:ring-2 focus:ring-blue-500">
-                    <div class="flex w-full">
-                        <button type="button" onclick="requestOtp()" id="loginBtn"
-                            class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
-                            <span id="loginBtnText">Get OTP</span>
-                            <span id="loginBtnSpinner" class="hidden">
-                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                Sending...
-                            </span>
-                        </button>
+                <!--Tabs navigation-->
+                <ul class="mb-5 flex list-none w-full flex-row flex-wrap border-b-0 ps-0" role="tablist"
+                    data-twe-nav-ref>
+                    <li role="presentation" class="flex-grow basis-0 text-center">
+                        <a href="#tabs-home02"
+                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[twe-nav-active]:border-primary data-[twe-nav-active]:text-primary"
+                            data-twe-toggle="pill" data-twe-target="#tabs-home02" data-twe-nav-active role="tab"
+                            aria-controls="tabs-home02" aria-selected="true">Login</a>
+                    </li>
+                    <li role="presentation" class="flex-grow basis-0 text-center">
+                        <a href="#tabs-profile02"
+                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[twe-nav-active]:border-primary data-[twe-nav-active]:text-primary"
+                            data-twe-toggle="pill" data-twe-target="#tabs-profile02" role="tab"
+                            aria-controls="tabs-profile02" aria-selected="false">Become a Member</a>
+                    </li>
+                </ul>
 
+                <!--Tabs content-->
+                <div class="mb-6 w-full">
+                    <div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="tabs-home02" role="tabpanel" aria-labelledby="tabs-home-tab02" data-twe-tab-active>
+                        <div id="loginCard"
+                            class="py-8 w-full mt-4 space-y-4 transition-all duration-500 ease-in-out rounded-xl">
+                            <h2 class="text-2xl font-semibold text-center text-gray-700">Welcome Back</h2>
+                            <input id="loginEmail" type="email" required placeholder="Email"
+                                class="w-full px-4 py-2 border text-sm rounded-md focus:ring-2 focus:ring-blue-500">
+                            <div class="flex w-full">
+                                <button type="button" onclick="requestOtp()" id="loginBtn"
+                                    class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
+                                    <span id="loginBtnText">Get OTP</span>
+                                    <span id="loginBtnSpinner" class="hidden">
+                                        <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4">
+                                            </circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Sending...
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pt-4 text-center">
-                        <button onclick="showRegister()" class="text-blue-600 hover:underline">Create a new
-                            account
-                        </button>
+                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="tabs-profile02" role="tabpanel" aria-labelledby="tabs-profile-tab02">
+                        <!-- Register Card -->
+                        <div id="registerCard" class=" top-0 left-0 z-10 w-full py-8 rounded-xl">
+                            <form id="registerForm" onsubmit="return validateBeforeSubmit()"
+                                class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                <div>
+                                    <label class="block mb-1 text-sm font-medium">Full Name</label>
+                                    <input type="text" id="regName" placeholder="John Doe"
+                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block mb-1 text-sm font-medium">Email Address</label>
+                                    <input type="email" id="regEmail" placeholder="email@example.com"
+                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block mb-1 text-sm font-medium">Organization</label>
+                                    <input type="text" id="regOrganization" placeholder="Company or School"
+                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block mb-1 text-sm font-medium">Account Type</label>
+                                    <select id="regAccountType" class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                        <option value="PARTNER">Partner Organization</option>
+                                        <option value="DONOR">Donor Organization</option>
+                                    </select>
+                                </div>
+                                <div id="parentDonorSection" class="hidden md:col-span-2">
+                                    <label class="block mb-1 text-sm font-medium">Parent Donor ID (Optional)</label>
+                                    <input type="number" id="regParentDonorId"
+                                        placeholder="Enter donor ID if linking to existing donor"
+                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    <p class="text-sm text-gray-600 mt-1">Leave empty if this is a standalone partner
+                                        account
+                                    </p>
+                                </div>
+
+
+                                <div class="gap-4 md:col-span-2 mt-6 space-x-4">
+                                    <button type="submit" id="registerBtn"
+                                        class="px-6 py-2 font-bold text-white w-full bg-blue-600 rounded hover:bg-blue-700">
+                                        <span id="registerBtnText">Create Account</span>
+                                        <span id="registerBtnSpinner" class="hidden">
+                                            <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4">
+                                                </circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                            Creating...
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="flex flex-col  w-full max-w-lg p-4 mx-auto items-center justify-center ">
 
-            <!-- Register Card -->
-            <div id="registerCard"
-                class="absolute top-0 left-0 z-10 hidden w-full max-w-4xl p-8 mx-auto mt-32 bg-white shadow-lg rounded-xl">
-                <h2 class="mb-6 text-2xl font-semibold text-center text-gray-700">Create Account</h2>
-
-                <form id="registerForm" onsubmit="return validateBeforeSubmit()"
-                    class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Full Name</label>
-                        <input type="text" id="regName" placeholder="John Doe"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Email Address</label>
-                        <input type="email" id="regEmail" placeholder="email@example.com"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Organization</label>
-                        <input type="text" id="regOrganization" placeholder="Company or School"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Account Type</label>
-                        <select id="regAccountType" class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                            <option value="PARTNER">Partner Organization</option>
-                            <option value="DONOR">Donor Organization</option>
-                        </select>
-                    </div>
-                    <div id="parentDonorSection" class="hidden md:col-span-2">
-                        <label class="block mb-1 text-sm font-medium">Parent Donor ID (Optional)</label>
-                        <input type="number" id="regParentDonorId"
-                            placeholder="Enter donor ID if linking to existing donor"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                        <p class="text-sm text-gray-600 mt-1">Leave empty if this is a standalone partner account</p>
-                    </div>
+                </div>
 
 
-                    <div class="grid grid-cols-2 gap-4 mt-6 space-x-4 md:col-span-2">
-                        <button type="submit" id="registerBtn"
-                            class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">
-                            <span id="registerBtnText">Create Account</span>
-                            <span id="registerBtnSpinner" class="hidden">
-                                <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                Creating...
-                            </span>
-                        </button>
-                        <button type="button" onclick="hideRegister()"
-                            class="px-6 py-2 text-blue-600 rounded bg-gray-50 hover:underline">Already have an
-                            account?</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        const images = [
+            'resources/images/main-1.jpg',
+            'resources/images/main-2.jpg',
+            'resources/images/main-3.jpg'
+        ];
+
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        document.getElementById('heroSection').style.backgroundImage = `url('${randomImage}')`;
+    </script>
+
+
+
     <script>
         async function requestOtp() {
             const email = document.getElementById("loginEmail").value;
@@ -292,8 +285,8 @@
 
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
+                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
+                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
 
                 const payload = { name, email, accountType };
                 if (accountType === "PARTNER" && parentDonorId) {
@@ -327,68 +320,7 @@
 
     </script>
 
-    <script>
-        function showRegister() {
-            const login = document.getElementById("loginCard");
-            const register = document.getElementById("registerCard");
 
-            // Reset form fields
-            document.getElementById("regName").value = "";
-            document.getElementById("regEmail").value = "";
-            document.getElementById("regOrganization").value = "";
-            document.getElementById("regAccountType").value = "PARTNER";
-            document.getElementById("regParentDonorId").value = "";
-            toggleParentDonorSection();
-
-            emailInput.addEventListener("input", () => {
-                const currentLength = emailInput.value.length;
-                emailInput.style.width = `${Math.max(100, currentLength * 8)}px`;
-            });
-
-            function showRegister() {
-                login.classList.add('fade-slide-leave');
-                setTimeout(() => {
-                    login.style.display = "none";
-                    register.style.display = "block";
-                    register.classList.add('fade-slide-enter');
-                    requestAnimationFrame(() => {
-                        register.classList.add('fade-slide-enter-active');
-                    });
-                }, 300);
-            }
-
-            function toggleParentDonorSection() {
-                const accountType = document.getElementById("regAccountType").value;
-                const parentDonorSection = document.getElementById("parentDonorSection");
-                if (accountType === "PARTNER") {
-                    parentDonorSection.classList.remove("hidden");
-                } else {
-                    parentDonorSection.classList.add("hidden");
-                }
-            }
-
-            // Add event listener for account type changes
-            document.addEventListener("DOMContentLoaded", function () {
-                const accountTypeSelect = document.getElementById("regAccountType");
-                if (accountTypeSelect) {
-                    accountTypeSelect.addEventListener("change", toggleParentDonorSection);
-                }
-            });
-
-            function hideRegister() {
-                register.classList.add('fade-slide-leave');
-                setTimeout(() => {
-                    register.style.display = "none";
-                    login.style.display = "block";
-                    login.classList.add('fade-slide-enter');
-                    requestAnimationFrame(() => {
-                        login.classList.add('fade-slide-enter-active');
-                    });
-                }, 300);
-            }
-        }
-
-    </script>
 
     </div>
 
