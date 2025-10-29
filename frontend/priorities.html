@@ -352,7 +352,9 @@
             </div>
         </div>
     </section>
-
+    <section class="p-4 lg:px-10 md:p-8">
+        <div id="localMap" class="h-[450px] sm:h-[45vh] z-0 w-full"></div>
+    </section>
     <section class="">
         <div class=" p-4 lg:px-10 md:p-8  px-4 py-12 sm:px-6 lg:px-8">
             <!-- Status Filter Buttons -->
@@ -515,10 +517,553 @@
     <script src="styles/effects.js"></script>
     <script src="styles/loadNav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-
-
-
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+        let map;
+        let projects = [];
+        let filteredProjects = [];
+        let sortBy = "name";
+        let sortOrder = "asc";
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let currentFilter = "all";
+        let searchQuery = "";
+        let dateRangeFrom = null;
+        let dateRangeTo = null;
+
+        const mapMarkers = [];
+        let stores = {
+            type: "FeatureCollection",
+            features: [],
+        };
+
+        const bgColors = {
+            active: "bg-green-50",
+            pending: "bg-yellow-50",
+            stalled: "bg-red-50",
+            completed: "bg-cyan-100",
+            default: "bg-white",
+        };
+
+        const statusBadge = (tag) => {
+            return (
+                {
+                    active: "bg-green-200 text-green-800",
+                    pending: "bg-yellow-200 text-yellow-800",
+                    stalled: "bg-red-200 text-red-800",
+                    completed: "bg-cyan-300 text-gray-800",
+                }[tag] || "bg-gray-200 text-gray-800"
+            );
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize authentication and load user data
+            initializeUserSession();
+
+            // Set Mapbox access token
+            mapboxgl.accessToken =
+                "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+            // Initialize Mapbox map
+            map = new mapboocxgl.Map({
+                container: "localMap",
+                style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+                center: [37.9062, -0.0236],
+                zoom: 6.3,
+            });
+
+            // Add zoom and rotation controls to the map
+            map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+            // Load projects after map is initialized
+            map.on("load", () => {
+                loadProjectsForMap();
+            });
+
+            document
+                .getElementById("searchInput")
+                .addEventListener("input", (e) => {
+                    searchQuery = e.target.value.trim().toLowerCase();
+                    currentPage = 1;
+                    highlightMarkers(currentFilter);
+                });
+
+            document.getElementById("dateFrom").addEventListener("change", (e) => {
+                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document.getElementById("dateTo").addEventListener("change", (e) => {
+                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+                currentPage = 1;
+                highlightMarkers(currentFilter);
+            });
+
+            document
+                .getElementById("sortSelect")
+                .addEventListener("change", (e) => {
+                    sortProjects(e.target.value);
+                });
+        });
+
+        // Load projects and add to map
+        async function loadProjectsForMap() {
+            try {
+                const response = await fetch(
+                    `${window.BASE_URL}/api/projects/with-coordinates`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authManager.getToken()}`,
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Raw API response (with-coordinates):", data);
+                    // Handle API response structure: { status: 200, data: [...], message: "..." }
+                    let projectsData = [];
+                    if (data.status === 200 && data.data) {
+                        projectsData = Array.isArray(data.data) ? data.data : [];
+                    } else if (Array.isArray(data)) {
+                        projectsData = data;
+                    }
+
+                    console.log("Loaded projects for map:", projectsData.length);
+                    console.log("Projects data (with coordinates):", projectsData);
+
+                    // Log each project's coordinates
+                    projectsData.forEach((project, idx) => {
+                        console.log(`Map Project ${idx + 1}:`, {
+                            name: project.projectName || project.name,
+                            latitude: project.latitude,
+                            longitude: project.longitude,
+                            hasCoordinates: !!(project.latitude && project.longitude),
+                        });
+                    });
+
+                    // ONLY add markers to map - don't overwrite the main projects array
+                    // The main projects array is managed by loadProjects() which includes ALL projects
+                    addMarkersToMap(projectsData);
+                } else {
+                    console.warn("API response not OK, loading sample projects");
+                    loadSampleProjects();
+                }
+            } catch (error) {
+                console.error("Error loading projects for map:", error);
+                // Use sample data for demo
+                loadSampleProjects();
+            }
+        }
+
+        // Load sample projects for demo
+        function loadSampleProjects() {
+            const sampleProjects = [
+                {
+                    id: 1,
+                    projectName: "Project 1",
+                    latitude: -1.2921,
+                    longitude: 36.8219,
+                    status: "ACTIVE",
+                },
+                {
+                    id: 2,
+                    projectName: "Project 2",
+                    latitude: -0.1023,
+                    longitude: 34.7619,
+                    status: "PENDING",
+                },
+                {
+                    id: 3,
+                    projectName: "Project 3",
+                    latitude: 0.3256,
+                    longitude: 37.1231,
+                    status: "STALLED",
+                },
+                {
+                    id: 4,
+                    projectName: "Project 4",
+                    latitude: -1.1504,
+                    longitude: 36.8907,
+                    status: "COMPLETED",
+                },
+            ];
+            projects = sampleProjects;
+            updateMapWithProjects(sampleProjects);
+            highlightMarkers("all");
+        }
+
+        // Add markers to Mapbox map (supports multiple locations per project)
+        function addMarkersToMap(projectsData) {
+            // Clear existing markers
+            mapMarkers.forEach((marker) => marker.remove());
+            mapMarkers.length = 0;
+
+            // Add new markers
+            projectsData.forEach((project) => {
+                // Determine location list: prefer project.locations array, fall back to single lat/lng
+                const locs =
+                    Array.isArray(project.locations) && project.locations.length
+                        ? project.locations
+                        : project.latitude && project.longitude
+                            ? [{ latitude: project.latitude, longitude: project.longitude }]
+                            : [];
+
+                locs.forEach((loc, locIndex) => {
+                    const lat = loc.latitude;
+                    const lng = loc.longitude;
+                    if (!lat || !lng) return;
+
+                    // Create marker element
+                    const el = document.createElement("div");
+                    el.className = "marker";
+                    el.style.backgroundColor = getStatusColor(project.status);
+                    el.style.width = "30px";
+                    el.style.height = "30px";
+                    el.style.borderRadius = "50%";
+                    el.style.border = "2px solid white";
+                    el.style.cursor = "pointer";
+                    el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+
+                    // Create popup — include location-specific info when available
+                    const popupHtml = `
+                <div style="padding: 10px; min-width: 200px;">
+                  <h3 style="font-weight: bold; margin-bottom: 8px;">${project.projectName || project.title || "Project"
+                        }</h3>
+                  <p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(
+                            project.status?.toLowerCase()
+                        )}">${project.status || "N/A"}</span></p>
+                  <p style="margin: 4px 0;"><strong>Region/County:</strong> ${loc.county ||
+                        loc.region ||
+                        project.region ||
+                        project.county ||
+                        "N/A"
+                        }</p>
+                  <p style="margin: 4px 0;"><strong>Budget:</strong> ${project.budget || "N/A"
+                        }</p>
+                  <button onclick="viewProject(${project.id
+                        })" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
+                </div>`;
+
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupHtml);
+
+                    // Create and add marker
+                    const marker = new mapboxgl.Marker(el)
+                        .setLngLat([lng, lat])
+                        .setPopup(popup)
+                        .addTo(map);
+
+                    // Attach data for other UI code that expects marker.data
+                    try {
+                        marker.data = Object.assign({}, project, {
+                            lat,
+                            lng,
+                            location: loc,
+                            locationIndex: locIndex,
+                        });
+                    } catch (e) {
+                        // ignore
+                    }
+
+                    // Add click event
+                    el.addEventListener("click", async () => {
+                        map.flyTo({ center: [lng, lat], zoom: 12 });
+
+                        // If county is missing, try to get it from coordinates
+                        if (!project.county && !project.region && (!loc || !loc.county)) {
+                            const countyName = await getCountyFromCoordinates(lng, lat);
+                            if (countyName) {
+                                if (loc) loc.county = countyName;
+                                else project.county = countyName;
+                                const projectIndex = projects.indexOf(project);
+                                if (projectIndex !== -1)
+                                    updateProjectAccordionItem(projectIndex);
+                            }
+                        }
+                    });
+
+                    mapMarkers.push(marker);
+                });
+            });
+        }
+
+        // Get county name from coordinates using Mapbox Geocoding API
+        async function getCountyFromCoordinates(longitude, latitude) {
+            try {
+                const response = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=region&access_token=${mapboxgl.accessToken}`
+                );
+                const data = await response.json();
+                if (data.features && data.features.length > 0) {
+                    return data.features[0].text;
+                }
+            } catch (error) {
+                console.error("Error getting county from coordinates:", error);
+            }
+            return null;
+        }
+
+        // Update a specific project accordion item
+        function updateProjectAccordionItem(index) {
+            const project = projects[index];
+            const collapseDiv = document.getElementById(`collapse-${index}`);
+            if (collapseDiv) {
+                const statusBg = statusBadge(project.status?.toLowerCase());
+                collapseDiv.innerHTML = `
+            <p><strong>County:</strong> ${project.county || project.region || ""
+                    }</p>
+            <p><strong>Budget:</strong> ${project.budget || ""}</p>
+            <p><strong>Partner:</strong> ${project.partner || ""}</p>
+            <p><strong>Status:</strong> 
+                <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBg}">
+                    ${project.status || ""}
+                </span>
+            </p>
+            <button onclick="focusMarker(${index})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+                Show on Map
+            </button>
+          `;
+            }
+        }
+
+        // Get status color
+        function getStatusColor(status) {
+            const colors = {
+                ACTIVE: "#22c55e",
+                PENDING: "#eab308",
+                STALLED: "#ef4444",
+                COMPLETED: "#06b6d4",
+            };
+            return colors[status] || "#6b7280";
+        }
+
+        // Comes From DB
+        function showProjectInfo(project) {
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.remove("hidden");
+
+            const color = getStatusColor(project.status);
+            const statusBg = statusBadge(project.status?.toLowerCase());
+
+            infoBox.innerHTML = `
+				<div class="px-6 py-5 mb-4 rounded-lg border-l-4 shadow-sm" 
+					style="border-left-color: ${color}; background-color: ${color}10;">
+					
+					<h3 class="text-xl font-bold text-gray-800 mb-2">
+						${project.name || project.projectName || "Unnamed Project"}
+					</h3>
+					
+					<p class="text-sm text-gray-700 leading-relaxed mb-4">
+						${project.description || "No detailed description provided for this project."}
+					</p>
+
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-700">
+						<p><strong>Region:</strong> ${project.region || project.county || "Not specified"}</p>
+						<p><strong>Budget:</strong> ${project.budget ? "KES " + Number(project.budget).toLocaleString() : "N/A"}</p>
+						<p><strong>Team:</strong> ${project.team || "Not specified"}</p>
+						<p><strong>Participants:</strong> ${project.participants || "Not specified"}</p>
+						<p><strong>Sponsor:</strong> ${project.sponsor || "Not specified"}</p>
+						<p><strong>Start Date:</strong> ${project.start_date ? new Date(project.start_date).toLocaleDateString() : "Not specified"}</p>
+						<p><strong>Status:</strong> 
+							<span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBg}">
+								${project.status || "Ongoing"}
+							</span>
+						</p>
+					</div>
+
+					<button onclick="focusMarker(${projects.findIndex(p => p.id === project.id)})"
+						class="mt-4 px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition">
+						Locate on Map
+					</button>
+				</div>
+			`;
+        }
+
+
+        function focusMarker(index) {
+            if (mapMarkers[index] && projects[index]) {
+                const project = projects[index];
+                map.flyTo({
+                    center: [project.longitude, project.latitude],
+                    zoom: 12,
+                });
+                mapMarkers[index].togglePopup();
+                document
+                    .getElementById("localMap")
+                    .scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        function sortProjects(field) {
+            if (sortBy === field) {
+                sortOrder = sortOrder === "asc" ? "desc" : "asc";
+            } else {
+                sortBy = field;
+                sortOrder = "asc";
+            }
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+        }
+
+        function highlightMarkers(tag) {
+            currentFilter = tag;
+            console.log("highlightMarkers called with tag:", tag);
+            console.log("Total projects available:", projects.length);
+            console.log("Projects:", projects);
+
+            const accordion = document.getElementById("projectAccordion");
+            const infoBox = document.getElementById("projectInfo");
+            infoBox.classList.add("hidden");
+            accordion.innerHTML = "";
+            accordion.classList.remove("hidden");
+            accordion.classList.add("opacity-0", "translate-y-4");
+
+            let filteredProjects = projects.filter((project) => {
+                if (tag !== "all" && project.status?.toLowerCase() !== tag) return false;
+                if (searchQuery && !project.projectName?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+                if (dateRangeFrom && new Date(project.startDate) < new Date(dateRangeFrom)) return false;
+                if (dateRangeTo && new Date(project.startDate) > new Date(dateRangeTo)) return false;
+                return true;
+            });
+
+            console.log("Filtered projects count:", filteredProjects.length);
+            console.log("Filtered projects:", filteredProjects);
+
+            filteredProjects.sort((a, b) => {
+                const aVal = sortBy === "name" ? a.projectName : new Date(a.startDate);
+                const bVal = sortBy === "name" ? b.projectName : new Date(b.startDate);
+                return sortOrder === "asc" ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+            });
+
+            const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+            const paginated = filteredProjects.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+            updatePaginationControls(totalPages);
+
+            // Update marker visibility
+            mapMarkers.forEach((marker, idx) => {
+                const project = projects[idx];
+                const isVisible = filteredProjects.includes(project);
+                if (marker.getElement()) {
+                    marker.getElement().style.opacity = isVisible ? "1" : "0.2";
+                }
+            });
+
+            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
+
+            // ✅ New full-display design (no accordion)
+            paginated.forEach((project, idx) => {
+                const i = projects.indexOf(project);
+                const color = getStatusColor(project.status);
+                const bg = bgColors[project.status?.toLowerCase()] || bgColors.default;
+
+                const item = document.createElement("div");
+                item.className = `rounded-lg shadow-sm mb-4 border-l-4 ${bg}`;
+                item.style.borderLeftColor = color;
+
+                item.innerHTML = `
+			<div class="px-6 py-5" style="background-color: ${color}10;">
+				<h4 class="text-lg font-semibold text-gray-800 mb-2">${project.projectName || project.title || "Untitled Project"}</h4>
+				
+				<p class="text-sm text-gray-700 leading-relaxed mb-3">
+					${project.description || project.objectives || "This project currently has no description provided."}
+				</p>
+
+				<p class="text-sm text-gray-700 mb-2">
+					Located in <strong>${project.county || project.region || "an unspecified region"}</strong>,
+					this project ${project.partner ? `is supported by <strong>${project.partner}</strong>` : "has partners to be announced"} 
+					with an estimated budget of <strong>${project.budget ? "KES " + Number(project.budget).toLocaleString() : "N/A"}</strong>.
+				</p>
+
+				<p class="text-sm text-gray-700 mb-2">
+					Status: <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status?.toLowerCase())}">
+						${project.status || "Ongoing"}
+					</span>
+				</p>
+
+				<p class="text-sm text-gray-700 mb-2">
+					Started on: ${project.startDate ? new Date(project.startDate).toLocaleDateString() : "Not specified"}
+				</p>
+
+				<button onclick="focusMarker(${i})" 
+					class="mt-3 px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition">
+					Locate on Map
+				</button>
+			</div>
+		`;
+
+                accordion.appendChild(item);
+            });
+        }
+
+
+        function updatePaginationControls(totalPages) {
+            const container = document.getElementById("paginationControls");
+            container.innerHTML = "";
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.textContent = i;
+                btn.className = `px-3 py-1 rounded ${i === currentPage
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    }`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    highlightMarkers(currentFilter);
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function exportCSV() {
+            const headers = [
+                "Name",
+                "Description",
+                "Region",
+                "Budget",
+                "Status",
+                "Start Date",
+            ];
+            const rows = projects
+                .filter((p) => {
+                    if (
+                        searchQuery &&
+                        !p.projectName?.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                        return false;
+                    const date = new Date(p.startDate);
+                    if (dateRangeFrom && date < dateRangeFrom) return false;
+                    if (dateRangeTo && date > dateRangeTo) return false;
+                    if (
+                        currentFilter !== "all" &&
+                        p.status?.toLowerCase() !== currentFilter
+                    )
+                        return false;
+                    return true;
+                })
+                .map((p) => [
+                    p.projectName || "",
+                    (p.description || "").replace(/,/g, ";"),
+                    p.region || p.county || "",
+                    p.budget || "",
+                    p.status || "",
+                    p.startDate ? new Date(p.startDate).toLocaleDateString() : "",
+                ]);
+
+            let csvContent = [headers.join(",")];
+            rows.forEach((r) =>
+                csvContent.push(r.map((val) => `"${val}"`).join(","))
+            );
+
+            const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `projects_${new Date().toISOString().split("T")[0]
+                }.csv`;
+            link.click();
+        }
+    </script>
+
 </body>
 
 </html>
