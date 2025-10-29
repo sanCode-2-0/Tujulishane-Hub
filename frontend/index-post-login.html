@@ -267,17 +267,17 @@
 		<div class="flex items-center justify-between px-6 py-4">
 			<a href="index.html"
 				class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
-				<img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo" />
-				<img src="resources/images/moh.png" class="object-contain h-12" alt="Site Logo" />
+				<img src="resources/images/log2.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
+				<img src="resources/images/moh.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
 			</a>
 
 			<button @click="open = !open"
-				class="text-xl lg:hidden focus:outline-none text-lime-600 hover:text-teal-800">
-				<i class="fas fa-bars" x-show="!open"></i>
-				<i class="fas fa-times" x-show="open" x-cloak></i>
+				class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800">
+				<i class="fal fa-bars" x-show="!open"></i>
+				<i class="fal fa-times" x-show="open" x-cloak></i>
 			</button>
 
-			<ul class="items-center hidden space-x-8 text-sm font-medium text-teal-700 lg:flex">
+			<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
 				<li>
 					<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
 				</li>
@@ -320,7 +320,7 @@
 						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
 						<ul class="py-2 text-sm text-left text-teal-700">
 							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="my-collaborations.html">
+								<a href="priorities.html">
 									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Proirities
 								</a>
 							</li>
@@ -340,7 +340,7 @@
 			</ul>
 
 			<!-- Right-aligned Items (Admin + User) -->
-			<ul class="flex items-center space-x-6 text-sm font-medium text-teal-700">
+			<ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
 
 				<!-- Admin -->
 				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
@@ -367,8 +367,8 @@
 				<!-- User Dropdown -->
 				<li x-data="{ showUserDropdown: false }" class="relative">
 					<button @click="showUserDropdown = !showUserDropdown"
-						class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium text-teal-700 transition rounded-lg hover:bg-gray-100">
-						<i class="mr-2 fas fa-user-circle text-lime-600"></i>
+						class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100">
+						<i class="mr-2 fas fa-user-circle"></i>
 						<span id="userDisplayName">User</span>
 						<i class="ml-2 fad fa-chevron-down"></i>
 					</button>
@@ -404,7 +404,7 @@
 				</li>
 
 				<li>
-					<a href="faq.html" class="uppercase font-semibold transition text-button_two md:mr-3">
+					<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
 						<i class="mr-2 fas fa-question-square"></i> FAQ's
 					</a>
 				</li>
@@ -421,46 +421,136 @@
 			x-transition:leave="transition ease-in duration-150"
 			x-transition:leave-start="opacity-100 transform translate-y-0"
 			x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-			<ul class="flex flex-col space-y-4 font-semibold text-gray-700">
+			<ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
 				<li>
-					<a href="/" class="block transition hover:text-blue-600">Home</a>
+					<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
 				</li>
-				<li>
-					<a href="#about" class="block transition hover:text-blue-600">About</a>
-				</li>
-				<li>
-					<a href="#why-us" class="block transition hover:text-blue-600">Why Us</a>
-				</li>
-				<li>
-					<a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a>
-				</li>
-				<!-- Collaboration Links -->
-				<li>
-					<a href="announcements.html" class="block transition hover:text-blue-600">
-						<i class="fas fa-bullhorn mr-2"></i>Announcements
-					</a>
-				</li>
-				<li>
-					<a href="my-collaborations.html" class="block transition hover:text-blue-600">
-						<i class="fas fa-users mr-2"></i>My Collaborations
-					</a>
-				</li>
-				<li id="admin-collab-mobile" class="block transition hover:text-blue-600" style="display: none">
-					<a href="Forms/Admin/collaboration-requests.html">
-						<i class="fas fa-handshake mr-2"></i>Manage Requests
-					</a>
-				</li>
-			</ul>
 
-			<!-- CTA Button -->
-			<div class="mt-6">
-				<a href="/contact"
-					class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-					<span
-						class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-					<span class="relative z-10 group-hover:text-white">Collaborate</span>
-				</a>
-			</div>
+				<!-- Projects Dropdown -->
+				<li x-data="{ showprojectDropdown: false }" class="relative">
+					<button @click="showprojectDropdown = !showprojectDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Projects <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md
+						 divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-800">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+									<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="projects.html#my-projects">
+									<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="all-projects.html">
+									<i class="far fa-folder-open mr-2 text-yellow-600"></i> All Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- Collaborations Dropdown -->
+				<li x-data="{ collabDropdown: false }" class="relative">
+					<button @click="collabDropdown = !collabDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="priorities.html">
+									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Proirities
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="my-collaborations.html">
+									<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My Collaborations
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="announcements.html">
+									<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+
+				<!-- Admin -->
+				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+					<button @click="showDropdown = !showDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Admin <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="dashboard.html">Dashboard</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="projects.html">Project Management</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="members.html">Stakeholder Management</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- User Dropdown -->
+				<li x-data="{ showUserDropdown: false }" class="relative">
+					<button @click="showUserDropdown = !showUserDropdown"
+						class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100">
+						<i class="mr-2 fas fa-user-circle"></i>
+						<span id="userDisplayName">User</span>
+						<i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+						class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+						<div class="px-4 py-3">
+							<div class="text-base font-semibold text-teal-900" id="userNameDisplay">Loading...</div>
+							<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+							<div class="text-xs text-slate-400 mt-1">
+								Role: <span id="userRoleDisplay" class="font-medium text-teal-600"></span> |
+								Status: <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+							</div>
+						</div>
+						<ul class="py-2 text-sm text-teal-700">
+							<li>
+								<a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-user"></i> Profile
+								</a>
+							</li>
+							<li>
+								<a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-cog"></i> Settings
+								</a>
+							</li>
+						</ul>
+						<div class="py-2">
+							<button onclick="authManager.logout()"
+								class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+								<i class="mr-2 fas fa-sign-out-alt"></i> Logout
+							</button>
+						</div>
+					</div>
+				</li>
+
+				<li>
+					<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+						<i class="mr-2 fas fa-question-square"></i> FAQ's
+					</a>
+				</li>
+
+			</ul>
 		</div>
 	</nav>
 
@@ -474,7 +564,7 @@
 						{ type: 'image', src: 'resources/images/main-3.jpg' }
 						]
 					}" x-init="setInterval(() => { activeSlide = (activeSlide + 1) % media.length }, 7000)"
-				class="relative w-full min-h-[90vh] md:h-[50vh] flex flex-col justify-end">
+				class="relative w-full min-h-[75vh] md:h-[50vh] flex flex-col justify-end">
 
 				<!-- Background Image Carousel with Zoom + Fade -->
 				<template x-for="(item, index) in media" :key="index">
@@ -493,11 +583,11 @@
 
 				<!-- Bottom Content Section -->
 				<div class="relative z-20 w-full pt-16 sm:pt-0">
-					<div class="mx-8 text-white px-4">
+					<div class="mx-4 md:mx-8 text-white px-4">
 						<a href="#" class="text-xs font-semibold uppercase tracking-wide mb-2 block">
 							Ministry of Health
 						</a>
-						<h1 class="text-3xl sm:text-4xl font-semibold mb-4">
+						<h1 class="text-xl sm:text-4xl font-semibold mb-4">
 							<span class="tracking-wide">RMNCAH</span> Co-ordination Hub
 						</h1>
 						<p class="text-sm sm:text-base mb-6 max-w-4xl">
@@ -513,9 +603,10 @@
 
 
 							<!-- Icon Buttons / Stats -->
-							<div class="flex justify-between text-white text-3xl w-full flex-wrap text-center gap-y-6">
+							<div
+								class="flex justify-between text-white text-xl lg:text-3xl w-full flex-wrap text-center gap-y-6">
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
-									<i class="fad fa-tasks text-2xl"></i>
+									<i class="fad fa-tasks text-lg lg:text-2xl"></i>
 									<div class="mt-2">
 										<span id="totalProjectsCount" class="font-bold tracking-wider">
 											8
@@ -524,21 +615,21 @@
 									</div>
 								</div>
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
-									<i class="fad fa-map-marker-alt text-2xl"></i>
+									<i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
 									<div class="mt-2">
 										<span id="totalCountiesCount" class="font-bold tracking-wider">7</span>
 										<span class="font-thin">Counties</span>
 									</div>
 								</div>
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
-									<i class="fad fa-handshake text-2xl"></i>
+									<i class="fad fa-handshake text-lg lg:text-2xl"></i>
 									<div class="mt-2">
 										<span id="totalStakeholdersCount" class="font-bold tracking-wider">10</span>
 										<span class="font-thin">Stakeholders</span>
 									</div>
 								</div>
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
-									<i class="fad fa-users text-2xl"></i>
+									<i class="fad fa-users text-lg lg:text-2xl"></i>
 									<div class="mt-2">
 										<span class="font-bold tracking-wider">97</span>
 										<span class="font-thin">Members</span>
@@ -556,7 +647,7 @@
 	<section class="">
 		<div class="grid items-center p-4 lg:px-10 md:p-8 md:grid-cols-5">
 			<div class="md:col-span-4">
-				<h3 class="mb-4 text-sm font-semibold leading-tight text-gray-900 uppercase">
+				<h3 class="mb-4 text-sm font-normal opacity-50 leading-tight text-gray-900 uppercase">
 					Explore Projects Across Kenya
 				</h3>
 				<h1 class="mb-2 text-4xl font-semibold md:text-4xl">
@@ -572,12 +663,12 @@
 				</p>
 			</div>
 			<div class="md:col-span-1">
-				<h6
-					class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center text-gray-900 uppercase opacity-70">
+				<h6 class="my-4 text-sm font-semibold leading-tight text-center text-gray-900 uppercase opacity-70">
 					Data Hub Resources
 				</h6>
-				<div class="grid gap-4 text-white">
-					<a href="" class="flex items-center justify-between px-4 py-2 rounded-full bg-button">
+				<div class="flex justify-between lg:grid lg:grid-cols-1 gap-4 text-white">
+					<a href=""
+						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button">
 						<span class="text-sm"> FAQ Docuent </span>
 						<span class="text-lg">
 							<i class="fas fa-file-pdf"></i>
@@ -591,7 +682,8 @@
                             <i class="fas fa-clipboard-list-check"></i>
                         </span>
                     </a> -->
-					<a href="" class="flex items-center justify-between px-4 py-2 rounded-full bg-button_two">
+					<a href=""
+						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button_two">
 						<span class="text-sm"> Video Tutorial </span>
 						<span class="text-lg">
 							<i class="fas fa-play-circle"></i>
@@ -604,9 +696,9 @@
 
 	<section class="py-20 p-4 lg:px-10 md:p-8 ">
 		<div class="w-full ">
-			<h2 class="text-xl font-normal uppercase text-gray-900/80 mb-8">
+			<h3 class="mb-4 text-sm font-normal opacity-50 leading-tight text-gray-900 uppercase">
 				Thematic Areas
-			</h2>
+			</h3>
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
 				<!-- Card -->
@@ -654,7 +746,7 @@
 
 				<!-- Sticky Filter Sidebar (Right Side) -->
 				<div
-					class="sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6">
+					class="lg:sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6">
 					<h2 class="mb-2 -mt-10 text-sm font-semibold text-left text-gray-800 transform rounded-xl">
 						<i class="p-2 text-black bg-white rounded-sm shadow fas fa-filter"></i>
 					</h2>
@@ -697,7 +789,7 @@
 
 						<!-- Sort By Theme -->
 						<div class="flex flex-col gap-2">
-							<label for="sortSelect" class="text-sm font-medium text-gray-700">Themes:</label>
+							<label for="sortSelect" class="text-sm font-medium text-gray-700">Thematic Areas :</label>
 							<select id="sortSelect"
 								class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 								<option value="name">Name (A-Z)</option>
