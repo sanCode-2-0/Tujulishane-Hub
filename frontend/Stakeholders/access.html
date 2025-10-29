@@ -76,98 +76,7 @@
 </head>
 
 <body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
-            <!-- Logo -->
-            <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="../resources/gov.png" class="object-contain h-12" alt="Site Logo">
-            </a>
-
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
-            </button>
-
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
-                <li>
-                    <a href="/" class="uppercase transition hover:text-blue-600">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="/about" class="uppercase transition hover:text-blue-600">
-                        Programs
-                    </a>
-                </li>
-
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Pages <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
-
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl md:w-96"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="index.html">Index</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="registration.html">Login / Registration</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-
-                <li>
-                    <a href="/blog" class="uppercase transition hover:text-blue-600">
-                        Blog
-                    </a>
-                </li>
-                <li>
-                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
-                        Partner
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
-
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <div class="" id="nav-placeholder"></div>
 
     <div class="pt-10 ">
         <div class="relative w-full max-w-4xl mx-auto">
@@ -318,6 +227,7 @@
         </div>
     </div>
 
+    <script src="../styles/loadNavStake.js"></script>
     <script>
         // Error log storage
         const errorLogEntries = [];

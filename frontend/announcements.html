@@ -52,6 +52,20 @@
 	<script src="auth.js"></script>
 	<!-- Load Alpine.js after function definitions -->
 	<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+	<style>
+		[x-cloak] {
+			display: none !important;
+		}
+
+		.line-clamp-3 {
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+	</style>
+
 </head>
 
 <body class="bg-gray-50">
@@ -523,7 +537,7 @@
 			};
 		};
 	</script>
-
+	<div class="" id="nav-placeholder"></div>
 	<div x-data="announcementsApp()" x-init="init()">
 		<!-- Navigation matching site design -->
 		<div data-twe-modal-init
@@ -1267,19 +1281,8 @@
 		</div>
 	</div>
 
-	<style>
-		[x-cloak] {
-			display: none !important;
-		}
 
-		.line-clamp-3 {
-			display: -webkit-box;
-			-webkit-line-clamp: 3;
-			line-clamp: 3;
-			-webkit-box-orient: vertical;
-			overflow: hidden;
-		}
-	</style>
+	<script src="styles/loadNav.js"></script>
 </body>
 
 </html>
