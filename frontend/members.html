@@ -1,221 +1,289 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <!-- Tailwind CSS (with custom config using inline script) -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#1e40af", // Custom Blue
-                        secondary: "#f59e0b", // Custom Amber
-                        accent: "#10b981", // Custom Green
-                        dark: "#1f2937", // Gray-800
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                    },
-                },
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
             },
-        };
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
     <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
     <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
     <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN"
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
+      crossorigin=""
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
     <style>
-        .fade-slide-enter {
-            opacity: 0;
-            transform: translateY(20px);
-        }
+      .fade-slide-enter {
+        opacity: 0;
+        transform: translateY(20px);
+      }
 
-        .fade-slide-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.4s ease;
-        }
+      .fade-slide-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.4s ease;
+      }
 
-        .fade-slide-leave {
-            opacity: 1;
-            transform: translateY(0);
-        }
+      .fade-slide-leave {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-        .fade-slide-leave-active {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
+      .fade-slide-leave-active {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
     </style>
-</head>
+  </head>
 
-<body class="text-gray-800">
+  <body class="text-gray-800">
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
-        <div class="flex items-center justify-center h-full">
-            <div class="text-center">
-                <div
-                    class="inline-block w-16 h-16 border-4 border-white rounded-full border-t-transparent animate-spin">
-                </div>
-                <p class="mt-4 text-white">Loading...</p>
-            </div>
+    <div
+      id="loadingOverlay"
+      class="fixed inset-0 z-50 hidden bg-black bg-opacity-50"
+    >
+      <div class="flex items-center justify-center h-full">
+        <div class="text-center">
+          <div
+            class="inline-block w-16 h-16 border-4 border-white rounded-full border-t-transparent animate-spin"
+          ></div>
+          <p class="mt-4 text-white">Loading...</p>
         </div>
+      </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast"
-        class="fixed z-50 hidden px-6 py-4 text-white transition-all transform translate-x-1/2 bg-green-600 rounded-lg shadow-lg top-4 right-1/2">
-        <div class="flex items-center gap-3">
-            <i class="text-xl fas fa-check-circle"></i>
-            <span id="toastMessage">Success!</span>
-        </div>
+    <div
+      id="toast"
+      class="fixed z-50 hidden px-6 py-4 text-white transition-all transform translate-x-1/2 bg-green-600 rounded-lg shadow-lg top-4 right-1/2"
+    >
+      <div class="flex items-center gap-3">
+        <i class="text-xl fas fa-check-circle"></i>
+        <span id="toastMessage">Success!</span>
+      </div>
     </div>
 
     <!-- Authentication & Authorization Scripts -->
     <script>
-        // Try to load a local config override (frontend/config.local.js) if present.
-        (function () {
-            try {
-                var s = document.createElement("script");
-                s.src = "./config.local.js";
-                s.async = false;
-                document.head.appendChild(s);
-            } catch (e) { }
-        })();
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
     </script>
     <script type="module">
-        import { BASE_URL } from "./config.js";
+      // import { BASE_URL } from "./config.js";
+      const BASE_URL = "http://localhost:8080";
 
-        // Initialize auth check
-        window.BASE_URL = BASE_URL;
+      // Initialize auth check
+      window.BASE_URL = BASE_URL;
 
-        // Check authentication on page load
-        document.addEventListener("DOMContentLoaded", async function () {
-            const token = localStorage.getItem("accessToken");
+      // Check authentication on page load
+      document.addEventListener("DOMContentLoaded", async function () {
+        const token = localStorage.getItem("accessToken");
 
-            if (!token) {
-                showToast("Please log in to access this page", "error");
-                setTimeout(() => {
-                    window.location.href = "frontend/index.html";
-                }, 2000);
-                return;
-            }
+        if (!token) {
+          showToast("Please log in to access this page", "error");
+          setTimeout(() => {
+            window.location.href = "frontend/index.html";
+          }, 2000);
+          return;
+        }
 
-            try {
-                // Get current user profile
-                const response = await fetch(`${BASE_URL}/api/auth/profile`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+        try {
+          // Get current user profile
+          const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
 
-                if (!response.ok) {
-                    throw new Error("Authentication failed");
-                }
+          if (!response.ok) {
+            throw new Error("Authentication failed");
+          }
 
-                const result = await response.json();
-                const user = result.data;
+          const result = await response.json();
+          const user = result.data;
 
-                // Check if user is SUPER_ADMIN
-                if (user.role !== "SUPER_ADMIN") {
-                    showToast("Access denied. Super Admin role required.", "error");
-                    setTimeout(() => {
-                        window.location.href = "frontend/dashboard.html";
-                    }, 2000);
-                    return;
-                }
+          // Check if user is SUPER_ADMIN
+          if (user.role !== "SUPER_ADMIN") {
+            showToast("Access denied. Super Admin role required.", "error");
+            setTimeout(() => {
+              window.location.href = "frontend/dashboard.html";
+            }, 2000);
+            return;
+          }
 
-                // Check if user is approved
-                if (user.approvalStatus !== "APPROVED") {
-                    showToast("Your account is pending approval", "error");
-                    setTimeout(() => {
-                        window.location.href = "frontend/dashboard.html";
-                    }, 2000);
-                    return;
-                }
+          // Check if user is approved
+          if (user.approvalStatus !== "APPROVED") {
+            showToast("Your account is pending approval", "error");
+            setTimeout(() => {
+              window.location.href = "frontend/dashboard.html";
+            }, 2000);
+            return;
+          }
 
-                // Load initial data
-                await Promise.all([
-                    loadUserStats(),
-                    loadPendingUsers(),
-                    loadApprovedUsers(),
-                    loadRejectedUsers(),
-                ]);
-            } catch (error) {
-                console.error("Auth error:", error);
-                showToast("Authentication error. Please log in again.", "error");
-                setTimeout(() => {
-                    window.location.href = "frontend/index.html";
-                }, 2000);
-            }
-        });
+          // Load initial data
+          await Promise.all([
+            loadUserStats(),
+            loadPendingUsers(),
+            loadApprovedUsers(),
+            loadRejectedUsers(),
+          ]);
+        } catch (error) {
+          console.error("Auth error:", error);
+          showToast("Authentication error. Please log in again.", "error");
+          setTimeout(() => {
+            window.location.href = "frontend/index.html";
+          }, 2000);
+        }
+      });
     </script>
 
-    <div data-twe-modal-init
-        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-        id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-        <div data-twe-modal-dialog-ref
-            class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-            <div
-                class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                <div
-                    class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                    <!-- Modal title -->
-                    <h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
-                        New Project
-                    </h5>
-                    <!-- Close button -->
-                    <button type="button"
-                        class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                        data-twe-modal-dismiss aria-label="Close">
-                        <span class="[&>svg]:h-6 [&>svg]:w-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </span>
-                    </button>
-                </div>
+    <div
+      data-twe-modal-init
+      class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+      id="createNewProject"
+      tabindex="-1"
+      aria-labelledby="createNewProjectTitle"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div
+        data-twe-modal-dialog-ref
+        class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
+      >
+        <div
+          class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+        >
+          <div
+            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+          >
+            <!-- Modal title -->
+            <h5
+              class="text-xl font-light uppercase leading-normal text-surface"
+              id="createNewProjectTitle"
+            >
+              New Project
+            </h5>
+            <!-- Close button -->
+            <button
+              type="button"
+              class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+              data-twe-modal-dismiss
+              aria-label="Close"
+            >
+              <span class="[&>svg]:h-6 [&>svg]:w-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
 
-                <!-- Modal body -->
-                <div class="relative p-4">
-                    <form id="newProjectForm">
-                        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                            <!-- Map Picker for Location -->
-                            <div class="col-span-2 lg:col-span-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
-                                    Map</label>
-                                <div class="text-xs text-gray-600 mb-2">
-                                    Search for a location or click on the map to select the
-                                    project coordinates.
-                                </div>
-                                <div id="newProjectMap" style="
+          <!-- Modal body -->
+          <div class="relative p-4">
+            <form id="newProjectForm">
+              <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <!-- Map Picker for Location -->
+                <div class="col-span-2 lg:col-span-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Pick Project Location on Map</label
+                  >
+                  <div class="text-xs text-gray-600 mb-2">
+                    Search for a location or click on the map to select the
+                    project coordinates.
+                  </div>
+                  <div
+                    id="newProjectMap"
+                    style="
                       height: 400px;
                       width: 100%;
                       border-radius: 8px;
@@ -224,592 +292,861 @@
                       background-color: #f3f4f6;
                       position: relative;
                       overflow: hidden;
-                    "></div>
-                                <input type="hidden" id="project_latitude" name="latitude" />
-                                <input type="hidden" id="project_longitude" name="longitude" />
-                                <input type="hidden" id="project_county" name="county" />
-                                <input type="hidden" id="project_subcounty" name="subcounty" />
-                                <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-                                    <strong>Selected Location:</strong>
-                                    <span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-                                        location</span>
-                                    <br />
-                                    <span id="selectedCounty" class="text-gray-600"></span>
-                                </div>
-                            </div>
-                            <!-- Title -->
-                            <div>
-                                <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
-                                <input required type="text" id="title" name="title"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-
-                            <!-- Project Theme -->
-                            <div>
-                                <label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-                                    *</label>
-                                <select id="theme" name="theme"
-                                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                    <option value="">Select Theme</option>
-                                    <option value="GBV">Gender based violence</option>
-                                    <option value="AYPSRH">
-                                        Adolescent and Young People Sexual and Reproductive Health
-                                    </option>
-                                    <option value="MNH">Maternal and Newborn Health</option>
-                                    <option value="FP">Family planning</option>
-                                    <option value="CH">Child Health</option>
-                                    <option value="AH">Adolescent Health</option>
-                                </select>
-                            </div>
-
-                            <!-- Time Period -->
-                            <div>
-                                <label for="starttime_period" class="block text-sm font-medium text-gray-700">
-                                    Start *
-                                </label>
-                                <input required type="date" id="starttime_period" name="start_date"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="endtime_period" class="block text-sm font-medium text-gray-700">End
-                                    *</label>
-                                <input type="date" id="endtime_period" name="end_date"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <!-- Activity Type -->
-                            <div class="col-span-2 md:col-span-4">
-                                <label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
-                                    (Description) *
-                                </label>
-                                <textarea required id="activity_type" name="activity_type" rows="3"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                            </div>
-
-                            <!-- County and Sub-county fields removed (not required) -->
-
-                            <!-- Contact Person -->
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Name *
-                                </label>
-                                <input required type="text" id="contact_person" name="contact_person_name"
-                                    placeholder="Name"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Role *
-                                </label>
-                                <input required type="text" id="contact_person" name="contact_person_role"
-                                    placeholder="Role"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Email *
-                                </label>
-                                <input required type="email" id="contact_person" name="contact_person_mail"
-                                    placeholder="Email"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="budget" class="block text-sm font-medium text-gray-700">
-                                    Budget in KES
-                                </label>
-                                <input required type="number" id="budget" name="budget" placeholder="amount"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-
-                            <!-- Gaps -->
-                            <div class="col-span-2 lg:col-span-4">
-                                <label for="gaps" class="block text-sm font-medium text-gray-700">
-                                    Objectives *
-                                </label>
-                                <textarea required id="gaps" name="gaps" rows="3"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Button -->
-                        <div class="mt-3">
-                            <button type="submit"
-                                class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Submit Project
-                            </button>
-                        </div>
-                    </form>
+                    "
+                  ></div>
+                  <input type="hidden" id="project_latitude" name="latitude" />
+                  <input
+                    type="hidden"
+                    id="project_longitude"
+                    name="longitude"
+                  />
+                  <input type="hidden" id="project_county" name="county" />
+                  <input
+                    type="hidden"
+                    id="project_subcounty"
+                    name="subcounty"
+                  />
+                  <div
+                    class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
+                  >
+                    <strong>Selected Location:</strong>
+                    <span id="selectedLatLng" class="font-mono text-blue-600"
+                      >Click on map to select location</span
+                    >
+                    <br />
+                    <span id="selectedCounty" class="text-gray-600"></span>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <!-- Title -->
+                <div>
+                  <label
+                    for="title"
+                    class="block text-sm font-medium text-gray-700"
+                    >Title *</label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="title"
+                    name="title"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
 
+                <!-- Project Theme -->
+                <div>
+                  <label
+                    for="theme"
+                    class="block text-sm font-medium text-gray-700"
+                    >Project Theme *</label
+                  >
+                  <select
+                    id="theme"
+                    name="theme"
+                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">Select Theme</option>
+                    <option value="GBV">Gender based violence</option>
+                    <option value="AYPSRH">
+                      Adolescent and Young People Sexual and Reproductive Health
+                    </option>
+                    <option value="MNH">Maternal and Newborn Health</option>
+                    <option value="FP">Family planning</option>
+                    <option value="CH">Child Health</option>
+                    <option value="AH">Adolescent Health</option>
+                  </select>
+                </div>
+
+                <!-- Time Period -->
+                <div>
+                  <label
+                    for="starttime_period"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Start *
+                  </label>
+                  <input
+                    required
+                    type="date"
+                    id="starttime_period"
+                    name="start_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="endtime_period"
+                    class="block text-sm font-medium text-gray-700"
+                    >End *</label
+                  >
+                  <input
+                    type="date"
+                    id="endtime_period"
+                    name="end_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <!-- Activity Type -->
+                <div class="col-span-2 md:col-span-4">
+                  <label
+                    for="activity_type"
+                    class="block text-sm font-medium text-gray-700"
+                    >Activity Type (Description) *
+                  </label>
+                  <textarea
+                    required
+                    id="activity_type"
+                    name="activity_type"
+                    rows="3"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  ></textarea>
+                </div>
+
+                <!-- County and Sub-county fields removed (not required) -->
+
+                <!-- Contact Person -->
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Name *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    id="contact_person"
+                    name="contact_person_name"
+                    placeholder="Name"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Role *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    id="contact_person"
+                    name="contact_person_role"
+                    placeholder="Role"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Email *
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    id="contact_person"
+                    name="contact_person_mail"
+                    placeholder="Email"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="budget"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Budget in KES
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    id="budget"
+                    name="budget"
+                    placeholder="amount"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+
+                <!-- Gaps -->
+                <div class="col-span-2 lg:col-span-4">
+                  <label
+                    for="gaps"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Objectives *
+                  </label>
+                  <textarea
+                    required
+                    id="gaps"
+                    name="gaps"
+                    rows="3"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Button -->
+              <div class="mt-3">
+                <button
+                  type="submit"
+                  class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Submit Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="" id="nav-placeholder"></div>
 
     <div class="min-h-screen pt-12 bg-gray-100">
-        <!-- New Project -->
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewOrganization" tabindex="-1" aria-labelledby="createNewOrganizationTitle" aria-modal="true"
-            role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewOrganizationTitle">
-                            New Project
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-                        <form id="userForm" class="space-y-5">
-                            <!-- First & Last Name -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
-                                    <input type="text" name="first_name" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                                    <input type="text" name="last_name" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Gender</label>
-                                    <select name="gender" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select...</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Country</label>
-                                    <input type="text" name="country" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">County</label>
-                                    <input type="text" name="county" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Role</label>
-                                    <select name="role" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select Role...</option>
-                                        <option>Super Admin</option>
-                                        <option>Ei</option>
-                                    </select>
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                                    <input type="email" name="email" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                                </div>
-                            </div>
-                            <!-- Submit -->
-                            <div class="pt-4">
-                                <button type="submit"
-                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
-                                    Create User
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+      <!-- New Project -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="createNewOrganization"
+        tabindex="-1"
+        aria-labelledby="createNewOrganizationTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <!-- Modal title -->
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="createNewOrganizationTitle"
+              >
+                New Project
+              </h5>
+              <!-- Close button -->
+              <button
+                type="button"
+                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
             </div>
-        </div>
 
-        <div class="max-w-full p-8 mx-auto">
-            <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-                <div class="flex items-center justify-between mb-5">
-                    <h2 class="text-2xl font-light text-gray-900 uppercase fade fade-left">
-                        User Management Dashboard
-                    </h2>
-                    <button onclick="refreshData()"
-                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Refresh</span>
-                    </button>
+            <!-- Modal body -->
+            <div class="relative p-4">
+              <form id="userForm" class="space-y-5">
+                <!-- First & Last Name -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >First Name</label
+                    >
+                    <input
+                      type="text"
+                      name="first_name"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Last Name</label
+                    >
+                    <input
+                      type="text"
+                      name="last_name"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Gender</label
+                    >
+                    <select
+                      name="gender"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">Select...</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Country</label
+                    >
+                    <input
+                      type="text"
+                      name="country"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >County</label
+                    >
+                    <input
+                      type="text"
+                      name="county"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Role</label
+                    >
+                    <select
+                      name="role"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">Select Role...</option>
+                      <option>Super Admin</option>
+                      <option>Ei</option>
+                    </select>
+                  </div>
+
+                  <!-- Email -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Email Address</label
+                    >
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <ul class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-4" id="pills-tab" role="tablist"
-                        data-twe-nav-ref>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
-                                id="pills-approved-tab" data-twe-toggle="pill" data-twe-target="#pills-approved"
-                                data-twe-nav-active role="tab" aria-controls="pills-approved" aria-selected="true">
-                                <p class="text-3xl font-bold" id="approvedCount">0</p>
-                                <p class="text-sm">Approved</p>
-                            </a>
-                        </li>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
-                                id="pills-pending-tab" data-twe-toggle="pill" data-twe-target="#pills-pending"
-                                role="tab">
-                                <p class="text-3xl font-bold" id="pendingCount">0</p>
-                                <p class="text-sm">Pending</p>
-                            </a>
-                        </li>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
-                                id="pills-rejected-tab" data-twe-toggle="pill" data-twe-target="#pills-rejected"
-                                role="tab">
-                                <p class="text-3xl font-bold" id="rejectedCount">0</p>
-                                <p class="text-sm">Rejected</p>
-                            </a>
-                        </li>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
-                                id="pills-all-tab" data-twe-toggle="pill" data-twe-target="#pills-all" role="tab">
-                                <p class="text-3xl font-bold" id="totalCount">0</p>
-                                <p class="text-sm">All Users</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <!--Pills content-->
-                    <div class="mb-6">
-                        <!-- Approved Users Tab -->
-                        <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-approved" role="tabpanel" aria-labelledby="pills-approved-tab"
-                            data-twe-tab-active>
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Status
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="approvedUsersTable">
-                                            <tr>
-                                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                                    <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
-                                                    <p>Loading approved users...</p>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pending Users Tab -->
-                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-pending" role="tabpanel" aria-labelledby="pills-pending-tab">
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Requested On
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="pendingUsersTable">
-                                            <tr>
-                                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                                    <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
-                                                    <p>Loading pending users...</p>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Rejected Users Tab -->
-                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-rejected" role="tabpanel" aria-labelledby="pills-rejected-tab">
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Rejection Reason
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="rejectedUsersTable">
-                                            <tr>
-                                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                                    <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
-                                                    <p>Loading rejected users...</p>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- All Users Tab -->
-                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-all" role="tabpanel" aria-labelledby="pills-all-tab">
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Status
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="allUsersTable">
-                                            <tr>
-                                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                                    <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
-                                                    <p>Loading all users...</p>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Submit -->
+                <div class="pt-4">
+                  <button
+                    type="submit"
+                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                  >
+                    Create User
+                  </button>
                 </div>
+              </form>
             </div>
+          </div>
         </div>
+      </div>
+
+      <div class="max-w-full p-8 mx-auto">
+        <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
+          <div class="flex items-center justify-between mb-5">
+            <h2
+              class="text-2xl font-light text-gray-900 uppercase fade fade-left"
+            >
+              User Management Dashboard
+            </h2>
+            <button
+              onclick="refreshData()"
+              class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
+            >
+              <i class="fas fa-sync-alt"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <ul
+              class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-4"
+              id="pills-tab"
+              role="tablist"
+              data-twe-nav-ref
+            >
+              <li class="flex" role="presentation">
+                <a
+                  class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+                  id="pills-approved-tab"
+                  data-twe-toggle="pill"
+                  data-twe-target="#pills-approved"
+                  data-twe-nav-active
+                  role="tab"
+                  aria-controls="pills-approved"
+                  aria-selected="true"
+                >
+                  <p class="text-3xl font-bold" id="approvedCount">0</p>
+                  <p class="text-sm">Approved</p>
+                </a>
+              </li>
+              <li class="flex" role="presentation">
+                <a
+                  class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+                  id="pills-pending-tab"
+                  data-twe-toggle="pill"
+                  data-twe-target="#pills-pending"
+                  role="tab"
+                >
+                  <p class="text-3xl font-bold" id="pendingCount">0</p>
+                  <p class="text-sm">Pending</p>
+                </a>
+              </li>
+              <li class="flex" role="presentation">
+                <a
+                  class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+                  id="pills-rejected-tab"
+                  data-twe-toggle="pill"
+                  data-twe-target="#pills-rejected"
+                  role="tab"
+                >
+                  <p class="text-3xl font-bold" id="rejectedCount">0</p>
+                  <p class="text-sm">Rejected</p>
+                </a>
+              </li>
+              <li class="flex" role="presentation">
+                <a
+                  class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+                  id="pills-all-tab"
+                  data-twe-toggle="pill"
+                  data-twe-target="#pills-all"
+                  role="tab"
+                >
+                  <p class="text-3xl font-bold" id="totalCount">0</p>
+                  <p class="text-sm">All Users</p>
+                </a>
+              </li>
+            </ul>
+            <!--Pills content-->
+            <div class="mb-6">
+              <!-- Approved Users Tab -->
+              <div
+                class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                id="pills-approved"
+                role="tabpanel"
+                aria-labelledby="pills-approved-tab"
+                data-twe-tab-active
+              >
+                <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                  <div
+                    class="inline-block min-w-full overflow-hidden rounded-lg"
+                  >
+                    <table class="min-w-full leading-normal">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Full Name
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Email Address
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Organization
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Role
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Status
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="approvedUsersTable">
+                        <tr>
+                          <td
+                            colspan="6"
+                            class="px-4 py-8 text-center text-gray-500"
+                          >
+                            <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+                            <p>Loading approved users...</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pending Users Tab -->
+              <div
+                class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                id="pills-pending"
+                role="tabpanel"
+                aria-labelledby="pills-pending-tab"
+              >
+                <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                  <div
+                    class="inline-block min-w-full overflow-hidden rounded-lg"
+                  >
+                    <table class="min-w-full leading-normal">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Full Name
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Email Address
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Organization
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Role
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Requested On
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="pendingUsersTable">
+                        <tr>
+                          <td
+                            colspan="6"
+                            class="px-4 py-8 text-center text-gray-500"
+                          >
+                            <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+                            <p>Loading pending users...</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rejected Users Tab -->
+              <div
+                class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                id="pills-rejected"
+                role="tabpanel"
+                aria-labelledby="pills-rejected-tab"
+              >
+                <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                  <div
+                    class="inline-block min-w-full overflow-hidden rounded-lg"
+                  >
+                    <table class="min-w-full leading-normal">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Full Name
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Email Address
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Organization
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Role
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Rejection Reason
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="rejectedUsersTable">
+                        <tr>
+                          <td
+                            colspan="6"
+                            class="px-4 py-8 text-center text-gray-500"
+                          >
+                            <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+                            <p>Loading rejected users...</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- All Users Tab -->
+              <div
+                class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                id="pills-all"
+                role="tabpanel"
+                aria-labelledby="pills-all-tab"
+              >
+                <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+                  <div
+                    class="inline-block min-w-full overflow-hidden rounded-lg"
+                  >
+                    <table class="min-w-full leading-normal">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Full Name
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Email Address
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Organization
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Role
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Status
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="allUsersTable">
+                        <tr>
+                          <td
+                            colspan="6"
+                            class="px-4 py-8 text-center text-gray-500"
+                          >
+                            <i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+                            <p>Loading all users...</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="styles/effects.js"></script>
     <script src="styles/loadNav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script>
-        // Global state
-        let allUsers = [];
-        let approvedUsers = [];
-        let pendingUsers = [];
-        let rejectedUsers = [];
+      // Global state
+      let allUsers = [];
+      let approvedUsers = [];
+      let pendingUsers = [];
+      let rejectedUsers = [];
 
-        // Utility Functions
-        function showLoading(show = true) {
-            const overlay = document.getElementById("loadingOverlay");
-            if (show) {
-                overlay.classList.remove("hidden");
-            } else {
-                overlay.classList.add("hidden");
-            }
+      // Utility Functions
+      function showLoading(show = true) {
+        const overlay = document.getElementById("loadingOverlay");
+        if (show) {
+          overlay.classList.remove("hidden");
+        } else {
+          overlay.classList.add("hidden");
+        }
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+
+        toastMessage.textContent = message;
+
+        // Set color based on type
+        if (type === "error") {
+          toast.classList.remove("bg-green-600");
+          toast.classList.add("bg-red-600");
+        } else {
+          toast.classList.remove("bg-red-600");
+          toast.classList.add("bg-green-600");
         }
 
-        function showToast(message, type = "success") {
-            const toast = document.getElementById("toast");
-            const toastMessage = document.getElementById("toastMessage");
+        toast.classList.remove("hidden");
 
-            toastMessage.textContent = message;
+        setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 3000);
+      }
 
-            // Set color based on type
-            if (type === "error") {
-                toast.classList.remove("bg-green-600");
-                toast.classList.add("bg-red-600");
-            } else {
-                toast.classList.remove("bg-red-600");
-                toast.classList.add("bg-green-600");
-            }
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
 
-            toast.classList.remove("hidden");
+      function getStatusBadge(status) {
+        const badges = {
+          APPROVED: "bg-green-100 text-green-800",
+          PENDING: "bg-yellow-100 text-yellow-800",
+          REJECTED: "bg-red-100 text-red-800",
+          ACTIVE: "bg-blue-100 text-blue-800",
+          INACTIVE: "bg-gray-100 text-gray-800",
+        };
+        return badges[status] || "bg-gray-100 text-gray-800";
+      }
 
-            setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 3000);
+      // API Functions
+      async function apiCall(endpoint, method = "GET", data = null) {
+        const token = localStorage.getItem("accessToken");
+        const config = {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        if (data && (method === "POST" || method === "PUT")) {
+          config.body = JSON.stringify(data);
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return "N/A";
-            const date = new Date(dateString);
-            return date.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-            });
+        const response = await fetch(`${window.BASE_URL}${endpoint}`, config);
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "API request failed");
         }
 
-        function getStatusBadge(status) {
-            const badges = {
-                APPROVED: "bg-green-100 text-green-800",
-                PENDING: "bg-yellow-100 text-yellow-800",
-                REJECTED: "bg-red-100 text-red-800",
-                ACTIVE: "bg-blue-100 text-blue-800",
-                INACTIVE: "bg-gray-100 text-gray-800",
-            };
-            return badges[status] || "bg-gray-100 text-gray-800";
+        return response.json();
+      }
+
+      // Load User Statistics
+      async function loadUserStats() {
+        try {
+          const result = await apiCall("/api/auth/admin/users");
+          allUsers = result.data || [];
+
+          const approved = allUsers.filter(
+            (u) => u.approvalStatus === "APPROVED"
+          ).length;
+          const pending = allUsers.filter(
+            (u) => u.approvalStatus === "PENDING"
+          ).length;
+          const rejected = allUsers.filter(
+            (u) => u.approvalStatus === "REJECTED"
+          ).length;
+
+          document.getElementById("approvedCount").textContent = approved;
+          document.getElementById("pendingCount").textContent = pending;
+          document.getElementById("rejectedCount").textContent = rejected;
+          document.getElementById("totalCount").textContent = allUsers.length;
+        } catch (error) {
+          console.error("Error loading user stats:", error);
+          showToast("Failed to load user statistics", "error");
         }
+      }
 
-        // API Functions
-        async function apiCall(endpoint, method = "GET", data = null) {
-            const token = localStorage.getItem("accessToken");
-            const config = {
-                method,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            };
-
-            if (data && (method === "POST" || method === "PUT")) {
-                config.body = JSON.stringify(data);
-            }
-
-            const response = await fetch(`${window.BASE_URL}${endpoint}`, config);
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || "API request failed");
-            }
-
-            return response.json();
-        }
-
-        // Load User Statistics
-        async function loadUserStats() {
-            try {
-                const result = await apiCall("/api/auth/admin/users");
-                allUsers = result.data || [];
-
-                const approved = allUsers.filter(
-                    (u) => u.approvalStatus === "APPROVED"
-                ).length;
-                const pending = allUsers.filter(
-                    (u) => u.approvalStatus === "PENDING"
-                ).length;
-                const rejected = allUsers.filter(
-                    (u) => u.approvalStatus === "REJECTED"
-                ).length;
-
-                document.getElementById("approvedCount").textContent = approved;
-                document.getElementById("pendingCount").textContent = pending;
-                document.getElementById("rejectedCount").textContent = rejected;
-                document.getElementById("totalCount").textContent = allUsers.length;
-            } catch (error) {
-                console.error("Error loading user stats:", error);
-                showToast("Failed to load user statistics", "error");
-            }
-        }
-
-        // Load Pending Users
-        async function loadPendingUsers() {
-            try {
-                const result = await apiCall("/api/auth/admin/pending-users");
-                pendingUsers = result.data || [];
-                renderPendingUsers();
-            } catch (error) {
-                console.error("Error loading pending users:", error);
-                showToast("Failed to load pending users", "error");
-                document.getElementById("pendingUsersTable").innerHTML = `
+      // Load Pending Users
+      async function loadPendingUsers() {
+        try {
+          const result = await apiCall("/api/auth/admin/pending-users");
+          pendingUsers = result.data || [];
+          renderPendingUsers();
+        } catch (error) {
+          console.error("Error loading pending users:", error);
+          showToast("Failed to load pending users", "error");
+          document.getElementById("pendingUsersTable").innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-red-500">
                           <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
@@ -817,19 +1154,19 @@
                       </td>
                   </tr>
               `;
-            }
         }
+      }
 
-        // Load Approved Users
-        async function loadApprovedUsers() {
-            try {
-                const result = await apiCall("/api/auth/admin/users/status/APPROVED");
-                approvedUsers = result.data || [];
-                renderApprovedUsers();
-            } catch (error) {
-                console.error("Error loading approved users:", error);
-                showToast("Failed to load approved users", "error");
-                document.getElementById("approvedUsersTable").innerHTML = `
+      // Load Approved Users
+      async function loadApprovedUsers() {
+        try {
+          const result = await apiCall("/api/auth/admin/users/status/APPROVED");
+          approvedUsers = result.data || [];
+          renderApprovedUsers();
+        } catch (error) {
+          console.error("Error loading approved users:", error);
+          showToast("Failed to load approved users", "error");
+          document.getElementById("approvedUsersTable").innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-red-500">
                           <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
@@ -837,19 +1174,19 @@
                       </td>
                   </tr>
               `;
-            }
         }
+      }
 
-        // Load Rejected Users
-        async function loadRejectedUsers() {
-            try {
-                const result = await apiCall("/api/auth/admin/users/status/REJECTED");
-                rejectedUsers = result.data || [];
-                renderRejectedUsers();
-            } catch (error) {
-                console.error("Error loading rejected users:", error);
-                showToast("Failed to load rejected users", "error");
-                document.getElementById("rejectedUsersTable").innerHTML = `
+      // Load Rejected Users
+      async function loadRejectedUsers() {
+        try {
+          const result = await apiCall("/api/auth/admin/users/status/REJECTED");
+          rejectedUsers = result.data || [];
+          renderRejectedUsers();
+        } catch (error) {
+          console.error("Error loading rejected users:", error);
+          showToast("Failed to load rejected users", "error");
+          document.getElementById("rejectedUsersTable").innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-red-500">
                           <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
@@ -857,27 +1194,27 @@
                       </td>
                   </tr>
               `;
-            }
         }
+      }
 
-        // Load All Users
-        async function loadAllUsers() {
-            try {
-                const result = await apiCall("/api/auth/admin/users");
-                allUsers = result.data || [];
-                renderAllUsers();
-            } catch (error) {
-                console.error("Error loading all users:", error);
-                showToast("Failed to load users", "error");
-            }
+      // Load All Users
+      async function loadAllUsers() {
+        try {
+          const result = await apiCall("/api/auth/admin/users");
+          allUsers = result.data || [];
+          renderAllUsers();
+        } catch (error) {
+          console.error("Error loading all users:", error);
+          showToast("Failed to load users", "error");
         }
+      }
 
-        // Render Functions
-        function renderPendingUsers() {
-            const table = document.getElementById("pendingUsersTable");
+      // Render Functions
+      function renderPendingUsers() {
+        const table = document.getElementById("pendingUsersTable");
 
-            if (pendingUsers.length === 0) {
-                table.innerHTML = `
+        if (pendingUsers.length === 0) {
+          table.innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                           <i class="mb-2 text-3xl fas fa-inbox"></i>
@@ -885,51 +1222,57 @@
                       </td>
                   </tr>
               `;
-                return;
-            }
+          return;
+        }
 
-            table.innerHTML = pendingUsers
-                .map(
-                    (user) => `
+        table.innerHTML = pendingUsers
+          .map(
+            (user) => `
               <tr class="border-b hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.organization?.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
-                        }">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                        user.role === "SUPER_ADMIN"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-blue-100 text-blue-800"
+                      }">
                           ${user.role}
                       </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">${formatDate(
-                            user.createdAt
-                        )}</td>
+                    user.createdAt
+                  )}</td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="approveUser(${user.id
-                        })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
+                      <button onclick="approveUser(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
                           <i class="mr-1 fas fa-check"></i> Approve
                       </button>
-                      <button onclick="showRejectModal(${user.id}, '${user.name
-                        }', '${user.email
-                        }')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
+                      <button onclick="showRejectModal(${user.id}, '${
+              user.name
+            }', '${
+              user.email
+            }')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
                           <i class="mr-1 fas fa-times"></i> Reject
                       </button>
                   </td>
               </tr>
           `
-                )
-                .join("");
-        }
+          )
+          .join("");
+      }
 
-        function renderApprovedUsers() {
-            const table = document.getElementById("approvedUsersTable");
+      function renderApprovedUsers() {
+        const table = document.getElementById("approvedUsersTable");
 
-            if (approvedUsers.length === 0) {
-                table.innerHTML = `
+        if (approvedUsers.length === 0) {
+          table.innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                           <i class="mb-2 text-3xl fas fa-inbox"></i>
@@ -937,55 +1280,61 @@
                       </td>
                   </tr>
               `;
-                return;
-            }
+          return;
+        }
 
-            table.innerHTML = approvedUsers
-                .map(
-                    (user) => `
+        table.innerHTML = approvedUsers
+          .map(
+            (user) => `
               <tr class="border-b hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.organization?.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
-                        }">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                        user.role === "SUPER_ADMIN"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-blue-100 text-blue-800"
+                      }">
                           ${user.role}
                       </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">
                       <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
-                            user.status
-                        )}">
+                        user.status
+                      )}">
                           ${user.status}
                       </span>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="viewUserDetails(${user.id
-                        })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                      <button onclick="viewUserDetails(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View
                       </button>
-                      <button onclick="showRejectModal(${user.id}, '${user.name
-                        }', '${user.email
-                        }')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
+                      <button onclick="showRejectModal(${user.id}, '${
+              user.name
+            }', '${
+              user.email
+            }')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
                           <i class="mr-1 fas fa-ban"></i> Suspend
                       </button>
                   </td>
               </tr>
           `
-                )
-                .join("");
-        }
+          )
+          .join("");
+      }
 
-        function renderRejectedUsers() {
-            const table = document.getElementById("rejectedUsersTable");
+      function renderRejectedUsers() {
+        const table = document.getElementById("rejectedUsersTable");
 
-            if (rejectedUsers.length === 0) {
-                table.innerHTML = `
+        if (rejectedUsers.length === 0) {
+          table.innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                           <i class="mb-2 text-3xl fas fa-inbox"></i>
@@ -993,53 +1342,59 @@
                       </td>
                   </tr>
               `;
-                return;
-            }
+          return;
+        }
 
-            table.innerHTML = rejectedUsers
-                .map(
-                    (user) => `
+        table.innerHTML = rejectedUsers
+          .map(
+            (user) => `
               <tr class="border-b hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.organization?.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
-                        }">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                        user.role === "SUPER_ADMIN"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-blue-100 text-blue-800"
+                      }">
                           ${user.role}
                       </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-500">
-                      <div class="max-w-xs truncate" title="${user.rejectionReason || "No reason provided"
-                        }">
+                      <div class="max-w-xs truncate" title="${
+                        user.rejectionReason || "No reason provided"
+                      }">
                           ${user.rejectionReason || "No reason provided"}
                       </div>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="approveUser(${user.id
-                        })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
+                      <button onclick="approveUser(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
                           <i class="mr-1 fas fa-redo"></i> Restore
                       </button>
-                      <button onclick="deleteUser(${user.id
-                        })" class="px-3 py-1 text-xs text-white bg-red-700 rounded hover:bg-red-800 transition">
+                      <button onclick="deleteUser(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-red-700 rounded hover:bg-red-800 transition">
                           <i class="mr-1 fas fa-trash"></i> Delete
                       </button>
                   </td>
               </tr>
           `
-                )
-                .join("");
-        }
+          )
+          .join("");
+      }
 
-        function renderAllUsers() {
-            const table = document.getElementById("allUsersTable");
+      function renderAllUsers() {
+        const table = document.getElementById("allUsersTable");
 
-            if (allUsers.length === 0) {
-                table.innerHTML = `
+        if (allUsers.length === 0) {
+          table.innerHTML = `
                   <tr>
                       <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                           <i class="mb-2 text-3xl fas fa-inbox"></i>
@@ -1047,151 +1402,156 @@
                       </td>
                   </tr>
               `;
-                return;
-            }
+          return;
+        }
 
-            table.innerHTML = allUsers
-                .map(
-                    (user) => `
+        table.innerHTML = allUsers
+          .map(
+            (user) => `
               <tr class="border-b hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
-                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
-                        }</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${
+                    user.organization?.name || "N/A"
+                  }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
-                        }">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                        user.role === "SUPER_ADMIN"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-blue-100 text-blue-800"
+                      }">
                           ${user.role}
                       </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">
                       <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
-                            user.approvalStatus
-                        )}">
+                        user.approvalStatus
+                      )}">
                           ${user.approvalStatus}
                       </span>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="viewUserDetails(${user.id
-                        })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                      <button onclick="viewUserDetails(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View
                       </button>
                   </td>
               </tr>
           `
-                )
-                .join("");
+          )
+          .join("");
+      }
+
+      // User Actions
+      async function approveUser(userId) {
+        if (!confirm("Are you sure you want to approve this user?")) {
+          return;
         }
 
-        // User Actions
-        async function approveUser(userId) {
-            if (!confirm("Are you sure you want to approve this user?")) {
-                return;
-            }
+        showLoading();
+        try {
+          await apiCall(`/api/auth/admin/approve-user/${userId}`, "POST");
+          showToast("User approved successfully!");
 
-            showLoading();
-            try {
-                await apiCall(`/api/auth/admin/approve-user/${userId}`, "POST");
-                showToast("User approved successfully!");
+          // Reload data
+          await Promise.all([
+            loadUserStats(),
+            loadPendingUsers(),
+            loadApprovedUsers(),
+            loadRejectedUsers(),
+          ]);
+        } catch (error) {
+          console.error("Error approving user:", error);
+          showToast(error.message || "Failed to approve user", "error");
+        } finally {
+          showLoading(false);
+        }
+      }
 
-                // Reload data
-                await Promise.all([
-                    loadUserStats(),
-                    loadPendingUsers(),
-                    loadApprovedUsers(),
-                    loadRejectedUsers(),
-                ]);
-            } catch (error) {
-                console.error("Error approving user:", error);
-                showToast(error.message || "Failed to approve user", "error");
-            } finally {
-                showLoading(false);
-            }
+      function showRejectModal(userId, name, email) {
+        const reason = prompt(
+          `Please provide a reason for rejecting ${name} (${email}):`
+        );
+
+        if (reason === null) {
+          return; // User cancelled
         }
 
-        function showRejectModal(userId, name, email) {
-            const reason = prompt(
-                `Please provide a reason for rejecting ${name} (${email}):`
-            );
-
-            if (reason === null) {
-                return; // User cancelled
-            }
-
-            if (!reason.trim()) {
-                showToast("Please provide a rejection reason", "error");
-                return;
-            }
-
-            rejectUser(userId, reason.trim());
+        if (!reason.trim()) {
+          showToast("Please provide a rejection reason", "error");
+          return;
         }
 
-        async function rejectUser(userId, reason) {
-            showLoading();
-            try {
-                await apiCall(`/api/auth/admin/reject-user/${userId}`, "POST", {
-                    reason,
-                });
-                showToast("User rejected successfully");
+        rejectUser(userId, reason.trim());
+      }
 
-                // Reload data
-                await Promise.all([
-                    loadUserStats(),
-                    loadPendingUsers(),
-                    loadApprovedUsers(),
-                    loadRejectedUsers(),
-                ]);
-            } catch (error) {
-                console.error("Error rejecting user:", error);
-                showToast(error.message || "Failed to reject user", "error");
-            } finally {
-                showLoading(false);
-            }
+      async function rejectUser(userId, reason) {
+        showLoading();
+        try {
+          await apiCall(`/api/auth/admin/reject-user/${userId}`, "POST", {
+            reason,
+          });
+          showToast("User rejected successfully");
+
+          // Reload data
+          await Promise.all([
+            loadUserStats(),
+            loadPendingUsers(),
+            loadApprovedUsers(),
+            loadRejectedUsers(),
+          ]);
+        } catch (error) {
+          console.error("Error rejecting user:", error);
+          showToast(error.message || "Failed to reject user", "error");
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      async function deleteUser(userId) {
+        if (
+          !confirm(
+            "Are you sure you want to permanently delete this user? This action cannot be undone."
+          )
+        ) {
+          return;
         }
 
-        async function deleteUser(userId) {
-            if (
-                !confirm(
-                    "Are you sure you want to permanently delete this user? This action cannot be undone."
-                )
-            ) {
-                return;
-            }
+        showLoading();
+        try {
+          // Call the backend delete endpoint. Ensure a matching endpoint exists
+          // (e.g. DELETE /api/auth/admin/delete-user/{id}) and that the logged-in
+          // user has permission to perform deletes.
+          await apiCall(`/api/auth/admin/delete-user/${userId}`, "DELETE");
+          showToast("User deleted successfully");
 
-            showLoading();
-            try {
-                // Note: You may need to implement a delete endpoint in the backend
-                showToast("Delete functionality to be implemented", "error");
-                // await apiCall(`/api/auth/admin/delete-user/${userId}`, 'DELETE');
-                // showToast('User deleted successfully');
+          // Reload data
+          await Promise.all([
+            loadUserStats(),
+            loadPendingUsers(),
+            loadApprovedUsers(),
+            loadRejectedUsers(),
+          ]);
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          showToast(error.message || "Failed to delete user", "error");
+        } finally {
+          showLoading(false);
+        }
+      }
 
-                // Reload data
-                // await Promise.all([
-                //     loadUserStats(),
-                //     loadPendingUsers(),
-                //     loadApprovedUsers(),
-                //     loadRejectedUsers()
-                // ]);
-            } catch (error) {
-                console.error("Error deleting user:", error);
-                showToast(error.message || "Failed to delete user", "error");
-            } finally {
-                showLoading(false);
-            }
+      function viewUserDetails(userId) {
+        const user = allUsers.find((u) => u.id === userId);
+        if (!user) {
+          showToast("User not found", "error");
+          return;
         }
 
-        function viewUserDetails(userId) {
-            const user = allUsers.find((u) => u.id === userId);
-            if (!user) {
-                showToast("User not found", "error");
-                return;
-            }
-
-            alert(
-                `
+        alert(
+          `
 User Details:
 ━━━━━━━━━━━━━━━━━━━━━
 Name: ${user.name || "N/A"}
@@ -1204,45 +1564,44 @@ Created: ${formatDate(user.createdAt)}
 Last Login: ${formatDate(user.lastLogin)}
 ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             `.trim()
-            );
-        }
+        );
+      }
 
-        // Refresh all data
-        async function refreshData() {
-            showLoading();
-            try {
-                await Promise.all([
-                    loadUserStats(),
-                    loadPendingUsers(),
-                    loadApprovedUsers(),
-                    loadRejectedUsers(),
-                    loadAllUsers(),
-                ]);
-                showToast("Data refreshed successfully");
-            } catch (error) {
-                console.error("Error refreshing data:", error);
-                showToast("Failed to refresh data", "error");
-            } finally {
-                showLoading(false);
-            }
+      // Refresh all data
+      async function refreshData() {
+        showLoading();
+        try {
+          await Promise.all([
+            loadUserStats(),
+            loadPendingUsers(),
+            loadApprovedUsers(),
+            loadRejectedUsers(),
+            loadAllUsers(),
+          ]);
+          showToast("Data refreshed successfully");
+        } catch (error) {
+          console.error("Error refreshing data:", error);
+          showToast("Failed to refresh data", "error");
+        } finally {
+          showLoading(false);
         }
+      }
 
-        // Lazy load all users when tab is clicked
-        document
-            .getElementById("pills-all-tab")
-            .addEventListener("click", function () {
-                if (
-                    allUsers.length === 0 ||
-                    document
-                        .getElementById("allUsersTable")
-                        .innerHTML.includes("Loading")
-                ) {
-                    loadAllUsers();
-                }
-            });
+      // Lazy load all users when tab is clicked
+      document
+        .getElementById("pills-all-tab")
+        .addEventListener("click", function () {
+          if (
+            allUsers.length === 0 ||
+            document
+              .getElementById("allUsersTable")
+              .innerHTML.includes("Loading")
+          ) {
+            loadAllUsers();
+          }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-</body>
-
+  </body>
 </html>

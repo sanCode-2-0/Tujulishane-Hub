@@ -3,9 +3,16 @@ package com.tujulishanehub.backend.services;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Organization;
 import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.models.Announcement;
+import com.tujulishanehub.backend.models.CollaborationRequest;
+import com.tujulishanehub.backend.models.ProjectCollaborator;
 import com.tujulishanehub.backend.repositories.UserRepository;
+import com.tujulishanehub.backend.repositories.AnnouncementRepository;
+import com.tujulishanehub.backend.repositories.CollaborationRequestRepository;
+import com.tujulishanehub.backend.repositories.ProjectCollaboratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Random;
@@ -21,6 +28,15 @@ public class UserService {
     
     @Autowired
     private OrganizationService organizationService;
+
+    @Autowired
+    private AnnouncementRepository announcementRepository;
+
+    @Autowired
+    private CollaborationRequestRepository collaborationRequestRepository;
+
+    @Autowired
+    private ProjectCollaboratorRepository projectCollaboratorRepository;
 
     // Register user (name + email + optional organization). Create INACTIVE account and send OTP
     public void registerUser(String name, String email, Long organizationId) {
@@ -430,6 +446,40 @@ public class UserService {
             }
         }
         
+        return false;
+    }
+
+    /**
+     * Delete user (Super-Admin only)
+     */
+    @Transactional
+    public boolean deleteUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            
+            // Delete dependent records first
+            // Delete announcements created by this user
+            java.util.List<Announcement> announcements = announcementRepository.findByCreatedBy(user);
+            for (Announcement announcement : announcements) {
+                // Delete collaboration requests on this announcement
+                java.util.List<CollaborationRequest> requestsOnAnnouncement = collaborationRequestRepository.findByAnnouncementIdOrderByCreatedAtDesc(announcement.getId());
+                collaborationRequestRepository.deleteAll(requestsOnAnnouncement);
+            }
+            announcementRepository.deleteAll(announcements);
+            
+            // Delete collaboration requests by this user
+            java.util.List<CollaborationRequest> collaborationRequests = collaborationRequestRepository.findByRequestingUserOrderByCreatedAtDesc(user);
+            collaborationRequestRepository.deleteAll(collaborationRequests);
+            
+            // Delete project collaborators for this user
+            java.util.List<ProjectCollaborator> collaborators = projectCollaboratorRepository.findByUser(user);
+            projectCollaboratorRepository.deleteAll(collaborators);
+            
+            // Finally delete the user
+            userRepository.delete(user);
+            return true;
+        }
         return false;
     }
 }

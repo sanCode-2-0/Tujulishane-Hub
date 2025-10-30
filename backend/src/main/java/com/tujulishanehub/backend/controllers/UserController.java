@@ -392,6 +392,40 @@ public class UserController {
     }
     
     /**
+     * Delete a user (Super-Admin only)
+     */
+    @DeleteMapping("/admin/delete-user/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable Long userId) {
+        try {
+            boolean success = userService.deleteUser(userId);
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(), 
+                    "User deleted successfully", 
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(), 
+                    "User not found", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error deleting user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to delete user", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * Get users by approval status (Admin only)
      */
     @GetMapping("/admin/users/status/{status}")

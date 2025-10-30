@@ -16,6 +16,8 @@ public interface ProjectCollaboratorRepository extends JpaRepository<ProjectColl
     
     List<ProjectCollaborator> findByProjectAndIsActive(Project project, Boolean isActive);
     
+    List<ProjectCollaborator> findByUser(User user);
+    
     List<ProjectCollaborator> findByUserAndIsActive(User user, Boolean isActive);
     
     Optional<ProjectCollaborator> findByProjectAndUserAndIsActive(Project project, User user, Boolean isActive);

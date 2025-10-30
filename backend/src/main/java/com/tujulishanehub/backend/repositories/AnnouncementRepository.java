@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
     List<Announcement> findByStatusOrderByCreatedAtDesc(AnnouncementStatus status);
+    List<Announcement> findByCreatedBy(User createdBy);
     List<Announcement> findByCreatedByAndStatusOrderByCreatedAtDesc(User createdBy, AnnouncementStatus status);
     List<Announcement> findByProjectIdAndStatus(Long projectId, AnnouncementStatus status);
     

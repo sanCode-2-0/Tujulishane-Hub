@@ -28,3 +28,7 @@ test_otp_flow.bat
 test_otp_workflow.bat
 TESTING_QUICK_GUIDE.md
 .gradle/file-system.probe
+.env
+query
+.env
+src/main/resources/application-dev.properties
