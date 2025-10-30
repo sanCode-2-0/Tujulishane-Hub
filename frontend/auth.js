@@ -25,7 +25,7 @@ function getBaseUrl() {
 }
 
 const AUTH_CONFIG = {
-  BASE_URL: getBaseUrl(),
+  BASE_URL: "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com",
   TOKEN_KEY: "accessToken",
   USER_KEY: "currentUser",
 };
