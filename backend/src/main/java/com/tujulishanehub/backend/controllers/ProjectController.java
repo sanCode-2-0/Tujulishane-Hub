@@ -379,6 +379,7 @@ public class ProjectController {
      * Get projects with coordinates (for map display)
      */
     @GetMapping("/with-coordinates")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsWithCoordinates() {
         try {
             List<Project> projects = projectService.getProjectsWithCoordinates();

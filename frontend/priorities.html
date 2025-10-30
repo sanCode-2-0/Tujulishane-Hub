@@ -177,10 +177,10 @@
                 <!-- Map Picker for Location -->
                 <div class="col-span-2 lg:col-span-4">
                   <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Pick Project Location on Map</label
+                    >Pick Project Locations on Map</label
                   >
                   <div class="text-xs text-gray-600 mb-2">
-                    Search for a location or click on the map to select the
+                    Search for a location or click on the map to select multiple
                     project coordinates.
                   </div>
                   <div
@@ -196,27 +196,19 @@
                       overflow: hidden;
                     "
                   ></div>
-                  <input type="hidden" id="project_latitude" name="latitude" />
-                  <input
-                    type="hidden"
-                    id="project_longitude"
-                    name="longitude"
-                  />
-                  <input type="hidden" id="project_county" name="county" />
-                  <input
-                    type="hidden"
-                    id="project_subcounty"
-                    name="subcounty"
-                  />
+                  <div id="locationInputs">
+                    <!-- Hidden inputs for locations will be added here by JS -->
+                  </div>
                   <div
                     class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
                   >
-                    <strong>Selected Location:</strong>
-                    <span id="selectedLatLng" class="font-mono text-blue-600"
-                      >Click on map to select location</span
+                    <strong>Selected Locations:</strong>
+                    <ul
+                      id="selectedLocations"
+                      class="list-disc list-inside mt-1"
                     >
-                    <br />
-                    <span id="selectedCounty" class="text-gray-600"></span>
+                      <li class="text-gray-500">No locations selected yet</li>
+                    </ul>
                   </div>
                 </div>
                 <!-- Title -->
@@ -237,29 +229,228 @@
 
                 <!-- Project Theme -->
                 <div>
-                  <label
-                    for="theme"
-                    class="block text-sm font-medium text-gray-700"
+                  <label class="block text-sm font-medium text-gray-700 mb-3"
                     >Project Theme *</label
                   >
-                  <select
-                    id="theme"
-                    name="theme"
-                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="">Select Theme</option>
-                    <option value="GBV">Gender based violence</option>
-                    <option value="AYPSRH">
-                      Adolescent and Young People Sexual and Reproductive Health
-                    </option>
-                    <option value="MNH">Maternal and Newborn Health</option>
-                    <option value="FP">Family planning</option>
-                    <option value="CH">Child Health</option>
-                    <option value="AH">Adolescent Health</option>
-                  </select>
+
+                  <!-- Select All Option -->
+                  <div class="mb-4">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="theme_select_all"
+                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span class="ml-2 text-sm font-medium text-gray-700"
+                        >Select All Themes</span
+                      >
+                    </label>
+                  </div>
+
+                  <!-- Theme Grid -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Gender Based Violence -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="GBV"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center"
+                          >
+                            <i
+                              class="fas fa-shield-alt text-red-600 text-sm"
+                            ></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              Gender Based Violence
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              GBV prevention & support
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Adolescent and Young People Sexual and Reproductive Health -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="AYPSRH"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
+                          >
+                            <i class="fas fa-heart text-blue-600 text-sm"></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              AYP Sexual & Reproductive Health
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              Adolescent health services
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Maternal and Newborn Health -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="MNH"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center"
+                          >
+                            <i class="fas fa-baby text-pink-600 text-sm"></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              Maternal & Newborn Health
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              Maternity care & newborn support
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Family Planning -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="FP"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"
+                          >
+                            <i class="fas fa-users text-green-600 text-sm"></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              Family Planning
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              Contraception & family services
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Child Health -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="CH"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center"
+                          >
+                            <i class="fas fa-child text-purple-600 text-sm"></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              Child Health
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              Pediatric care & development
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Adolescent Health -->
+                    <div class="theme-card relative">
+                      <label
+                        class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="theme[]"
+                          value="AH"
+                          class="theme-checkbox h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <div class="ml-3 flex items-center flex-1">
+                          <div
+                            class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center"
+                          >
+                            <i
+                              class="fas fa-user-graduate text-orange-600 text-sm"
+                            ></i>
+                          </div>
+                          <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">
+                              Adolescent Health
+                            </div>
+                            <div class="text-xs text-gray-500">
+                              Teen health & wellness
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Selected Themes Counter -->
+                  <div class="mt-3 text-xs text-gray-500">
+                    <span id="selected-themes-count">0</span> theme(s) selected
+                  </div>
                 </div>
 
-                <!-- Time Period -->
+                <!-- Project Category -->
+                <div>
+                  <label
+                    for="category"
+                    class="block text-sm font-medium text-gray-700"
+                    >Project Category *</label
+                  >
+                  <select
+                    id="category"
+                    name="category"
+                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="IMPLEMENTING">Implementing Project</option>
+                    <option value="RESEARCH">Research Project</option>
+                  </select>
+                </div>
                 <div>
                   <label
                     for="starttime_period"
@@ -317,7 +508,7 @@
                   <input
                     required
                     type="text"
-                    id="contact_person_name"
+                    id="contact_person"
                     name="contact_person_name"
                     placeholder="Name"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
@@ -325,7 +516,7 @@
                 </div>
                 <div>
                   <label
-                    for="contact_person_role"
+                    for="contact_person"
                     class="block text-sm font-medium text-gray-700"
                   >
                     Contact Person Role *
@@ -333,7 +524,7 @@
                   <input
                     required
                     type="text"
-                    id="contact_person_role"
+                    id="contact_person"
                     name="contact_person_role"
                     placeholder="Role"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
@@ -341,7 +532,7 @@
                 </div>
                 <div>
                   <label
-                    for="contact_person_email"
+                    for="contact_person"
                     class="block text-sm font-medium text-gray-700"
                   >
                     Contact Person Email *
@@ -349,7 +540,7 @@
                   <input
                     required
                     type="email"
-                    id="contact_person_email"
+                    id="contact_person"
                     name="contact_person_mail"
                     placeholder="Email"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
@@ -629,41 +820,11 @@
                 <i class="mr-2 fas fa-plus"></i> Create New Priority Project
               </button>
             </div>
-            <div class="px-6 py-5 bg-green-800/5 rounded-md">
-              <h4 class="text-lg font-semibold text-gray-800 mb-2">
-                Project Name
-              </h4>
-
-              <p class="text-sm text-gray-700 leading-relaxed mb-3">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Neque
-                nam delectus, impedit aperiam asperiores voluptatem accusamus
-                sunt quas repellendus cupiditate iusto assumenda ullam placeat
-                modi, enim ex hic, quidem possimus.
-              </p>
-
-              <p class="text-sm text-gray-700 mb-2">
-                Located in
-                <strong>Nairobi , Nairobi Central , Langata </strong>, this
-                project has partners to be announced with an estimated budget of
-                <strong>KES 112.34 M</strong>.
-              </p>
-
-              <p class="text-sm text-gray-700 mb-2">
-                Status:
-                <span
-                  class="inline-block px-2 py-1 rounded-full text-sm font-medium bg-green-800/20"
-                >
-                  Open
-                </span>
-              </p>
-
-              <p class="text-sm text-gray-700 mb-2">Due By: 12 Jul 2027</p>
-
-              <button
-                class="mt-3 px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition"
-              >
-                Locate on Map
-              </button>
+            <div
+              id="featuredProjectSection"
+              class="px-6 py-5 bg-green-800/5 rounded-md"
+            >
+              <!-- Featured priority project will be loaded here -->
             </div>
           </div>
         </div>
@@ -882,6 +1043,11 @@
 
             // ONLY add markers to map - don't overwrite the main projects array
             // The main projects array is managed by loadProjects() which includes ALL projects
+            console.log(
+              "Adding markers to map for",
+              projectsData.length,
+              "projects"
+            );
             addMarkersToMap(projectsData);
           } else {
             console.warn("API response not OK, loading sample projects");
@@ -899,46 +1065,198 @@
         const sampleProjects = [
           {
             id: 1,
-            projectName: "Project 1",
-            latitude: -1.2921,
-            longitude: 36.8219,
-            status: "ACTIVE",
+            title: "Emergency Maternal Health Response Program",
+            projectCategory: "PRIORITY",
+            projectTheme: "MNH",
+            latitude: -1.263,
+            longitude: 36.8065,
+            status: "active",
+            county: "Nairobi",
+            partner: "Ministry of Health - Nairobi County",
+            budget: 5000000,
+            objectives:
+              "Reduce maternal mortality through emergency response and capacity building in Nairobi County",
+            endDate: "2024-12-31",
           },
           {
             id: 2,
-            projectName: "Project 2",
-            latitude: -0.1023,
-            longitude: 34.7619,
-            status: "PENDING",
+            title: "Adolescent Sexual Reproductive Health Initiative",
+            projectCategory: "PRIORITY",
+            projectTheme: "AYPSRH",
+            latitude: -1.2833,
+            longitude: 36.8167,
+            status: "active",
+            county: "Nairobi",
+            partner: "UNICEF Kenya",
+            budget: 3500000,
+            objectives:
+              "Comprehensive SRH education and services for adolescents aged 10-19 in urban slums",
+            endDate: "2025-01-31",
           },
           {
             id: 3,
-            projectName: "Project 3",
-            latitude: 0.3256,
-            longitude: 37.1231,
-            status: "STALLED",
+            title: "Modern Contraceptive Access Program",
+            projectCategory: "PRIORITY",
+            projectTheme: "FP",
+            latitude: -1.0333,
+            longitude: 37.0833,
+            status: "active",
+            county: "Kiambu",
+            partner: "USAID Kenya",
+            budget: 4200000,
+            objectives:
+              "Increase modern contraceptive prevalence rate by 15% through community distribution",
+            endDate: "2024-11-30",
           },
           {
             id: 4,
-            projectName: "Project 4",
-            latitude: -1.1504,
-            longitude: 36.8907,
-            status: "COMPLETED",
+            title: "Integrated Child Health and Nutrition Program",
+            projectCategory: "PRIORITY",
+            projectTheme: "CH",
+            latitude: -0.3031,
+            longitude: 36.08,
+            status: "active",
+            county: "Nakuru",
+            partner: "World Health Organization",
+            budget: 6100000,
+            objectives:
+              "Reduce child malnutrition and improve immunization coverage in rural areas",
+            endDate: "2024-12-15",
+          },
+          {
+            id: 5,
+            title: "GBV Prevention and Response Network",
+            projectCategory: "PRIORITY",
+            projectTheme: "GBV",
+            latitude: -1.2833,
+            longitude: 36.8167,
+            status: "active",
+            county: "Nairobi",
+            partner: "Amref Health Africa",
+            budget: 2800000,
+            objectives:
+              "Establish comprehensive GBV prevention and survivor support systems",
+            endDate: "2025-03-31",
           },
         ];
         projects = sampleProjects;
-        updateMapWithProjects(sampleProjects);
+        addMarkersToMap(sampleProjects);
         highlightMarkers("all");
+        updateFeaturedProject(sampleProjects);
+      }
+
+      // Update featured project section
+      function updateFeaturedProject(projectsData) {
+        const featuredSection = document.getElementById(
+          "featuredProjectSection"
+        );
+        if (!featuredSection) return;
+
+        // Find the first priority project or any project if no priority projects exist
+        const priorityProject =
+          projectsData.find((p) => p.projectCategory === "PRIORITY") ||
+          projectsData[0];
+
+        if (!priorityProject) {
+          featuredSection.innerHTML = `
+            <h4 class="text-lg font-semibold text-gray-800 mb-2">
+              No Projects Available
+            </h4>
+            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+              No projects are currently available. Check back later or create a new project.
+            </p>
+          `;
+          return;
+        }
+
+        const color = getStatusColor(priorityProject.status);
+        const statusBg = statusBadge(priorityProject.status?.toLowerCase());
+        const projectName =
+          priorityProject.projectName ||
+          priorityProject.title ||
+          "Untitled Project";
+        const description =
+          priorityProject.description ||
+          priorityProject.objectives ||
+          "This project currently has no description provided.";
+        const location =
+          priorityProject.county ||
+          priorityProject.region ||
+          "an unspecified region";
+        const partner = priorityProject.partner || "partners to be announced";
+        const budget = priorityProject.budget
+          ? "KES " + Number(priorityProject.budget).toLocaleString()
+          : "N/A";
+        const endDate = priorityProject.endDate
+          ? new Date(priorityProject.endDate).toLocaleDateString()
+          : "Not specified";
+
+        featuredSection.innerHTML = `
+          <div class="flex items-center gap-2 mb-2">
+            <h4 class="text-lg font-semibold text-gray-800">${projectName}</h4>
+            ${
+              priorityProject.projectCategory === "PRIORITY"
+                ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200"><i class="fas fa-star mr-1"></i>PRIORITY</span>'
+                : ""
+            }
+          </div>
+
+          <p class="text-sm text-gray-700 leading-relaxed mb-3">
+            ${description}
+          </p>
+
+          <p class="text-sm text-gray-700 mb-2">
+            Located in <strong>${location}</strong>, this project ${
+          partner
+            ? `is supported by <strong>${partner}</strong>`
+            : "has partners to be announced"
+        }
+            with an estimated budget of <strong>${budget}</strong>.
+          </p>
+
+          <p class="text-sm text-gray-700 mb-2">
+            Status: <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBg}">
+              ${priorityProject.status || "Ongoing"}
+            </span>
+          </p>
+
+          <p class="text-sm text-gray-700 mb-2">Due By: ${endDate}</p>
+
+          <div class="flex gap-2 mt-3">
+            <button onclick="focusMarker(${projectsData.indexOf(
+              priorityProject
+            )})" class="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition">
+              Locate on Map
+            </button>
+            <button onclick="requestCollaboration(${
+              priorityProject.id
+            })" class="px-5 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 hover:scale-105 transition">
+              Request Collaboration
+            </button>
+          </div>
+        `;
       }
 
       // Add markers to Mapbox map (supports multiple locations per project)
       function addMarkersToMap(projectsData) {
+        console.log(
+          "addMarkersToMap called with",
+          projectsData.length,
+          "projects"
+        );
         // Clear existing markers
         mapMarkers.forEach((marker) => marker.remove());
         mapMarkers.length = 0;
 
         // Add new markers
-        projectsData.forEach((project) => {
+        projectsData.forEach((project, index) => {
+          console.log(
+            `Processing project ${index}:`,
+            project.title || project.projectName,
+            "coords:",
+            project.latitude,
+            project.longitude
+          );
           // Determine location list: prefer project.locations array, fall back to single lat/lng
           const locs =
             Array.isArray(project.locations) && project.locations.length
@@ -947,10 +1265,15 @@
               ? [{ latitude: project.latitude, longitude: project.longitude }]
               : [];
 
+          console.log(`Project ${index} has ${locs.length} locations`);
           locs.forEach((loc, locIndex) => {
             const lat = loc.latitude;
             const lng = loc.longitude;
-            if (!lat || !lng) return;
+            console.log(`Location ${locIndex}: lat=${lat}, lng=${lng}`);
+            if (!lat || !lng) {
+              console.log("Skipping location due to missing coordinates");
+              return;
+            }
 
             // Create marker element
             const el = document.createElement("div");
@@ -1244,9 +1567,16 @@
 
           item.innerHTML = `
 			<div class="px-6 py-5" style="background-color: ${color}10;">
-				<h4 class="text-lg font-semibold text-gray-800 mb-2">${
-          project.projectName || project.title || "Untitled Project"
-        }</h4>
+				<div class="flex items-center gap-2 mb-2">
+					<h4 class="text-lg font-semibold text-gray-800">${
+            project.projectName || project.title || "Untitled Project"
+          }</h4>
+					${
+            project.projectCategory === "PRIORITY"
+              ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200"><i class="fas fa-star mr-1"></i>PRIORITY</span>'
+              : ""
+          }
+				</div>
 				
 				<p class="text-sm text-gray-700 leading-relaxed mb-3">
 					${
@@ -1288,10 +1618,16 @@
           }
 				</p>
 
-				<button onclick="focusMarker(${i})" 
-					class="mt-3 px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition">
-					Locate on Map
-				</button>
+				<div class="flex gap-2 mt-3">
+					<button onclick="focusMarker(${i})" 
+						class="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 hover:scale-105 transition">
+						Locate on Map
+					</button>
+					<button onclick="requestCollaboration(${project.id})" 
+						class="px-5 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 hover:scale-105 transition">
+						<i class="fas fa-handshake mr-1"></i>Request Collaboration
+					</button>
+				</div>
 			</div>
 		`;
 
@@ -1446,100 +1782,209 @@
         }
       }
 
+      // Handle theme selection
+      document.addEventListener("DOMContentLoaded", function () {
+        // Theme selection logic
+        const themeSelectAll = document.getElementById("theme_select_all");
+        const themeCheckboxes = document.querySelectorAll(
+          'input[name="theme[]"]'
+        );
+        const selectedThemesCount = document.getElementById(
+          "selected-themes-count"
+        );
+
+        function updateThemeCounter() {
+          const checkedCount = document.querySelectorAll(
+            'input[name="theme[]"]:checked'
+          ).length;
+          selectedThemesCount.textContent = checkedCount;
+        }
+
+        // Handle "Select All" checkbox
+        if (themeSelectAll) {
+          themeSelectAll.addEventListener("change", function () {
+            themeCheckboxes.forEach((checkbox) => {
+              checkbox.checked = this.checked;
+            });
+            updateThemeCounter();
+          });
+        }
+
+        // Handle individual theme checkboxes
+        themeCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const allChecked = Array.from(themeCheckboxes).every(
+              (cb) => cb.checked
+            );
+            const noneChecked = Array.from(themeCheckboxes).every(
+              (cb) => !cb.checked
+            );
+
+            if (themeSelectAll) {
+              themeSelectAll.checked = allChecked;
+              themeSelectAll.indeterminate = !allChecked && !noneChecked;
+            }
+
+            updateThemeCounter();
+          });
+        });
+
+        // Initialize counter
+        updateThemeCounter();
+      });
+
       // Handle new project form submission
       document
         .getElementById("newProjectForm")
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
-          // Validate required fields
-          const title = document.getElementById("title").value.trim();
-          const theme = document.getElementById("theme").value;
-          const startDate = document.getElementById("starttime_period").value;
-          const activityType = document
-            .getElementById("activity_type")
-            .value.trim();
-          const contactName = document
-            .getElementById("contact_person_name")
-            .value.trim();
-          const contactRole = document
-            .querySelector('input[name="contact_person_role"]')
-            .value.trim();
-          const contactEmail = document
-            .querySelector('input[name="contact_person_mail"]')
-            .value.trim();
-          const budget = document.getElementById("budget").value;
-          const objectives = document.getElementById("gaps").value.trim();
+          // Validate required fields by checking form data directly
+          const form = e.target;
+          const formDataObj = new FormData(form);
 
-          if (
-            !title ||
-            !theme ||
-            !startDate ||
-            !activityType ||
-            !contactName ||
-            !contactRole ||
-            !contactEmail ||
-            !budget ||
-            !objectives
-          ) {
-            alert("Please fill in all required fields.");
+          // Collect multiple themes
+          const selectedThemes = formDataObj.getAll("theme[]");
+
+          const requiredFormFields = [
+            { field: "title", label: "Title" },
+            { field: "start_date", label: "Start Date" },
+            { field: "activity_type", label: "Activity Type" },
+            { field: "contact_person_name", label: "Contact Person Name" },
+            { field: "contact_person_role", label: "Contact Person Role" },
+            { field: "contact_person_mail", label: "Contact Person Email" },
+            { field: "gaps", label: "Objectives" },
+            { field: "budget", label: "Budget" },
+            { field: "category", label: "Project Category" },
+          ];
+
+          const missingFields = requiredFormFields.filter((fieldObj) => {
+            const value = formDataObj.get(fieldObj.field);
+            return !value || value.trim() === "";
+          });
+
+          // Check for at least one theme
+          if (selectedThemes.length === 0) {
+            missingFields.push({
+              field: "theme",
+              label: "At least one Project Theme",
+            });
+          }
+
+          // Check for at least one location (latitude/longitude from map selection)
+          const latitude = document.getElementById("project_latitude")?.value;
+          const longitude = document.getElementById("project_longitude")?.value;
+          if (!latitude || !longitude) {
+            missingFields.push({
+              field: "location",
+              label: "Project Location (click on map)",
+            });
+          }
+
+          if (missingFields.length > 0) {
+            const missingLabels = missingFields.map((f) => f.label);
+            alert(
+              `Please fill in all required fields:\n• ${missingLabels.join(
+                "\n• "
+              )}`
+            );
+
+            // Focus on the first missing field
+            const firstMissingField = form.querySelector(
+              `[name="${missingFields[0].field}"]`
+            );
+            if (firstMissingField) {
+              firstMissingField.focus();
+              firstMissingField.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
             return;
           }
 
           // Get location data
-          const latitude = document.getElementById("project_latitude").value;
-          const longitude = document.getElementById("project_longitude").value;
           const county = document.getElementById("project_county").value;
+          const subCounty = document.getElementById("project_subcounty").value;
 
-          if (!latitude || !longitude) {
-            alert("Please select a location on the map.");
-            return;
-          }
-
-          // Prepare form data
+          // Prepare form data according to API documentation
           const formData = {
-            title: title,
-            partner: title, // Will be overridden by backend based on authenticated user
-            themes: [theme], // Single theme selection, convert to array
-            projectCategory: "PRIORITY", // Default category for priority projects
-            startDate: startDate,
-            endDate: document.getElementById("endtime_period").value || null,
-            activityType: activityType,
+            partner: "TBD", // This should come from user's organization
+            title: formDataObj.get("title"),
+            themes: selectedThemes,
+            projectCategory: formDataObj.get("category"),
+            startDate: formDataObj.get("start_date"),
+            endDate: formDataObj.get("end_date") || null,
+            activityType: formDataObj.get("activity_type"),
             locations: [
               {
                 county: county,
-                subCounty:
-                  document.getElementById("project_subcounty").value || null,
+                subCounty: subCounty || null,
                 latitude: parseFloat(latitude),
                 longitude: parseFloat(longitude),
+                mapsAddress: `${county}${
+                  subCounty ? ", " + subCounty : ""
+                }, Kenya`.trim(),
               },
             ],
-            contactPersonName: contactName,
-            contactPersonRole: contactRole,
-            contactPersonEmail: contactEmail,
-            objectives: objectives,
-            budget: parseFloat(budget),
+            contactPersonName: formDataObj.get("contact_person_name"),
+            contactPersonRole: formDataObj.get("contact_person_role"),
+            contactPersonEmail: formDataObj.get("contact_person_mail"),
+            objectives: formDataObj.get("gaps"),
+            budget: parseFloat(formDataObj.get("budget")),
+            isPriority: true,
           };
 
           try {
-            const token = authManager.getToken();
-            if (!token) {
-              alert("You must be logged in to create a project.");
-              return;
+            // Get current user to set partner
+            const user = await authManager.getCurrentUser();
+            console.log("Current user data:", user);
+
+            // Try multiple sources for organization name
+            if (user) {
+              if (user.organization && user.organization.name) {
+                formData.partner = user.organization.name;
+                console.log(
+                  "Partner set from user.organization.name:",
+                  formData.partner
+                );
+              } else if (user.organizationName) {
+                formData.partner = user.organizationName;
+                console.log(
+                  "Partner set from user.organizationName:",
+                  formData.partner
+                );
+              } else if (user.name) {
+                // Fallback to user's name if no organization
+                formData.partner = user.organization.name;
+                console.log(
+                  "Partner set from user.name (fallback):",
+                  formData.partner
+                );
+              }
             }
 
-            const response = await fetch(`${window.BASE_URL}/api/projects`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(formData),
-            });
+            console.log("📡 Submitting priority project to API...");
+            console.log(
+              "📦 Final project data being sent:",
+              JSON.stringify(formData, null, 2)
+            );
+
+            // Submit to API using authManager
+            const response = await authManager.apiCall(
+              "/api/projects",
+              "POST",
+              formData
+            );
 
             if (response.ok) {
               const result = await response.json();
-              alert("Project created successfully!");
+              console.log("✅ Priority project created successfully:", result);
+
+              // Show success message
+              alert(
+                "Priority project created successfully! Your project has been submitted for review."
+              );
 
               // Close modal
               const modal = document.getElementById("createNewProject");
@@ -1560,15 +2005,24 @@
               // Refresh projects list
               loadProjectsForMap();
             } else {
-              const error = await response.json();
-              alert(
-                `Failed to create project: ${error.message || "Unknown error"}`
-              );
+              let errorMessage = "Failed to create priority project";
+              // Use stored raw error text from authManager.apiCall if available
+              const errorText = response.errorText || "";
+              if (errorText) console.error("❌ Raw error response:", errorText);
+              // Attempt to parse JSON error
+              try {
+                const errorData = JSON.parse(errorText);
+                errorMessage = errorData.message || errorMessage;
+                console.error("❌ API Error:", errorData);
+              } catch (_e) {
+                // Not JSON, skip
+              }
+              alert(`Failed to create priority project: ${errorMessage}`);
             }
           } catch (error) {
-            console.error("Error creating project:", error);
+            console.error("❌ Submission error:", error);
             alert(
-              "An error occurred while creating the project. Please try again."
+              "An error occurred while creating the priority project. Please try again."
             );
           }
         });
@@ -1633,6 +2087,56 @@
         modal.classList.remove("hidden");
         // Initialize map when modal opens
         setTimeout(initializeNewProjectMap, 100);
+      }
+
+      // Function to request collaboration on a project
+      async function requestCollaboration(projectId) {
+        if (
+          !confirm(
+            "Are you sure you want to request collaboration on this project?"
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const token = authManager.getToken();
+          if (!token) {
+            alert("You must be logged in to request collaboration.");
+            return;
+          }
+
+          const response = await fetch(
+            `${window.BASE_URL}/api/projects/${projectId}/collaborators`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                role: "COLLABORATOR", // Default role for new collaborators
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            alert("Collaboration request sent successfully!");
+          } else {
+            const error = await response.json();
+            alert(
+              `Failed to request collaboration: ${
+                error.message || "Unknown error"
+              }`
+            );
+          }
+        } catch (error) {
+          console.error("Error requesting collaboration:", error);
+          alert(
+            "An error occurred while requesting collaboration. Please try again."
+          );
+        }
       }
     </script>
   </body>

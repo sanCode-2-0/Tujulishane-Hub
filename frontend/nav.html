@@ -1,25 +1,11 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <nav
   x-data="{ open: false }"
   class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
 >
   <div class="flex items-center justify-between px-6 py-4">
     <a
-      href="index.html    <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
-      <li>
-        <a href="index.html" class="uppercase transition hover:text-lime-600"
-          >Home</a
-        >
-      </li>
-
-      <!-- Projects Dropdown -->
-      <li x-data="{ showprojectDropdown: false }" class="relative">
-        <button
-          @click="showprojectDropdown = !showprojectDropdown"
-          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-        >
-          Projects <i class="fas fa-chevron-down ml-2"></i>
-        </button>"flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
+      href="index.html"
+      class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
     >
       <img
         src="resources/images/log2.png"
@@ -56,28 +42,28 @@
           @click="showprojectDropdown = !showprojectDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Projects <i class="ml-2 fas fa-chevron-down"></i>
+          Projects <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showprojectDropdown"
           @click.outside="showprojectDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-800">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                <i class="fas fa-plus mr-3 text-emerald-500"></i> New Project
+                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="projects.html#my-projects">
-                <i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects
+                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="all-projects.html">
-                <i class="fas fa-folder-open mr-2 text-yellow-600"></i> All
+                <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
                 Projects
               </a>
             </li>
@@ -91,30 +77,30 @@
           @click="collabDropdown = !collabDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Collaborations <i class="ml-2 fas fa-chevron-down"></i>
+          Collaborations <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="collabDropdown"
           @click.outside="collabDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-700">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="priorities.html">
-                <i class="fas fa-star mr-2 text-orange-600"></i> RMNCAH
+                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
                 Proirities
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="my-collaborations.html">
-                <i class="fas fa-users-crown mr-2 text-fuchsia-600"></i> My
+                <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
                 Collaborations
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="announcements.html">
-                <i class="fas fa-search mr-2 text-cyan-500"></i> Find Projects
+                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
               </a>
             </li>
           </ul>
@@ -136,13 +122,13 @@
           @click="showDropdown = !showDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Admin <i class="ml-2 fas fa-chevron-down"></i>
+          Admin <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showDropdown"
           @click.outside="showDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-700">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
@@ -158,16 +144,6 @@
         </div>
       </li>
 
-      <!-- Donor -->
-      <li class="relative hidden" id="donorNav">
-        <a
-          href="donor-management.html"
-          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-        >
-          <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-        </a>
-      </li>
-
       <!-- User Dropdown -->
       <li x-data="{ showUserDropdown: false }" class="relative">
         <button
@@ -176,7 +152,7 @@
         >
           <i class="mr-2 fas fa-user-circle"></i>
           <span id="userDisplayName">User</span>
-          <i class="ml-2 fas fa-chevron-down"></i>
+          <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showUserDropdown"
@@ -269,28 +245,28 @@
           @click="showprojectDropdown = !showprojectDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Projects <i class="fas fa-chevron-down ml-2"></i>
+          Projects <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showprojectDropdown"
           @click.outside="showprojectDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-800">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                <i class="fas fa-plus mr-3 text-emerald-500"></i> New Project
+                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="projects.html#my-projects">
-                <i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects
+                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="all-projects.html">
-                <i class="fas fa-folder-open mr-2 text-yellow-600"></i> All
+                <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
                 Projects
               </a>
             </li>
@@ -304,30 +280,30 @@
           @click="collabDropdown = !collabDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Collaborations <i class="ml-2 fas fa-chevron-down"></i>
+          Collaborations <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="collabDropdown"
           @click.outside="collabDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-700">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="priorities.html">
-                <i class="fas fa-star mr-2 text-orange-600"></i> RMNCAH
+                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
                 Proirities
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="my-collaborations.html">
-                <i class="fas fa-users-crown mr-2 text-fuchsia-600"></i> My
+                <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
                 Collaborations
               </a>
             </li>
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
               <a href="announcements.html">
-                <i class="fas fa-search mr-2 text-cyan-500"></i> Find Projects
+                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
               </a>
             </li>
           </ul>
@@ -344,13 +320,13 @@
           @click="showDropdown = !showDropdown"
           class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
         >
-          Admin <i class="ml-2 fas fa-chevron-down"></i>
+          Admin <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showDropdown"
           @click.outside="showDropdown = false"
           x-transition
-          x-cloak class="hidden absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
         >
           <ul class="py-2 text-sm text-left text-teal-700">
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
@@ -366,16 +342,6 @@
         </div>
       </li>
 
-      <!-- Donor -->
-      <li class="relative hidden" id="donorNav">
-        <a
-          href="donor-management.html"
-          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-        >
-          <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-        </a>
-      </li>
-
       <!-- User Dropdown -->
       <li x-data="{ showUserDropdown: false }" class="relative">
         <button
@@ -384,7 +350,7 @@
         >
           <i class="mr-2 fas fa-user-circle"></i>
           <span id="userDisplayName">User</span>
-          <i class="ml-2 fas fa-chevron-down"></i>
+          <i class="ml-2 fad fa-chevron-down"></i>
         </button>
         <div
           x-show="showUserDropdown"
@@ -453,15 +419,3 @@
     </ul>
   </div>
 </nav>
-<script>
-  console.log("Navigation HTML loaded and inserted");
-  // Check if Font Awesome icons are present
-  setTimeout(() => {
-    const icons = document.querySelectorAll('nav i.fas');
-    console.log("Found", icons.length, "Font Awesome icons in nav");
-    if (icons.length > 0) {
-      console.log("First icon classes:", icons[0].className);
-      console.log("First icon computed style:", getComputedStyle(icons[0]));
-    }
-  }, 100);
-</script>
