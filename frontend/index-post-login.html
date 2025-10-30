@@ -1058,6 +1058,9 @@
 
               // Load pending requests count
               loadPendingRequestsCount();
+            } else if (user.role === "DONOR") {
+              const donorNavItems = document.querySelectorAll("#donorNav");
+              donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
             }
           } else {
             console.warn("[DEBUG] No user data found in cache");
