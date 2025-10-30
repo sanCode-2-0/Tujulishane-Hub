@@ -15,7 +15,7 @@ const DEV_URL = "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
 
 // Compute base URL from toggle. If a runtime global override is set (by a
 // non-committed local file that sets window.__BASE_URL_OVERRIDE), prefer that.
-let BASE_URL = USE_PROD ? PROD_URL : DEV_URL;
+let BASE_URL = "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
 if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
   BASE_URL = window.__BASE_URL_OVERRIDE;
 }
