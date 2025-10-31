@@ -128,3 +128,9 @@ frontend/TEST_MEMBERS_INTEGRATION.md
 GUIDELINES_SOPS_PLAN.md
 # Local frontend config override
 frontend/config.local.js
+
+BACKEND_COMPILATION_FIXES.md
+IMPLEMENTATION_COMPLETE.md
+sample_priority_projects.sql
+insert_priority_projects.sql
+frontend/Stakeholders/MULTI_THEMES_LOCATIONS_README.md
