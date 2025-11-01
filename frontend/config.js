@@ -10,14 +10,15 @@
 const USE_PROD = true; // <--- flip this boolean to switch environments
 
 // Backend endpoints
-const PROD_URL = "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-const DEV_URL = "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+const PROD_URL = "http://localhost:8080";
+const DEV_URL = "http://localhost:8080";
 
 // Compute base URL from toggle. If a runtime global override is set (by a
 // non-committed local file that sets window.__BASE_URL_OVERRIDE), prefer that.
-let BASE_URL = "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+let BASE_URL = "http://localhost:8080";
 if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
   BASE_URL = window.__BASE_URL_OVERRIDE;
 }
 
+console.log("BASE URL", BASE_URL);
 export { BASE_URL, DEV_URL, PROD_URL, USE_PROD };

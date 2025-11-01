@@ -12,6 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectResponse {
     private Long id;
+    private String projectNo;
     private String partner;
     private String title;
     private ProjectCategory projectCategory;
@@ -41,6 +42,14 @@ public class ProjectResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getProjectNo() {
+        return projectNo;
+    }
+
+    public void setProjectNo(String projectNo) {
+        this.projectNo = projectNo;
     }
 
     public String getPartner() {

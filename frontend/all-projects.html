@@ -973,7 +973,7 @@
                 <input
                   type="text"
                   id="searchInput"
-                  placeholder="Search by name..."
+                  placeholder="Search by name or project number..."
                   class="block w-full py-2 pl-10 pr-4 text-base text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <div
@@ -1915,7 +1915,11 @@
           if (currentCategory !== "all" && p.category !== currentCategory)
             return false;
           // Filter by search query
-          if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+          if (
+            searchQuery &&
+            !p.name.toLowerCase().includes(searchQuery) &&
+            !(p.projectNo && p.projectNo.toLowerCase().includes(searchQuery))
+          )
             return false;
           // Filter by date range
           const pDate = p.start_date ? new Date(p.start_date) : null;
@@ -1979,8 +1983,8 @@
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <div>
                         <h4 class="text-lg font-semibold text-gray-800">${
-                          project.title || ""
-                        }</h4>
+                          project.projectNo || ""
+                        } - ${project.title || ""}</h4>
                         <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${
             project.objectives || ""
           }</p>

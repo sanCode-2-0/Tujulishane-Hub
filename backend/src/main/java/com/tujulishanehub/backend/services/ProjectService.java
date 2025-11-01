@@ -155,9 +155,9 @@ public class ProjectService {
     /**
      * Search projects by various criteria
      */
-    public List<Project> searchProjects(String partner, String title, String status, 
+    public List<Project> searchProjects(String partner, String title, String projectNo, String status, 
                                        String county, String activityType) {
-        return projectRepository.searchProjects(partner, title, status, county, activityType);
+        return projectRepository.searchProjects(partner, title, projectNo, status, county, activityType);
     }
     
     /**
@@ -453,6 +453,7 @@ public class ProjectService {
             logger.debug("Creating ProjectResponse object");
             ProjectResponse response = new ProjectResponse();
             response.setId(project.getId());
+            response.setProjectNo(project.getProjectNo());
             response.setPartner(project.getPartner());
             response.setTitle(project.getTitle());
             response.setProjectCategory(project.getProjectCategory());
@@ -519,6 +520,7 @@ public class ProjectService {
 
         try {
             Project project = new Project();
+            project.setProjectNo(generateProjectNo());
             project.setTitle(request.getTitle());
             project.setPartner(userEmail); // Override with authenticated user
             project.setProjectCategory(request.getProjectCategory());
@@ -697,6 +699,22 @@ public class ProjectService {
 
         logger.info("Project {} marked as stalled by {}", projectId, stalledBy);
         return project;
+    }
+
+    /**
+     * Generate a unique project number in P-0001 format
+     */
+    private String generateProjectNo() {
+        // Find the highest existing project number
+        Optional<String> maxProjectNo = projectRepository.findAll().stream()
+            .filter(p -> p.getProjectNo() != null && p.getProjectNo().startsWith("P-"))
+            .map(Project::getProjectNo)
+            .map(no -> no.substring(2)) // Remove "P-"
+            .map(Integer::parseInt)
+            .max(Integer::compareTo)
+            .map(num -> String.format("P-%04d", num + 1));
+
+        return maxProjectNo.orElse("P-0001");
     }
 
     /**

@@ -93,12 +93,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT DISTINCT p FROM Project p LEFT JOIN p.locations loc WHERE " +
            "(:partner IS NULL OR :partner = '' OR LOWER(CAST(p.partner AS string)) LIKE LOWER(CONCAT('%', :partner, '%'))) AND " +
            "(:title IS NULL OR :title = '' OR LOWER(CAST(p.title AS string)) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
+           "(:projectNo IS NULL OR :projectNo = '' OR p.projectNo = :projectNo) AND " +
            "(:status IS NULL OR :status = '' OR p.status = :status) AND " +
            "(:county IS NULL OR :county = '' OR LOWER(CAST(loc.county AS string)) LIKE LOWER(CONCAT('%', :county, '%'))) AND " +
            "(:activityType IS NULL OR :activityType = '' OR LOWER(CAST(p.activityType AS string)) LIKE LOWER(CONCAT('%', :activityType, '%')))")
     List<Project> searchProjects(
         @Param("partner") String partner,
         @Param("title") String title,
+        @Param("projectNo") String projectNo,
         @Param("status") String status,
         @Param("county") String county,
         @Param("activityType") String activityType

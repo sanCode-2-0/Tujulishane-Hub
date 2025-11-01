@@ -324,12 +324,13 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> searchProjects(
             @RequestParam(required = false) String partner,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false) String projectNo,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String county,
             @RequestParam(required = false) String activityType) {
         
         try {
-            List<Project> projects = projectService.searchProjects(partner, title, status, county, activityType);
+            List<Project> projects = projectService.searchProjects(partner, title, projectNo, status, county, activityType);
             
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 

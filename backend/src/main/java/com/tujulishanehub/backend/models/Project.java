@@ -25,6 +25,9 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
+    private String projectNo;
     
     @Column(nullable = false)
     private String partner;
@@ -166,6 +169,14 @@ public class Project {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setProjectNo(String projectNo){
+        this.projectNo = projectNo;
+    }
+
+    public String getProjectNo(){
+        return projectNo;
     }
 
     public String getTitle() {

@@ -3,7 +3,7 @@
  * Handles JWT token management, API calls with authentication, and user session
  */
 
-// PROD URL: https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com
+// PROD URL: http://localhost:8080
 
 // Allow switching between dev and prod base URLs
 function getBaseUrl() {
@@ -11,21 +11,21 @@ function getBaseUrl() {
   const params = new URLSearchParams(window.location.search);
   const env = params.get("env") || localStorage.getItem("apiEnv");
   if (env === "dev") {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+    return "http://localhost:8080";
   }
   // 2. Production: Use Heroku backend
   if (
     window.location.hostname !== "localhost" &&
     window.location.hostname !== "127.0.0.1"
   ) {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+    return "http://localhost:8080";
   }
   // 3. Development: Use local backend
-  return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+  return "http://localhost:8080";
 }
 
 const AUTH_CONFIG = {
-  BASE_URL: "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com",
+  BASE_URL: "http://localhost:8080",
   TOKEN_KEY: "accessToken",
   USER_KEY: "currentUser",
 };

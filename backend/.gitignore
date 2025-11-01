@@ -32,3 +32,5 @@ TESTING_QUICK_GUIDE.md
 query
 .env
 src/main/resources/application-dev.properties
+Database.md
+.env
