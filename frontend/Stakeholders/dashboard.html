@@ -336,6 +336,14 @@
 								<input type="date" id="endtime_period" name="end_date"
 									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
 							</div>
+								<!-- Supporting Documents -->
+								<div class="col-span-2 md:col-span-4">
+									<label for="supporting_documents" class="block text-sm font-medium text-gray-700">Supporting Documents</label>
+									<input type="file" id="supporting_documents" name="supporting_documents" multiple
+										accept=".pdf,.doc,.docx,image/*"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+									<p class="text-xs text-gray-500 mt-1">You can upload Word documents (.doc, .docx), images, and PDF files. Multiple files allowed.</p>
+								</div>
 							<!-- Activity Type -->
 							<div class="col-span-2 md:col-span-4">
 								<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
@@ -2729,6 +2737,31 @@
 			// Get form data
 			const form = event.target;
 			const formData = new FormData(form);
+			// Add supporting documents to FormData (already included if input is inside form)
+			const filesInput = form.querySelector('#supporting_documents');
+			if (filesInput && filesInput.files.length > 0) {
+				for (let i = 0; i < filesInput.files.length; i++) {
+					formData.append('supporting_documents', filesInput.files[i]);
+				}
+			}
+			// Debug: Log all form data including files
+			console.log('📋 FormData to be sent:');
+			for (let pair of formData.entries()) {
+				if (pair[1] instanceof File) {
+					console.log(`  ${pair[0]}: [File] name=${pair[1].name}, type=${pair[1].type}, size=${pair[1].size}`);
+				} else {
+					console.log(`  ${pair[0]}: "${pair[1]}"`);
+				}
+			}
+			// Example POST request using FormData (uncomment to use)
+			/*
+			fetch('/api/projects', {
+				method: 'POST',
+				body: formData
+			}).then(response => response.json())
+				.then(data => console.log('Server response:', data))
+				.catch(error => console.error('Error:', error));
+			*/
 
 			// Debug: Log all form data
 			console.log("📋 Form data collected:");
