@@ -1,21 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
-    <script type="module">
-      // Try to load a local config override (frontend/config.local.js) if present.
-      (function () {
-        try {
-          var s = document.createElement("script");
-          s.src = "./config.local.js";
-          s.async = false;
-          document.head.appendChild(s);
-        } catch (e) {}
-      })();
-
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
-    </script>
-    <script src="auth.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMNCAH</title>
@@ -28,51 +13,6 @@
     />
     <!-- Tailwind CSS (with custom config using inline script) -->
     <script>
-      // Handle new project form submission as multipart/form-data
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("newProjectForm");
-        if (!form) return;
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
-          const formData = new FormData(form);
-
-          // If you have file inputs, append them here (example):
-          // const fileInput = document.getElementById("supporting_documents");
-          // if (fileInput && fileInput.files.length > 0) {
-          //   for (const file of fileInput.files) {
-          //     formData.append("supporting_documents", file);
-          //   }
-          // }
-
-          // If you need to send a JSON object for 'project', you can do:
-          // formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
-
-          const token = localStorage.getItem("accessToken");
-          try {
-            const response = await fetch("http://localhost:8080/api/projects", {
-              method: "POST",
-              body: formData,
-              headers: {
-                Authorization: `Bearer ${token}`,
-                // Do NOT set Content-Type, browser will set it for FormData
-              },
-            });
-            const result = await response.json();
-            if (response.ok) {
-              alert("Project created successfully!");
-              // Optionally, reset form or close modal
-              form.reset();
-            } else {
-              alert(
-                "Failed to create project: " +
-                  (result.message || response.status)
-              );
-            }
-          } catch (err) {
-            alert("Error submitting project: " + err.message);
-          }
-        });
-      });
       tailwind.config = {
         theme: {
           extend: {
@@ -143,6 +83,22 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
+    <script type="module">
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+
+      import { BASE_URL } from "./config.js";
+      window.BASE_URL = BASE_URL;
+    </script>
+    <script src="auth.js"></script>
+
     <style>
       .fade-slide-enter {
         opacity: 0;
@@ -610,7 +566,463 @@
       </div>
     </div>
 
-    <div class="" id="nav-placeholder"></div>
+    <!-- Nav Start -->
+    <nav
+      x-data="{ open: false }"
+      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
+    >
+      <div class="flex items-center justify-between px-6 py-4">
+        <a
+          href="index.html"
+          class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
+        >
+          <img
+            src="resources/images/log2.png"
+            class="object-contain h-10 lg:h-12"
+            alt="Site Logo"
+          />
+          <img
+            src="resources/images/moh.png"
+            class="object-contain h-10 lg:h-12"
+            alt="Site Logo"
+          />
+        </a>
+
+        <button
+          @click="open = !open"
+          class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
+        >
+          <i class="fal fa-bars" x-show="!open"></i>
+          <i class="fal fa-times" x-show="open" x-cloak></i>
+        </button>
+
+        <ul
+          class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
+        >
+          <li>
+            <a
+              href="index.html"
+              class="uppercase transition hover:text-lime-600"
+              >Home</a
+            >
+          </li>
+
+          <!-- Projects Dropdown -->
+          <li x-data="{ showprojectDropdown: false }" class="relative">
+            <button
+              @click="showprojectDropdown = !showprojectDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Projects <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showprojectDropdown"
+              @click.outside="showprojectDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-800">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a
+                    data-twe-toggle="modal"
+                    data-twe-target="#createNewProject"
+                  >
+                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
+                    Project
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="projects.html#my-projects">
+                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
+                    Projects
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="all-projects.html">
+                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- Collaborations Dropdown -->
+          <li x-data="{ collabDropdown: false }" class="relative">
+            <button
+              @click="collabDropdown = !collabDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="collabDropdown"
+              @click.outside="collabDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-700">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="priorities.html">
+                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+                    Proirities
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="my-collaborations.html">
+                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+                    Collaborations
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="announcements.html">
+                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Right-aligned Items (Admin + User) -->
+        <ul
+          class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800"
+        >
+          <!-- Admin -->
+          <li
+            x-data="{ showDropdown: false }"
+            class="relative hidden"
+            id="adminNav"
+          >
+            <button
+              @click="showDropdown = !showDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Admin <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showDropdown"
+              @click.outside="showDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-700">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="projects.html">Project Management</a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="members.html">Stakeholder Management</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- User Dropdown -->
+          <li x-data="{ showUserDropdown: false }" class="relative">
+            <button
+              @click="showUserDropdown = !showUserDropdown"
+              class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100"
+            >
+              <i class="mr-2 fas fa-user-circle"></i>
+              <span id="userDisplayName">User</span>
+              <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showUserDropdown"
+              @click.outside="showUserDropdown = false"
+              x-transition
+              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+            >
+              <div class="px-4 py-3">
+                <div
+                  class="text-base font-semibold text-teal-900"
+                  id="userNameDisplay"
+                >
+                  Loading...
+                </div>
+                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+                <div class="text-xs text-slate-400 mt-1">
+                  Role:
+                  <span
+                    id="userRoleDisplay"
+                    class="font-medium text-teal-600"
+                  ></span>
+                  | Status:
+                  <span
+                    id="userStatusDisplay"
+                    class="font-medium text-lime-500"
+                  ></span>
+                </div>
+              </div>
+              <ul class="py-2 text-sm text-teal-700">
+                <li>
+                  <a
+                    href="profile.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-user"></i> Profile
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="settings.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-cog"></i> Settings
+                  </a>
+                </li>
+                <li id="donorNav" class="hidden">
+                  <a
+                    href="donor-management.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+                    Management
+                  </a>
+                </li>
+              </ul>
+              <div class="py-2">
+                <button
+                  onclick="authManager.logout()"
+                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
+                >
+                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
+                </button>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a
+              href="faq.html"
+              class="uppercase font-semibold transition text-blue-800 md:mr-3"
+            >
+              <i class="mr-2 fas fa-question-square"></i> FAQ's
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Nav Links - Mobile -->
+      <div
+        x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="px-6 pb-6 lg:hidden"
+      >
+        <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
+          <li>
+            <a
+              href="index.html"
+              class="uppercase transition hover:text-lime-600"
+              >Home</a
+            >
+          </li>
+
+          <!-- Projects Dropdown -->
+          <li x-data="{ showprojectDropdown: false }" class="relative">
+            <button
+              @click="showprojectDropdown = !showprojectDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Projects <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showprojectDropdown"
+              @click.outside="showprojectDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-800">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a
+                    data-twe-toggle="modal"
+                    data-twe-target="#createNewProject"
+                  >
+                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
+                    Project
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="projects.html#my-projects">
+                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
+                    Projects
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="all-projects.html">
+                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- Collaborations Dropdown -->
+          <li x-data="{ collabDropdown: false }" class="relative">
+            <button
+              @click="collabDropdown = !collabDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="collabDropdown"
+              @click.outside="collabDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-700">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="priorities.html">
+                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+                    Proirities
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="my-collaborations.html">
+                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+                    Collaborations
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="announcements.html">
+                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- Admin -->
+          <li
+            x-data="{ showDropdown: false }"
+            class="relative hidden"
+            id="adminNav"
+          >
+            <button
+              @click="showDropdown = !showDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Admin <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showDropdown"
+              @click.outside="showDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-700">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="projects.html">Project Management</a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="members.html">Stakeholder Management</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- User Dropdown -->
+          <li x-data="{ showUserDropdown: false }" class="relative">
+            <button
+              @click="showUserDropdown = !showUserDropdown"
+              class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100"
+            >
+              <i class="mr-2 fas fa-user-circle"></i>
+              <span id="userDisplayName">User</span>
+              <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showUserDropdown"
+              @click.outside="showUserDropdown = false"
+              x-transition
+              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+            >
+              <div class="px-4 py-3">
+                <div
+                  class="text-base font-semibold text-teal-900"
+                  id="userNameDisplay"
+                >
+                  Loading...
+                </div>
+                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+                <div class="text-xs text-slate-400 mt-1">
+                  Role:
+                  <span
+                    id="userRoleDisplay"
+                    class="font-medium text-teal-600"
+                  ></span>
+                  | Status:
+                  <span
+                    id="userStatusDisplay"
+                    class="font-medium text-lime-500"
+                  ></span>
+                </div>
+              </div>
+              <ul class="py-2 text-sm text-teal-700">
+                <li>
+                  <a
+                    href="profile.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-user"></i> Profile
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="settings.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-cog"></i> Settings
+                  </a>
+                </li>
+                <li id="donorNav" class="hidden">
+                  <a
+                    href="donor-management.html"
+                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
+                  >
+                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+                    Management
+                  </a>
+                </li>
+              </ul>
+              <div class="py-2">
+                <button
+                  onclick="authManager.logout()"
+                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
+                >
+                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
+                </button>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a
+              href="faq.html"
+              class="uppercase font-semibold transition text-blue-800 md:mr-3"
+            >
+              <i class="mr-2 fas fa-question-square"></i> FAQ's
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Nav End -->
 
     <section class="pt-16 mt-20 bg-cyan-800 sm:pt-20">
       <div
@@ -1267,6 +1679,1200 @@
         class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full"
       ></div>
     </div>
+
+    <script>
+      // Populate user dropdown with data from authManager
+      document.addEventListener("DOMContentLoaded", function () {
+        // Wait a bit for authManager to initialize
+        setTimeout(() => {
+          const user = authManager.getCachedUser();
+          console.log("[DEBUG] Loading user data for dropdown:", user);
+
+          if (user) {
+            // Update user display name in button
+            const userDisplayName = document.getElementById("userDisplayName");
+            if (userDisplayName) {
+              userDisplayName.textContent = user.name || user.email || "User";
+            }
+
+            // Update user name in dropdown
+            const userNameDisplay = document.getElementById("userNameDisplay");
+            if (userNameDisplay) {
+              userNameDisplay.textContent = user.name || "User";
+            }
+
+            // Update email
+            const userEmailDisplay =
+              document.getElementById("userEmailDisplay");
+            if (userEmailDisplay) {
+              userEmailDisplay.textContent = user.email || "";
+            }
+
+            // Update role
+            const userRoleDisplay = document.getElementById("userRoleDisplay");
+            if (userRoleDisplay) {
+              userRoleDisplay.textContent = user.role || "USER";
+            }
+
+            // Update status
+            const userStatusDisplay =
+              document.getElementById("userStatusDisplay");
+            if (userStatusDisplay) {
+              userStatusDisplay.textContent = user.approvalStatus || "PENDING";
+            }
+
+            // Show admin nav if user is admin
+            console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+            if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+              console.log(
+                "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+              );
+
+              const adminNavItems = document.querySelectorAll("#adminNav");
+              adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+              // Show admin collaboration menu item
+              const adminCollabItem =
+                document.getElementById("admin-collab-item");
+              if (adminCollabItem) {
+                adminCollabItem.style.display = "block";
+                console.log(
+                  "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+                );
+              }
+
+              const adminCollabMobile = document.getElementById(
+                "admin-collab-mobile"
+              );
+              if (adminCollabMobile) {
+                adminCollabMobile.style.display = "block";
+                console.log(
+                  "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+                );
+              }
+
+              // Load pending requests count
+              loadPendingRequestsCount();
+            } else if (user.role === "DONOR") {
+              const donorNavItems = document.querySelectorAll("#donorNav");
+              donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+            }
+          } else {
+            console.warn("[DEBUG] No user data found in cache");
+          }
+        }, 500);
+      });
+    </script>
+
+    <script>
+      // User session initialization
+      async function initializeUserSession() {
+        console.log(
+          "[DEBUG] initializeUserSession: Starting user session initialization"
+        );
+
+        // Check if user is authenticated
+        if (!authManager.isAuthenticated()) {
+          console.log("[DEBUG] initializeUserSession: User not authenticated");
+          alert(
+            "You must be logged in to access this page. (See console for details)"
+          );
+          // Prevent redirect for debugging
+          throw new Error("Not authenticated");
+        }
+
+        console.log("[DEBUG] initializeUserSession: User is authenticated");
+
+        // Check for demo token
+        const demoToken =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vQGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk1ODQwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dummysignature";
+        const token = authManager.getToken();
+        if (token === demoToken) {
+          console.log("[DEBUG] initializeUserSession: Using demo token");
+          // Use a fake user object for demo
+          const user = {
+            id: 1,
+            name: "Demo User",
+            email: "demo@email.com",
+            role: "USER",
+            approvalStatus: "APPROVED",
+          };
+          updateUserDisplayWhenNavReady(user);
+          await loadDashboardData();
+          return;
+        }
+
+        try {
+          console.log(
+            "[DEBUG] initializeUserSession: Attempting to load current user data"
+          );
+          // Load current user data
+          const user = await authManager.getCurrentUser();
+          console.log(
+            "[DEBUG] initializeUserSession: User data loaded successfully",
+            user
+          );
+
+          // Update UI with user information
+          updateUserDisplayWhenNavReady(user);
+
+          // Check if user is approved
+          if (user.approvalStatus !== "APPROVED") {
+            console.log(
+              "[DEBUG] initializeUserSession: User not approved, status:",
+              user.approvalStatus
+            );
+            showApprovalPendingMessage(user);
+          } else {
+            console.log("[DEBUG] initializeUserSession: User is approved");
+          }
+
+          // Load dashboard data
+          console.log("[DEBUG] initializeUserSession: Loading dashboard data");
+          await loadDashboardData();
+          console.log(
+            "[DEBUG] initializeUserSession: Initialization completed successfully"
+          );
+        } catch (error) {
+          console.error(
+            "[DEBUG] initializeUserSession: Failed to load user session:",
+            error
+          );
+          alert("Failed to load user session. Please log in again.");
+          authManager.logout();
+        }
+      }
+
+      // Load dashboard statistics and projects from API
+      async function loadDashboardData() {
+        try {
+          console.log("Loading dashboard data...");
+          // Load project statistics
+          await loadProjectStatistics();
+          // Load projects list (default: all projects)
+          await loadProjects();
+          // Optionally, load map-only projects
+          // await loadProjectsWithCoordinates();
+          console.log("Dashboard data loaded successfully");
+        } catch (error) {
+          console.error("Failed to load dashboard data:", error);
+          showDashboardError();
+        }
+      }
+
+      // Load project statistics from API
+      async function loadProjectStatistics() {
+        try {
+          const response = await authManager.apiCall(
+            "/api/projects/statistics",
+            "GET"
+          );
+          if (!response || !response.ok) {
+            console.error("Failed to fetch statistics, using defaults");
+            useDefaultStatistics();
+            return;
+          }
+
+          const stats = await response.json();
+          console.log("[DEBUG] Statistics loaded:", stats);
+
+          // Calculate statistics from the API response
+          if (stats.data) {
+            const data = stats.data;
+
+            // Calculate regions/counties from countyCounts
+            const regions = data.countyCounts ? data.countyCounts.length : 0;
+
+            // Locations is the number of projects with coordinates
+            const locations =
+              data.projectsWithCoordinates || data.totalProjects || 0;
+
+            // Projects is the total number of projects
+            const projects = data.totalProjects || 0;
+
+            // Calculate total active status count
+            let activeCount = 0;
+            if (data.statusCounts) {
+              data.statusCounts.forEach(([status, count]) => {
+                if (status === "active" || status === "ACTIVE") {
+                  activeCount += count;
+                }
+              });
+            }
+
+            // Store the statistics in a global variable for Alpine.js
+            window.statsData = {
+              locations: locations,
+              projects: projects,
+              regions: regions,
+              users: activeCount || projects, // Use active projects or total as "teams"
+              amount: projects * 1000000, // Estimate: 1M KES per project (adjust as needed)
+            };
+
+            console.log("[DEBUG] Calculated statsData:", window.statsData);
+
+            // Dispatch a custom event that Alpine.js will listen to
+            window.dispatchEvent(
+              new CustomEvent("stats-loaded", {
+                detail: window.statsData,
+              })
+            );
+
+            // Update the hero statistics display with the actual data
+            updateStatisticsDisplay(data);
+          } else {
+            console.warn("[DEBUG] No stats.data found, using defaults");
+            useDefaultStatistics();
+          }
+        } catch (error) {
+          console.error("Error loading statistics:", error);
+          useDefaultStatistics();
+        }
+      }
+
+      // Use default statistics if API calls fail
+      function useDefaultStatistics() {
+        const defaultStats = {
+          totalProjects: 0,
+          countyCounts: {},
+          statusCounts: {},
+          totalStakeholders: 0,
+          totalBudget: 0,
+          coordinatesCoveragePercentage: 0,
+        };
+
+        // Show message about using defaults
+        console.warn(
+          "⚠️ Using default statistics due to API failure - this should show 0 for all stats"
+        );
+        showApiConnectionWarning();
+
+        updateStatisticsDisplay(defaultStats);
+      }
+
+      // Show API connection warning
+      function showApiConnectionWarning() {
+        const warningBanner = document.createElement("div");
+        warningBanner.className =
+          "fixed top-20 left-4 right-4 z-40 bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded";
+        warningBanner.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>API Connection Issue:</strong> Unable to load live data. Showing default values.
+                                This may be due to server maintenance or connectivity issues.
+                            </p>
+                        </div>
+                        <div class="ml-auto pl-3">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-yellow-500 hover:text-yellow-600">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+        document.body.appendChild(warningBanner);
+
+        setTimeout(() => {
+          if (warningBanner.parentElement) {
+            warningBanner.remove();
+          }
+        }, 10000);
+      }
+
+      // Load projects from API
+      // Load all projects with pagination, sorting, and filtering
+      async function loadProjects({
+        page = 0,
+        size = 50,
+        sortBy = "id",
+        sortDir = "desc",
+        filters = {},
+      } = {}) {
+        try {
+          let url = `/api/projects?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`;
+          // Add filter params
+          Object.entries(filters).forEach(([key, value]) => {
+            if (value)
+              url += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+          });
+          const response = await authManager.apiCall(url, "GET");
+          if (response.ok) {
+            const data = await response.json();
+            console.log("loadProjects API response:", data);
+            if (data.status === 200 && data.data && data.data.projects) {
+              const allProjects = data.data.projects;
+              console.log("Loaded all projects:", allProjects.length);
+
+              // Update the global projects array
+              projects = allProjects;
+
+              // Update the projects display (accordion)
+              updateProjectsDisplay(allProjects);
+
+              // Also add map markers for projects that have coordinates
+              addMarkersToMap(
+                allProjects.filter((p) => p.latitude && p.longitude)
+              );
+
+              // Trigger the accordion display
+              highlightMarkers("all");
+            }
+          } else {
+            showProjectsError();
+          }
+        } catch (error) {
+          console.error("Error loading projects:", error);
+          showProjectsError();
+        }
+      }
+
+      // Load only projects with coordinates (for map)
+      async function loadProjectsWithCoordinates() {
+        try {
+          const response = await authManager.apiCall(
+            "/api/projects/with-coordinates",
+            "GET"
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {
+          // Optionally show error
+        }
+      }
+
+      // Advanced search/filter
+      async function searchProjects(filters) {
+        try {
+          let url = "/api/projects/search";
+          const params = Object.entries(filters)
+            .filter(([_, v]) => v)
+            .map(
+              ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
+            )
+            .join("&");
+          if (params) url += `?${params}`;
+          const response = await authManager.apiCall(url, "GET");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateProjectsDisplay(data.data);
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Filter by status
+      async function filterProjectsByStatus(status) {
+        try {
+          const response = await authManager.apiCall(
+            `/api/projects/status/${status}`,
+            "GET"
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateProjectsDisplay(data.data);
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Filter by date range
+      async function filterProjectsByDateRange(startDate, endDate) {
+        try {
+          const url = `/api/projects/date-range?startDate=${encodeURIComponent(
+            startDate
+          )}&endDate=${encodeURIComponent(endDate)}`;
+          const response = await authManager.apiCall(url, "GET");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateProjectsDisplay(data.data);
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Filter by bounding box (for map)
+      async function filterProjectsByBounds(minLat, maxLat, minLng, maxLng) {
+        try {
+          const url = `/api/projects/in-bounds?minLat=${minLat}&maxLat=${maxLat}&minLng=${minLng}&maxLng=${maxLng}`;
+          const response = await authManager.apiCall(url, "GET");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateProjectsDisplay(data.data);
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Get project details by ID
+      async function getProjectById(id) {
+        try {
+          const response = await authManager.apiCall(
+            `/api/projects/${id}`,
+            "GET"
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              // Show details in modal or section
+              // showProjectDetailsModal(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Get my projects (for PARTNER)
+      async function loadMyProjects() {
+        try {
+          const response = await authManager.apiCall(
+            "/api/projects/my-projects",
+            "GET"
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === 200 && data.data) {
+              updateProjectsDisplay(data.data);
+              updateMapWithProjects(data.data);
+            }
+          }
+        } catch (error) {}
+      }
+
+      // Update map with real project data
+      function updateMapWithProjects(projectsData) {
+        console.log("updateMapWithProjects called with:", projectsData);
+        console.log("Number of projects received:", projectsData.length);
+
+        // Log all projects to see their structure
+        projectsData.forEach((project, idx) => {
+          console.log(`Project ${idx + 1} structure:`, {
+            id: project.id,
+            name: project.projectName || project.name,
+            latitude: project.latitude,
+            longitude: project.longitude,
+            status: project.status,
+            hasCoordinates: !!(project.latitude && project.longitude),
+            allFields: Object.keys(project),
+          });
+        });
+
+        // Find projects with coordinates
+        const projectsWithCoords = projectsData.filter((p) => {
+          const hasCoords = p.latitude && p.longitude;
+          if (!hasCoords) {
+            console.warn(
+              `Project "${p.projectName || p.name}" (ID: ${
+                p.id
+              }) is missing coordinates!`
+            );
+          }
+          return hasCoords;
+        });
+
+        console.log("Updating map with", projectsWithCoords.length, "projects");
+        console.log("Projects with coordinates:", projectsWithCoords);
+
+        // Add markers to Mapbox map
+        addMarkersToMap(projectsWithCoords);
+
+        // Update project list
+        projects = projectsData;
+      }
+
+      // Update statistics display with real data
+      function updateStatisticsDisplay(stats) {
+        console.log("📊 Updating statistics display with:", stats);
+
+        // Update hero section statistics
+        const totalProjectsElement =
+          document.getElementById("totalProjectsCount");
+        const totalCountiesElement =
+          document.getElementById("totalCountiesCount");
+        const totalStakeholdersElement = document.getElementById(
+          "totalStakeholdersCount"
+        );
+
+        // Calculate counties count - handle both array and object formats
+        let countiesCount = 0;
+        if (stats.countyCounts) {
+          if (Array.isArray(stats.countyCounts)) {
+            countiesCount = stats.countyCounts.length;
+          } else if (typeof stats.countyCounts === "object") {
+            countiesCount = Object.keys(stats.countyCounts).length;
+          }
+        }
+
+        if (totalProjectsElement) {
+          const projectCount = stats.totalProjects || 0;
+          totalProjectsElement.textContent = projectCount;
+          console.log("✅ Updated total projects count:", projectCount);
+        } else {
+          console.warn("⚠️ totalProjectsElement not found");
+        }
+
+        if (totalCountiesElement) {
+          totalCountiesElement.textContent = countiesCount;
+          console.log("✅ Updated total counties count:", countiesCount);
+        } else {
+          console.warn("⚠️ totalCountiesElement not found");
+        }
+
+        if (totalStakeholdersElement) {
+          const stakeholdersCount = stats.totalStakeholders || 0;
+          totalStakeholdersElement.textContent = stakeholdersCount;
+          console.log(
+            "✅ Updated total stakeholders count:",
+            stakeholdersCount
+          );
+        } else {
+          console.warn("⚠️ totalStakeholdersElement not found");
+        }
+
+        console.log("📊 Hero statistics updated:", {
+          projects: stats.totalProjects,
+          counties: countiesCount,
+          stakeholders: stats.totalStakeholders,
+        });
+
+        // Update Alpine.js countdownStats component
+        try {
+          const statsComponent = Alpine.$data(
+            document.querySelector('[x-data*="countdownStats"]')
+          );
+
+          if (statsComponent) {
+            // Update targets with real data
+            statsComponent.targets = {
+              locations: stats.coordinatesCoveragePercentage || 0,
+              projects: stats.totalProjects || 0,
+              regions: Object.keys(stats.countyCounts || {}).length || 0,
+              users: stats.totalStakeholders || 0,
+              amount: stats.totalBudget || 0, // This would need to be calculated from projects
+            };
+
+            // Reset the animation values
+            statsComponent.locations = 0;
+            statsComponent.projects = 0;
+            statsComponent.regions = 0;
+            statsComponent.users = 0;
+            statsComponent.amount = 0;
+            statsComponent.amountDisplay = "0";
+
+            // Restart the animation with new targets
+            statsComponent.start();
+
+            console.log(
+              "Alpine.js statistics updated:",
+              statsComponent.targets
+            );
+          } else {
+            console.warn("Alpine.js countdownStats component not found");
+          }
+        } catch (error) {
+          console.error("Error updating Alpine.js component:", error);
+        }
+
+        console.log("Hero statistics updated:", {
+          projects: stats.totalProjects,
+          counties: Object.keys(stats.countyCounts || {}).length,
+          stakeholders: stats.totalStakeholders,
+        });
+      }
+
+      // Update projects display
+      function updateProjectsDisplay(projectsData) {
+        console.log(
+          "updateProjectsDisplay called with:",
+          projectsData.length,
+          "projects"
+        );
+
+        // Update global projects variable
+        window.projects = projectsData;
+        window.filteredProjects = projectsData;
+
+        // Render accordion with projects
+        renderProjectsList(projectsData);
+
+        console.log(
+          "Projects display updated with",
+          projectsData.length,
+          "projects"
+        );
+      }
+
+      // Render projects accordion in the UI
+      function renderProjectsList(projects) {
+        console.log(
+          "renderProjectsList called with:",
+          projects.length,
+          "projects"
+        );
+        const accordion = document.getElementById("projectAccordion");
+        if (!accordion) {
+          console.error("Accordion element not found!");
+          return;
+        }
+
+        // Make sure accordion is visible
+        accordion.classList.remove("hidden");
+        accordion.innerHTML = "";
+
+        if (projects.length === 0) {
+          console.log("No projects to display");
+          accordion.innerHTML = `
+                <div class="text-center py-8">
+                  <i class="fas fa-project-diagram text-gray-400 text-4xl mb-4"></i>
+                  <p class="text-gray-600">No projects found.</p>
+                </div>
+              `;
+          return;
+        }
+
+        console.log("Rendering", projects.length, "projects in accordion");
+        projects.forEach((project, idx) => {
+          console.log(
+            `Rendering project ${idx + 1}:`,
+            project.projectName || project.name
+          );
+          // Status color classes
+          const statusBg =
+            {
+              active: "bg-green-50",
+              pending: "bg-yellow-50",
+              stalled: "bg-red-50",
+              completed: "bg-cyan-100",
+            }[project.status] || "bg-white";
+          const statusBadge =
+            {
+              active: "bg-green-200 text-green-800",
+              pending: "bg-yellow-200 text-yellow-800",
+              stalled: "bg-red-200 text-red-800",
+              completed: "bg-cyan-300 text-gray-800",
+            }[project.status] || "bg-gray-200 text-gray-800";
+          // Format budget
+          const budget = project.budget
+            ? Number(project.budget).toLocaleString("en-KE", {
+                style: "currency",
+                currency: "KES",
+                maximumFractionDigits: 0,
+              })
+            : "N/A";
+          // Accordion item
+          const item = document.createElement("div");
+          item.className = `rounded shadow-sm ${statusBg}`;
+          item.innerHTML = `
+                <button class=\"w-full px-6 py-4 text-left border-b focus:outline-none\" data-toggle=\"collapse-${idx}\">
+                  <div class=\"flex flex-col sm:flex-row sm:justify-between sm:items-center\">
+                    <div>
+                      <h4 class=\"text-lg font-semibold text-gray-800\">${
+                        project.title || ""
+                      }</h4>
+                      <p id=\"desc-${idx}\" class=\"mt-2 text-sm text-gray-600\">${
+            project.objectives
+              ? project.objectives.substring(0, 100) +
+                (project.objectives.length > 100 ? "..." : "")
+              : ""
+          }</p>
+                    </div>
+                    <div class=\"flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0\">
+                      ${
+                        project.projectTheme
+                          ? `<span class='px-2 py-1 rounded-full bg-gray-100 text-gray-700 mr-2'>${project.projectTheme}</span>`
+                          : ""
+                      }
+                      ${
+                        project.status
+                          ? `<span class='px-2 py-1 rounded-full text-sm font-medium ${statusBadge}'>${project.status}</span>`
+                          : ""
+                      }
+                    </div>
+                  </div>
+                </button>
+                <div id=\"collapse-${idx}\" class=\"hidden px-6 py-4 bg-white\">
+                  <p><strong>County:</strong> ${
+                    project.county || "Not specified"
+                  }</p>
+                  <p><strong>Budget:</strong> ${budget}</p>
+                  <p><strong>Partner:</strong> ${
+                    project.partner && project.partner !== "TBD"
+                      ? project.partner
+                      : "Partner information pending"
+                  }</p>
+                  <p><strong>Status:</strong>
+                    <span class=\"inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge}\">
+                      ${project.status || ""}
+                    </span>
+                  </p>
+                  <button onclick=\"focusMarker(${idx})\" class=\"px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105\">
+                    Show on Map
+                  </button>
+                </div>
+              `;
+          accordion.appendChild(item);
+          // Toggle description between truncated and full
+          const btn = item.querySelector(`[data-toggle="collapse-${idx}"]`);
+          btn.addEventListener("click", () => {
+            const collapse = document.getElementById(`collapse-${idx}`);
+            const desc = document.getElementById(`desc-${idx}`);
+            collapse.classList.toggle("hidden");
+            if (!collapse.classList.contains("hidden")) {
+              desc.textContent = project.objectives || "";
+            } else {
+              desc.textContent = project.objectives
+                ? project.objectives.substring(0, 100) +
+                  (project.objectives.length > 100 ? "..." : "")
+                : "";
+            }
+          });
+        });
+      }
+
+      // Create project card element
+      function createProjectCard(project) {
+        const card = document.createElement("div");
+        card.className =
+          "bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow";
+
+        const statusClass = getStatusClass(project.status);
+        const themeClass = getThemeClass(project.projectTheme);
+
+        card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 line-clamp-2">${
+                          project.title
+                        }</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ${statusClass}">
+                            ${
+                              project.status.charAt(0).toUpperCase() +
+                              project.status.slice(1)
+                            }
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 mb-4">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-building mr-2"></i>${
+                              project.partner
+                            }
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-map-marker-alt mr-2"></i>${
+                              project.county
+                            }${
+          project.subCounty ? ", " + project.subCounty : ""
+        }
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-calendar mr-2"></i>${
+                              project.startDate
+                            } - ${project.endDate}
+                        </p>
+                        ${
+                          project.budget
+                            ? `
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>$${project.budget.toLocaleString()}
+                            </p>
+                        `
+                            : ""
+                        }
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="px-2 py-1 rounded text-xs font-medium ${themeClass}">
+                            ${project.projectTheme}
+                        </span>
+                        <button onclick="viewProject(${project.id})"
+                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View Details →
+                        </button>
+                    </div>
+                `;
+
+        return card;
+      }
+
+      // Helper functions for styling
+      function getStatusClass(status) {
+        const classes = {
+          active: "bg-green-100 text-green-800",
+          pending: "bg-yellow-100 text-yellow-800",
+          completed: "bg-blue-100 text-blue-800",
+          stalled: "bg-red-100 text-red-800",
+          abandoned: "bg-gray-100 text-gray-800",
+        };
+        return classes[status] || "bg-gray-100 text-gray-800";
+      }
+
+      function getThemeClass(theme) {
+        const classes = {
+          MNH: "bg-pink-100 text-pink-800",
+          FP: "bg-blue-100 text-blue-800",
+          GBV: "bg-red-100 text-red-800",
+          CH: "bg-green-100 text-green-800",
+          AH: "bg-purple-100 text-purple-800",
+          AYPSRH: "bg-indigo-100 text-indigo-800",
+        };
+        return classes[theme] || "bg-gray-100 text-gray-800";
+      }
+
+      // View project details
+      function viewProject(projectId) {
+        window.open(`project-details.html?id=${projectId}`, "_blank");
+      }
+
+      // Use default statistics if API fails
+      function useDefaultStatistics() {
+        console.log("Using default statistics");
+        // The existing hardcoded values will be used
+      }
+
+      // Show dashboard error
+      function showDashboardError() {
+        const errorBanner = document.createElement("div");
+        errorBanner.className =
+          "fixed top-20 left-4 right-4 z-40 bg-red-100 border-l-4 border-red-500 p-4 rounded";
+        errorBanner.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700">
+                                Failed to load some dashboard data. Showing cached or default information.
+                            </p>
+                        </div>
+                        <div class="ml-auto pl-3">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-600">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+        document.body.appendChild(errorBanner);
+
+        setTimeout(() => {
+          if (errorBanner.parentElement) {
+            errorBanner.remove();
+          }
+        }, 5000);
+      }
+
+      // Show projects error
+      function showProjectsError() {
+        const projectsContainer = document.getElementById("projects-container");
+        if (projectsContainer) {
+          projectsContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                            <p class="text-gray-600 mb-4">Failed to load projects. Please try again later.</p>
+                            <button onclick="loadProjects()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                Retry
+                            </button>
+                        </div>
+                    `;
+        }
+      }
+
+      function updateUserDisplayWhenNavReady(user) {
+        // Check if nav is already loaded
+        const navPlaceholder = document.getElementById("nav-placeholder");
+        if (navPlaceholder && navPlaceholder.innerHTML.trim() !== "") {
+          updateUserDisplay(user);
+        } else {
+          // Wait for nav to be loaded
+          window.addEventListener(
+            "navLoaded",
+            () => {
+              updateUserDisplay(user);
+            },
+            { once: true }
+          );
+        }
+      }
+
+      function updateUserDisplay(user) {
+        // Update navigation display
+        const userDisplayName = document.getElementById("userDisplayName");
+        const userNameDisplay = document.getElementById("userNameDisplay");
+        const userEmailDisplay = document.getElementById("userEmailDisplay");
+        const userRoleDisplay = document.getElementById("userRoleDisplay");
+        const userStatusDisplay = document.getElementById("userStatusDisplay");
+
+        if (userDisplayName) userDisplayName.textContent = user.name || "User";
+        if (userNameDisplay) userNameDisplay.textContent = user.name || "N/A";
+        if (userEmailDisplay)
+          userEmailDisplay.textContent = user.email || "N/A";
+        if (userRoleDisplay) userRoleDisplay.textContent = user.role || "N/A";
+        if (userStatusDisplay) {
+          userStatusDisplay.textContent = user.approvalStatus || "N/A";
+          userStatusDisplay.className =
+            user.approvalStatus === "APPROVED"
+              ? "text-green-600"
+              : user.approvalStatus === "PENDING"
+              ? "text-yellow-600"
+              : "text-red-600";
+        }
+
+        // Hide all role-based navs by default
+        const adminNav = document.getElementById("adminNav");
+        const partnerNav = document.getElementById("partnerNav");
+        const donorNav = document.getElementById("donorNav");
+        const myProjectsNav = document.getElementById("myProjectsNav");
+        if (adminNav) adminNav.classList.add("hidden");
+        if (partnerNav) partnerNav.classList.add("hidden");
+        if (donorNav) donorNav.classList.add("hidden");
+        if (myProjectsNav) myProjectsNav.classList.add("hidden");
+
+        // Show navs based on role
+        if (user.role === "SUPER_ADMIN") {
+          if (adminNav) adminNav.classList.remove("hidden");
+        }
+        if (user.role === "PARTNER") {
+          if (partnerNav) partnerNav.classList.remove("hidden");
+          if (myProjectsNav) myProjectsNav.classList.remove("hidden");
+        }
+        if (user.role === "DONOR") {
+          if (donorNav) donorNav.classList.remove("hidden");
+          // Customize dashboard for donors
+          const projectsTitle = document.getElementById("projectsTitle");
+          if (projectsTitle)
+            projectsTitle.textContent = "Projects in Your Network";
+
+          const projectsLabel = document.getElementById("projectsLabel");
+          if (projectsLabel) projectsLabel.textContent = "Funded Projects";
+
+          const usersLabel = document.getElementById("usersLabel");
+          if (usersLabel) usersLabel.textContent = "Partners";
+        }
+
+        // Show admin collaboration menu for ADMIN or SUPER_ADMIN
+        console.log("[DEBUG] User role:", user.role);
+        if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+          console.log("[DEBUG] User is admin, showing admin collab menu");
+          const adminCollabItem = document.getElementById("admin-collab-item");
+          const adminCollabMobile = document.getElementById(
+            "admin-collab-mobile"
+          );
+          console.log("[DEBUG] adminCollabItem found:", adminCollabItem);
+          console.log("[DEBUG] adminCollabMobile found:", adminCollabMobile);
+
+          if (adminCollabItem) {
+            adminCollabItem.style.display = "block";
+            console.log("[DEBUG] Set adminCollabItem display to block");
+          }
+          if (adminCollabMobile) {
+            adminCollabMobile.style.display = "block";
+            console.log("[DEBUG] Set adminCollabMobile display to block");
+          }
+          loadPendingRequestsCount();
+        } else {
+          console.log("[DEBUG] User is NOT admin, role is:", user.role);
+        }
+        // Optionally, show/hide other navs for other roles as needed
+      }
+
+      async function loadPendingRequestsCount() {
+        try {
+          const token = localStorage.getItem("accessToken");
+          const response = await fetch(
+            `${BASE_URL}/api/collaboration-requests/admin/pending`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (data.status === 200 && data.data) {
+            const count = data.data.length;
+
+            // Update Alpine.js data for the collaboration dropdown
+            const collabNav = document.getElementById("collabNav");
+            if (collabNav && collabNav.__x) {
+              collabNav.__x.$data.pendingCount = count;
+            }
+
+            // Legacy support for old badge element if it exists
+            const badge = document.getElementById("pending-badge");
+            if (badge && count > 0) {
+              badge.textContent = count;
+              badge.style.display = "inline-block";
+            }
+          }
+        } catch (error) {
+          console.error("Error loading pending requests count:", error);
+        }
+      }
+
+      function showApprovalPendingMessage(user) {
+        if (user.approvalStatus === "PENDING") {
+          const banner = document.createElement("div");
+          banner.className =
+            "fixed top-20 left-4 right-4 z-40 bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded";
+          banner.innerHTML = `
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    Your account is pending approval. Some features may be limited until an administrator approves your account.
+                                </p>
+                            </div>
+                            <div class="ml-auto pl-3">
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-yellow-500 hover:text-yellow-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+          document.body.appendChild(banner);
+
+          // Auto-remove after 10 seconds
+          setTimeout(() => {
+            if (banner.parentElement) {
+              banner.remove();
+            }
+          }, 10000);
+        }
+      }
+
+      // Show My Projects section for PARTNER users
+
+      // Load user's own projects (for PARTNER users)
+      async function loadUserProjects() {
+        try {
+          console.log("Loading user projects...");
+          const userId = currentUser.id;
+          const response = await authManager.apiCall(
+            `/api/projects/user/${userId}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (response && response.length > 0) {
+            renderUserProjectsList(response);
+          } else {
+            showNoUserProjectsMessage();
+          }
+        } catch (error) {
+          console.error("Failed to load user projects:", error);
+          showUserProjectsError();
+        }
+      }
+
+      // Render user's projects list
+      function renderUserProjectsList(projects) {
+        const container = document.getElementById("projects-container");
+        if (!container) return;
+
+        container.innerHTML = `
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">My Projects</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${projects
+                              .map((project) => createUserProjectCard(project))
+                              .join("")}
+                        </div>
+                    </div>
+                `;
+      }
+
+      // Create project card for user's projects
+      function createUserProjectCard(project) {
+        const statusColors = {
+          ACTIVE: "bg-green-100 text-green-800",
+          PENDING: "bg-yellow-100 text-yellow-800",
+          STALLED: "bg-red-100 text-red-800",
+          COMPLETED: "bg-blue-100 text-blue-800",
+          ABANDONED: "bg-gray-100 text-gray-800",
+        };
+
+        return `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-800 truncate">${
+                                  project.name || "Untitled Project"
+                                }</h4>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                                  statusColors[project.status] ||
+                                  "bg-gray-100 text-gray-800"
+                                }">
+                                    ${project.status || "Unknown"}
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                ${
+                                  project.description ||
+                                  "No description available"
+                                }
+                            </p>
+                            <div class="space-y-2 text-sm text-gray-500">
+                                <div class="flex justify-between">
+                                    <span>Budget:</span>
+                                    <span class="font-medium">$${
+                                      project.budget
+                                        ? project.budget.toLocaleString()
+                                        : "N/A"
+                                    }</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Progress:</span>
+                                    <span class="font-medium">${
+                                      project.progress || 0
+                                    }%</span>
+                                </div>
+                                ${
+                                  project.startDate
+                                    ? `
+                                <div class="flex justify-between">
+                                    <span>Started:</span>
+                                    <span class="font-medium">${new Date(
+                                      project.startDate
+                                    ).toLocaleDateString()}</span>
+                                </div>
+                                `
+                                    : ""
+                                }
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <button onclick="viewProjectDetails(${
+                                  project.id
+                                })"
+                                        class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+      }
+
+      // View project details
+      function viewProjectDetails(projectId) {
+        // Navigate to project details page or show modal
+        window.location.href = `project-details.html?id=${projectId}`;
+      }
+    </script>
 
     <script src="styles/loadNav.js"></script>
 
