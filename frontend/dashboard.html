@@ -1,289 +1,396 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+  <head>
+    <script type="module">
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
 
-<head>
-	<script type="module">
-		// Try to load a local config override (frontend/config.local.js) if present.
-		(function () {
-			try {
-				var s = document.createElement("script");
-				s.src = "./config.local.js";
-				s.async = false;
-				document.head.appendChild(s);
-			} catch (e) { }
-		})();
+      import { BASE_URL } from "./config.js";
+      window.BASE_URL = BASE_URL;
+    </script>
+    <script src="auth.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RMNCAH</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+      // Handle new project form submission as multipart/form-data
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("newProjectForm");
+        if (!form) return;
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const formData = new FormData(form);
 
-		import { BASE_URL } from "./config.js";
-		window.BASE_URL = BASE_URL;
-	</script>
-	<script src="auth.js"></script>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>RMNCAH</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!-- Tailwind CSS (with custom config using inline script) -->
-	<script>
-		tailwind.config = {
-			theme: {
-				extend: {
-					colors: {
-						primary: "#1e40af", // Custom Blue
-						secondary: "#f59e0b", // Custom Amber
-						accent: "#10b981", // Custom Green
-						dark: "#1f2937", // Gray-800
-					},
-					fontFamily: {
-						sans: ["Inter", "sans-serif"],
-					},
-				},
-			},
-		};
-	</script>
-	<link rel="stylesheet" href="styles/main.css" />
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-	<script src="styles/main.js"></script>
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-		rel="stylesheet" />
-	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-	<!-- Alpine.js -->
-	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-	<!-- Leaflet CSS -->
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-	<!-- Leaflet JS -->
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-		integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-		integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-	<!-- Optional: Google Font -->
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-	<style>
-		.fade-slide-enter {
-			opacity: 0;
-			transform: translateY(20px);
-		}
+          // If you have file inputs, append them here (example):
+          // const fileInput = document.getElementById("supporting_documents");
+          // if (fileInput && fileInput.files.length > 0) {
+          //   for (const file of fileInput.files) {
+          //     formData.append("supporting_documents", file);
+          //   }
+          // }
 
-		.fade-slide-enter-active {
-			opacity: 1;
-			transform: translateY(0);
-			transition: all 0.4s ease;
-		}
+          // If you need to send a JSON object for 'project', you can do:
+          // formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
 
-		.fade-slide-leave {
-			opacity: 1;
-			transform: translateY(0);
-		}
+          const token = localStorage.getItem("accessToken");
+          try {
+            const response = await fetch("http://localhost:8080/api/projects", {
+              method: "POST",
+              body: formData,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                // Do NOT set Content-Type, browser will set it for FormData
+              },
+            });
+            const result = await response.json();
+            if (response.ok) {
+              alert("Project created successfully!");
+              // Optionally, reset form or close modal
+              form.reset();
+            } else {
+              alert(
+                "Failed to create project: " +
+                  (result.message || response.status)
+              );
+            }
+          } catch (err) {
+            alert("Error submitting project: " + err.message);
+          }
+        });
+      });
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <!-- Leaflet JS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN"
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Optional: Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
+    <style>
+      .fade-slide-enter {
+        opacity: 0;
+        transform: translateY(20px);
+      }
 
-		.fade-slide-leave-active {
-			opacity: 0;
-			transform: translateY(20px);
-			transition: all 0.3s ease;
-		}
-	</style>
-</head>
+      .fade-slide-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.4s ease;
+      }
 
-<body class="text-gray-800">
-	<script>
-		// AuthManager instance
-		const authManager = new AuthManager();
-		let dashboardStats = {};
-		let dashboardProjects = [];
-		let dashboardOrgs = [];
-		let dashboardTopics = [];
-		let dashboardStatusCounts = {};
-		let dashboardMapProjects = [];
+      .fade-slide-leave {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-		document.addEventListener("DOMContentLoaded", async function () {
-			if (!authManager.isAuthenticated()) {
-				alert("You must be logged in to access the dashboard.");
-				window.location.href = "frontend/index.html";
-				return;
-			}
-			try {
-				await loadDashboardStats();
-				await loadDashboardProjects();
-				renderDashboardStats();
-				renderCharts();
-				renderMap();
-			} catch (e) {
-				console.error("Dashboard load error:", e);
-				showDashboardError();
-			}
-		});
+      .fade-slide-leave-active {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
 
-		async function loadDashboardStats() {
-			// Load statistics from /api/projects/statistics
-			const resp = await authManager.apiCall(
-				"/api/projects/statistics",
-				"GET"
-			);
-			if (resp.ok) {
-				const data = await resp.json();
-				dashboardStats = data.data || {};
-				dashboardStatusCounts = dashboardStats.statusCounts || {};
-			} else {
-				throw new Error("Failed to load statistics");
-			}
-		}
+  <body class="text-gray-800">
+    <script>
+      // AuthManager instance
+      const authManager = new AuthManager();
+      let dashboardStats = {};
+      let dashboardProjects = [];
+      let dashboardOrgs = [];
+      let dashboardTopics = [];
+      let dashboardStatusCounts = {};
+      let dashboardMapProjects = [];
 
-		async function loadDashboardProjects() {
-			// Load all projects (for map, charts, etc)
-			const resp = await authManager.apiCall("/api/projects", "GET");
-			if (resp.ok) {
-				const data = await resp.json();
-				dashboardProjects =
-					data.data && data.data.content ? data.data.content : [];
-				dashboardMapProjects = dashboardProjects.filter(
-					(p) => p.latitude && p.longitude
-				);
-			} else {
-				throw new Error("Failed to load projects");
-			}
-		}
+      document.addEventListener("DOMContentLoaded", async function () {
+        if (!authManager.isAuthenticated()) {
+          alert("You must be logged in to access the dashboard.");
+          window.location.href = "frontend/index.html";
+          return;
+        }
+        try {
+          await loadDashboardStats();
+          await loadDashboardProjects();
+          renderDashboardStats();
+          renderCharts();
+          renderMap();
+        } catch (e) {
+          console.error("Dashboard load error:", e);
+          showDashboardError();
+        }
+      });
 
-		function renderDashboardStats() {
-			// Status summary
-			const statusMap = {
-				approved: dashboardStatusCounts["ACTIVE"] || 0,
-				pending: dashboardStatusCounts["PENDING"] || 0,
-				stalled: dashboardStatusCounts["STALLED"] || 0,
-				abandoned: dashboardStatusCounts["COMPLETED"] || 0,
-			};
-			document
-				.querySelectorAll(".p-4.bg-green-50 .text-3xl")
-				.forEach((e) => (e.textContent = statusMap.approved));
-			document
-				.querySelectorAll(".p-4.bg-yellow-50 .text-3xl")
-				.forEach((e) => (e.textContent = statusMap.pending));
-			document
-				.querySelectorAll(".p-4.bg-red-50 .text-3xl")
-				.forEach((e) => (e.textContent = statusMap.stalled));
-			document
-				.querySelectorAll(".p-4.bg-gray-50 .text-3xl")
-				.forEach((e) => (e.textContent = statusMap.abandoned));
+      async function loadDashboardStats() {
+        // Load statistics from /api/projects/statistics
+        const resp = await authManager.apiCall(
+          "/api/projects/statistics",
+          "GET"
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          dashboardStats = data.data || {};
+          dashboardStatusCounts = dashboardStats.statusCounts || {};
+        } else {
+          throw new Error("Failed to load statistics");
+        }
+      }
 
-			// Example: update other stats (avg cost, top county, etc) if available
-			// ...
-		}
+      async function loadDashboardProjects() {
+        // Load all projects (for map, charts, etc)
+        const resp = await authManager.apiCall("/api/projects", "GET");
+        if (resp.ok) {
+          const data = await resp.json();
+          dashboardProjects =
+            data.data && data.data.content ? data.data.content : [];
+          dashboardMapProjects = dashboardProjects.filter(
+            (p) => p.latitude && p.longitude
+          );
+        } else {
+          throw new Error("Failed to load projects");
+        }
+      }
 
-		function renderCharts() {
-			// Example: update ApexCharts with real data
-			// You may need to re-initialize or update the chart options with dashboardProjects
-			// For now, just re-render the orgChart and barChart with dummy data
-			// TODO: Replace with real aggregation from dashboardProjects
-			if (window.ApexCharts) {
-				// Org chart (by org type)
-				let orgTypeCounts = { Implementing: 0, Development: 0 };
-				dashboardProjects.forEach((p) => {
-					if (p.organizationType === "IMPLEMENTING")
-						orgTypeCounts.Implementing++;
-					else if (p.organizationType === "DEVELOPMENT")
-						orgTypeCounts.Development++;
-				});
-				let orgChart = new ApexCharts(document.querySelector("#orgChart"), {
-					chart: { type: "donut", height: 350 },
-					series: [orgTypeCounts.Implementing, orgTypeCounts.Development],
-					labels: ["Implementing", "Development"],
-					colors: ["#A08BFB", "#FFF560"],
-					legend: { position: "bottom" },
-					dataLabels: { enabled: true },
-				});
-				orgChart.render();
+      function renderDashboardStats() {
+        // Status summary
+        const statusMap = {
+          approved: dashboardStatusCounts["ACTIVE"] || 0,
+          pending: dashboardStatusCounts["PENDING"] || 0,
+          stalled: dashboardStatusCounts["STALLED"] || 0,
+          abandoned: dashboardStatusCounts["COMPLETED"] || 0,
+        };
+        document
+          .querySelectorAll(".p-4.bg-green-50 .text-3xl")
+          .forEach((e) => (e.textContent = statusMap.approved));
+        document
+          .querySelectorAll(".p-4.bg-yellow-50 .text-3xl")
+          .forEach((e) => (e.textContent = statusMap.pending));
+        document
+          .querySelectorAll(".p-4.bg-red-50 .text-3xl")
+          .forEach((e) => (e.textContent = statusMap.stalled));
+        document
+          .querySelectorAll(".p-4.bg-gray-50 .text-3xl")
+          .forEach((e) => (e.textContent = statusMap.abandoned));
 
-				// Bar chart (by topic)
-				let topicCounts = {};
-				dashboardProjects.forEach((p) => {
-					if (p.theme) topicCounts[p.theme] = (topicCounts[p.theme] || 0) + 1;
-				});
-				let topics = Object.keys(topicCounts);
-				let topicVals = topics.map((t) => topicCounts[t]);
-				let barChart = new ApexCharts(document.querySelector("#barChart"), {
-					chart: { type: "bar", height: 400 },
-					series: [{ name: "Projects", data: topicVals }],
-					xaxis: { categories: topics },
-					legend: { position: "top" },
-				});
-				barChart.render();
-			}
-		}
+        // Example: update other stats (avg cost, top county, etc) if available
+        // ...
+      }
 
-		function renderMap() {
-			// Remove static markers, use dashboardMapProjects
-			if (!window.L) return;
-			let map = L.map("kenyaMap", {
-				center: [-0.0236, 37.9062],
-				zoom: 6.3,
-				scrollWheelZoom: false,
-				dragging: true,
-				touchZoom: false,
-				doubleClickZoom: true,
-				boxZoom: false,
-				keyboard: false,
-				zoomControl: true,
-			});
-			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-				maxZoom: 19,
-				attribution: "&copy; OpenStreetMap contributors",
-			}).addTo(map);
-			dashboardMapProjects.forEach((p) => {
-				if (p.latitude && p.longitude) {
-					L.marker([p.latitude, p.longitude])
-						.addTo(map)
-						.bindTooltip(p.name || p.title || "Project");
-				}
-			});
-		}
+      function renderCharts() {
+        // Example: update ApexCharts with real data
+        // You may need to re-initialize or update the chart options with dashboardProjects
+        // For now, just re-render the orgChart and barChart with dummy data
+        // TODO: Replace with real aggregation from dashboardProjects
+        if (window.ApexCharts) {
+          // Org chart (by org type)
+          let orgTypeCounts = { Implementing: 0, Development: 0 };
+          dashboardProjects.forEach((p) => {
+            if (p.organizationType === "IMPLEMENTING")
+              orgTypeCounts.Implementing++;
+            else if (p.organizationType === "DEVELOPMENT")
+              orgTypeCounts.Development++;
+          });
+          let orgChart = new ApexCharts(document.querySelector("#orgChart"), {
+            chart: { type: "donut", height: 350 },
+            series: [orgTypeCounts.Implementing, orgTypeCounts.Development],
+            labels: ["Implementing", "Development"],
+            colors: ["#A08BFB", "#FFF560"],
+            legend: { position: "bottom" },
+            dataLabels: { enabled: true },
+          });
+          orgChart.render();
 
-		function showDashboardError() {
-			alert("Failed to load dashboard data. Please try again later.");
-		}
-	</script>
-	<div data-twe-modal-init
-		class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-		id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-		<div data-twe-modal-dialog-ref
-			class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-			<div
-				class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-				<div
-					class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-					<!-- Modal title -->
-					<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
-						New Project
-					</h5>
-					<!-- Close button -->
-					<button type="button"
-						class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-						data-twe-modal-dismiss aria-label="Close">
-						<span class="[&>svg]:h-6 [&>svg]:w-6">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-								stroke-width="1.5" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-							</svg>
-						</span>
-					</button>
-				</div>
+          // Bar chart (by topic)
+          let topicCounts = {};
+          dashboardProjects.forEach((p) => {
+            if (p.theme) topicCounts[p.theme] = (topicCounts[p.theme] || 0) + 1;
+          });
+          let topics = Object.keys(topicCounts);
+          let topicVals = topics.map((t) => topicCounts[t]);
+          let barChart = new ApexCharts(document.querySelector("#barChart"), {
+            chart: { type: "bar", height: 400 },
+            series: [{ name: "Projects", data: topicVals }],
+            xaxis: { categories: topics },
+            legend: { position: "top" },
+          });
+          barChart.render();
+        }
+      }
 
-				<!-- Modal body -->
-				<div class="relative p-4">
-					<form id="newProjectForm">
-						<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-							<!-- Map Picker for Location -->
-							<div class="col-span-2 lg:col-span-4">
-								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
-									Map</label>
-								<div class="text-xs text-gray-600 mb-2">
-									Search for a location or click on the map to select the
-									project coordinates.
-								</div>
-								<div id="newProjectMap" style="
+      function renderMap() {
+        // Remove static markers, use dashboardMapProjects
+        if (!window.L) return;
+        let map = L.map("kenyaMap", {
+          center: [-0.0236, 37.9062],
+          zoom: 6.3,
+          scrollWheelZoom: false,
+          dragging: true,
+          touchZoom: false,
+          doubleClickZoom: true,
+          boxZoom: false,
+          keyboard: false,
+          zoomControl: true,
+        });
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors",
+        }).addTo(map);
+        dashboardMapProjects.forEach((p) => {
+          if (p.latitude && p.longitude) {
+            L.marker([p.latitude, p.longitude])
+              .addTo(map)
+              .bindTooltip(p.name || p.title || "Project");
+          }
+        });
+      }
+
+      function showDashboardError() {
+        alert("Failed to load dashboard data. Please try again later.");
+      }
+    </script>
+    <div
+      data-twe-modal-init
+      class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+      id="createNewProject"
+      tabindex="-1"
+      aria-labelledby="createNewProjectTitle"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div
+        data-twe-modal-dialog-ref
+        class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
+      >
+        <div
+          class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+        >
+          <div
+            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+          >
+            <!-- Modal title -->
+            <h5
+              class="text-xl font-light uppercase leading-normal text-surface"
+              id="createNewProjectTitle"
+            >
+              New Project
+            </h5>
+            <!-- Close button -->
+            <button
+              type="button"
+              class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+              data-twe-modal-dismiss
+              aria-label="Close"
+            >
+              <span class="[&>svg]:h-6 [&>svg]:w-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="relative p-4">
+            <form id="newProjectForm">
+              <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <!-- Map Picker for Location -->
+                <div class="col-span-2 lg:col-span-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Pick Project Location on Map</label
+                  >
+                  <div class="text-xs text-gray-600 mb-2">
+                    Search for a location or click on the map to select the
+                    project coordinates.
+                  </div>
+                  <div
+                    id="newProjectMap"
+                    style="
                       height: 400px;
                       width: 100%;
                       border-radius: 8px;
@@ -292,763 +399,1058 @@
                       background-color: #f3f4f6;
                       position: relative;
                       overflow: hidden;
-                    "></div>
-								<input type="hidden" id="project_latitude" name="latitude" />
-								<input type="hidden" id="project_longitude" name="longitude" />
-								<input type="hidden" id="project_county" name="county" />
-								<input type="hidden" id="project_subcounty" name="subcounty" />
-								<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-									<strong>Selected Location:</strong>
-									<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-										location</span>
-									<br />
-									<span id="selectedCounty" class="text-gray-600"></span>
-								</div>
-							</div>
-							<!-- Title -->
-							<div>
-								<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
-								<input required type="text" id="title" name="title"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
+                    "
+                  ></div>
+                  <input type="hidden" id="project_latitude" name="latitude" />
+                  <input
+                    type="hidden"
+                    id="project_longitude"
+                    name="longitude"
+                  />
+                  <input type="hidden" id="project_county" name="county" />
+                  <input
+                    type="hidden"
+                    id="project_subcounty"
+                    name="subcounty"
+                  />
+                  <div
+                    class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
+                  >
+                    <strong>Selected Location:</strong>
+                    <span id="selectedLatLng" class="font-mono text-blue-600"
+                      >Click on map to select location</span
+                    >
+                    <br />
+                    <span id="selectedCounty" class="text-gray-600"></span>
+                  </div>
+                </div>
+                <!-- Title -->
+                <div>
+                  <label
+                    for="title"
+                    class="block text-sm font-medium text-gray-700"
+                    >Title *</label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="title"
+                    name="title"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
 
-							<!-- Project Theme -->
-							<div>
-								<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-									*</label>
-								<select id="theme" name="theme"
-									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-									<option value="">Select Theme</option>
-									<option value="GBV">Gender based violence</option>
-									<option value="AYPSRH">
-										Adolescent and Young People Sexual and Reproductive Health
-									</option>
-									<option value="MNH">Maternal and Newborn Health</option>
-									<option value="FP">Family planning</option>
-									<option value="CH">Child Health</option>
-									<option value="AH">Adolescent Health</option>
-								</select>
-							</div>
+                <!-- Project Theme -->
+                <div>
+                  <label
+                    for="theme"
+                    class="block text-sm font-medium text-gray-700"
+                    >Project Theme *</label
+                  >
+                  <select
+                    id="theme"
+                    name="theme"
+                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">Select Theme</option>
+                    <option value="GBV">Gender based violence</option>
+                    <option value="AYPSRH">
+                      Adolescent and Young People Sexual and Reproductive Health
+                    </option>
+                    <option value="MNH">Maternal and Newborn Health</option>
+                    <option value="FP">Family planning</option>
+                    <option value="CH">Child Health</option>
+                    <option value="AH">Adolescent Health</option>
+                  </select>
+                </div>
 
-							<!-- Time Period -->
-							<div>
-								<label for="starttime_period" class="block text-sm font-medium text-gray-700">
-									Start *
-								</label>
-								<input required type="date" id="starttime_period" name="start_date"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
-									*</label>
-								<input type="date" id="endtime_period" name="end_date"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<!-- Activity Type -->
-							<div class="col-span-2 md:col-span-4">
-								<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
-									(Description) *
-								</label>
-								<textarea required id="activity_type" name="activity_type" rows="3"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-							</div>
+                <!-- Time Period -->
+                <div>
+                  <label
+                    for="starttime_period"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Start *
+                  </label>
+                  <input
+                    required
+                    type="date"
+                    id="starttime_period"
+                    name="start_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="endtime_period"
+                    class="block text-sm font-medium text-gray-700"
+                    >End *</label
+                  >
+                  <input
+                    type="date"
+                    id="endtime_period"
+                    name="end_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <!-- Activity Type -->
+                <div class="col-span-2 md:col-span-4">
+                  <label
+                    for="activity_type"
+                    class="block text-sm font-medium text-gray-700"
+                    >Activity Type (Description) *
+                  </label>
+                  <textarea
+                    required
+                    id="activity_type"
+                    name="activity_type"
+                    rows="3"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  ></textarea>
+                </div>
 
-							<!-- County and Sub-county fields removed (not required) -->
+                <!-- County and Sub-county fields removed (not required) -->
 
-							<!-- Contact Person -->
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Name *
-								</label>
-								<input required type="text" id="contact_person" name="contact_person_name"
-									placeholder="Name"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Role *
-								</label>
-								<input required type="text" id="contact_person" name="contact_person_role"
-									placeholder="Role"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Email *
-								</label>
-								<input required type="email" id="contact_person" name="contact_person_mail"
-									placeholder="Email"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="budget" class="block text-sm font-medium text-gray-700">
-									Budget in KES
-								</label>
-								<input required type="number" id="budget" name="budget" placeholder="amount"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
+                <!-- Contact Person -->
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Name *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    id="contact_person"
+                    name="contact_person_name"
+                    placeholder="Name"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Role *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    id="contact_person"
+                    name="contact_person_role"
+                    placeholder="Role"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Person Email *
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    id="contact_person"
+                    name="contact_person_mail"
+                    placeholder="Email"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="budget"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Budget in KES
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    id="budget"
+                    name="budget"
+                    placeholder="amount"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
 
-							<!-- Gaps -->
-							<div class="col-span-2 lg:col-span-4">
-								<label for="gaps" class="block text-sm font-medium text-gray-700">
-									Objectives *
-								</label>
-								<textarea required id="gaps" name="gaps" rows="3"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-							</div>
-						</div>
+                <!-- Gaps -->
+                <div class="col-span-2 lg:col-span-4">
+                  <label
+                    for="gaps"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Objectives *
+                  </label>
+                  <textarea
+                    required
+                    id="gaps"
+                    name="gaps"
+                    rows="3"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  ></textarea>
+                </div>
+              </div>
 
-						<!-- Button -->
-						<div class="mt-3">
-							<button type="submit"
-								class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-								Submit Project
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+              <!-- Button -->
+              <div class="mt-3">
+                <button
+                  type="submit"
+                  class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Submit Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
-	<div class="" id="nav-placeholder"></div>
+    <div class="" id="nav-placeholder"></div>
 
-	<section class="pt-16 mt-20 bg-cyan-800 sm:pt-20">
-		<div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
-			<div class="md:col-span-4">
-				<h1 class="mb-2 text-4xl font-semibold md:text-4xl">
-					RMNCAH Hub Admn Portal
-				</h1>
-				<p class="text-[16px] mb-6 max-w-2xl">
-					Welcome back, <span class="font-bold">John</span>! Here is a quick
-					overview of the system statistics and your recent activities.
-				</p>
-			</div>
-			<div class="md:col-span-1">
-				<h6 class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase">
-					Admin Actions
-				</h6>
-				<div class="grid gap-4 text-white">
-					<button data-twe-toggle="modal" data-twe-target="#createNewUser"
-						class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
-						<span class="text-sm"> New Admin </span>
-						<span class="text-sm">
-							<i class="far fa-user-plus"></i>
-						</span>
-					</button>
-					<button data-twe-toggle="modal" data-twe-target="#createNewUser"
-						class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
-						<span class="text-sm"> Access Control </span>
-						<span class="text-sm">
-							<i class="far fa-user-shield"></i>
-						</span>
-					</button>
-				</div>
-			</div>
-		</div>
-	</section>
+    <section class="pt-16 mt-20 bg-cyan-800 sm:pt-20">
+      <div
+        class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5"
+      >
+        <div class="md:col-span-4">
+          <h1 class="mb-2 text-4xl font-semibold md:text-4xl">
+            RMNCAH Hub Admn Portal
+          </h1>
+          <p class="text-[16px] mb-6 max-w-2xl">
+            Welcome back, <span class="font-bold">John</span>! Here is a quick
+            overview of the system statistics and your recent activities.
+          </p>
+        </div>
+        <div class="md:col-span-1">
+          <h6
+            class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase"
+          >
+            Admin Actions
+          </h6>
+          <div class="grid gap-4 text-white">
+            <button
+              data-twe-toggle="modal"
+              data-twe-target="#createNewUser"
+              class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600"
+            >
+              <span class="text-sm"> New Admin </span>
+              <span class="text-sm">
+                <i class="far fa-user-plus"></i>
+              </span>
+            </button>
+            <button
+              data-twe-toggle="modal"
+              data-twe-target="#createNewUser"
+              class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600"
+            >
+              <span class="text-sm"> Access Control </span>
+              <span class="text-sm">
+                <i class="far fa-user-shield"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-	<div class="min-h-screen bg-gray-100">
-		<!-- New User -->
-		<div data-twe-modal-init
-			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-			id="createNewUser" tabindex="-1" aria-labelledby="createNewUserTitle" aria-modal="true" role="dialog">
-			<div data-twe-modal-dialog-ref
-				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-				<div
-					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-					<div
-						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-						<!-- Modal title -->
-						<h5 class="text-xl font-medium leading-normal text-surface" id="createNewUserTitle">
-							New User
-						</h5>
-						<!-- Close button -->
-						<button type="button"
-							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-							data-twe-modal-dismiss aria-label="Close">
-							<span class="[&>svg]:h-6 [&>svg]:w-6">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-									stroke-width="1.5" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-								</svg>
-							</span>
-						</button>
-					</div>
+    <div class="min-h-screen bg-gray-100">
+      <!-- New User -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="createNewUser"
+        tabindex="-1"
+        aria-labelledby="createNewUserTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <!-- Modal title -->
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="createNewUserTitle"
+              >
+                New User
+              </h5>
+              <!-- Close button -->
+              <button
+                type="button"
+                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
 
-					<!-- Modal body -->
-					<div class="relative p-4">
-						<form id="userForm" class="space-y-5">
-							<!-- First & Last Name -->
-							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-								<div>
-									<label class="block text-sm font-medium text-gray-700">First Name</label>
-									<input type="text" name="first_name" required
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700">Last Name</label>
-									<input type="text" name="last_name" required
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
+            <!-- Modal body -->
+            <div class="relative p-4">
+              <form id="userForm" class="space-y-5">
+                <!-- First & Last Name -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >First Name</label
+                    >
+                    <input
+                      type="text"
+                      name="first_name"
+                      required
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Last Name</label
+                    >
+                    <input
+                      type="text"
+                      name="last_name"
+                      required
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
 
-								<div>
-									<label class="block text-sm font-medium text-gray-700">Role</label>
-									<select name="role" required
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-										<option value="">Select Role...</option>
-										<option>Super Admin</option>
-										<option>Ei</option>
-									</select>
-								</div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Role</label
+                    >
+                    <select
+                      name="role"
+                      required
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">Select Role...</option>
+                      <option>Super Admin</option>
+                      <option>Ei</option>
+                    </select>
+                  </div>
 
-								<!-- Email -->
-								<div>
-									<label class="block text-sm font-medium text-gray-700">Email Address</label>
-									<input type="email" name="email" required
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-							</div>
-							<!-- Submit -->
-							<div class="pt-4">
-								<button type="submit"
-									class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
-									Create User
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
+                  <!-- Email -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >Email Address</label
+                    >
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+                <!-- Submit -->
+                <div class="pt-4">
+                  <button
+                    type="submit"
+                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                  >
+                    Create User
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 
-		<!-- New Project -->
-		<div data-twe-modal-init
-			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-			id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-			<div data-twe-modal-dialog-ref
-				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-				<div
-					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-					<div
-						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-						<!-- Modal title -->
-						<h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
-							New ADMIN Project
-						</h5>
-						<!-- Close button -->
-						<button type="button"
-							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-							data-twe-modal-dismiss aria-label="Close">
-							<span class="[&>svg]:h-6 [&>svg]:w-6">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-									stroke-width="1.5" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-								</svg>
-							</span>
-						</button>
-					</div>
+      <!-- New Project -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="createNewProject"
+        tabindex="-1"
+        aria-labelledby="createNewProjectTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <!-- Modal title -->
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="createNewProjectTitle"
+              >
+                New ADMIN Project
+              </h5>
+              <!-- Close button -->
+              <button
+                type="button"
+                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
 
-					<!-- Modal body -->
-					<div class="relative p-4">
-						<form action="#" method="POST">
-							<div class="grid grid-cols-2 gap-4 lg:grid-cols-4" id="newProjectFormFields">
-								<!-- Map Picker for Location -->
-								<div class="col-span-2 lg:col-span-4">
-									<label class="block text-sm font-medium text-gray-700 mb-1">Pick Project Location on
-										Map</label>
-									<div id="newProjectMap" style="
+            <!-- Modal body -->
+            <div class="relative p-4">
+              <form action="#" method="POST">
+                <div
+                  class="grid grid-cols-2 gap-4 lg:grid-cols-4"
+                  id="newProjectFormFields"
+                >
+                  <!-- Map Picker for Location -->
+                  <div class="col-span-2 lg:col-span-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Pick Project Location on Map</label
+                    >
+                    <div
+                      id="newProjectMap"
+                      style="
                         height: 250px;
                         width: 100%;
                         border-radius: 8px;
                         margin-bottom: 8px;
-                      "></div>
-									<input type="hidden" id="project_latitude" name="latitude" />
-									<input type="hidden" id="project_longitude" name="longitude" />
-									<div class="text-xs text-gray-500 mt-1">
-										Click on the map to select the project location. Selected:
-										<span id="selectedLatLng">None</span>
-									</div>
-								</div>
-								<script>
-									// Integrate New Project form with backend
-									document.addEventListener("DOMContentLoaded", function () {
-										const form = document.querySelector(
-											"#createNewProject form"
-										);
-										if (!form) return;
+                      "
+                    ></div>
+                    <input
+                      type="hidden"
+                      id="project_latitude"
+                      name="latitude"
+                    />
+                    <input
+                      type="hidden"
+                      id="project_longitude"
+                      name="longitude"
+                    />
+                    <div class="text-xs text-gray-500 mt-1">
+                      Click on the map to select the project location. Selected:
+                      <span id="selectedLatLng">None</span>
+                    </div>
+                  </div>
+                  <script>
+                    // Integrate New Project form with backend
+                    document.addEventListener("DOMContentLoaded", function () {
+                      const form = document.querySelector(
+                        "#createNewProject form"
+                      );
+                      if (!form) return;
 
-										// Map picker logic
-										let mapPicker, markerPicker;
-										const mapModal =
-											document.getElementById("createNewProject");
-										const mapDiv = document.getElementById("newProjectMap");
-										let latInput =
-											document.getElementById("project_latitude");
-										let lngInput =
-											document.getElementById("project_longitude");
-										let latLngDisplay =
-											document.getElementById("selectedLatLng");
+                      // Map picker logic
+                      let mapPicker, markerPicker;
+                      const mapModal =
+                        document.getElementById("createNewProject");
+                      const mapDiv = document.getElementById("newProjectMap");
+                      let latInput =
+                        document.getElementById("project_latitude");
+                      let lngInput =
+                        document.getElementById("project_longitude");
+                      let latLngDisplay =
+                        document.getElementById("selectedLatLng");
 
-										// Helper to initialize map only once
-										let mapInitialized = false;
-										function initMapPicker() {
-											if (mapInitialized) return;
-											mapPicker = L.map("newProjectMap", {
-												center: [-0.0236, 37.9062],
-												zoom: 6.3,
-												scrollWheelZoom: true,
-												dragging: true,
-												doubleClickZoom: true,
-												boxZoom: true,
-												keyboard: true,
-												zoomControl: true,
-											});
-											L.tileLayer(
-												"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-												{
-													maxZoom: 19,
-													attribution: "&copy; OpenStreetMap contributors",
-												}
-											).addTo(mapPicker);
-											mapPicker.on("click", function (e) {
-												if (markerPicker) mapPicker.removeLayer(markerPicker);
-												markerPicker = L.marker(e.latlng).addTo(mapPicker);
-												latInput.value = e.latlng.lat;
-												lngInput.value = e.latlng.lng;
-												latLngDisplay.textContent = `${e.latlng.lat.toFixed(
-													5
-												)}, ${e.latlng.lng.toFixed(5)}`;
-											});
-											mapInitialized = true;
-										}
+                      // Helper to initialize map only once
+                      let mapInitialized = false;
+                      function initMapPicker() {
+                        if (mapInitialized) return;
+                        mapPicker = L.map("newProjectMap", {
+                          center: [-0.0236, 37.9062],
+                          zoom: 6.3,
+                          scrollWheelZoom: true,
+                          dragging: true,
+                          doubleClickZoom: true,
+                          boxZoom: true,
+                          keyboard: true,
+                          zoomControl: true,
+                        });
+                        L.tileLayer(
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          {
+                            maxZoom: 19,
+                            attribution: "&copy; OpenStreetMap contributors",
+                          }
+                        ).addTo(mapPicker);
+                        mapPicker.on("click", function (e) {
+                          if (markerPicker) mapPicker.removeLayer(markerPicker);
+                          markerPicker = L.marker(e.latlng).addTo(mapPicker);
+                          latInput.value = e.latlng.lat;
+                          lngInput.value = e.latlng.lng;
+                          latLngDisplay.textContent = `${e.latlng.lat.toFixed(
+                            5
+                          )}, ${e.latlng.lng.toFixed(5)}`;
+                        });
+                        mapInitialized = true;
+                      }
 
-										// Show map when modal opens
-										mapModal.addEventListener("show.tw.modal", function () {
-											setTimeout(() => {
-												initMapPicker();
-												mapPicker.invalidateSize();
-											}, 200);
-										});
-										// Also initialize if modal is already visible (fallback)
-										if (
-											!mapInitialized &&
-											mapModal.classList.contains("show")
-										) {
-											setTimeout(() => {
-												initMapPicker();
-												mapPicker.invalidateSize();
-											}, 200);
-										}
+                      // Show map when modal opens
+                      mapModal.addEventListener("show.tw.modal", function () {
+                        setTimeout(() => {
+                          initMapPicker();
+                          mapPicker.invalidateSize();
+                        }, 200);
+                      });
+                      // Also initialize if modal is already visible (fallback)
+                      if (
+                        !mapInitialized &&
+                        mapModal.classList.contains("show")
+                      ) {
+                        setTimeout(() => {
+                          initMapPicker();
+                          mapPicker.invalidateSize();
+                        }, 200);
+                      }
 
-										// Submission handled by centralized handler in Stakeholders/dashboard.html
-									});
-								</script>
-								<!-- Title -->
-								<div>
-									<label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-									<input type="text" id="title" name="title"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
+                      // Submission handled by centralized handler in Stakeholders/dashboard.html
+                    });
+                  </script>
+                  <!-- Title -->
+                  <div>
+                    <label
+                      for="title"
+                      class="block text-sm font-medium text-gray-700"
+                      >Title</label
+                    >
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
 
-								<!-- Project Theme -->
-								<div>
-									<label for="theme" class="block text-sm font-medium text-gray-700">Project
-										Theme</label>
-									<select id="theme" name="theme"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-										<option value="">Select Theme</option>
-										<option value="GBV">Gender based violence</option>
-										<option value="AYPSRH">
-											Adolescent and Young People Sexual and Reproductive
-											Health
-										</option>
-										<option value="MNH">Maternal and Newborn Health</option>
-										<option value="FP">Family planning</option>
-										<option value="CH">Child Health</option>
-										<option value="AH">Adolescent Health</option>
-									</select>
-								</div>
+                  <!-- Project Theme -->
+                  <div>
+                    <label
+                      for="theme"
+                      class="block text-sm font-medium text-gray-700"
+                      >Project Theme</label
+                    >
+                    <select
+                      id="theme"
+                      name="theme"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">Select Theme</option>
+                      <option value="GBV">Gender based violence</option>
+                      <option value="AYPSRH">
+                        Adolescent and Young People Sexual and Reproductive
+                        Health
+                      </option>
+                      <option value="MNH">Maternal and Newborn Health</option>
+                      <option value="FP">Family planning</option>
+                      <option value="CH">Child Health</option>
+                      <option value="AH">Adolescent Health</option>
+                    </select>
+                  </div>
 
-								<!-- Time Period -->
-								<div>
-									<label for="starttime_period" class="block text-sm font-medium text-gray-700">
-										Start
-									</label>
-									<input type="date" id="starttime_period" name="start_date"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-								<div>
-									<label for="endtime_period"
-										class="block text-sm font-medium text-gray-700">End</label>
-									<input type="date" id="endtime_period" name="end_date"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-								<!-- Activity Type -->
-								<div class="col-span-2 md:col-span-4">
-									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
-										Type (Description)</label>
-									<textarea id="activity_type" name="activity_type" rows="3"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-								</div>
+                  <!-- Time Period -->
+                  <div>
+                    <label
+                      for="starttime_period"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      Start
+                    </label>
+                    <input
+                      type="date"
+                      id="starttime_period"
+                      name="start_date"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="endtime_period"
+                      class="block text-sm font-medium text-gray-700"
+                      >End</label
+                    >
+                    <input
+                      type="date"
+                      id="endtime_period"
+                      name="end_date"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <!-- Activity Type -->
+                  <div class="col-span-2 md:col-span-4">
+                    <label
+                      for="activity_type"
+                      class="block text-sm font-medium text-gray-700"
+                      >Activity Type (Description)</label
+                    >
+                    <textarea
+                      id="activity_type"
+                      name="activity_type"
+                      rows="3"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    ></textarea>
+                  </div>
 
-								<!-- County and Sub County removed from this form -->
+                  <!-- County and Sub County removed from this form -->
 
-								<div>
-									<label for="location" class="block text-sm font-medium text-gray-700">Area</label>
-									<input type="text" id="time_period" name="project_area"
-										placeholder="Where in county"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
+                  <div>
+                    <label
+                      for="location"
+                      class="block text-sm font-medium text-gray-700"
+                      >Area</label
+                    >
+                    <input
+                      type="text"
+                      id="time_period"
+                      name="project_area"
+                      placeholder="Where in county"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
 
-								<div>
-									<label for="location" class="block text-sm font-medium text-gray-700">Maps
-										Address</label>
-									<input type="text" id="time_period" name="maps_address" placeholder="Maps Address"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
+                  <div>
+                    <label
+                      for="location"
+                      class="block text-sm font-medium text-gray-700"
+                      >Maps Address</label
+                    >
+                    <input
+                      type="text"
+                      id="time_period"
+                      name="maps_address"
+                      placeholder="Maps Address"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
 
-								<!-- Contact Person -->
-								<div>
-									<label for="contact_person" class="block text-sm font-medium text-gray-700">
-										Contact Person Name
-									</label>
-									<input type="text" id="contact_person" name="contact_person_name" placeholder="Name"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-								<div>
-									<label for="contact_person" class="block text-sm font-medium text-gray-700">
-										Contact Person Role
-									</label>
-									<input type="text" id="contact_person" name="contact_person_role" placeholder="Role"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
-								<div>
-									<label for="contact_person" class="block text-sm font-medium text-gray-700">
-										Contact Person Email
-									</label>
-									<input type="email" id="contact_person" name="contact_person_mail"
-										placeholder="Email"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-								</div>
+                  <!-- Contact Person -->
+                  <div>
+                    <label
+                      for="contact_person"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      Contact Person Name
+                    </label>
+                    <input
+                      type="text"
+                      id="contact_person"
+                      name="contact_person_name"
+                      placeholder="Name"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="contact_person"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      Contact Person Role
+                    </label>
+                    <input
+                      type="text"
+                      id="contact_person"
+                      name="contact_person_role"
+                      placeholder="Role"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="contact_person"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      Contact Person Email
+                    </label>
+                    <input
+                      type="email"
+                      id="contact_person"
+                      name="contact_person_mail"
+                      placeholder="Email"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
 
-								<!-- Gaps -->
-								<div class="col-span-2 lg:col-span-4">
-									<label for="gaps" class="block text-sm font-medium text-gray-700">
-										Objectives
-									</label>
-									<textarea id="gaps" name="gaps" rows="3"
-										class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-								</div>
-							</div>
+                  <!-- Gaps -->
+                  <div class="col-span-2 lg:col-span-4">
+                    <label
+                      for="gaps"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      Objectives
+                    </label>
+                    <textarea
+                      id="gaps"
+                      name="gaps"
+                      rows="3"
+                      class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    ></textarea>
+                  </div>
+                </div>
 
-							<!-- Button -->
-							<div class="mt-3">
-								<button type="submit"
-									class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-									Request Info
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
+                <!-- Button -->
+                <div class="mt-3">
+                  <button
+                    type="submit"
+                    class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Request Info
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 
-		<div class="max-w-6xl p-8 mx-auto">
-			<div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-				<h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-					Projects Overview
-				</h2>
-				<h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-					Investments Over Time
-				</h3>
-				<div id="chart" class="p-4 mt-6 fade fade-up"></div>
-				<h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-					Projects Distribution By Topic
-				</h3>
-				<div id="barChart"></div>
-				<h2 class="flex items-center mb-5 text-lg font-light text-gray-900 uppercase fade fade-left">
-					Status Summary
-				</h2>
-				<div class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5">
-					<button data-twe-toggle="modal" data-twe-target="#createNewProject"
-						class="p-4 rounded-md fade fade-up bg-blue-50">
-						<p class="text-3xl font-bold text-blue-700">
-							<i class="text-xl fas fa-plus-circle"></i>
-						</p>
-						<p class="text-sm text-blue-600">New Project</p>
-					</button>
-					<div class="p-4 rounded-md fade fade-up bg-green-50">
-						<p class="text-3xl font-bold text-green-700">0</p>
-						<p class="text-sm text-green-600">Approved</p>
-					</div>
-					<div class="p-4 rounded-md fade fade-up bg-yellow-50">
-						<p class="text-3xl font-bold text-yellow-700">0</p>
-						<p class="text-sm text-yellow-600">Pending</p>
-					</div>
-					<div class="p-4 rounded-md fade fade-up bg-red-50">
-						<p class="text-3xl font-bold text-red-700">0</p>
-						<p class="text-sm text-red-600">Stalled</p>
-					</div>
-					<div class="p-4 rounded-md fade fade-up bg-gray-50">
-						<p class="text-3xl font-bold text-gray-700">0</p>
-						<p class="text-sm text-gray-600">Abandoned</p>
-					</div>
-				</div>
-				<ul class="space-y-2 text-base text-gray-700 fade fade-left">
-					<li>
-						<span class="font-medium"> Avg. Cost: </span>
-						<span class="text-blue-600">
-							<span class="text-xs opacity-75"> KES </span>
-							25,000,000
-						</span>
-					</li>
-					<li>
-						<span class="font-medium"> Top County By Projects: </span>
-						Mombasa , 378
-					</li>
-					<li>
-						<span class="font-medium"> Top County By Project Value: </span>
-						Kisumu , <span class="ml-2 text-xs">KES</span> 1,200,000
-					</li>
-					<li>
-						<span class="font-medium"> Addressed Topics: </span>
-						GBV , Community Empowerment , Community Health
-					</li>
-					<li>
-						<span class="font-medium"> Latest Start: </span>
-						June 2025 , Nakuru
-					</li>
-				</ul>
-				<div class="flex fade fade-up">
-					<a href="projects.html"
-						class="w-full text-center bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5">
-						<i class="mr-2 fas fa-cog"></i>
-						Manage Projects
-					</a>
-				</div>
-			</div>
+      <div class="max-w-6xl p-8 mx-auto">
+        <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
+          <h2
+            class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left"
+          >
+            Projects Overview
+          </h2>
+          <h3
+            class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left"
+          >
+            Investments Over Time
+          </h3>
+          <div id="chart" class="p-4 mt-6 fade fade-up"></div>
+          <h3
+            class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left"
+          >
+            Projects Distribution By Topic
+          </h3>
+          <div id="barChart"></div>
+          <h2
+            class="flex items-center mb-5 text-lg font-light text-gray-900 uppercase fade fade-left"
+          >
+            Status Summary
+          </h2>
+          <div class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5">
+            <button
+              data-twe-toggle="modal"
+              data-twe-target="#createNewProject"
+              class="p-4 rounded-md fade fade-up bg-blue-50"
+            >
+              <p class="text-3xl font-bold text-blue-700">
+                <i class="text-xl fas fa-plus-circle"></i>
+              </p>
+              <p class="text-sm text-blue-600">New Project</p>
+            </button>
+            <div class="p-4 rounded-md fade fade-up bg-green-50">
+              <p class="text-3xl font-bold text-green-700">0</p>
+              <p class="text-sm text-green-600">Approved</p>
+            </div>
+            <div class="p-4 rounded-md fade fade-up bg-yellow-50">
+              <p class="text-3xl font-bold text-yellow-700">0</p>
+              <p class="text-sm text-yellow-600">Pending</p>
+            </div>
+            <div class="p-4 rounded-md fade fade-up bg-red-50">
+              <p class="text-3xl font-bold text-red-700">0</p>
+              <p class="text-sm text-red-600">Stalled</p>
+            </div>
+            <div class="p-4 rounded-md fade fade-up bg-gray-50">
+              <p class="text-3xl font-bold text-gray-700">0</p>
+              <p class="text-sm text-gray-600">Abandoned</p>
+            </div>
+          </div>
+          <ul class="space-y-2 text-base text-gray-700 fade fade-left">
+            <li>
+              <span class="font-medium"> Avg. Cost: </span>
+              <span class="text-blue-600">
+                <span class="text-xs opacity-75"> KES </span>
+                25,000,000
+              </span>
+            </li>
+            <li>
+              <span class="font-medium"> Top County By Projects: </span>
+              Mombasa , 378
+            </li>
+            <li>
+              <span class="font-medium"> Top County By Project Value: </span>
+              Kisumu , <span class="ml-2 text-xs">KES</span> 1,200,000
+            </li>
+            <li>
+              <span class="font-medium"> Addressed Topics: </span>
+              GBV , Community Empowerment , Community Health
+            </li>
+            <li>
+              <span class="font-medium"> Latest Start: </span>
+              June 2025 , Nakuru
+            </li>
+          </ul>
+          <div class="flex fade fade-up">
+            <a
+              href="projects.html"
+              class="w-full text-center bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5"
+            >
+              <i class="mr-2 fas fa-cog"></i>
+              Manage Projects
+            </a>
+          </div>
+        </div>
 
-			<div class="p-6 my-4 bg-white rounded-lg shadow-md fade fade-right">
-				<h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-					Stakeholder Overview
-				</h2>
-				<h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-					Organization Types
-				</h3>
-				<div id="orgChart" class="fade fade-up"></div>
-				<div class="grid grid-cols-2 gap-4 mb-6 text-center fade fade-up">
-					<div class="p-4 rounded-md bg-blue-50">
-						<p class="text-3xl font-bold text-blue-700">100</p>
-						<p class="text-sm text-blue-600">Whitelisted</p>
-					</div>
-					<div class="p-4 rounded-md bg-yellow-50">
-						<p class="text-3xl font-bold text-yellow-700">10</p>
-						<p class="text-sm text-yellow-600">Pending</p>
-					</div>
-					<div class="p-4 rounded-md bg-red-50">
-						<p class="text-3xl font-bold text-red-700">10</p>
-						<p class="text-sm text-red-600">Restricted</p>
-					</div>
-				</div>
-				<div class="flex fade fade-up">
-					<a href="members.html"
-						class="w-full bg-blue-600 text-center text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200">
-						<i class="mr-2 fas fa-address-book"></i> Manage Members
-					</a>
-				</div>
-			</div>
-		</div>
+        <div class="p-6 my-4 bg-white rounded-lg shadow-md fade fade-right">
+          <h2
+            class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left"
+          >
+            Stakeholder Overview
+          </h2>
+          <h3
+            class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left"
+          >
+            Organization Types
+          </h3>
+          <div id="orgChart" class="fade fade-up"></div>
+          <div class="grid grid-cols-2 gap-4 mb-6 text-center fade fade-up">
+            <div class="p-4 rounded-md bg-blue-50">
+              <p class="text-3xl font-bold text-blue-700">100</p>
+              <p class="text-sm text-blue-600">Whitelisted</p>
+            </div>
+            <div class="p-4 rounded-md bg-yellow-50">
+              <p class="text-3xl font-bold text-yellow-700">10</p>
+              <p class="text-sm text-yellow-600">Pending</p>
+            </div>
+            <div class="p-4 rounded-md bg-red-50">
+              <p class="text-3xl font-bold text-red-700">10</p>
+              <p class="text-sm text-red-600">Restricted</p>
+            </div>
+          </div>
+          <div class="flex fade fade-up">
+            <a
+              href="members.html"
+              class="w-full bg-blue-600 text-center text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200"
+            >
+              <i class="mr-2 fas fa-address-book"></i> Manage Members
+            </a>
+          </div>
+        </div>
+      </div>
 
-		<div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full"></div>
-	</div>
+      <div
+        id="kenyaMap"
+        class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full"
+      ></div>
+    </div>
 
+    <script src="styles/loadNav.js"></script>
 
+    <script>
+      var options = {
+        chart: {
+          type: "donut",
+          height: 350,
+        },
+        series: [65, 35],
+        labels: ["Implementing", "Development"],
+        colors: ["#A08BFB", "#FFF560"],
+        legend: {
+          position: "bottom",
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val, opts) {
+            return opts.w.config.series[opts.seriesIndex];
+          },
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " Oranizations";
+            },
+          },
+        },
+      };
 
-	<script src="styles/loadNav.js"></script>
+      var chart = new ApexCharts(document.querySelector("#orgChart"), options);
+      chart.render();
+    </script>
+    <script>
+      var options = {
+        chart: {
+          type: "donut",
+          height: 350,
+        },
+        series: [65, 35], // Example: 65 males, 35 females
+        labels: ["Male", "Female"],
+        colors: ["#008FFB", "#FF4560"],
+        legend: {
+          position: "bottom",
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val, opts) {
+            return opts.w.config.series[opts.seriesIndex];
+          },
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " Members";
+            },
+          },
+        },
+      };
 
-	<script>
-		var options = {
-			chart: {
-				type: "donut",
-				height: 350,
-			},
-			series: [65, 35],
-			labels: ["Implementing", "Development"],
-			colors: ["#A08BFB", "#FFF560"],
-			legend: {
-				position: "bottom",
-			},
-			dataLabels: {
-				enabled: true,
-				formatter: function (val, opts) {
-					return opts.w.config.series[opts.seriesIndex];
-				},
-			},
-			tooltip: {
-				y: {
-					formatter: function (val) {
-						return val + " Oranizations";
-					},
-				},
-			},
-		};
+      var chart = new ApexCharts(document.querySelector("#teamChart"), options);
+      chart.render();
+    </script>
+    <script>
+      var options = {
+        chart: {
+          type: "bar",
+          height: 400,
+          stacked: false,
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "50%",
+            dataLabels: {
+              position: "top",
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          offsetY: -20,
+          style: {
+            fontSize: "12px",
+            colors: ["#304758"],
+          },
+        },
+        series: [
+          {
+            name: "Implementing Projects",
+            data: [8, 12, 9],
+          },
+          {
+            name: "Development Projects",
+            data: [6, 10, 7],
+          },
+        ],
+        xaxis: {
+          categories: ["GBV", "Community Empowerment", "Community Health"],
+          title: { text: "Category" },
+        },
+        yaxis: {
+          title: { text: "Value (Millions / No. of Projects)" },
+        },
+        legend: {
+          position: "top",
+        },
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter: function (val, opts) {
+              let seriesName =
+                opts.seriesIndex < 2 ? "Investment (M)" : "Projects";
+              return val + " " + seriesName;
+            },
+          },
+        },
+      };
 
-		var chart = new ApexCharts(document.querySelector("#orgChart"), options);
-		chart.render();
-	</script>
-	<script>
-		var options = {
-			chart: {
-				type: "donut",
-				height: 350,
-			},
-			series: [65, 35], // Example: 65 males, 35 females
-			labels: ["Male", "Female"],
-			colors: ["#008FFB", "#FF4560"],
-			legend: {
-				position: "bottom",
-			},
-			dataLabels: {
-				enabled: true,
-				formatter: function (val, opts) {
-					return opts.w.config.series[opts.seriesIndex];
-				},
-			},
-			tooltip: {
-				y: {
-					formatter: function (val) {
-						return val + " Members";
-					},
-				},
-			},
-		};
+      var chart = new ApexCharts(document.querySelector("#barChart"), options);
+      chart.render();
+    </script>
 
-		var chart = new ApexCharts(document.querySelector("#teamChart"), options);
-		chart.render();
-	</script>
-	<script>
-		var options = {
-			chart: {
-				type: "bar",
-				height: 400,
-				stacked: false,
-			},
-			plotOptions: {
-				bar: {
-					horizontal: false,
-					columnWidth: "50%",
-					dataLabels: {
-						position: "top",
-					},
-				},
-			},
-			dataLabels: {
-				enabled: true,
-				offsetY: -20,
-				style: {
-					fontSize: "12px",
-					colors: ["#304758"],
-				},
-			},
-			series: [
-				{
-					name: "Implementing Projects",
-					data: [8, 12, 9],
-				},
-				{
-					name: "Development Projects",
-					data: [6, 10, 7],
-				},
-			],
-			xaxis: {
-				categories: ["GBV", "Community Empowerment", "Community Health"],
-				title: { text: "Category" },
-			},
-			yaxis: {
-				title: { text: "Value (Millions / No. of Projects)" },
-			},
-			legend: {
-				position: "top",
-			},
-			tooltip: {
-				shared: true,
-				intersect: false,
-				y: {
-					formatter: function (val, opts) {
-						let seriesName =
-							opts.seriesIndex < 2 ? "Investment (M)" : "Projects";
-						return val + " " + seriesName;
-					},
-				},
-			},
-		};
+    <script>
+      // Example data
+      var localData = [120, 150, 180, 200, 170, 220, 250];
+      var foreignData = [100, 130, 160, 140, 190, 210, 230];
 
-		var chart = new ApexCharts(document.querySelector("#barChart"), options);
-		chart.render();
-	</script>
+      // Extra info aligned with each data point
+      var localExtra = [
+        { stakeholders: 10, projects: 5 },
+        { stakeholders: 12, projects: 6 },
+        { stakeholders: 15, projects: 7 },
+        { stakeholders: 18, projects: 8 },
+        { stakeholders: 14, projects: 5 },
+        { stakeholders: 20, projects: 9 },
+        { stakeholders: 22, projects: 11 },
+      ];
 
-	<script>
-		// Example data
-		var localData = [120, 150, 180, 200, 170, 220, 250];
-		var foreignData = [100, 130, 160, 140, 190, 210, 230];
+      var foreignExtra = [
+        { stakeholders: 8, projects: 3 },
+        { stakeholders: 11, projects: 4 },
+        { stakeholders: 13, projects: 6 },
+        { stakeholders: 12, projects: 4 },
+        { stakeholders: 15, projects: 7 },
+        { stakeholders: 17, projects: 8 },
+        { stakeholders: 19, projects: 9 },
+      ];
 
-		// Extra info aligned with each data point
-		var localExtra = [
-			{ stakeholders: 10, projects: 5 },
-			{ stakeholders: 12, projects: 6 },
-			{ stakeholders: 15, projects: 7 },
-			{ stakeholders: 18, projects: 8 },
-			{ stakeholders: 14, projects: 5 },
-			{ stakeholders: 20, projects: 9 },
-			{ stakeholders: 22, projects: 11 },
-		];
+      var options = {
+        chart: {
+          type: "line",
+          height: 400,
+          toolbar: { show: true },
+        },
+        series: [
+          { name: "Implementing Investment", data: localData },
+          { name: "Development Investment", data: foreignData },
+        ],
+        xaxis: {
+          categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+          title: { text: "Months" },
+        },
+        yaxis: {
+          title: { text: "Investment (in Millions)" },
+        },
+        stroke: {
+          curve: "smooth",
+          width: 3,
+        },
+        markers: {
+          size: 4,
+        },
+        tooltip: {
+          shared: false,
+          custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+            let investment = series[seriesIndex][dataPointIndex];
+            let extra =
+              seriesIndex === 0
+                ? localExtra[dataPointIndex]
+                : foreignExtra[dataPointIndex];
 
-		var foreignExtra = [
-			{ stakeholders: 8, projects: 3 },
-			{ stakeholders: 11, projects: 4 },
-			{ stakeholders: 13, projects: 6 },
-			{ stakeholders: 12, projects: 4 },
-			{ stakeholders: 15, projects: 7 },
-			{ stakeholders: 17, projects: 8 },
-			{ stakeholders: 19, projects: 9 },
-		];
-
-		var options = {
-			chart: {
-				type: "line",
-				height: 400,
-				toolbar: { show: true },
-			},
-			series: [
-				{ name: "Implementing Investment", data: localData },
-				{ name: "Development Investment", data: foreignData },
-			],
-			xaxis: {
-				categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-				title: { text: "Months" },
-			},
-			yaxis: {
-				title: { text: "Investment (in Millions)" },
-			},
-			stroke: {
-				curve: "smooth",
-				width: 3,
-			},
-			markers: {
-				size: 4,
-			},
-			tooltip: {
-				shared: false,
-				custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-					let investment = series[seriesIndex][dataPointIndex];
-					let extra =
-						seriesIndex === 0
-							? localExtra[dataPointIndex]
-							: foreignExtra[dataPointIndex];
-
-					return `
+            return `
             <div style="padding:8px;">
               <strong>${w.globals.seriesNames[seriesIndex]}</strong><br/>
               Investment: ${investment} M<br/>
@@ -1056,197 +1458,198 @@
               No. of Projects: ${extra.projects}
             </div>
           `;
-				},
-			},
-			legend: {
-				position: "top",
-			},
-		};
+          },
+        },
+        legend: {
+          position: "top",
+        },
+      };
 
-		var chart = new ApexCharts(document.querySelector("#chart"), options);
-		chart.render();
-	</script>
+      var chart = new ApexCharts(document.querySelector("#chart"), options);
+      chart.render();
+    </script>
 
-	<script src="styles/effects.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-	<script>
-		let map,
-			selectedMarker = null;
-		const markers = [];
-		const icons = {
-			default: (tag) =>
-				L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
-			selected: (tag) =>
-				L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] }),
-		};
+    <script src="styles/effects.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      let map,
+        selectedMarker = null;
+      const markers = [];
+      const icons = {
+        default: (tag) =>
+          L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
+        selected: (tag) =>
+          L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] }),
+      };
 
-		const bgColors = {
-			active: "bg-green-50",
-			pending: "bg-yellow-50",
-			stalled: "bg-red-50",
-			abandoned: "bg-gray-100",
-			default: "bg-white",
-		};
+      const bgColors = {
+        active: "bg-green-50",
+        pending: "bg-yellow-50",
+        stalled: "bg-red-50",
+        abandoned: "bg-gray-100",
+        default: "bg-white",
+      };
 
-		const statusBadge = (tag) => {
-			return (
-				{
-					active: "bg-green-200 text-green-800",
-					pending: "bg-yellow-200 text-yellow-800",
-					stalled: "bg-red-200 text-red-800",
-					abandoned: "bg-gray-300 text-gray-800",
-				}[tag] || "bg-gray-200 text-gray-800"
-			);
-		};
+      const statusBadge = (tag) => {
+        return (
+          {
+            active: "bg-green-200 text-green-800",
+            pending: "bg-yellow-200 text-yellow-800",
+            stalled: "bg-red-200 text-red-800",
+            abandoned: "bg-gray-300 text-gray-800",
+          }[tag] || "bg-gray-200 text-gray-800"
+        );
+      };
 
-		let sortBy = "name";
-		let sortOrder = "asc";
-		let currentPage = 1;
-		const itemsPerPage = 5;
-		let currentFilter = "all";
+      let sortBy = "name";
+      let sortOrder = "asc";
+      let currentPage = 1;
+      const itemsPerPage = 5;
+      let currentFilter = "all";
 
-		let searchQuery = "";
-		let dateRangeFrom = null;
-		let dateRangeTo = null;
+      let searchQuery = "";
+      let dateRangeFrom = null;
+      let dateRangeTo = null;
 
-		document.addEventListener("DOMContentLoaded", function () {
-			map = L.map("kenyaMap", {
-				center: [-0.0236, 37.9062],
-				zoom: 6.3,
-				scrollWheelZoom: false,
-				dragging: true,
-				touchZoom: false,
-				doubleClickZoom: true,
-				boxZoom: false,
-				keyboard: false,
-				zoomControl: true, // keeps the + / – buttons visible
-			});
+      document.addEventListener("DOMContentLoaded", function () {
+        map = L.map("kenyaMap", {
+          center: [-0.0236, 37.9062],
+          zoom: 6.3,
+          scrollWheelZoom: false,
+          dragging: true,
+          touchZoom: false,
+          doubleClickZoom: true,
+          boxZoom: false,
+          keyboard: false,
+          zoomControl: true, // keeps the + / – buttons visible
+        });
 
-			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-				maxZoom: 19,
-				attribution: "&copy; OpenStreetMap contributors",
-			}).addTo(map);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors",
+        }).addTo(map);
 
-			const markerData = [
-				{ lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
-				{ lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
-				{ lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
-				{ lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "abandoned" },
-				{ lat: 0.5673, lng: 35.2489, name: "Project 5", tag: "active" },
-				{ lat: -0.7584, lng: 36.9684, name: "Project 6", tag: "pending" },
-				{ lat: 1.0321, lng: 37.7456, name: "Project 7", tag: "stalled" },
-				{ lat: -0.5648, lng: 35.6892, name: "Project 8", tag: "abandoned" },
-				{ lat: -1.3201, lng: 36.9021, name: "Project 9", tag: "active" },
-				{ lat: 0.8231, lng: 36.4562, name: "Project 10", tag: "pending" },
-				{ lat: -0.8723, lng: 35.9231, name: "Project 11", tag: "stalled" },
-				{ lat: 0.2974, lng: 36.8762, name: "Project 12", tag: "abandoned" },
-				{ lat: 0.1492, lng: 37.5312, name: "Project 13", tag: "active" },
-				{ lat: -1.6754, lng: 36.1212, name: "Project 14", tag: "pending" },
-				{ lat: 0.9273, lng: 35.1342, name: "Project 15", tag: "stalled" },
-				{ lat: 0.6284, lng: 36.3173, name: "Project 16", tag: "abandoned" },
-				{ lat: -1.3627, lng: 36.5431, name: "Project 17", tag: "active" },
-				{ lat: 0.7542, lng: 35.9751, name: "Project 18", tag: "pending" },
-				{ lat: -0.8921, lng: 36.6519, name: "Project 19", tag: "stalled" },
-				{ lat: -1.0234, lng: 37.0917, name: "Project 20", tag: "abandoned" },
-				{ lat: 1.1023, lng: 36.8342, name: "Project 21", tag: "active" },
-				{ lat: 0.4132, lng: 35.8423, name: "Project 22", tag: "pending" },
-				{ lat: -0.5273, lng: 36.4398, name: "Project 23", tag: "stalled" },
-				{ lat: -1.2573, lng: 37.2812, name: "Project 24", tag: "abandoned" },
-				{ lat: 0.7632, lng: 35.1231, name: "Project 25", tag: "active" },
-				{ lat: -0.2734, lng: 36.9781, name: "Project 26", tag: "pending" },
-				{ lat: 1.0213, lng: 36.5341, name: "Project 27", tag: "stalled" },
-				{ lat: 0.6842, lng: 36.8345, name: "Project 28", tag: "abandoned" },
-				{ lat: -1.0214, lng: 37.2134, name: "Project 29", tag: "active" },
-				{ lat: 0.8123, lng: 35.7481, name: "Project 30", tag: "pending" },
-				{ lat: 0.9431, lng: 36.1934, name: "Project 31", tag: "stalled" },
-				{ lat: -0.7421, lng: 36.0298, name: "Project 32", tag: "abandoned" },
-				{ lat: -1.2419, lng: 36.7492, name: "Project 33", tag: "active" },
-				{ lat: 0.4561, lng: 35.9021, name: "Project 34", tag: "pending" },
-				{ lat: -0.6872, lng: 36.4983, name: "Project 35", tag: "stalled" },
-				{ lat: 0.9812, lng: 37.3847, name: "Project 36", tag: "abandoned" },
-				{ lat: -1.1023, lng: 36.9821, name: "Project 37", tag: "active" },
-				{ lat: 0.7421, lng: 36.4213, name: "Project 38", tag: "pending" },
-				{ lat: -0.3421, lng: 35.8741, name: "Project 39", tag: "stalled" },
-				{ lat: 0.9843, lng: 36.1321, name: "Project 40", tag: "abandoned" },
-				{ lat: 0.2142, lng: 37.8234, name: "Project 41", tag: "active" },
-				{ lat: -0.9432, lng: 36.9431, name: "Project 42", tag: "pending" },
-				{ lat: 1.1543, lng: 35.6212, name: "Project 43", tag: "stalled" },
-				{ lat: 0.5324, lng: 36.0932, name: "Project 44", tag: "abandoned" },
-				{ lat: -1.1932, lng: 36.8371, name: "Project 45", tag: "active" },
-				{ lat: 0.8934, lng: 35.8232, name: "Project 46", tag: "pending" },
-				{ lat: -0.4721, lng: 36.4731, name: "Project 47", tag: "stalled" },
-				{ lat: 0.6231, lng: 36.9512, name: "Project 48", tag: "abandoned" },
-				{ lat: -1.0132, lng: 36.3421, name: "Project 49", tag: "active" },
-				{ lat: 0.3782, lng: 35.6491, name: "Project 50", tag: "pending" },
-			];
+        const markerData = [
+          { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
+          { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
+          { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
+          { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "abandoned" },
+          { lat: 0.5673, lng: 35.2489, name: "Project 5", tag: "active" },
+          { lat: -0.7584, lng: 36.9684, name: "Project 6", tag: "pending" },
+          { lat: 1.0321, lng: 37.7456, name: "Project 7", tag: "stalled" },
+          { lat: -0.5648, lng: 35.6892, name: "Project 8", tag: "abandoned" },
+          { lat: -1.3201, lng: 36.9021, name: "Project 9", tag: "active" },
+          { lat: 0.8231, lng: 36.4562, name: "Project 10", tag: "pending" },
+          { lat: -0.8723, lng: 35.9231, name: "Project 11", tag: "stalled" },
+          { lat: 0.2974, lng: 36.8762, name: "Project 12", tag: "abandoned" },
+          { lat: 0.1492, lng: 37.5312, name: "Project 13", tag: "active" },
+          { lat: -1.6754, lng: 36.1212, name: "Project 14", tag: "pending" },
+          { lat: 0.9273, lng: 35.1342, name: "Project 15", tag: "stalled" },
+          { lat: 0.6284, lng: 36.3173, name: "Project 16", tag: "abandoned" },
+          { lat: -1.3627, lng: 36.5431, name: "Project 17", tag: "active" },
+          { lat: 0.7542, lng: 35.9751, name: "Project 18", tag: "pending" },
+          { lat: -0.8921, lng: 36.6519, name: "Project 19", tag: "stalled" },
+          { lat: -1.0234, lng: 37.0917, name: "Project 20", tag: "abandoned" },
+          { lat: 1.1023, lng: 36.8342, name: "Project 21", tag: "active" },
+          { lat: 0.4132, lng: 35.8423, name: "Project 22", tag: "pending" },
+          { lat: -0.5273, lng: 36.4398, name: "Project 23", tag: "stalled" },
+          { lat: -1.2573, lng: 37.2812, name: "Project 24", tag: "abandoned" },
+          { lat: 0.7632, lng: 35.1231, name: "Project 25", tag: "active" },
+          { lat: -0.2734, lng: 36.9781, name: "Project 26", tag: "pending" },
+          { lat: 1.0213, lng: 36.5341, name: "Project 27", tag: "stalled" },
+          { lat: 0.6842, lng: 36.8345, name: "Project 28", tag: "abandoned" },
+          { lat: -1.0214, lng: 37.2134, name: "Project 29", tag: "active" },
+          { lat: 0.8123, lng: 35.7481, name: "Project 30", tag: "pending" },
+          { lat: 0.9431, lng: 36.1934, name: "Project 31", tag: "stalled" },
+          { lat: -0.7421, lng: 36.0298, name: "Project 32", tag: "abandoned" },
+          { lat: -1.2419, lng: 36.7492, name: "Project 33", tag: "active" },
+          { lat: 0.4561, lng: 35.9021, name: "Project 34", tag: "pending" },
+          { lat: -0.6872, lng: 36.4983, name: "Project 35", tag: "stalled" },
+          { lat: 0.9812, lng: 37.3847, name: "Project 36", tag: "abandoned" },
+          { lat: -1.1023, lng: 36.9821, name: "Project 37", tag: "active" },
+          { lat: 0.7421, lng: 36.4213, name: "Project 38", tag: "pending" },
+          { lat: -0.3421, lng: 35.8741, name: "Project 39", tag: "stalled" },
+          { lat: 0.9843, lng: 36.1321, name: "Project 40", tag: "abandoned" },
+          { lat: 0.2142, lng: 37.8234, name: "Project 41", tag: "active" },
+          { lat: -0.9432, lng: 36.9431, name: "Project 42", tag: "pending" },
+          { lat: 1.1543, lng: 35.6212, name: "Project 43", tag: "stalled" },
+          { lat: 0.5324, lng: 36.0932, name: "Project 44", tag: "abandoned" },
+          { lat: -1.1932, lng: 36.8371, name: "Project 45", tag: "active" },
+          { lat: 0.8934, lng: 35.8232, name: "Project 46", tag: "pending" },
+          { lat: -0.4721, lng: 36.4731, name: "Project 47", tag: "stalled" },
+          { lat: 0.6231, lng: 36.9512, name: "Project 48", tag: "abandoned" },
+          { lat: -1.0132, lng: 36.3421, name: "Project 49", tag: "active" },
+          { lat: 0.3782, lng: 35.6491, name: "Project 50", tag: "pending" },
+        ];
 
-			markerData.forEach((data) => {
-				data.description = `This is a description for ${data.name}`;
-				data.region = `Region ${Math.ceil(Math.random() * 10)}`;
-				data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
-				data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
-				data.sponsor = `Sponsor for ${data.name}`;
-				data.participants = Math.ceil(Math.random() * 100);
-				data.start_date = new Date(
-					Date.now() - Math.random() * 10000000000
-				).toISOString();
-				data.status = data.tag;
+        markerData.forEach((data) => {
+          data.description = `This is a description for ${data.name}`;
+          data.region = `Region ${Math.ceil(Math.random() * 10)}`;
+          data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
+          data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
+          data.sponsor = `Sponsor for ${data.name}`;
+          data.participants = Math.ceil(Math.random() * 100);
+          data.start_date = new Date(
+            Date.now() - Math.random() * 10000000000
+          ).toISOString();
+          data.status = data.tag;
 
-				const marker = L.marker([data.lat, data.lng], {
-					icon: icons.default(data.tag),
-				})
-					.addTo(map)
-					.bindTooltip(data.name)
-					.on("click", function () {
-						if (selectedMarker && selectedMarker !== this) {
-							selectedMarker.setIcon(icons.default(selectedMarker.tag));
-						}
-						this.setIcon(icons.selected(data.tag));
-						selectedMarker = this;
-						showProjectInfo(data);
-					});
+          const marker = L.marker([data.lat, data.lng], {
+            icon: icons.default(data.tag),
+          })
+            .addTo(map)
+            .bindTooltip(data.name)
+            .on("click", function () {
+              if (selectedMarker && selectedMarker !== this) {
+                selectedMarker.setIcon(icons.default(selectedMarker.tag));
+              }
+              this.setIcon(icons.selected(data.tag));
+              selectedMarker = this;
+              showProjectInfo(data);
+            });
 
-				marker.data = data;
-				marker.tag = data.tag;
-				markers.push(marker);
-			});
+          marker.data = data;
+          marker.tag = data.tag;
+          markers.push(marker);
+        });
 
-			highlightMarkers("all");
+        highlightMarkers("all");
 
-			document
-				.getElementById("searchInput")
-				.addEventListener("input", (e) => {
-					searchQuery = e.target.value.trim().toLowerCase();
-					currentPage = 1;
-					highlightMarkers(currentFilter);
-				});
+        document
+          .getElementById("searchInput")
+          .addEventListener("input", (e) => {
+            searchQuery = e.target.value.trim().toLowerCase();
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+          });
 
-			document.getElementById("dateFrom").addEventListener("change", (e) => {
-				dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-				currentPage = 1;
-				highlightMarkers(currentFilter);
-			});
+        document.getElementById("dateFrom").addEventListener("change", (e) => {
+          dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+          currentPage = 1;
+          highlightMarkers(currentFilter);
+        });
 
-			document.getElementById("dateTo").addEventListener("change", (e) => {
-				dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-				currentPage = 1;
-				highlightMarkers(currentFilter);
-			});
+        document.getElementById("dateTo").addEventListener("change", (e) => {
+          dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+          currentPage = 1;
+          highlightMarkers(currentFilter);
+        });
 
-			document
-				.getElementById("sortSelect")
-				.addEventListener("change", (e) => {
-					sortProjects(e.target.value);
-				});
-		});
+        document
+          .getElementById("sortSelect")
+          .addEventListener("change", (e) => {
+            sortProjects(e.target.value);
+          });
+      });
 
-		function showProjectInfo(project) {
-			const infoBox = document.getElementById("projectInfo");
-			infoBox.classList.remove("hidden");
-			infoBox.innerHTML = `
-            <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name
-				}</h3>
+      function showProjectInfo(project) {
+        const infoBox = document.getElementById("projectInfo");
+        infoBox.classList.remove("hidden");
+        infoBox.innerHTML = `
+            <h3 class="mb-4 text-xl font-bold text-gray-800">${
+              project.name
+            }</h3>
             <p><strong>Description:</strong> ${project.description}</p>
             <p><strong>Region:</strong> ${project.region}</p>
             <p><strong>Budget:</strong> ${project.budget}</p>
@@ -1254,247 +1657,251 @@
             <p><strong>Participants:</strong> ${project.participants}</p>
             <p><strong>Sponsor:</strong> ${project.sponsor}</p>
             <p><strong>Start Date:</strong> ${new Date(
-					project.start_date
-				).toLocaleDateString()}</p>
+              project.start_date
+            ).toLocaleDateString()}</p>
             <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
-					project.status
-				)}">${project.status}</span></p>
+              project.status
+            )}">${project.status}</span></p>
         `;
-		}
+      }
 
-		function focusMarker(index) {
-			const marker = markers[index];
-			map.setView(marker.getLatLng(), 9);
-			marker.fire("click");
-			document
-				.getElementById("kenyaMap")
-				.scrollIntoView({ behavior: "smooth" });
-		}
+      function focusMarker(index) {
+        const marker = markers[index];
+        map.setView(marker.getLatLng(), 9);
+        marker.fire("click");
+        document
+          .getElementById("kenyaMap")
+          .scrollIntoView({ behavior: "smooth" });
+      }
 
-		function sortProjects(field) {
-			if (sortBy === field) {
-				sortOrder = sortOrder === "asc" ? "desc" : "asc";
-			} else {
-				sortBy = field;
-				sortOrder = "asc";
-			}
-			currentPage = 1;
-			highlightMarkers(currentFilter);
-		}
+      function sortProjects(field) {
+        if (sortBy === field) {
+          sortOrder = sortOrder === "asc" ? "desc" : "asc";
+        } else {
+          sortBy = field;
+          sortOrder = "asc";
+        }
+        currentPage = 1;
+        highlightMarkers(currentFilter);
+      }
 
-		function highlightMarkers(tag) {
-			currentFilter = tag;
-			const accordion = document.getElementById("projectAccordion");
-			const infoBox = document.getElementById("projectInfo");
-			infoBox.classList.add("hidden");
-			accordion.innerHTML = "";
-			accordion.classList.remove("hidden");
-			accordion.classList.add("opacity-0", "translate-y-4");
+      function highlightMarkers(tag) {
+        currentFilter = tag;
+        const accordion = document.getElementById("projectAccordion");
+        const infoBox = document.getElementById("projectInfo");
+        infoBox.classList.add("hidden");
+        accordion.innerHTML = "";
+        accordion.classList.remove("hidden");
+        accordion.classList.add("opacity-0", "translate-y-4");
 
-			let filteredMarkers = markers.filter((marker) => {
-				const p = marker.data;
-				if (tag !== "all" && marker.tag !== tag) return false;
-				if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
-					return false;
-				const pDate = new Date(p.start_date);
-				if (dateRangeFrom && pDate < dateRangeFrom) return false;
-				if (dateRangeTo && pDate > dateRangeTo) return false;
-				return true;
-			});
+        let filteredMarkers = markers.filter((marker) => {
+          const p = marker.data;
+          if (tag !== "all" && marker.tag !== tag) return false;
+          if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+            return false;
+          const pDate = new Date(p.start_date);
+          if (dateRangeFrom && pDate < dateRangeFrom) return false;
+          if (dateRangeTo && pDate > dateRangeTo) return false;
+          return true;
+        });
 
-			filteredMarkers.sort((a, b) => {
-				const aVal =
-					sortBy === "name" ? a.data.name : new Date(a.data.start_date);
-				const bVal =
-					sortBy === "name" ? b.data.name : new Date(b.data.start_date);
-				return sortOrder === "asc"
-					? aVal > bVal
-						? 1
-						: -1
-					: aVal < bVal
-						? 1
-						: -1;
-			});
+        filteredMarkers.sort((a, b) => {
+          const aVal =
+            sortBy === "name" ? a.data.name : new Date(a.data.start_date);
+          const bVal =
+            sortBy === "name" ? b.data.name : new Date(b.data.start_date);
+          return sortOrder === "asc"
+            ? aVal > bVal
+              ? 1
+              : -1
+            : aVal < bVal
+            ? 1
+            : -1;
+        });
 
-			const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-			const paginated = filteredMarkers.slice(
-				(currentPage - 1) * itemsPerPage,
-				currentPage * itemsPerPage
-			);
-			updatePaginationControls(totalPages);
+        const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
+        const paginated = filteredMarkers.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        );
+        updatePaginationControls(totalPages);
 
-			markers.forEach((marker) => {
-				marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
-			});
+        markers.forEach((marker) => {
+          marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+        });
 
-			setTimeout(
-				() => accordion.classList.remove("opacity-0", "translate-y-4"),
-				10
-			);
+        setTimeout(
+          () => accordion.classList.remove("opacity-0", "translate-y-4"),
+          10
+        );
 
-			paginated.forEach((marker, idx) => {
-				const i = markers.indexOf(marker);
-				const project = marker.data;
-				const bg = bgColors[project.status] || bgColors.default;
+        paginated.forEach((marker, idx) => {
+          const i = markers.indexOf(marker);
+          const project = marker.data;
+          const bg = bgColors[project.status] || bgColors.default;
 
-				const item = document.createElement("div");
-				item.className = `rounded shadow-sm ${bg}`;
+          const item = document.createElement("div");
+          item.className = `rounded shadow-sm ${bg}`;
 
-				item.innerHTML = `
+          item.innerHTML = `
                 <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-800">${project.name
-					}</h4>
-                            <p class="text-sm text-gray-600">${project.description
-					}</p>
+                            <h4 class="text-lg font-semibold text-gray-800">${
+                              project.name
+                            }</h4>
+                            <p class="text-sm text-gray-600">${
+                              project.description
+                            }</p>
                         </div>
                         <div class="mt-2 text-sm text-gray-500 sm:mt-0">${new Date(
-						project.start_date
-					).toLocaleDateString()}</div>
+                          project.start_date
+                        ).toLocaleDateString()}</div>
                     </div>
                 </button>
                 <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
                     <p><strong>Region:</strong> ${project.region}</p>
                     <p><strong>Budget:</strong> ${project.budget}</p>
                     <p><strong>Team:</strong> ${project.team}</p>
-                    <p><strong>Participants:</strong> ${project.participants
-					}</p>
+                    <p><strong>Participants:</strong> ${
+                      project.participants
+                    }</p>
                     <p><strong>Sponsor:</strong> ${project.sponsor}</p>
                     <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
-						project.status
-					)}">${project.status}</span></p>
+                      project.status
+                    )}">${project.status}</span></p>
                     <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                         Show on Map
                     </button>
                 </div>
             `;
 
-				accordion.appendChild(item);
+          accordion.appendChild(item);
 
-				item
-					.querySelector(`[data-toggle="collapse-${i}"]`)
-					.addEventListener("click", () => {
-						document
-							.getElementById(`collapse-${i}`)
-							.classList.toggle("hidden");
-					});
-			});
-		}
+          item
+            .querySelector(`[data-toggle="collapse-${i}"]`)
+            .addEventListener("click", () => {
+              document
+                .getElementById(`collapse-${i}`)
+                .classList.toggle("hidden");
+            });
+        });
+      }
 
-		function updatePaginationControls(totalPages) {
-			const container = document.getElementById("paginationControls");
-			container.innerHTML = "";
-			for (let i = 1; i <= totalPages; i++) {
-				const btn = document.createElement("button");
-				btn.textContent = i;
-				btn.className = `px-3 py-1 rounded ${i === currentPage
-					? "bg-blue-600 text-white"
-					: "bg-gray-100 text-gray-800 hover:bg-gray-200"
-					}`;
-				btn.onclick = () => {
-					currentPage = i;
-					highlightMarkers(currentFilter);
-				};
-				container.appendChild(btn);
-			}
-		}
+      function updatePaginationControls(totalPages) {
+        const container = document.getElementById("paginationControls");
+        container.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          btn.className = `px-3 py-1 rounded ${
+            i === currentPage
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+          }`;
+          btn.onclick = () => {
+            currentPage = i;
+            highlightMarkers(currentFilter);
+          };
+          container.appendChild(btn);
+        }
+      }
 
-		function exportCSV() {
-			const headers = [
-				"Name",
-				"Description",
-				"Region",
-				"Budget",
-				"Team",
-				"Participants",
-				"Sponsor",
-				"Start Date",
-				"Status",
-			];
-			const rows = markers
-				.map((m) => m.data)
-				.filter((p) => {
-					if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
-						return false;
-					const date = new Date(p.start_date);
-					if (dateRangeFrom && date < dateRangeFrom) return false;
-					if (dateRangeTo && date > dateRangeTo) return false;
-					if (currentFilter !== "all" && p.status !== currentFilter)
-						return false;
-					return true;
-				})
-				.map((p) => [
-					p.name,
-					p.description,
-					p.region,
-					p.budget,
-					p.team,
-					p.participants,
-					p.sponsor,
-					new Date(p.start_date).toLocaleDateString(),
-					p.status,
-				]);
+      function exportCSV() {
+        const headers = [
+          "Name",
+          "Description",
+          "Region",
+          "Budget",
+          "Team",
+          "Participants",
+          "Sponsor",
+          "Start Date",
+          "Status",
+        ];
+        const rows = markers
+          .map((m) => m.data)
+          .filter((p) => {
+            if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+              return false;
+            const date = new Date(p.start_date);
+            if (dateRangeFrom && date < dateRangeFrom) return false;
+            if (dateRangeTo && date > dateRangeTo) return false;
+            if (currentFilter !== "all" && p.status !== currentFilter)
+              return false;
+            return true;
+          })
+          .map((p) => [
+            p.name,
+            p.description,
+            p.region,
+            p.budget,
+            p.team,
+            p.participants,
+            p.sponsor,
+            new Date(p.start_date).toLocaleDateString(),
+            p.status,
+          ]);
 
-			let csvContent = [headers.join(",")];
-			rows.forEach((r) =>
-				csvContent.push(r.map((field) => `"${field}"`).join(","))
-			);
+        let csvContent = [headers.join(",")];
+        rows.forEach((r) =>
+          csvContent.push(r.map((field) => `"${field}"`).join(","))
+        );
 
-			const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
-			const link = document.createElement("a");
-			link.href = URL.createObjectURL(blob);
-			link.download = `projects_${new Date().toISOString().split("T")[0]
-				}.csv`;
-			link.click();
-		}
+        const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `projects_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        link.click();
+      }
 
-		// Show/hide admin collaboration menu and load pending count
-		document.addEventListener("DOMContentLoaded", function () {
-			const userRole = localStorage.getItem("userRole");
+      // Show/hide admin collaboration menu and load pending count
+      document.addEventListener("DOMContentLoaded", function () {
+        const userRole = localStorage.getItem("userRole");
 
-			// Show admin menu items if user is admin or super admin
-			if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
-				const adminMenuItem = document.getElementById(
-					"admin-collab-requests"
-				);
-				const adminMenuMobile = document.getElementById(
-					"admin-collab-requests-mobile"
-				);
-				if (adminMenuItem) adminMenuItem.style.display = "block";
-				if (adminMenuMobile) adminMenuMobile.style.display = "block";
+        // Show admin menu items if user is admin or super admin
+        if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+          const adminMenuItem = document.getElementById(
+            "admin-collab-requests"
+          );
+          const adminMenuMobile = document.getElementById(
+            "admin-collab-requests-mobile"
+          );
+          if (adminMenuItem) adminMenuItem.style.display = "block";
+          if (adminMenuMobile) adminMenuMobile.style.display = "block";
 
-				// Load pending collaboration requests count
-				loadPendingRequestsCount();
-			}
-		});
+          // Load pending collaboration requests count
+          loadPendingRequestsCount();
+        }
+      });
 
-		async function loadPendingRequestsCount() {
-			try {
-				const token = localStorage.getItem("accessToken");
-				const response = await fetch(
-					`${window.BASE_URL}/api/collaboration-requests/admin/pending`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
-				const data = await response.json();
+      async function loadPendingRequestsCount() {
+        try {
+          const token = localStorage.getItem("accessToken");
+          const response = await fetch(
+            `${window.BASE_URL}/api/collaboration-requests/admin/pending`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          const data = await response.json();
 
-				if (data.status === 200 && data.data.length > 0) {
-					const badge = document.getElementById("pending-badge");
-					if (badge) {
-						badge.textContent = data.data.length;
-						badge.style.display = "inline-block";
-					}
-				}
-			} catch (error) {
-				console.error("Error loading pending requests count:", error);
-			}
-		}
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-	<!-- Leaflet JS -->
-</body>
-
+          if (data.status === 200 && data.data.length > 0) {
+            const badge = document.getElementById("pending-badge");
+            if (badge) {
+              badge.textContent = data.data.length;
+              badge.style.display = "inline-block";
+            }
+          }
+        } catch (error) {
+          console.error("Error loading pending requests count:", error);
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <!-- Leaflet JS -->
+  </body>
 </html>

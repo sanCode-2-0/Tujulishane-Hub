@@ -66,12 +66,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Allow origins configured via environment variable FRONTEND_ORIGIN (comma-separated) or allow all for demo
-        String origins = System.getenv("FRONTEND_ORIGIN");
-        if (origins != null && !origins.isBlank()) {
-            configuration.setAllowedOrigins(Arrays.asList(origins.split("\s*,\s*")));
-        } else {
-            configuration.addAllowedOriginPattern("*");
-        }
+        // Explicitly allow local and production frontend origins
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8081",
+            "https://tujulishane-hub.onrender.com"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);

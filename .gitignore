@@ -135,3 +135,4 @@ sample_priority_projects.sql
 insert_priority_projects.sql
 frontend/Stakeholders/MULTI_THEMES_LOCATIONS_README.md
 backend/src/main/resources/db/migration/V1__Add_Project_Number.sql
+project.json

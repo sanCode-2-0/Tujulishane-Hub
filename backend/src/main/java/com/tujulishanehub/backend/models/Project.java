@@ -75,6 +75,10 @@ public class Project {
     @Column(precision = 15, scale = 2)
     private java.math.BigDecimal budget;
     
+        // Supporting documents (files as blobs)
+        @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+        private java.util.List<ProjectDocument> supportingDocuments = new java.util.ArrayList<>();
+    
     // Additional metadata fields
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

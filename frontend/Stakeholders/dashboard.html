@@ -28,7 +28,6 @@
 	</script>
 	<link rel="stylesheet" href="../styles/main.css" />
 	<script src="../set-base-url.js"></script>
-	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
 	<script src="../styles/effects.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -413,7 +412,7 @@
 
 	<div class="" id="nav-placeholder"></div>
 	<section class="pt-16 bg-cyan-800 sm:pt-20">
-		<div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
+	<div class="grid max-w-6xl px-4 py-8 mx-auto sm:px-6 lg:px-8 md:grid-cols-5 bg-gray-50" style="background-color: #f8fafc;">
 			<div class="md:col-span-4">
 				<h1 class="mb-2 text-4xl font-semibold md:text-4xl">
 					RMNCAH Hub Sponsor Dashboard
@@ -444,7 +443,7 @@
 					class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase text-gray-50 opacity-90">
 					Quick Actions
 				</h6>
-				<div class="grid gap-4 text-white">
+				<div class="grid gap-4">
 					<button data-twe-toggle="modal" data-twe-target="#createNewProject"
 						class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
 						<span class="text-sm"> New Project </span>
@@ -2736,49 +2735,16 @@
 
 			// Get form data
 			const form = event.target;
-			const formData = new FormData(form);
-			// Add supporting documents to FormData (already included if input is inside form)
+			const rawFormData = new FormData(form);
 			const filesInput = form.querySelector('#supporting_documents');
-			if (filesInput && filesInput.files.length > 0) {
-				for (let i = 0; i < filesInput.files.length; i++) {
-					formData.append('supporting_documents', filesInput.files[i]);
-				}
-			}
-			// Debug: Log all form data including files
-			console.log('📋 FormData to be sent:');
-			for (let pair of formData.entries()) {
-				if (pair[1] instanceof File) {
-					console.log(`  ${pair[0]}: [File] name=${pair[1].name}, type=${pair[1].type}, size=${pair[1].size}`);
-				} else {
-					console.log(`  ${pair[0]}: "${pair[1]}"`);
-				}
-			}
-			// Example POST request using FormData (uncomment to use)
-			/*
-			fetch('/api/projects', {
-				method: 'POST',
-				body: formData
-			}).then(response => response.json())
-				.then(data => console.log('Server response:', data))
-				.catch(error => console.error('Error:', error));
-			*/
-
-			// Debug: Log all form data
-			console.log("📋 Form data collected:");
-			for (let [key, value] of formData.entries()) {
-				console.log(`  ${key}: "${value}"`);
-			}
 
 			// Collect multiple themes
-			const selectedThemes = formData.getAll("theme[]");
-			console.log("🎨 Selected themes:", selectedThemes);
-
+			const selectedThemes = rawFormData.getAll("theme[]");
 			// Collect multiple locations
-			const latitudes = formData.getAll("latitude[]");
-			const longitudes = formData.getAll("longitude[]");
-			const counties = formData.getAll("county[]");
-			const subcounties = formData.getAll("subcounty[]");
-
+			const latitudes = rawFormData.getAll("latitude[]");
+			const longitudes = rawFormData.getAll("longitude[]");
+			const counties = rawFormData.getAll("county[]");
+			const subcounties = rawFormData.getAll("subcounty[]");
 			const locations = [];
 			for (let i = 0; i < latitudes.length; i++) {
 				locations.push({
@@ -2789,7 +2755,43 @@
 					mapsAddress: `${counties[i] || ''}${subcounties[i] ? ', ' + subcounties[i] : ''}, Kenya`.trim()
 				});
 			}
-			console.log("📍 Collected locations:", locations);
+
+			// Build the project object
+			const projectObj = {
+				partner: rawFormData.get("partner"),
+				title: rawFormData.get("title"),
+				themes: selectedThemes,
+				projectCategory: rawFormData.get("category"),
+				startDate: rawFormData.get("start_date"),
+				endDate: rawFormData.get("end_date"),
+				activityType: rawFormData.get("activity_type"),
+				locations: locations,
+				contactPersonName: rawFormData.get("contact_person_name"),
+				contactPersonRole: rawFormData.get("contact_person_role"),
+				contactPersonEmail: rawFormData.get("contact_person_mail"),
+				objectives: rawFormData.get("gaps"),
+				budget: parseFloat(rawFormData.get("budget")) || 0,
+			};
+
+			// Create new FormData for submission
+			const submitFormData = new FormData();
+			const projectBlob = new Blob([JSON.stringify(projectObj)], { type: "application/json" });
+			submitFormData.append("project", projectBlob, "project.json");
+			if (filesInput && filesInput.files.length > 0) {
+				for (let i = 0; i < filesInput.files.length; i++) {
+					submitFormData.append("supporting_documents", filesInput.files[i]);
+				}
+			}
+
+			// Debug: Log all form data including files
+			console.log('📋 FormData to be sent:');
+			for (let pair of submitFormData.entries()) {
+				if (pair[1] instanceof File) {
+					console.log(`  ${pair[0]}: [File] name=${pair[1].name}, type=${pair[1].type}, size=${pair[1].size}`);
+				} else {
+					console.log(`  ${pair[0]}: "${pair[1]}"`);
+				}
+			}
 
 			// Ensure global markers array exists and is usable here
 			if (typeof markers === 'undefined' || !Array.isArray(markers)) {
@@ -2801,18 +2803,18 @@
 			// Prepare project data according to API documentation
 			const projectData = {
 				partner: "TBD", // This should come from user's organization
-				title: formData.get("title"),
+				title: rawFormData.get("title"),
 				themes: selectedThemes,
-				projectCategory: formData.get("category"),
-				startDate: formData.get("start_date"),
-				endDate: formData.get("end_date"),
-				activityType: formData.get("activity_type"),
+				projectCategory: rawFormData.get("category"),
+				startDate: rawFormData.get("start_date"),
+				endDate: rawFormData.get("end_date"),
+				activityType: rawFormData.get("activity_type"),
 				locations: locations,
-				contactPersonName: formData.get("contact_person_name"),
-				contactPersonRole: formData.get("contact_person_role"),
-				contactPersonEmail: formData.get("contact_person_mail"),
-				objectives: formData.get("gaps"),
-				budget: parseFloat(formData.get("budget")) || 0,
+				contactPersonName: rawFormData.get("contact_person_name"),
+				contactPersonRole: rawFormData.get("contact_person_role"),
+				contactPersonEmail: rawFormData.get("contact_person_mail"),
+				objectives: rawFormData.get("gaps"),
+				budget: parseFloat(rawFormData.get("budget")) || 0,
 			};
 
 			console.log("📝 Project data to submit:", projectData);
@@ -2831,7 +2833,7 @@
 			];
 
 			const missingFields = requiredFormFields.filter((fieldObj) => {
-				const value = formData.get(fieldObj.field);
+				const value = rawFormData.get(fieldObj.field);
 				return !value || value.trim() === "";
 			});
 
@@ -2878,53 +2880,32 @@
 				const user = await authManager.getCurrentUser();
 				console.log("Current user data:", user);
 
-				// Try multiple sources for organization name
+				// Set partner in FormData
 				if (user) {
 					if (user.organization && user.organization.name) {
-						projectData.partner = user.organization.name;
-						console.log(
-							"Partner set from user.organization.name:",
-							projectData.partner
-						);
+						submitFormData.set("partner", user.organization.name);
 					} else if (user.organizationName) {
-						projectData.partner = user.organizationName;
-						console.log(
-							"Partner set from user.organizationName:",
-							projectData.partner
-						);
+						formData.set("partner", user.organizationName);
 					} else if (user.name) {
-						// Fallback to user's name if no organization
-						projectData.partner = user.name;
-						console.log(
-							"Partner set from user.name (fallback):",
-							projectData.partner
-						);
+						formData.set("partner", user.name);
 					}
 				}
 
 				console.log("📡 Submitting to API...");
-				console.log("📦 Final project data being sent:", JSON.stringify(projectData, null, 2));
-
-				// Submit to API
-				const response = await authManager.apiCall(
-					"/api/projects",
-					"POST",
-					projectData
-				);
+				// Submit to API using fetch and FormData
+				const response = await fetch("http://localhost:8080/api/projects", {
+					method: "POST",
+					headers: {
+						"Authorization": `Bearer ${authManager.getToken()}`
+						// Do NOT set Content-Type for FormData; browser will set it with boundary
+					},
+					body: submitFormData
+				});
 
 				if (response.ok) {
 					const result = await response.json();
-					console.log("✅ Project created successfully:", result);
-
-					// Show success message
-					alert(
-						"Project created successfully! Your project has been submitted for review."
-					);
-
-					// Reset form
+					alert("Project created successfully! Your project has been submitted for review.");
 					form.reset();
-
-					// Clear locations and markers
 					locations.forEach(location => {
 						if (location.marker) {
 							location.marker.remove();
@@ -2932,45 +2913,39 @@
 					});
 					locations.length = 0;
 					if (Array.isArray(markers)) markers.length = 0;
-
-					// Clear hidden inputs
 					locationInputsDiv.innerHTML = '';
-
-					// Update display
 					updateLocationsDisplay();
-
-					// Close modal (if using bootstrap/tw-elements modal)
 					const modal = document.querySelector("[data-twe-modal-show]");
 					if (modal) {
-						// Try to close modal using various methods
 						try {
-							const closeBtn = modal.querySelector(
-								"[data-twe-modal-dismiss]"
-							);
+							const closeBtn = modal.querySelector("[data-twe-modal-dismiss]");
 							if (closeBtn) closeBtn.click();
 						} catch (e) {
 							console.log("Could not close modal automatically");
 						}
 					}
-
-					// Optionally refresh the page or update the project list
 					setTimeout(() => {
 						window.location.reload();
 					}, 2000);
 				} else {
 					let errorMessage = "Failed to create project";
-					// Use stored raw error text from authManager.apiCall if available
-					const errorText = response.errorText || "";
-					if (errorText) console.error("❌ Raw error response:", errorText);
-					// Attempt to parse JSON error
+					let errorDetails = "";
 					try {
-						const errorData = JSON.parse(errorText);
-						errorMessage = errorData.message || errorMessage;
-						console.error("❌ API Error:", errorData);
-					} catch (_e) {
-						// Not JSON, skip
+						const errorText = await response.text();
+						console.error("❌ Raw error response:", errorText);
+						// Try to parse JSON error
+						try {
+							const errorData = JSON.parse(errorText);
+							errorMessage = errorData.message || errorMessage;
+							errorDetails = JSON.stringify(errorData, null, 2);
+						} catch (jsonErr) {
+							errorDetails = errorText;
+						}
+					} catch (e) {
+						errorDetails = String(e);
 					}
-					alert(`Failed to create project: ${errorMessage}`);
+					console.error(`❌ Submission failed. Status: ${response.status} ${response.statusText}`);
+					alert(`Failed to create project: ${errorMessage}\nStatus: ${response.status} ${response.statusText}\nDetails: ${errorDetails}`);
 				}
 			} catch (error) {
 				console.error("❌ Submission error:", error);

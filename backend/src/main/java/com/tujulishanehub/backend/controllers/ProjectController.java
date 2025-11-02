@@ -1,6 +1,10 @@
 package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.payload.ProjectCreateRequest;
+import com.tujulishanehub.backend.models.ProjectDocument;
+import com.tujulishanehub.backend.repositories.ProjectDocumentRepository;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 import com.tujulishanehub.backend.payload.ProjectUpdateRequest;
 import com.tujulishanehub.backend.payload.ProjectResponse;
 import com.tujulishanehub.backend.payload.ApiResponse;
@@ -44,6 +48,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
+    @Autowired
+    private ProjectDocumentRepository projectDocumentRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     
@@ -59,46 +65,38 @@ public class ProjectController {
     /**
      * Create a new project (Partners/Donors only)
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('PARTNER') and @userService.canUserCreateProjects(authentication.name)")
-    public ResponseEntity<ApiResponse<ProjectResponse>> createProject(@Valid @RequestBody ProjectCreateRequest request) {
+    public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
+        @RequestPart("project") @Valid ProjectCreateRequest request,
+        @RequestPart(value = "supporting_documents", required = false) List<MultipartFile> files
+    ) {
         try {
             // Log brief info to console
             logger.info("Controller: Creating new project: {}", request.getTitle());
             logger.debug("Controller: Full request data - title: {}, themes: {}, locations: {}, partner: {}",
                 request.getTitle(), request.getThemes(), request.getLocations(), request.getPartner());
 
-            // Also append the raw request JSON to a dedicated file for debugging (non-blocking)
-            try {
-                ObjectMapper _om = new ObjectMapper();
-                // Support Java 8 date/time types (LocalDate, LocalDateTime)
-                _om.registerModule(new JavaTimeModule());
-                _om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-                String json = _om.writerWithDefaultPrettyPrinter().writeValueAsString(request);
-                Path logDir = Paths.get("logs");
-                if (!Files.exists(logDir)) {
-                    try { Files.createDirectories(logDir); } catch (Exception ignore) { }
-                }
-                Path logFile = logDir.resolve("api-projects-create.log");
-                String entry = String.format("%s - Incoming /api/projects POST:\n%s\n---\n", java.time.LocalDateTime.now(), json);
-                try {
-                    Files.writeString(logFile, entry, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                } catch (Exception ioe) {
-                    logger.warn("Could not write request log to {}: {}", logFile.toAbsolutePath(), ioe.getMessage());
-                }
-            } catch (Exception logEx) {
-                logger.warn("Failed to serialize ProjectCreateRequest for logging: {}", logEx.getMessage());
-            }
-            logger.debug("Controller: Request validation passed, user authenticated");
-
-            // Get the authenticated user and associate with project
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            // Get authenticated user email
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
-            logger.debug("Controller: Authenticated user: {}", userEmail);
 
-            logger.debug("Controller: Calling projectService.createProjectFromRequest");
+            // Save project as usual
             Project createdProject = projectService.createProjectFromRequest(request, userEmail);
 
+            // Save files as blobs
+            if (files != null) {
+                for (MultipartFile file : files) {
+                    ProjectDocument doc = new ProjectDocument();
+                    doc.setFileName(file.getOriginalFilename());
+                    doc.setFileType(file.getContentType());
+                    doc.setData(file.getBytes());
+                    doc.setProject(createdProject);
+                    projectDocumentRepository.save(doc);
+                }
+            }
+            logger.debug("Controller: Request validation passed, user authenticated");
+            logger.debug("Controller: Authenticated user: {}", userEmail);
             logger.debug("Controller: Project created, converting to response");
             ProjectResponse projectResponse = projectService.toProjectResponse(createdProject);
             logger.debug("Controller: Response created successfully");
