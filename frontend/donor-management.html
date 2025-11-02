@@ -1,291 +1,748 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Donor Management - Tujulishane Hub</title>
-    <script src="auth.js"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af",
-              secondary: "#f59e0b",
-              accent: "#10b981",
-              dark: "#1f2937",
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="./set-base-url.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    />
-    <!-- Alpine.js -->
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-  </head>
 
-  <body class="bg-gray-50">
-    <div class="min-h-screen">
-      <!-- Header -->
-      <div class="" id="nav-placeholder"></div>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Donor Management - Tujulishane Hub</title>
+	<script src="auth.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af",
+						secondary: "#f59e0b",
+						accent: "#10b981",
+						dark: "#1f2937",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="./set-base-url.js"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Navigation Tabs -->
-        <div class="mb-8">
-          <nav class="flex space-x-8" id="tabNavigation">
-            <!-- Tabs will be dynamically generated based on user role -->
-          </nav>
-        </div>
+<body class="bg-gray-50">
+	<div class="min-h-screen">
+		<!-- Header -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<!-- Modal title -->
+						<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
+							New Project
+						</h5>
+						<!-- Close button -->
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
 
-        <!-- Donors List -->
-        <div id="donorsSection" class="tab-content">
-          <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                All Donors
-              </h3>
-              <div id="donorsList" class="space-y-4">
-                <!-- Donors will be loaded here -->
-              </div>
-            </div>
-          </div>
-        </div>
+					<!-- Modal body -->
+					<div class="relative p-4">
+						<form id="newProjectForm">
+							<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+								<!-- Map Picker for Location -->
+								<div class="col-span-2 lg:col-span-4">
+									<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+										Map</label>
+									<div class="text-xs text-gray-600 mb-2">
+										Search for a location or click on the map to select the
+										project coordinates.
+									</div>
+									<div id="newProjectMap" style="
+                      height: 400px;
+                      width: 100%;
+                      border-radius: 8px;
+                      margin-bottom: 8px;
+                      border: 1px solid #e5e7eb;
+                      background-color: #f3f4f6;
+                      position: relative;
+                      overflow: hidden;
+                    "></div>
+									<input type="hidden" id="project_latitude" name="latitude" />
+									<input type="hidden" id="project_longitude" name="longitude" />
+									<input type="hidden" id="project_county" name="county" />
+									<input type="hidden" id="project_subcounty" name="subcounty" />
+									<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+										<strong>Selected Location:</strong>
+										<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
+											location</span>
+										<br />
+										<span id="selectedCounty" class="text-gray-600"></span>
+									</div>
+								</div>
+								<!-- Title -->
+								<div>
+									<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+									<input required type="text" id="title" name="title"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
 
-        <!-- My Partners Section -->
-        <div id="partnersSection" class="tab-content hidden">
-          <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                My Partner Organizations
-              </h3>
-              <div id="partnersList" class="space-y-4">
-                <!-- Partners will be loaded here -->
-              </div>
-              <div class="mt-6">
-                <button
-                  onclick="showLinkPartnerModal()"
-                  class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                >
-                  <i class="fas fa-plus mr-2"></i>Link New Partner
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+								<!-- Project Theme -->
+								<div>
+									<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
+										*</label>
+									<select id="theme" name="theme"
+										class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+										<option value="">Select Theme</option>
+										<option value="GBV">Gender based violence</option>
+										<option value="AYPSRH">
+											Adolescent and Young People Sexual and Reproductive Health
+										</option>
+										<option value="MNH">Maternal and Newborn Health</option>
+										<option value="FP">Family planning</option>
+										<option value="CH">Child Health</option>
+										<option value="AH">Adolescent Health</option>
+									</select>
+								</div>
 
-        <!-- My Donor Section (for partners) -->
-        <div id="myDonorSection" class="tab-content hidden">
-          <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                My Donor Organization
-              </h3>
-              <div id="donorInfo" class="space-y-4">
-                <!-- Donor info will be loaded here -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+								<!-- Time Period -->
+								<div>
+									<label for="starttime_period" class="block text-sm font-medium text-gray-700">
+										Start *
+									</label>
+									<input required type="date" id="starttime_period" name="start_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+										*</label>
+									<input type="date" id="endtime_period" name="end_date"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<!-- Activity Type -->
+								<div class="col-span-2 md:col-span-4">
+									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
+										Type
+										(Description) *
+									</label>
+									<textarea required id="activity_type" name="activity_type" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
 
-    <!-- Link Partner Modal -->
-    <div
-      id="linkPartnerModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
-    >
-      <div
-        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
-      >
-        <div class="mt-3">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
-            Link Partner Organization
-          </h3>
-          <form id="linkPartnerForm">
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Select Partner Organization</label
-              >
-              <select
-                id="partnerSelect"
-                required
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Choose a partner...</option>
-                <!-- Available partners will be loaded here -->
-              </select>
-              <p class="text-xs text-gray-500 mt-1">
-                Only shows approved partner organizations that aren't already
-                linked to a donor
-              </p>
-            </div>
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                onclick="hideLinkPartnerModal()"
-                class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-              >
-                Link Partner
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+								<!-- County and Sub-county fields removed (not required) -->
 
-    <script src="styles/loadNav.js"></script>
-    <script>
-      let currentUser = null;
+								<!-- Contact Person -->
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Name *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_name"
+										placeholder="Name"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Role *
+									</label>
+									<input required type="text" id="contact_person" name="contact_person_role"
+										placeholder="Role"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="contact_person" class="block text-sm font-medium text-gray-700">
+										Contact Person Email *
+									</label>
+									<input required type="email" id="contact_person" name="contact_person_mail"
+										placeholder="Email"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label for="budget" class="block text-sm font-medium text-gray-700">
+										Budget in KES
+									</label>
+									<input required type="number" id="budget" name="budget" placeholder="amount"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
 
-      function updateUserDisplayWhenNavReady(user) {
-        // Check if nav is already loaded
-        const navPlaceholder = document.getElementById("nav-placeholder");
-        if (navPlaceholder && navPlaceholder.innerHTML.trim() !== "") {
-          updateUserDisplay(user);
-        } else {
-          // Wait for nav to be loaded
-          window.addEventListener(
-            "navLoaded",
-            () => {
-              updateUserDisplay(user);
-            },
-            { once: true }
-          );
-        }
-      }
+								<!-- Gaps -->
+								<div class="col-span-2 lg:col-span-4">
+									<label for="gaps" class="block text-sm font-medium text-gray-700">
+										Objectives *
+									</label>
+									<textarea required id="gaps" name="gaps" rows="3"
+										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+								</div>
+							</div>
 
-      function updateUserDisplay(user) {
-        // Update navigation display
-        const userDisplayName = document.getElementById("userDisplayName");
-        const userNameDisplay = document.getElementById("userNameDisplay");
-        const userEmailDisplay = document.getElementById("userEmailDisplay");
-        const userRoleDisplay = document.getElementById("userRoleDisplay");
+							<!-- Button -->
+							<div class="mt-3">
+								<button type="submit"
+									class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+									Submit Project
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Nav Start -->
+		<nav x-data="{ open: false }"
+			class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+			<div class="flex items-center justify-between px-6 py-4">
+				<a href="index.html"
+					class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
+					<img src="resources/images/log2.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
+					<img src="resources/images/moh.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
+				</a>
 
-        if (userDisplayName) userDisplayName.textContent = user.name || "User";
-        if (userNameDisplay) userNameDisplay.textContent = user.name || "User";
-        if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
-        if (userRoleDisplay)
-          userRoleDisplay.textContent = user.role || "Unknown";
-      }
+				<button @click="open = !open"
+					class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800">
+					<i class="fal fa-bars" x-show="!open"></i>
+					<i class="fal fa-times" x-show="open" x-cloak></i>
+				</button>
 
-      // Initialize page
-      document.addEventListener("DOMContentLoaded", async function () {
-        const auth = new AuthManager();
-        const token = auth.getToken();
+				<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
+					<li>
+						<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
+					</li>
 
-        if (!token) {
-          window.location.href = "index.html";
-          return;
-        }
+					<!-- Projects Dropdown -->
+					<li x-data="{ showprojectDropdown: false }" class="relative">
+						<button @click="showprojectDropdown = !showprojectDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Projects <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-800">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+										<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="projects.html#my-projects">
+										<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="all-projects.html">
+										<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+										Projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 
-        try {
-          // Get current user info
-          const userResponse = await fetch(`${auth.baseUrl}/api/auth/profile`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+					<!-- Collaborations Dropdown -->
+					<li x-data="{ collabDropdown: false }" class="relative">
+						<button @click="collabDropdown = !collabDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="priorities.html">
+										<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+										Proirities
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="my-collaborations.html">
+										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+										Collaborations
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="announcements.html">
+										<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
 
-          if (!userResponse.ok) {
-            throw new Error("Failed to get user info");
-          }
+				<!-- Right-aligned Items (Admin + User) -->
+				<ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
+					<!-- Admin -->
+					<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+						<button @click="showDropdown = !showDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Admin <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="dashboard.html">Dashboard</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="projects.html">Project Management</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="members.html">Stakeholder Management</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 
-          currentUser = await userResponse.json();
-          console.log("DEBUG: Full userResponse JSON:", currentUser);
-          console.log("DEBUG: currentUser.data:", currentUser.data);
-          console.log("DEBUG: currentUser.role:", currentUser.role);
-          console.log("DEBUG: currentUser.data.role:", currentUser.data?.role);
+					<!-- User Dropdown -->
+					<li x-data="{ showUserDropdown: false }" class="relative">
+						<button @click="showUserDropdown = !showUserDropdown"
+							class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100">
+							<i class="mr-2 fas fa-user-circle"></i>
+							<span id="userDisplayName">User</span>
+							<i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+							class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+							<div class="px-4 py-3">
+								<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
+									Loading...
+								</div>
+								<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+								<div class="text-xs text-slate-400 mt-1">
+									Role:
+									<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+									| Status:
+									<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+								</div>
+							</div>
+							<ul class="py-2 text-sm text-teal-700">
+								<li>
+									<a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-user"></i> Profile
+									</a>
+								</li>
+								<li>
+									<a href="settings.html"
+										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-cog"></i> Settings
+									</a>
+								</li>
+								<li id="donorNav" class="hidden">
+									<a href="donor-management.html"
+										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+									</a>
+								</li>
+							</ul>
+							<div class="py-2">
+								<button onclick="authManager.logout()"
+									class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+									<i class="mr-2 fas fa-sign-out-alt"></i> Logout
+								</button>
+							</div>
+						</div>
+					</li>
 
-          // Handle both response formats (with or without data wrapper)
-          const userData = currentUser.data || currentUser;
-          currentUser = userData;
+					<li>
+						<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+							<i class="mr-2 fas fa-question-square"></i> FAQ's
+						</a>
+					</li>
+				</ul>
+			</div>
 
-          console.log("DEBUG: Final currentUser object:", currentUser);
-          console.log(
-            "DEBUG: currentUser.role after assignment:",
-            currentUser.role
-          );
+			<!-- Nav Links - Mobile -->
+			<div x-show="open" x-transition:enter="transition ease-out duration-200"
+				x-transition:enter-start="opacity-0 transform -translate-y-2"
+				x-transition:enter-end="opacity-100 transform translate-y-0"
+				x-transition:leave="transition ease-in duration-150"
+				x-transition:leave-start="opacity-100 transform translate-y-0"
+				x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+				<ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
+					<li>
+						<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
+					</li>
 
-          // Update user display after nav is loaded
-          updateUserDisplayWhenNavReady(currentUser);
+					<!-- Projects Dropdown -->
+					<li x-data="{ showprojectDropdown: false }" class="relative">
+						<button @click="showprojectDropdown = !showprojectDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Projects <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-800">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+										<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="projects.html#my-projects">
+										<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="all-projects.html">
+										<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+										Projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 
-          // Check if user is donor or super admin
-          console.log("DEBUG: Checking role access...");
-          console.log("DEBUG: currentUser.role value:", currentUser.role);
-          console.log(
-            "DEBUG: currentUser.role === 'DONOR':",
-            currentUser.role === "DONOR"
-          );
-          console.log(
-            "DEBUG: currentUser.role === 'SUPER_ADMIN':",
-            currentUser.role === "SUPER_ADMIN"
-          );
+					<!-- Collaborations Dropdown -->
+					<li x-data="{ collabDropdown: false }" class="relative">
+						<button @click="collabDropdown = !collabDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="priorities.html">
+										<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+										Proirities
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="my-collaborations.html">
+										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+										Collaborations
+									</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="announcements.html">
+										<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 
-          if (
-            currentUser.role !== "DONOR" &&
-            currentUser.role !== "SUPER_ADMIN"
-          ) {
-            console.log("DEBUG: Access denied - role check failed");
-            alert(
-              "Access denied. Only donors and administrators can access this page."
-            );
-            window.location.href = "dashboard.html";
-            return;
-          }
+					<!-- Admin -->
+					<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+						<button @click="showDropdown = !showDropdown"
+							class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+							Admin <i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+							class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+							<ul class="py-2 text-sm text-left text-teal-700">
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="dashboard.html">Dashboard</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="projects.html">Project Management</a>
+								</li>
+								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+									<a href="members.html">Stakeholder Management</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 
-          console.log("DEBUG: Access granted - proceeding with initialization");
+					<!-- User Dropdown -->
+					<li x-data="{ showUserDropdown: false }" class="relative">
+						<button @click="showUserDropdown = !showUserDropdown"
+							class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100">
+							<i class="mr-2 fas fa-user-circle"></i>
+							<span id="userDisplayName">User</span>
+							<i class="ml-2 fad fa-chevron-down"></i>
+						</button>
+						<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+							class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+							<div class="px-4 py-3">
+								<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
+									Loading...
+								</div>
+								<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+								<div class="text-xs text-slate-400 mt-1">
+									Role:
+									<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+									| Status:
+									<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+								</div>
+							</div>
+							<ul class="py-2 text-sm text-teal-700">
+								<li>
+									<a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-user"></i> Profile
+									</a>
+								</li>
+								<li>
+									<a href="settings.html"
+										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-cog"></i> Settings
+									</a>
+								</li>
+								<li id="donorNav" class="hidden">
+									<a href="donor-management.html"
+										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+									</a>
+								</li>
+							</ul>
+							<div class="py-2">
+								<button onclick="authManager.logout()"
+									class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+									<i class="mr-2 fas fa-sign-out-alt"></i> Logout
+								</button>
+							</div>
+						</div>
+					</li>
 
-          // Setup tabs based on user role
-          setupTabsForRole();
+					<li>
+						<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+							<i class="mr-2 fas fa-question-square"></i> FAQ's
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<!-- Nav End -->
 
-          // Load initial data
-          if (currentUser.role === "SUPER_ADMIN") {
-            document.getElementById("donorsSection").classList.remove("hidden");
-            loadDonors();
-          } else if (currentUser.role === "DONOR") {
-            // Show the partners section and load linked partners
-            document
-              .getElementById("partnersSection")
-              .classList.remove("hidden");
-            loadMyPartners();
-          } else if (currentUser.role === "PARTNER") {
-            document
-              .getElementById("myDonorSection")
-              .classList.remove("hidden");
-            loadMyDonor();
-          }
-        } catch (error) {
-          console.error("Error initializing page:", error);
-          alert("Error initializing page: " + error.message);
-          // window.location.href = "index.html";
-        }
-      });
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<!-- Navigation Tabs -->
+			<div class="mb-8">
+				<nav class="flex space-x-8" id="tabNavigation">
+					<!-- Tabs will be dynamically generated based on user role -->
+				</nav>
+			</div>
 
-      function setupTabsForRole() {
-        const tabNavigation = document.getElementById("tabNavigation");
-        if (!tabNavigation) {
-          console.error("tabNavigation element not found");
-          return;
-        }
+			<!-- Donors List -->
+			<div id="donorsSection" class="tab-content">
+				<div class="bg-white shadow rounded-lg">
+					<div class="px-4 py-5 sm:p-6">
+						<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+							All Donors
+						</h3>
+						<div id="donorsList" class="space-y-4">
+							<!-- Donors will be loaded here -->
+						</div>
+					</div>
+				</div>
+			</div>
 
-        if (currentUser.role === "SUPER_ADMIN") {
-          tabNavigation.innerHTML = `
+			<!-- My Partners Section -->
+			<div id="partnersSection" class="tab-content hidden">
+				<div class="bg-white shadow rounded-lg">
+					<div class="px-4 py-5 sm:p-6">
+						<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+							My Partner Organizations
+						</h3>
+						<div id="partnersList" class="space-y-4">
+							<!-- Partners will be loaded here -->
+						</div>
+						<div class="mt-6">
+							<button onclick="showLinkPartnerModal()"
+								class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+								<i class="fas fa-plus mr-2"></i>Link New Partner
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- My Donor Section (for partners) -->
+			<div id="myDonorSection" class="tab-content hidden">
+				<div class="bg-white shadow rounded-lg">
+					<div class="px-4 py-5 sm:p-6">
+						<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+							My Donor Organization
+						</h3>
+						<div id="donorInfo" class="space-y-4">
+							<!-- Donor info will be loaded here -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Link Partner Modal -->
+	<div id="linkPartnerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+		<div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+			<div class="mt-3">
+				<h3 class="text-lg font-medium text-gray-900 mb-4">
+					Link Partner Organization
+				</h3>
+				<form id="linkPartnerForm">
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-2">Select Partner Organization</label>
+						<select id="partnerSelect" required
+							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+							<option value="">Choose a partner...</option>
+							<!-- Available partners will be loaded here -->
+						</select>
+						<p class="text-xs text-gray-500 mt-1">
+							Only shows approved partner organizations that aren't already
+							linked to a donor
+						</p>
+					</div>
+					<div class="flex justify-end space-x-3">
+						<button type="button" onclick="hideLinkPartnerModal()"
+							class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+							Cancel
+						</button>
+						<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+							Link Partner
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="styles/loadNav.js"></script>
+	<script>
+		let currentUser = null;
+
+		function updateUserDisplayWhenNavReady(user) {
+			// Check if nav is already loaded
+			const navPlaceholder = document.getElementById("nav-placeholder");
+			if (navPlaceholder && navPlaceholder.innerHTML.trim() !== "") {
+				updateUserDisplay(user);
+			} else {
+				// Wait for nav to be loaded
+				window.addEventListener(
+					"navLoaded",
+					() => {
+						updateUserDisplay(user);
+					},
+					{ once: true }
+				);
+			}
+		}
+
+		function updateUserDisplay(user) {
+			// Update navigation display
+			const userDisplayName = document.getElementById("userDisplayName");
+			const userNameDisplay = document.getElementById("userNameDisplay");
+			const userEmailDisplay = document.getElementById("userEmailDisplay");
+			const userRoleDisplay = document.getElementById("userRoleDisplay");
+
+			if (userDisplayName) userDisplayName.textContent = user.name || "User";
+			if (userNameDisplay) userNameDisplay.textContent = user.name || "User";
+			if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+			if (userRoleDisplay)
+				userRoleDisplay.textContent = user.role || "Unknown";
+		}
+
+		// Initialize page
+		document.addEventListener("DOMContentLoaded", async function () {
+			const auth = new AuthManager();
+			const token = auth.getToken();
+
+			if (!token) {
+				window.location.href = "index.html";
+				return;
+			}
+
+			try {
+				// Get current user info
+				const userResponse = await fetch(`${auth.baseUrl}/api/auth/profile`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+
+				if (!userResponse.ok) {
+					throw new Error("Failed to get user info");
+				}
+
+				currentUser = await userResponse.json();
+				console.log("DEBUG: Full userResponse JSON:", currentUser);
+				console.log("DEBUG: currentUser.data:", currentUser.data);
+				console.log("DEBUG: currentUser.role:", currentUser.role);
+				console.log("DEBUG: currentUser.data.role:", currentUser.data?.role);
+
+				// Handle both response formats (with or without data wrapper)
+				const userData = currentUser.data || currentUser;
+				currentUser = userData;
+
+				console.log("DEBUG: Final currentUser object:", currentUser);
+				console.log(
+					"DEBUG: currentUser.role after assignment:",
+					currentUser.role
+				);
+
+				// Update user display after nav is loaded
+				updateUserDisplayWhenNavReady(currentUser);
+
+				// Check if user is donor or super admin
+				console.log("DEBUG: Checking role access...");
+				console.log("DEBUG: currentUser.role value:", currentUser.role);
+				console.log(
+					"DEBUG: currentUser.role === 'DONOR':",
+					currentUser.role === "DONOR"
+				);
+				console.log(
+					"DEBUG: currentUser.role === 'SUPER_ADMIN':",
+					currentUser.role === "SUPER_ADMIN"
+				);
+
+				if (
+					currentUser.role !== "DONOR" &&
+					currentUser.role !== "SUPER_ADMIN"
+				) {
+					console.log("DEBUG: Access denied - role check failed");
+					alert(
+						"Access denied. Only donors and administrators can access this page."
+					);
+					window.location.href = "dashboard.html";
+					return;
+				}
+
+				console.log("DEBUG: Access granted - proceeding with initialization");
+
+				// Setup tabs based on user role
+				setupTabsForRole();
+
+				// Load initial data
+				if (currentUser.role === "SUPER_ADMIN") {
+					document.getElementById("donorsSection").classList.remove("hidden");
+					loadDonors();
+				} else if (currentUser.role === "DONOR") {
+					// Show the partners section and load linked partners
+					document
+						.getElementById("partnersSection")
+						.classList.remove("hidden");
+					loadMyPartners();
+				} else if (currentUser.role === "PARTNER") {
+					document
+						.getElementById("myDonorSection")
+						.classList.remove("hidden");
+					loadMyDonor();
+				}
+			} catch (error) {
+				console.error("Error initializing page:", error);
+				alert("Error initializing page: " + error.message);
+				// window.location.href = "index.html";
+			}
+		});
+
+		function setupTabsForRole() {
+			const tabNavigation = document.getElementById("tabNavigation");
+			if (!tabNavigation) {
+				console.error("tabNavigation element not found");
+				return;
+			}
+
+			if (currentUser.role === "SUPER_ADMIN") {
+				tabNavigation.innerHTML = `
             <button id="donorsTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
               All Donors
             </button>
@@ -293,119 +750,119 @@
               All Partners
             </button>
           `;
-        } else if (currentUser.role === "DONOR") {
-          tabNavigation.innerHTML = `
+			} else if (currentUser.role === "DONOR") {
+				tabNavigation.innerHTML = `
             <button id="myPartnersTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
               Donor Dashboard
             </button>
           `;
-        } else if (currentUser.role === "PARTNER") {
-          tabNavigation.innerHTML = `
+			} else if (currentUser.role === "PARTNER") {
+				tabNavigation.innerHTML = `
             <button id="myDonorTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
               My Donor
             </button>
           `;
-        }
+			}
 
-        setupTabs();
-      }
+			setupTabs();
+		}
 
-      function setupTabs() {
-        const tabs = document.querySelectorAll(".tab-button");
-        tabs.forEach((tab) => {
-          tab.addEventListener("click", function () {
-            // Remove active class from all tabs
-            tabs.forEach((t) => {
-              t.classList.remove("active", "border-blue-500", "text-blue-600");
-              t.classList.add("border-transparent", "text-gray-500");
-            });
+		function setupTabs() {
+			const tabs = document.querySelectorAll(".tab-button");
+			tabs.forEach((tab) => {
+				tab.addEventListener("click", function () {
+					// Remove active class from all tabs
+					tabs.forEach((t) => {
+						t.classList.remove("active", "border-blue-500", "text-blue-600");
+						t.classList.add("border-transparent", "text-gray-500");
+					});
 
-            // Add active class to clicked tab
-            this.classList.add("active", "border-blue-500", "text-blue-600");
-            this.classList.remove("border-transparent", "text-gray-500");
+					// Add active class to clicked tab
+					this.classList.add("active", "border-blue-500", "text-blue-600");
+					this.classList.remove("border-transparent", "text-gray-500");
 
-            // Show corresponding content
-            const tabContents = document.querySelectorAll(".tab-content");
-            tabContents.forEach((content) => content.classList.add("hidden"));
+					// Show corresponding content
+					const tabContents = document.querySelectorAll(".tab-content");
+					tabContents.forEach((content) => content.classList.add("hidden"));
 
-            if (this.id === "donorsTab") {
-              document
-                .getElementById("donorsSection")
-                .classList.remove("hidden");
-              loadDonors();
-            } else if (this.id === "myPartnersTab") {
-              document
-                .getElementById("partnersSection")
-                .classList.remove("hidden");
-              loadMyPartners();
-            } else if (this.id === "myDonorTab") {
-              document
-                .getElementById("myDonorSection")
-                .classList.remove("hidden");
-              loadMyDonor();
-            }
-          });
-        });
-      }
+					if (this.id === "donorsTab") {
+						document
+							.getElementById("donorsSection")
+							.classList.remove("hidden");
+						loadDonors();
+					} else if (this.id === "myPartnersTab") {
+						document
+							.getElementById("partnersSection")
+							.classList.remove("hidden");
+						loadMyPartners();
+					} else if (this.id === "myDonorTab") {
+						document
+							.getElementById("myDonorSection")
+							.classList.remove("hidden");
+						loadMyDonor();
+					}
+				});
+			});
+		}
 
-      async function loadDonors() {
-        const auth = new AuthManager();
-        const token = auth.getToken();
+		async function loadDonors() {
+			const auth = new AuthManager();
+			const token = auth.getToken();
 
-        try {
-          const response = await fetch(`${auth.baseUrl}/api/auth/donors`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+			try {
+				const response = await fetch(`${auth.baseUrl}/api/auth/donors`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
-          if (!response.ok) {
-            throw new Error("Failed to load donors");
-          }
+				if (!response.ok) {
+					throw new Error("Failed to load donors");
+				}
 
-          const donors = await response.json();
-          displayDonors(donors.data || donors);
-        } catch (error) {
-          console.error("Error loading donors:", error);
-          document.getElementById("donorsList").innerHTML =
-            '<p class="text-red-600">Error loading donors</p>';
-        }
-      }
+				const donors = await response.json();
+				displayDonors(donors.data || donors);
+			} catch (error) {
+				console.error("Error loading donors:", error);
+				document.getElementById("donorsList").innerHTML =
+					'<p class="text-red-600">Error loading donors</p>';
+			}
+		}
 
-      async function loadMyPartners() {
-        const auth = new AuthManager();
-        const token = auth.getToken();
+		async function loadMyPartners() {
+			const auth = new AuthManager();
+			const token = auth.getToken();
 
-        try {
-          const response = await fetch(
-            `${auth.baseUrl}/api/auth/donor/${currentUser.id}/partners`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+			try {
+				const response = await fetch(
+					`${auth.baseUrl}/api/auth/donor/${currentUser.id}/partners`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				);
 
-          if (!response.ok) {
-            throw new Error("Failed to load partners");
-          }
+				if (!response.ok) {
+					throw new Error("Failed to load partners");
+				}
 
-          const partners = await response.json();
-          displayPartners(partners.data || partners);
-        } catch (error) {
-          console.error("Error loading partners:", error);
-          document.getElementById("partnersList").innerHTML =
-            '<p class="text-red-600">Error loading partners</p>';
-        }
-      }
+				const partners = await response.json();
+				displayPartners(partners.data || partners);
+			} catch (error) {
+				console.error("Error loading partners:", error);
+				document.getElementById("partnersList").innerHTML =
+					'<p class="text-red-600">Error loading partners</p>';
+			}
+		}
 
-      function displayDonors(donors) {
-        const donorsList = document.getElementById("donorsList");
+		function displayDonors(donors) {
+			const donorsList = document.getElementById("donorsList");
 
-        if (!donors || donors.length === 0) {
-          donorsList.innerHTML = '<p class="text-gray-500">No donors found</p>';
-          return;
-        }
+			if (!donors || donors.length === 0) {
+				donorsList.innerHTML = '<p class="text-gray-500">No donors found</p>';
+				return;
+			}
 
-        donorsList.innerHTML = donors
-          .map(
-            (donor) => `
+			donorsList.innerHTML = donors
+				.map(
+					(donor) => `
                 <div class="border rounded-lg p-4">
                     <div class="flex justify-between items-start">
                         <div>
@@ -422,22 +879,22 @@
                     </div>
                 </div>
             `
-          )
-          .join("");
-      }
+				)
+				.join("");
+		}
 
-      function displayPartners(partners) {
-        const partnersList = document.getElementById("partnersList");
+		function displayPartners(partners) {
+			const partnersList = document.getElementById("partnersList");
 
-        if (!partners || partners.length === 0) {
-          partnersList.innerHTML =
-            '<p class="text-gray-500">No partners linked yet</p>';
-          return;
-        }
+			if (!partners || partners.length === 0) {
+				partnersList.innerHTML =
+					'<p class="text-gray-500">No partners linked yet</p>';
+				return;
+			}
 
-        partnersList.innerHTML = partners
-          .map(
-            (partner) => `
+			partnersList.innerHTML = partners
+				.map(
+					(partner) => `
                 <div class="border rounded-lg p-4">
                     <div class="flex justify-between items-start">
                         <div>
@@ -454,179 +911,178 @@
                     </div>
                 </div>
             `
-          )
-          .join("");
-      }
+				)
+				.join("");
+		}
 
-      function viewDonorPartners(donorId) {
-        // This could open a modal or navigate to a detailed view
-        alert("View partners functionality would be implemented here");
-      }
+		function viewDonorPartners(donorId) {
+			// This could open a modal or navigate to a detailed view
+			alert("View partners functionality would be implemented here");
+		}
 
-      function showDonorPlaceholder() {
-        const partnersList = document.getElementById("partnersList");
-        if (!partnersList) {
-          console.error("partnersList element not found");
-          return;
-        }
-        partnersList.innerHTML =
-          '<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"><h3 class="text-lg font-semibold text-blue-900 mb-2">Donor Management Portal</h3><p class="text-blue-700">Welcome to your donor management dashboard.</p></div>';
-      }
+		function showDonorPlaceholder() {
+			const partnersList = document.getElementById("partnersList");
+			if (!partnersList) {
+				console.error("partnersList element not found");
+				return;
+			}
+			partnersList.innerHTML =
+				'<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"><h3 class="text-lg font-semibold text-blue-900 mb-2">Donor Management Portal</h3><p class="text-blue-700">Welcome to your donor management dashboard.</p></div>';
+		}
 
-      async function unlinkPartner(partnerId) {
-        if (!confirm("Are you sure you want to unlink this partner?")) {
-          return;
-        }
+		async function unlinkPartner(partnerId) {
+			if (!confirm("Are you sure you want to unlink this partner?")) {
+				return;
+			}
 
-        const auth = new AuthManager();
-        const token = auth.getToken();
+			const auth = new AuthManager();
+			const token = auth.getToken();
 
-        try {
-          const response = await fetch(
-            `${auth.baseUrl}/api/auth/partner/${partnerId}/unlink-donor`,
-            {
-              method: "POST",
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+			try {
+				const response = await fetch(
+					`${auth.baseUrl}/api/auth/partner/${partnerId}/unlink-donor`,
+					{
+						method: "POST",
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				);
 
-          if (!response.ok) {
-            throw new Error("Failed to unlink partner");
-          }
+				if (!response.ok) {
+					throw new Error("Failed to unlink partner");
+				}
 
-          alert("Partner unlinked successfully");
-          loadMyPartners(); // Refresh the list
-        } catch (error) {
-          console.error("Error unlinking partner:", error);
-          alert("Error unlinking partner: " + error.message);
-        }
-      }
+				alert("Partner unlinked successfully");
+				loadMyPartners(); // Refresh the list
+			} catch (error) {
+				console.error("Error unlinking partner:", error);
+				alert("Error unlinking partner: " + error.message);
+			}
+		}
 
-      function showLinkPartnerModal() {
-        document.getElementById("linkPartnerModal").classList.remove("hidden");
-        loadAvailablePartners();
-      }
+		function showLinkPartnerModal() {
+			document.getElementById("linkPartnerModal").classList.remove("hidden");
+			loadAvailablePartners();
+		}
 
-      async function loadAvailablePartners() {
-        const auth = new AuthManager();
-        const token = auth.getToken();
-        const select = document.getElementById("partnerSelect");
+		async function loadAvailablePartners() {
+			const auth = new AuthManager();
+			const token = auth.getToken();
+			const select = document.getElementById("partnerSelect");
 
-        // Clear existing options except the first one
-        select.innerHTML = '<option value="">Choose a partner...</option>';
+			// Clear existing options except the first one
+			select.innerHTML = '<option value="">Choose a partner...</option>';
 
-        try {
-          // Get available partners (approved partners not linked to any donor)
-          const response = await fetch(
-            `${auth.baseUrl}/api/auth/partners/available`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+			try {
+				// Get available partners (approved partners not linked to any donor)
+				const response = await fetch(
+					`${auth.baseUrl}/api/auth/partners/available`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				);
 
-          if (!response.ok) {
-            throw new Error("Failed to load partners");
-          }
+				if (!response.ok) {
+					throw new Error("Failed to load partners");
+				}
 
-          const result = await response.json();
-          const availablePartners = result.data || result;
+				const result = await response.json();
+				const availablePartners = result.data || result;
 
-          if (availablePartners.length === 0) {
-            select.innerHTML +=
-              '<option value="" disabled>No available partners</option>';
-            return;
-          }
+				if (availablePartners.length === 0) {
+					select.innerHTML +=
+						'<option value="" disabled>No available partners</option>';
+					return;
+				}
 
-          // Add partners to dropdown
-          availablePartners.forEach((partner) => {
-            const option = document.createElement("option");
-            option.value = partner.id;
-            option.textContent = `${partner.name} (${partner.email})`;
-            select.appendChild(option);
-          });
-        } catch (error) {
-          console.error("Error loading available partners:", error);
-          select.innerHTML +=
-            '<option value="" disabled>Error loading partners</option>';
-        }
-      }
+				// Add partners to dropdown
+				availablePartners.forEach((partner) => {
+					const option = document.createElement("option");
+					option.value = partner.id;
+					option.textContent = `${partner.name} (${partner.email})`;
+					select.appendChild(option);
+				});
+			} catch (error) {
+				console.error("Error loading available partners:", error);
+				select.innerHTML +=
+					'<option value="" disabled>Error loading partners</option>';
+			}
+		}
 
-      function hideLinkPartnerModal() {
-        document.getElementById("linkPartnerModal").classList.add("hidden");
-        document.getElementById("linkPartnerForm").reset();
-        document.getElementById("partnerSelect").innerHTML =
-          '<option value="">Choose a partner...</option>';
-      }
+		function hideLinkPartnerModal() {
+			document.getElementById("linkPartnerModal").classList.add("hidden");
+			document.getElementById("linkPartnerForm").reset();
+			document.getElementById("partnerSelect").innerHTML =
+				'<option value="">Choose a partner...</option>';
+		}
 
-      // Handle link partner form submission
-      document
-        .getElementById("linkPartnerForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
+		// Handle link partner form submission
+		document
+			.getElementById("linkPartnerForm")
+			.addEventListener("submit", async function (e) {
+				e.preventDefault();
 
-          const partnerId = document.getElementById("partnerSelect").value;
+				const partnerId = document.getElementById("partnerSelect").value;
 
-          if (!partnerId) {
-            alert("Please select a partner organization");
-            return;
-          }
+				if (!partnerId) {
+					alert("Please select a partner organization");
+					return;
+				}
 
-          const auth = new AuthManager();
-          const token = auth.getToken();
+				const auth = new AuthManager();
+				const token = auth.getToken();
 
-          try {
-            const response = await fetch(
-              `${auth.baseUrl}/api/auth/partner/${partnerId}/link-donor/${currentUser.id}`,
-              {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
+				try {
+					const response = await fetch(
+						`${auth.baseUrl}/api/auth/partner/${partnerId}/link-donor/${currentUser.id}`,
+						{
+							method: "POST",
+							headers: { Authorization: `Bearer ${token}` },
+						}
+					);
 
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || "Failed to link partner");
-            }
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || "Failed to link partner");
+					}
 
-            alert("Partner linked successfully");
-            hideLinkPartnerModal();
-            loadMyPartners(); // Refresh the list
-          } catch (error) {
-            console.error("Error linking partner:", error);
-            alert("Error linking partner: " + error.message);
-          }
-        });
+					alert("Partner linked successfully");
+					hideLinkPartnerModal();
+					loadMyPartners(); // Refresh the list
+				} catch (error) {
+					console.error("Error linking partner:", error);
+					alert("Error linking partner: " + error.message);
+				}
+			});
 
-      function loadMyDonor() {
-        const donorSection = document.getElementById("donorInfo");
-        donorSection.innerHTML =
-          "<p class='text-gray-600'>Loading donor information...</p>";
+		function loadMyDonor() {
+			const donorSection = document.getElementById("donorInfo");
+			donorSection.innerHTML =
+				"<p class='text-gray-600'>Loading donor information...</p>";
 
-        fetch("/api/auth/me/donor", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${authManager.getToken()}`,
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            const donor = data.data;
-            if (donor) {
-              donorSection.innerHTML = `
+			fetch("/api/auth/me/donor", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${authManager.getToken()}`,
+					"Content-Type": "application/json",
+				},
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then((data) => {
+					const donor = data.data;
+					if (donor) {
+						donorSection.innerHTML = `
                 <div class="bg-white rounded-lg shadow p-6">
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">My Donor</h3>
                   <div class="space-y-3">
                     <div class="flex justify-between">
                       <span class="text-gray-600">Name:</span>
-                      <span class="font-medium">${donor.firstName} ${
-                donor.lastName
-              }</span>
+                      <span class="font-medium">${donor.firstName} ${donor.lastName
+							}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-gray-600">Email:</span>
@@ -634,9 +1090,8 @@
                     </div>
                     <div class="flex justify-between">
                       <span class="text-gray-600">Organization:</span>
-                      <span class="font-medium">${
-                        donor.organization || "N/A"
-                      }</span>
+                      <span class="font-medium">${donor.organization || "N/A"
+							}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-gray-600">Phone:</span>
@@ -645,29 +1100,30 @@
                   </div>
                 </div>
               `;
-            } else {
-              donorSection.innerHTML = `
+					} else {
+						donorSection.innerHTML = `
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <p class="text-yellow-800">You are not linked to any donor yet.</p>
                 </div>
               `;
-            }
-          })
-          .catch((error) => {
-            console.error("Error loading donor:", error);
-            donorSection.innerHTML = `
+					}
+				})
+				.catch((error) => {
+					console.error("Error loading donor:", error);
+					donorSection.innerHTML = `
               <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p class="text-red-800">Error loading donor information. Please try again.</p>
               </div>
             `;
-          });
-      }
+				});
+		}
 
-      function logout() {
-        const auth = new AuthManager();
-        auth.logout();
-        window.location.href = "index.html";
-      }
-    </script>
-  </body>
+		function logout() {
+			const auth = new AuthManager();
+			auth.logout();
+			window.location.href = "index.html";
+		}
+	</script>
+</body>
+
 </html>

@@ -403,7 +403,318 @@
 		</div>
 	</div>
 
-	<div class="" id="nav-placeholder"></div>
+	<nav x-data="{ open: false }"
+		class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+		<div class="flex items-center justify-between px-6 py-4">
+			<a href="../index.html"
+				class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
+				<img src="../resources/images/log2.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
+				<img src="../resources/images/moh.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
+			</a>
+
+			<button @click="open = !open"
+				class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800">
+				<i class="fal fa-bars" x-show="!open"></i>
+				<i class="fal fa-times" x-show="open" x-cloak></i>
+			</button>
+
+			<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
+				<li>
+					<a href="../index.html" class="uppercase transition hover:text-lime-600">Home</a>
+				</li>
+
+				<!-- Projects Dropdown -->
+				<li x-data="{ showprojectDropdown: false }" class="relative">
+					<button @click="showprojectDropdown = !showprojectDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Projects <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-800">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+									<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../projects.html#my-projects">
+									<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../all-projects.html">
+									<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+									Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- Collaborations Dropdown -->
+				<li x-data="{ collabDropdown: false }" class="relative">
+					<button @click="collabDropdown = !collabDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../priorities.html">
+									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+									Proirities
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../my-collaborations.html">
+									<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+									Collaborations
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../announcements.html">
+									<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+
+			<!-- Right-aligned Items (Admin + User) -->
+			<ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
+				<!-- Admin -->
+				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+					<button @click="showDropdown = !showDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Admin <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../dashboard.html">Dashboard</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../projects.html">Project Management</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../members.html">Stakeholder Management</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- User Dropdown -->
+				<li x-data="{ showUserDropdown: false }" class="relative">
+					<button @click="showUserDropdown = !showUserDropdown"
+						class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100">
+						<i class="mr-2 fas fa-user-circle"></i>
+						<span id="userDisplayName">User</span>
+						<i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+						class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+						<div class="px-4 py-3">
+							<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
+								Loading...
+							</div>
+							<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+							<div class="text-xs text-slate-400 mt-1">
+								Role:
+								<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+								| Status:
+								<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+							</div>
+						</div>
+						<ul class="py-2 text-sm text-teal-700">
+							<li>
+								<a href="../profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-user"></i> Profile
+								</a>
+							</li>
+							<li>
+								<a href="../settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-cog"></i> Settings
+								</a>
+							</li>
+							<li id="donorNav" class="hidden">
+								<a href="../donor-management.html"
+									class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+								</a>
+							</li>
+						</ul>
+						<div class="py-2">
+							<button onclick="authManager.logout()"
+								class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+								<i class="mr-2 fas fa-sign-out-alt"></i> Logout
+							</button>
+						</div>
+					</div>
+				</li>
+
+				<li>
+					<a href="../faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+						<i class="mr-2 fas fa-question-square"></i> FAQ's
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Nav Links - Mobile -->
+		<div x-show="open" x-transition:enter="transition ease-out duration-200"
+			x-transition:enter-start="opacity-0 transform -translate-y-2"
+			x-transition:enter-end="opacity-100 transform translate-y-0"
+			x-transition:leave="transition ease-in duration-150"
+			x-transition:leave-start="opacity-100 transform translate-y-0"
+			x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+			<ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
+				<li>
+					<a href="../index.html" class="uppercase transition hover:text-lime-600">Home</a>
+				</li>
+
+				<!-- Projects Dropdown -->
+				<li x-data="{ showprojectDropdown: false }" class="relative">
+					<button @click="showprojectDropdown = !showprojectDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Projects <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-800">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
+									<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../projects.html#my-projects">
+									<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../all-projects.html">
+									<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+									Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- Collaborations Dropdown -->
+				<li x-data="{ collabDropdown: false }" class="relative">
+					<button @click="collabDropdown = !collabDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../priorities.html">
+									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+									Proirities
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../my-collaborations.html">
+									<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+									Collaborations
+								</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../announcements.html">
+									<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- Admin -->
+				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+					<button @click="showDropdown = !showDropdown"
+						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+						Admin <i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+						<ul class="py-2 text-sm text-left text-teal-700">
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../dashboard.html">Dashboard</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../projects.html">Project Management</a>
+							</li>
+							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+								<a href="../members.html">Stakeholder Management</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+				<!-- User Dropdown -->
+				<li x-data="{ showUserDropdown: false }" class="relative">
+					<button @click="showUserDropdown = !showUserDropdown"
+						class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100">
+						<i class="mr-2 fas fa-user-circle"></i>
+						<span id="userDisplayName">User</span>
+						<i class="ml-2 fad fa-chevron-down"></i>
+					</button>
+					<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
+						class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+						<div class="px-4 py-3">
+							<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
+								Loading...
+							</div>
+							<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+							<div class="text-xs text-slate-400 mt-1">
+								Role:
+								<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+								| Status:
+								<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+							</div>
+						</div>
+						<ul class="py-2 text-sm text-teal-700">
+							<li>
+								<a href="../profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-user"></i> Profile
+								</a>
+							</li>
+							<li>
+								<a href="../settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-cog"></i> Settings
+								</a>
+							</li>
+							<li id="donorNav" class="hidden">
+								<a href="../donor-management.html"
+									class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+									<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+								</a>
+							</li>
+						</ul>
+						<div class="py-2">
+							<button onclick="authManager.logout()"
+								class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+								<i class="mr-2 fas fa-sign-out-alt"></i> Logout
+							</button>
+						</div>
+					</div>
+				</li>
+
+				<li>
+					<a href="../faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+						<i class="mr-2 fas fa-question-square"></i> FAQ's
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
 	<section class="pt-16 bg-cyan-800 sm:pt-20">
 		<div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
 			<div class="md:col-span-4">
