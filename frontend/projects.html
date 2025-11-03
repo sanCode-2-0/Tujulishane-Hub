@@ -1187,9 +1187,7 @@
                                         } else {
                                             alert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status));
                                         }
-                                        loadProjectStats();
-                                        loadProjectsByStatus('active', 'tbody-active');
-                                        loadProjectsByStatus('stalled', 'tbody-stalled');
+                                        reloadAfterAction(['active', 'stalled']);
                                     } catch (e) {
                                         console.error('[stalledProject] Exception:', e);
                                         alert('Failed to mark project as stalled: ' + e);
@@ -1220,9 +1218,7 @@
                                         } else {
                                             alert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status));
                                         }
-                                        loadProjectStats();
-                                        loadProjectsByStatus('active', 'tbody-active');
-                                        loadProjectsByStatus('completed', 'tbody-completed');
+                                        reloadAfterAction(['active', 'completed']);
                                     } catch (e) {
                                         console.error('[completedProject] Exception:', e);
                                         alert('Failed to mark project as completed: ' + e);
@@ -1256,9 +1252,7 @@
                                     } else {
                                         alert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status));
                                     }
-                                    loadProjectStats();
-                                    loadProjectsByStatus('active', 'tbody-active');
-                                    loadProjectsByStatus('completed', 'tbody-completed');
+                                    reloadAfterAction(['active', 'completed']);
                                 } catch (e) {
                                     console.error('[completeProject] Exception:', e);
                                     alert('Failed to mark project as completed: ' + e);
@@ -1343,14 +1337,10 @@
 
                             // Load projects for the current authenticated user and populate the status tables
                             async function loadMyProjects() {
-                                // Ensure authManager exists
-                                if (!window.authManager) {
-                                    console.error('authManager is not available. Cannot load user projects.');
-                                    return;
-                                }
+                                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                                const hasAuthManager = !!(window.authManager && typeof window.authManager.apiCall === 'function');
 
-                                // Require authentication; show friendly message if not authenticated
-                                if (!authManager.isAuthenticated()) {
+                                const showLoginMessage = () => {
                                     const msg = '<tr><td colspan="8" class="px-4 py-3 text-sm text-gray-700">Please log in to view your projects.</td></tr>';
                                     document.getElementById('tbody-active').innerHTML = msg;
                                     document.getElementById('tbody-pending').innerHTML = msg;
@@ -1360,17 +1350,37 @@
                                     document.getElementById('count-pending').textContent = 0;
                                     document.getElementById('count-stalled').textContent = 0;
                                     document.getElementById('count-completed').textContent = 0;
+                                };
+
+                                if (!hasAuthManager && !token) {
+                                    showLoginMessage();
+                                    return;
+                                }
+
+                                if (hasAuthManager && !authManager.isAuthenticated() && !token) {
+                                    showLoginMessage();
                                     return;
                                 }
 
                                 try {
-                                    const res = await authManager.apiCall('/api/projects/my-projects', 'GET');
-                                    if (!res.ok) {
+                                    let res;
+                                    if (hasAuthManager && authManager.isAuthenticated()) {
+                                        res = await authManager.apiCall('/api/projects/my-projects', 'GET');
+                                    } else {
+                                        res = await fetch(`${API_BASE}/projects/my-projects`, {
+                                            method: 'GET',
+                                            credentials: 'include',
+                                            headers: token ? { Authorization: `Bearer ${token}` } : {}
+                                        });
+                                    }
+
+                                    if (!res || !res.ok) {
                                         console.error('Failed to fetch my-projects', res);
                                         return;
                                     }
+
                                     const json = await res.json();
-                                    const projects = json.data || [];
+                                    const projects = (json && json.data) || [];
 
                                     // Clear tables
                                     const tbActive = document.getElementById('tbody-active');
@@ -1385,7 +1395,13 @@
                                     const counts = { active: 0, pending: 0, stalled: 0, completed: 0 };
 
                                     projects.forEach(project => {
-                                        const status = (project.status || project.projectStatus || (project.tag && project.tag.toLowerCase()) || 'active').toLowerCase();
+                                        const status = (
+                                            project.approvalStatus ||
+                                            project.status ||
+                                            project.projectStatus ||
+                                            (project.tag && project.tag.toLowerCase()) ||
+                                            'active'
+                                        ).toLowerCase();
                                         const row = `
                     <tr>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
@@ -1425,6 +1441,39 @@
                                 }
                             }
 
+                            function refreshProjectTables(statuses = ['active', 'pending', 'stalled', 'completed']) {
+                                const userRole = localStorage.getItem('userRole');
+                                const isPartner = userRole === 'PARTNER';
+
+                                if (isMyProjectsView() || isPartner) {
+                                    loadMyProjects();
+                                    return;
+                                }
+
+                                const tableMap = {
+                                    active: 'tbody-active',
+                                    pending: 'tbody-pending',
+                                    stalled: 'tbody-stalled',
+                                    completed: 'tbody-completed'
+                                };
+
+                                statuses.forEach(status => {
+                                    const key = status.toLowerCase();
+                                    const tableId = tableMap[key];
+                                    if (tableId) {
+                                        loadProjectsByStatus(key, tableId);
+                                    }
+                                });
+                            }
+
+                            function reloadAfterAction(statuses = ['active', 'pending', 'stalled', 'completed']) {
+                                const userRole = localStorage.getItem('userRole');
+                                if (userRole !== 'PARTNER') {
+                                    loadProjectStats();
+                                }
+                                refreshProjectTables(statuses);
+                            }
+
                             // Action handlers
                             async function approveProject(id) {
                                 if (!confirm('Approve this project?')) return;
@@ -1452,9 +1501,7 @@
                                     } else {
                                         alert('Failed to approve project: ' + (data && data.message ? data.message : res.status));
                                     }
-                                    loadProjectStats();
-                                    loadProjectsByStatus('pending', 'tbody-pending');
-                                    loadProjectsByStatus('active', 'tbody-active');
+                                    reloadAfterAction(['pending', 'active']);
                                 } catch (e) {
                                     console.error('[approveProject] Exception:', e);
                                     alert('Failed to approve project: ' + e);
@@ -1504,8 +1551,7 @@
                                     if (res.ok) {
                                         alert((data && data.message) || 'Project rejected');
                                         closeRejectModal();
-                                        loadProjectStats();
-                                        loadProjectsByStatus('pending', 'tbody-pending');
+                                        reloadAfterAction(['pending']);
                                     } else {
                                         alert((data && data.message) || 'Failed to reject project.');
                                     }
@@ -1532,29 +1578,19 @@
 
                             // On page load: choose between global view and "My Projects" view
                             document.addEventListener('DOMContentLoaded', () => {
-                                loadProjectStats();
-                                if (isMyProjectsView()) {
-                                    // load only current user's projects
-                                    loadMyProjects();
-                                } else {
-                                    // default - load public/global projects by status
-                                    loadProjectsByStatus('active', 'tbody-active');
-                                    loadProjectsByStatus('pending', 'tbody-pending');
-                                    loadProjectsByStatus('stalled', 'tbody-stalled');
-                                    loadProjectsByStatus('completed', 'tbody-completed');
+                                const userRole = localStorage.getItem('userRole');
+                                const isPartner = userRole === 'PARTNER';
+
+                                if (!isPartner) {
+                                    loadProjectStats();
                                 }
+
+                                refreshProjectTables();
                             });
 
                             // React to hash changes so linking to #my-projects works without reload
                             window.addEventListener('hashchange', () => {
-                                if (isMyProjectsView()) {
-                                    loadMyProjects();
-                                } else {
-                                    loadProjectsByStatus('active', 'tbody-active');
-                                    loadProjectsByStatus('pending', 'tbody-pending');
-                                    loadProjectsByStatus('stalled', 'tbody-stalled');
-                                    loadProjectsByStatus('completed', 'tbody-completed');
-                                }
+                                refreshProjectTables();
                             });
                         </script>
                         </table>
