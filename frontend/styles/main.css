@@ -70,3 +70,38 @@
   background-color: #3b82f6;
   border-color: #3b82f6;
 }
+
+/* File Upload Styles */
+.file-upload-area {
+  transition: all 0.2s ease-in-out;
+}
+
+.file-upload-area:hover .upload-icon {
+  color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.file-upload-area.dragover {
+  border-color: #3b82f6 !important;
+  background-color: #eff6ff !important;
+}
+
+.upload-icon {
+  transition: all 0.2s ease-in-out;
+}
+
+/* File list item hover effects */
+#filesList > div:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Supporting documents section */
+.supporting-documents {
+  position: relative;
+}
+
+.supporting-documents.error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444;
+}

@@ -639,6 +639,84 @@
                 ></textarea>
               </div>
 
+              <!-- Supporting Documents -->
+              <div
+                class="supporting-documents bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <label class="block text-lg font-semibold text-gray-800">
+                    Supporting Documents
+                  </label>
+                  <div
+                    id="documentsCount"
+                    class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium"
+                  >
+                    <i class="fas fa-file mr-1"></i>
+                    <span id="docsCount">0</span> files
+                  </div>
+                </div>
+
+                <p class="text-sm text-gray-600 mb-4">
+                  Upload relevant documents to support your project proposal
+                  (PDF, DOC, DOCX, XLS, XLSX - Max 10MB each)
+                </p>
+
+                <!-- File Upload Area -->
+                <div
+                  class="file-upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+                  id="fileUploadArea"
+                >
+                  <div class="upload-icon text-gray-400 mb-4">
+                    <i class="fas fa-cloud-upload-alt text-4xl"></i>
+                  </div>
+                  <div class="upload-text">
+                    <p class="text-lg font-medium text-gray-700 mb-2">
+                      Drop files here or click to browse
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      Supported formats: PDF, DOC, DOCX, XLS, XLSX
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                      Maximum file size: 10MB per file
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    id="documentFiles"
+                    name="documents"
+                    multiple
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    class="hidden"
+                  />
+                </div>
+
+                <!-- Selected Files Display -->
+                <div id="selectedFiles" class="mt-4 space-y-2 hidden">
+                  <h4 class="text-sm font-medium text-gray-700 mb-3">
+                    Selected Files:
+                  </h4>
+                  <div id="filesList" class="space-y-2">
+                    <!-- Files will be added here dynamically -->
+                  </div>
+                </div>
+
+                <!-- File Upload Error -->
+                <div
+                  class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden"
+                  id="fileUploadError"
+                >
+                  <div class="flex items-center">
+                    <i
+                      class="fas fa-exclamation-triangle text-red-500 mr-2"
+                    ></i>
+                    <span
+                      class="text-red-700 text-sm"
+                      id="fileErrorMessage"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
               <!-- Submit Button -->
               <div class="pt-4">
                 <button
@@ -665,6 +743,7 @@
         initializeCountyDropdown("countySelect", "subCountySelect");
         initializeMap();
         initializeThemeSelection();
+        initializeFileUpload();
       });
 
       // Map initialization
@@ -929,6 +1008,212 @@
         updateSelectedThemes();
       }
 
+      // File upload handling
+      let selectedFiles = [];
+
+      function initializeFileUpload() {
+        const fileUploadArea = document.getElementById("fileUploadArea");
+        const documentFilesInput = document.getElementById("documentFiles");
+        const selectedFilesDiv = document.getElementById("selectedFiles");
+        const filesList = document.getElementById("filesList");
+        const docsCount = document.getElementById("docsCount");
+        const documentsCount = document.getElementById("documentsCount");
+
+        // Click to open file dialog
+        fileUploadArea.addEventListener("click", function () {
+          documentFilesInput.click();
+        });
+
+        // Drag and drop functionality
+        fileUploadArea.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          fileUploadArea.classList.add("border-blue-500", "bg-blue-50");
+        });
+
+        fileUploadArea.addEventListener("dragleave", function (e) {
+          e.preventDefault();
+          fileUploadArea.classList.remove("border-blue-500", "bg-blue-50");
+        });
+
+        fileUploadArea.addEventListener("drop", function (e) {
+          e.preventDefault();
+          fileUploadArea.classList.remove("border-blue-500", "bg-blue-50");
+
+          const files = Array.from(e.dataTransfer.files);
+          handleFileSelection(files);
+        });
+
+        // File input change
+        documentFilesInput.addEventListener("change", function (e) {
+          const files = Array.from(e.target.files);
+          handleFileSelection(files);
+        });
+
+        function handleFileSelection(files) {
+          const validFiles = [];
+          const errors = [];
+
+          files.forEach((file) => {
+            // Validate file type
+            const allowedTypes = [
+              "application/pdf",
+              "application/msword",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "application/vnd.ms-excel",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ];
+            const allowedExtensions = [
+              ".pdf",
+              ".doc",
+              ".docx",
+              ".xls",
+              ".xlsx",
+            ];
+
+            const fileExtension = file.name
+              .toLowerCase()
+              .substring(file.name.lastIndexOf("."));
+            const isValidType =
+              allowedTypes.includes(file.type) ||
+              allowedExtensions.includes(fileExtension);
+
+            if (!isValidType) {
+              errors.push(
+                `${file.name}: Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX allowed.`
+              );
+              return;
+            }
+
+            // Validate file size (10MB max)
+            const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+            if (file.size > maxSize) {
+              errors.push(
+                `${file.name}: File too large. Maximum size is 10MB.`
+              );
+              return;
+            }
+
+            // Check for duplicates
+            const isDuplicate = selectedFiles.some(
+              (existingFile) =>
+                existingFile.name === file.name &&
+                existingFile.size === file.size
+            );
+
+            if (isDuplicate) {
+              errors.push(`${file.name}: File already selected.`);
+              return;
+            }
+
+            validFiles.push(file);
+          });
+
+          // Show errors if any
+          if (errors.length > 0) {
+            showFileError(errors.join("<br>"));
+            return;
+          }
+
+          // Hide error if shown
+          hideFileError();
+
+          // Add valid files
+          selectedFiles.push(...validFiles);
+          updateFileDisplay();
+
+          // Clear input
+          documentFilesInput.value = "";
+        }
+
+        function updateFileDisplay() {
+          if (selectedFiles.length === 0) {
+            selectedFilesDiv.classList.add("hidden");
+            documentsCount.classList.remove("bg-blue-50", "text-blue-700");
+            documentsCount.classList.add("bg-gray-100", "text-gray-600");
+          } else {
+            selectedFilesDiv.classList.remove("hidden");
+            documentsCount.classList.remove("bg-gray-100", "text-gray-600");
+            documentsCount.classList.add("bg-blue-50", "text-blue-700");
+          }
+
+          docsCount.textContent = selectedFiles.length;
+
+          // Clear existing list
+          filesList.innerHTML = "";
+
+          // Add files to list
+          selectedFiles.forEach((file, index) => {
+            const fileDiv = document.createElement("div");
+            fileDiv.className =
+              "flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200";
+
+            const fileIcon = getFileIcon(file.name);
+            const fileSize = formatFileSize(file.size);
+
+            fileDiv.innerHTML = `
+              <div class="flex items-center space-x-3">
+                <div class="text-blue-500">
+                  <i class="${fileIcon}"></i>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-800">${file.name}</p>
+                  <p class="text-xs text-gray-500">${fileSize}</p>
+                </div>
+              </div>
+              <button type="button" onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 transition-colors">
+                <i class="fas fa-times"></i>
+              </button>
+            `;
+
+            filesList.appendChild(fileDiv);
+          });
+        }
+
+        function getFileIcon(filename) {
+          const extension = filename.toLowerCase().split(".").pop();
+          switch (extension) {
+            case "pdf":
+              return "fas fa-file-pdf";
+            case "doc":
+            case "docx":
+              return "fas fa-file-word";
+            case "xls":
+            case "xlsx":
+              return "fas fa-file-excel";
+            default:
+              return "fas fa-file";
+          }
+        }
+
+        function formatFileSize(bytes) {
+          if (bytes === 0) return "0 Bytes";
+          const k = 1024;
+          const sizes = ["Bytes", "KB", "MB", "GB"];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return (
+            parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+          );
+        }
+
+        function showFileError(message) {
+          const errorDiv = document.getElementById("fileUploadError");
+          const errorMessage = document.getElementById("fileErrorMessage");
+          errorMessage.innerHTML = message;
+          errorDiv.classList.remove("hidden");
+        }
+
+        function hideFileError() {
+          const errorDiv = document.getElementById("fileUploadError");
+          errorDiv.classList.add("hidden");
+        }
+
+        // Make removeFile function globally available
+        window.removeFile = function (index) {
+          selectedFiles.splice(index, 1);
+          updateFileDisplay();
+        };
+      }
+
       // Add event listeners for county/sub-county dropdowns to zoom map
       document
         .getElementById("countySelect")
@@ -973,7 +1258,20 @@
           e.preventDefault();
 
           const formData = new FormData(this);
-          const data = Object.fromEntries(formData.entries());
+
+          // Add selected files to FormData
+          selectedFiles.forEach((file, index) => {
+            formData.append(`documents`, file);
+          });
+
+          // Get form data as object for validation
+          const data = {};
+          for (let [key, value] of formData.entries()) {
+            if (key !== "documents") {
+              // Skip files for validation
+              data[key] = value;
+            }
+          }
 
           // Parse locations and themes from JSON strings
           try {
@@ -982,7 +1280,8 @@
             }
             if (data.selected_themes) {
               data.themes = JSON.parse(data.selected_themes);
-              delete data.selected_themes; // Remove the hidden field
+              formData.delete("selected_themes"); // Remove from FormData
+              formData.append("themes", JSON.stringify(data.themes)); // Add parsed themes
             }
 
             // Validate required fields
@@ -1009,15 +1308,18 @@
               return;
             }
 
-            console.log("Submitting data:", data);
+            console.log(
+              "Submitting form data with files:",
+              selectedFiles.length,
+              "files"
+            );
 
             const response = await fetch(`${window.BASE_URL}/api/projects`, {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
-              body: JSON.stringify(data),
+              body: formData, // Send as FormData for file uploads
             });
 
             if (response.ok) {
