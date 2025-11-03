@@ -2640,9 +2640,32 @@
 				</p>
 
 				<p class="text-sm text-gray-700 mb-2">
-					Located in <strong>${
-            project.county || project.region || "an unspecified region"
-          }</strong>,
+					Located in <strong>${(() => {
+            const locationParts = [];
+            // Check if project has locations array with detailed info
+            if (
+              project.locations &&
+              Array.isArray(project.locations) &&
+              project.locations.length > 0
+            ) {
+              const primaryLoc = project.locations[0]; // Use first location for summary
+              if (primaryLoc.subCounty)
+                locationParts.push(primaryLoc.subCounty);
+              if (primaryLoc.county) locationParts.push(primaryLoc.county);
+              if (primaryLoc.region && primaryLoc.region !== primaryLoc.county)
+                locationParts.push(primaryLoc.region);
+            }
+            // Fallback to direct project properties
+            if (locationParts.length === 0) {
+              if (project.subCounty) locationParts.push(project.subCounty);
+              if (project.county) locationParts.push(project.county);
+              if (project.region && project.region !== project.county)
+                locationParts.push(project.region);
+            }
+            return locationParts.length > 0
+              ? locationParts.join(", ")
+              : "an unspecified region";
+          })()}</strong>,
 					this project ${
             project.partner
               ? `is supported by <strong>${project.partner}</strong>`
@@ -3113,11 +3136,7 @@
                 <p class="text-md text-gray-500 mb-2">
                   <span class="font-bold text-gray-800">${stats.locationCount}</span> Locations
                 </p>
-                <div class="flex gap-2">
-                  <a href="#" class="text-md rounded-md flex-center text-button_two font-medium">
-                    More Info <i class="far fa-chevron-right text-xs ml-0.5"></i>
-                  </a>
-                </div>
+                
               </div>
             </div>
           `;
@@ -3212,13 +3231,47 @@
               });
             }
 
+            // Calculate total budget by fetching all projects
+            let totalBudget = 0;
+            try {
+              const projectsResponse = await authManager.apiCall(
+                "/api/projects?page=0&size=1000&sortBy=id&sortDir=desc",
+                "GET"
+              );
+              if (projectsResponse.ok) {
+                const projectsData = await projectsResponse.json();
+                if (
+                  projectsData.status === 200 &&
+                  projectsData.data &&
+                  projectsData.data.projects
+                ) {
+                  const allProjects = projectsData.data.projects;
+                  totalBudget = allProjects.reduce((sum, project) => {
+                    return sum + (project.budget || 0);
+                  }, 0);
+                  console.log(
+                    "[DEBUG] Total budget calculated from",
+                    allProjects.length,
+                    "projects:",
+                    totalBudget
+                  );
+                }
+              }
+            } catch (budgetError) {
+              console.error(
+                "Error fetching projects for budget calculation:",
+                budgetError
+              );
+              totalBudget = 0;
+            }
+
             // Store the statistics in a global variable for Alpine.js
             window.statsData = {
               locations: locations,
               projects: projects,
               regions: regions,
               users: data.totalStakeholders || activeCount || projects, // Use stakeholders for animated users count
-              amount: projects * 1000000, // Estimate: 1M KES per project (adjust as needed)
+              amount: totalBudget, // Use actual total budget instead of estimate
             };
 
             console.log("[DEBUG] Calculated statsData:", window.statsData);
