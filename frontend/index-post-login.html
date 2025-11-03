@@ -1760,6 +1760,10 @@
               }
             });
           }
+          // Also check for direct county on project
+          if (project.county) {
+            counties.add(project.county);
+          }
         });
 
         // Clear existing options except "All Counties"
@@ -1782,7 +1786,10 @@
       function performMapSearch() {
         console.log("performMapSearch called");
         console.log("Total projects available:", projects.length);
-        console.log("Projects sample:", projects.slice(0, 3));
+        if (projects.length > 0) {
+          console.log("First project structure:", Object.keys(projects[0]));
+          console.log("First project data:", projects[0]);
+        }
 
         const searchText = document
           .getElementById("mapSearchInput")
@@ -1799,12 +1806,38 @@
 
         // Filter projects based on search criteria
         const matchingProjects = projects.filter((project) => {
-          // Text search in project name, title, or project number (id)
+          // Text search in multiple fields
+          const searchFields = [
+            project.projectName,
+            project.title,
+            project.projectNo,
+            project.id?.toString(),
+            project.name,
+            project.code,
+            project.projectCode,
+          ].filter((field) => field != null);
+
+          // Also search in all string properties as fallback
+          const allStringFields = Object.values(project).filter(
+            (val) =>
+              typeof val === "string" && val.toLowerCase().includes(searchText)
+          );
+
           const nameMatch =
             !searchText ||
-            project.projectName?.toLowerCase().includes(searchText) ||
-            project.title?.toLowerCase().includes(searchText) ||
-            (project.id && project.id.toString().includes(searchText));
+            searchFields.some((field) =>
+              field.toString().toLowerCase().includes(searchText)
+            ) ||
+            allStringFields.length > 0;
+
+          if (searchText && nameMatch) {
+            console.log(
+              "Project matched search:",
+              project.id,
+              "Fields checked:",
+              searchFields
+            );
+          }
 
           // Status filter
           const statusMatch =
@@ -1972,6 +2005,9 @@
             console.log("Loaded projects for map:", projectsData.length);
             console.log("Projects data (with coordinates):", projectsData);
 
+            // Set global projects array for search functionality
+            projects = projectsData;
+
             // Process projects for map display
             addMarkersToMap(projectsData);
 
@@ -2095,9 +2131,16 @@
             const popupHtml = `
                 <div class="max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden relative">
                   <div class="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-gray-900 leading-tight pr-2">${
-                      project.projectName || project.title || "Project"
-                    }</h3>
+                    <h3 class="text-lg font-bold text-gray-900 leading-tight pr-2 flex-1">
+                      <span class="block">${
+                        project.projectName || project.title || "Project"
+                      }</span>
+                      ${
+                        project.projectNo
+                          ? `<span class="text-sm font-normal text-gray-600 mt-1 block">(${project.projectNo})</span>`
+                          : ""
+                      }
+                    </h3>
                     <button onclick="this.closest('.mapboxgl-popup').style.display='none'"
                       class="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-800 flex items-center justify-center transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
                       <i class="fas fa-times text-xs"></i>
