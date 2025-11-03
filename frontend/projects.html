@@ -633,38 +633,18 @@
                                     <table class="min-w-full leading-normal">
                                         <thead>
                                             <tr>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Project No</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Title</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Partner</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Theme</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Location</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Start</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">End</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Contact</th>
+                                                <th scope="col" class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+                                            </tr>
+                                        </thead>
                                         <tbody id="tbody-stalled"></tbody>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Partner A
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Education
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Nairobi, Langata
-                                            <br>
-                                            <span class="text-xs">St. Marys Hospital</span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-01-01
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-12-31
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Jane Doe
-                                        </td>
-                                        <td
-                                            class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-
-                                            <button
-                                                class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
-                                                Re-activate
-                                            </button>
-                                        </td>
-                                        </tr>
-                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -839,6 +819,13 @@
 
                             // Helper to render action buttons
                             function renderActions(project, status) {
+                                const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                                const isPartner = userRole === 'PARTNER';
+
+                                if (isPartner) {
+                                    return `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
+                                }
+
                                 let html = '';
                                 if (status === 'pending') {
                                     html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
@@ -1070,7 +1057,26 @@
                                     }
 
                                     const json = await res.json();
+                                    console.log('[loadMyProjects] API response:', json);
                                     const projects = (json && json.data) || [];
+                                    console.log('[loadMyProjects] Projects array:', projects);
+                                    const userStr = localStorage.getItem('user');
+                                    let userEmail = '';
+                                    if (userStr) {
+                                        try {
+                                            const userObj = JSON.parse(userStr);
+                                            userEmail = userObj.email || '';
+                                            console.log('[loadMyProjects] Logged in user email:', userEmail);
+                                        } catch (e) {
+                                            console.error('[loadMyProjects] Error parsing user from localStorage:', e);
+                                        }
+                                    } else {
+                                        console.warn('[loadMyProjects] No user found in localStorage');
+                                    }
+
+                                    // Use the returned array directly
+                                    const myProjects = projects;
+                                    console.log('[loadMyProjects] Using returned projects array:', myProjects);
 
                                     // Clear tables
                                     const tbActive = document.getElementById('tbody-active');
@@ -1084,7 +1090,7 @@
 
                                     const counts = { active: 0, pending: 0, stalled: 0, completed: 0 };
 
-                                    projects.forEach(project => {
+                                    myProjects.forEach(project => {
                                         const status = (
                                             project.approvalStatus ||
                                             project.status ||
@@ -1095,13 +1101,24 @@
                                         const row = `
                     <tr>
                         <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.title || project.name || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${renderPartnerField(project)}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectTheme || project.theme || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.county || project.location || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || project.start_date || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || project.end_date || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${renderContactField(project)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.activityType || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${(project.themes || []).map(t => t.name || t).join(', ')}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.county).join(', ')}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonRole || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonEmail || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.objectives || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.budget || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.status || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.approvalStatus || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.createdAt || ''}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${project.updatedAt || ''}</td>
+                        <!-- Add more fields as needed -->
                         <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
                     </tr>
                 `;
@@ -1109,7 +1126,7 @@
                                         if (status === 'pending') {
                                             tbPending.innerHTML += row;
                                             counts.pending++;
-                                        } else if (status === 'stalled') {
+                                        } else if (status === 'stalled' || status === 'stall' || status === 'stalled project') {
                                             tbStalled.innerHTML += row;
                                             counts.stalled++;
                                         } else if (status === 'completed') {
