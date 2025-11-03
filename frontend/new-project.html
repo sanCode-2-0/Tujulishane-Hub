@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Project - RMNCAH</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav
+      x-data="{ open: false }"
+      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
+    >
+      <div class="flex items-center justify-between px-6 py-4">
+        <a
+          href="index.html"
+          class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
+        >
+          <img
+            src="resources/images/log2.png"
+            class="object-contain h-10 lg:h-12"
+            alt="Site Logo"
+          />
+          <img
+            src="resources/images/moh.png"
+            class="object-contain h-10 lg:h-12"
+            alt="Site Logo"
+          />
+        </a>
+
+        <button
+          @click="open = !open"
+          class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
+        >
+          <i class="fal fa-bars" x-show="!open"></i>
+          <i class="fal fa-times" x-show="open" x-cloak></i>
+        </button>
+
+        <ul
+          class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
+        >
+          <li>
+            <a
+              href="index.html"
+              class="uppercase transition hover:text-lime-600"
+              >Home</a
+            >
+          </li>
+
+          <!-- Projects Dropdown -->
+          <li x-data="{ showprojectDropdown: false }" class="relative">
+            <button
+              @click="showprojectDropdown = !showprojectDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Projects <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="showprojectDropdown"
+              @click.outside="showprojectDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-800">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="new-project.html">
+                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
+                    Project
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="projects.html#my-projects">
+                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
+                    Projects
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="all-projects.html">
+                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- Collaborations Dropdown -->
+          <li x-data="{ collabDropdown: false }" class="relative">
+            <button
+              @click="collabDropdown = !collabDropdown"
+              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+            >
+              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+            </button>
+            <div
+              x-show="collabDropdown"
+              @click.outside="collabDropdown = false"
+              x-transition
+              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+            >
+              <ul class="py-2 text-sm text-left text-teal-700">
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="priorities.html">
+                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
+                    Priorities
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="my-collaborations.html">
+                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
+                    Collaborations
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="announcements.html">
+                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
+                    Projects
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Mobile Menu -->
+        <div
+          x-show="open"
+          x-transition
+          class="absolute top-full left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-white/10 rounded-b-xl lg:hidden"
+        >
+          <ul
+            class="flex flex-col py-4 space-y-4 text-sm font-medium text-center text-gray-800"
+          >
+            <li>
+              <a
+                href="index.html"
+                class="uppercase transition hover:text-lime-600"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="new-project.html"
+                class="uppercase transition hover:text-lime-600"
+                >New Project</a
+              >
+            </li>
+            <li>
+              <a
+                href="projects.html#my-projects"
+                class="uppercase transition hover:text-lime-600"
+                >My Projects</a
+              >
+            </li>
+            <li>
+              <a
+                href="all-projects.html"
+                class="uppercase transition hover:text-lime-600"
+                >All Projects</a
+              >
+            </li>
+            <li>
+              <a
+                href="priorities.html"
+                class="uppercase transition hover:text-lime-600"
+                >RMNCAH Priorities</a
+              >
+            </li>
+            <li>
+              <a
+                href="my-collaborations.html"
+                class="uppercase transition hover:text-lime-600"
+                >My Collaborations</a
+              >
+            </li>
+            <li>
+              <a
+                href="announcements.html"
+                class="uppercase transition hover:text-lime-600"
+                >Find Projects</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-24 pb-12">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="px-6 py-4 bg-gradient-to-r from-teal-600 to-teal-700">
+            <h1 class="text-2xl font-bold text-white">Create New Project</h1>
+            <p class="text-teal-100 mt-1">
+              Fill in the details to create a new RMNCAH project
+            </p>
+          </div>
+
+          <div class="p-6">
+            <form id="newProjectForm" class="space-y-6">
+              <!-- Location Selection -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    for="countySelect"
+                    class="block text-sm font-medium text-gray-700"
+                    >County</label
+                  >
+                  <select
+                    id="countySelect"
+                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">All Counties</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="subCountySelect"
+                    class="block text-sm font-medium text-gray-700"
+                    >Sub-County</label
+                  >
+                  <select
+                    id="subCountySelect"
+                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">All Sub-Counties</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Map Section -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Pick Project Location on Map</label
+                >
+                <div
+                  id="newProjectMap"
+                  style="
+                    height: 400px;
+                    width: 100%;
+                    border-radius: 8px;
+                    margin-bottom: 8px;
+                    border: 1px solid #e5e7eb;
+                    background-color: #f3f4f6;
+                    position: relative;
+                    overflow: hidden;
+                  "
+                ></div>
+                <input type="hidden" id="project_latitude" name="latitude" />
+                <input type="hidden" id="project_longitude" name="longitude" />
+                <input type="hidden" id="project_county" name="county" />
+                <input type="hidden" id="project_subcounty" name="subcounty" />
+                <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+                  <strong>Selected Location:</strong>
+                  <span id="selectedLatLng" class="font-mono text-blue-600"
+                    >Click on map to select location</span
+                  >
+                  <br />
+                  <span id="selectedCounty" class="text-gray-600"></span>
+                </div>
+              </div>
+
+              <!-- Title -->
+              <div>
+                <label
+                  for="title"
+                  class="block text-sm font-medium text-gray-700"
+                  >Title *</label
+                >
+                <input
+                  required
+                  type="text"
+                  id="title"
+                  name="title"
+                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+
+              <!-- Project Theme -->
+              <div>
+                <label
+                  for="theme"
+                  class="block text-sm font-medium text-gray-700"
+                  >Project Theme *</label
+                >
+                <select
+                  id="theme"
+                  name="theme"
+                  class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                >
+                  <option value="">Select Theme</option>
+                  <option value="GBV">Gender based violence</option>
+                  <option value="AYPSRH">
+                    Adolescent and Young People Sexual and Reproductive Health
+                  </option>
+                  <option value="MNH">Maternal and Newborn Health</option>
+                  <option value="FP">Family Planning</option>
+                  <option value="CH">Child Health</option>
+                  <option value="AH">Adolescent Health</option>
+                </select>
+              </div>
+
+              <!-- Time Period -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    for="starttime_period"
+                    class="block text-sm font-medium text-gray-700"
+                    >Start *</label
+                  >
+                  <input
+                    required
+                    type="date"
+                    id="starttime_period"
+                    name="start_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="endtime_period"
+                    class="block text-sm font-medium text-gray-700"
+                    >End *</label
+                  >
+                  <input
+                    type="date"
+                    id="endtime_period"
+                    name="end_date"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <!-- Activity Type -->
+              <div>
+                <label
+                  for="activity_type"
+                  class="block text-sm font-medium text-gray-700"
+                  >Activity Type (Description) *</label
+                >
+                <textarea
+                  required
+                  id="activity_type"
+                  name="activity_type"
+                  rows="3"
+                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                ></textarea>
+              </div>
+
+              <!-- Contact Person -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="contact_person_name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Contact Person Name *</label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="contact_person_name"
+                    name="contact_person_name"
+                    placeholder="Name"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person_role"
+                    class="block text-sm font-medium text-gray-700"
+                    >Contact Person Role *</label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="contact_person_role"
+                    name="contact_person_role"
+                    placeholder="Role"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="contact_person_email"
+                    class="block text-sm font-medium text-gray-700"
+                    >Contact Person Email *</label
+                  >
+                  <input
+                    required
+                    type="email"
+                    id="contact_person_email"
+                    name="contact_person_mail"
+                    placeholder="Email"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <!-- Budget -->
+              <div>
+                <label
+                  for="budget"
+                  class="block text-sm font-medium text-gray-700"
+                  >Budget in KES</label
+                >
+                <input
+                  required
+                  type="number"
+                  id="budget"
+                  name="budget"
+                  placeholder="amount"
+                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+
+              <!-- Objectives -->
+              <div>
+                <label
+                  for="gaps"
+                  class="block text-sm font-medium text-gray-700"
+                  >Objectives *</label
+                >
+                <textarea
+                  required
+                  id="gaps"
+                  name="gaps"
+                  rows="3"
+                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                ></textarea>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="pt-4">
+                <button
+                  type="submit"
+                  class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Submit Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="config.js"></script>
+    <script src="kenya-locations.js"></script>
+    <script src="set-base-url.js"></script>
+    <script>
+      // Initialize dropdowns when DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeCountyDropdown("countySelect", "subCountySelect");
+      });
+
+      // Map initialization
+      let map;
+      let marker;
+
+      function initializeMap() {
+        try {
+          mapboxgl.accessToken =
+            "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+          map = new mapboxgl.Map({
+            container: "newProjectMap",
+            style: "mapbox://styles/mapbox/streets-v11",
+            center: [37.9062, -0.0236], // Center of Kenya
+            zoom: 6,
+          });
+
+          map.on("click", function (e) {
+            const lngLat = e.lngLat;
+
+            // Remove existing marker
+            if (marker) {
+              marker.remove();
+            }
+
+            // Add new marker
+            marker = new mapboxgl.Marker().setLngLat(lngLat).addTo(map);
+
+            // Update form fields
+            document.getElementById("project_latitude").value = lngLat.lat;
+            document.getElementById("project_longitude").value = lngLat.lng;
+            document.getElementById(
+              "selectedLatLng"
+            ).textContent = `${lngLat.lat.toFixed(6)}, ${lngLat.lng.toFixed(
+              6
+            )}`;
+
+            // Reverse geocode to get county
+            fetch(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${lngLat.lng},${lngLat.lat}.json?access_token=${mapboxgl.accessToken}`
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                const county =
+                  data.features.find((f) => f.place_type.includes("region"))
+                    ?.text || "Unknown";
+                document.getElementById("project_county").value = county;
+                document.getElementById(
+                  "selectedCounty"
+                ).textContent = `County: ${county}`;
+              })
+              .catch((error) => {
+                console.error("Geocoding error:", error);
+                document.getElementById("selectedCounty").textContent =
+                  "County: Unable to determine";
+              });
+          });
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+          document.getElementById("newProjectMap").innerHTML =
+            '<div class="flex items-center justify-center h-full text-gray-500"><div class="text-center"><i class="fas fa-map-marked-alt text-4xl mb-2"></i><p>Map unavailable</p><p class="text-sm">Please check Mapbox configuration</p></div></div>';
+        }
+      }
+
+      // Initialize map when page loads
+      document.addEventListener("DOMContentLoaded", initializeMap);
+
+      // Add event listeners for county/sub-county dropdowns to zoom map
+      document
+        .getElementById("countySelect")
+        .addEventListener("change", function () {
+          const selectedCounty = this.value;
+          if (
+            selectedCounty &&
+            window.countyCoordinates &&
+            window.countyCoordinates[selectedCounty] &&
+            map
+          ) {
+            const [lng, lat] = window.countyCoordinates[selectedCounty];
+            map.flyTo({
+              center: [lng, lat],
+              zoom: 9,
+            });
+          }
+        });
+
+      document
+        .getElementById("subCountySelect")
+        .addEventListener("change", function () {
+          const selectedSubCounty = this.value;
+          if (
+            selectedSubCounty &&
+            window.subCountyCoordinates &&
+            window.subCountyCoordinates[selectedSubCounty] &&
+            map
+          ) {
+            const [lng, lat] = window.subCountyCoordinates[selectedSubCounty];
+            map.flyTo({
+              center: [lng, lat],
+              zoom: 11,
+            });
+          }
+        });
+
+      // Form submission
+      document
+        .getElementById("newProjectForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData.entries());
+
+          try {
+            const response = await fetch(`${window.BASE_URL}/api/projects`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+              alert("Project created successfully!");
+              window.location.href = "projects.html";
+            } else {
+              const error = await response.json();
+              alert(
+                "Failed to create project: " +
+                  (error.message || "Unknown error")
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to create project. Please try again.");
+          }
+        });
+    </script>
+  </body>
+</html>
