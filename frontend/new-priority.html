@@ -152,6 +152,148 @@
 					</div>
 				</div>
 
+				<!-- Step 3: Project Themes -->
+				<div class="form-step hidden" data-step="3">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">3</span>
+							Project Themes<span class="font-light text-sm ml-1">(optional)</span>
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide essential details about your project
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div
+						class="theme-selection bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md">
+						<div class="flex items-center justify-between mb-4">
+							<label class="block text-lg font-semibold text-gray-800">
+
+							</label>
+							<div id="selectedThemesDisplay"
+								class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+								<i class="fas fa-check-circle mr-1"></i>
+								<span id="themesCount">0</span> selected
+							</div>
+						</div>
+
+						<p class="text-sm text-gray-600 mb-4">
+							Select all themes that apply to your project (minimum 1
+							required)
+						</p>
+
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="GBV"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Gender
+										Based Violence</span>
+									<p class="text-xs text-gray-500 mt-1">
+										GBV prevention and support programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="AYPSRH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Adolescent
+										& Youth SRH</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Sexual and reproductive health for young people
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="MNH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Maternal &
+										Newborn Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Maternal care and newborn health programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="FP"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Family
+										Planning</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Contraception and family planning services
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="CH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Child
+										Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Child healthcare and nutrition programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="AH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Adolescent
+										Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Adolescent healthcare and development
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+						</div>
+
+						<input type="hidden" id="selected_themes" name="selected_themes" value="[]" />
+
+						<div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden"
+							id="themeValidationError">
+							<div class="flex items-center">
+								<i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+								<span class="text-red-700 text-sm">Please select at least one project
+									theme.</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- Step 4: Contact Information -->
 				<div class="form-step hidden" data-step="4">
 					<div class="mb-4">
@@ -193,6 +335,53 @@
 					</div>
 				</div>
 
+				<!-- Step 5: Budget & Objectives -->
+				<div class="form-step hidden" data-step="5">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">5</span>
+							Budget & Objectives <span class="font-light text-sm ml-1">(optional)</span>
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide budget estimates and project goals
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div>
+						<label for="currency" class="block text-sm font-medium text-gray-700">
+							Currency</label>
+						<select id="currency" name="currency" required
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+							<option value="">
+								Select Currency
+							</option>
+							<option value="EUR">
+								Euro
+							</option>
+							<option value="KES">
+								Kenyan Shilling
+							</option>
+							<option value="USD">
+								US Dollar
+							</option>
+						</select>
+
+					</div>
+					<div>
+						<label for="budget" class="block text-sm font-medium text-gray-700">Amount </label>
+						<input required type="text" id="budget" name="budget" placeholder="1,000,000"
+							class="block w-full p-2 numbers-only mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+					</div>
+
+					<!-- Objectives -->
+					<div>
+						<label for="objectives" class="block text-sm font-medium text-gray-700">Project
+							Objectives </label>
+						<textarea required id="objectives" name="objectives" rows="3"
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+					</div>
+				</div>
 				<!-- Navigation Buttons -->
 				<div class="flex justify-between mt-10">
 					<button type="button" id="prevBtn"
@@ -205,9 +394,10 @@
 	</div>
 
 	<!-- Scripts -->
+	<script src="styles/numbersOnly.js"></script>
 	<script src="styles/loadNav.js"></script>
 	<script src="styles/authnav.js"></script>
-	<script src="styles/projectSteps.js"></script>
+	<script src="styles/prioritySteps.js"></script>
 	<script src="auth.js"></script>
 	<script src="config.js"></script>
 	<script src="kenya-locations.js"></script>
