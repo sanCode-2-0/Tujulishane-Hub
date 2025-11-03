@@ -1018,13 +1018,6 @@
                       <span class="font-thin">Stakeholders</span>
                     </div>
                   </div>
-                  <div class="flex flex-col items-center w-1/2 sm:w-auto">
-                    <i class="fad fa-users text-lg lg:text-2xl"></i>
-                    <div class="mt-2">
-                      <span class="font-bold tracking-wider">97</span>
-                      <span class="font-thin">Members</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -2435,7 +2428,7 @@
               locations: locations,
               projects: projects,
               regions: regions,
-              users: activeCount || projects, // Use active projects or total as "teams"
+              users: data.totalStakeholders || activeCount || projects, // Use stakeholders for animated users count
               amount: projects * 1000000, // Estimate: 1M KES per project (adjust as needed)
             };
 
@@ -2450,6 +2443,12 @@
 
             // Update the hero statistics display with the actual data
             updateStatisticsDisplay(data);
+
+            // Try to load user statistics if user is admin
+            await loadUserStatistics(data);
+
+            // Update display again with user statistics included
+            updateStatisticsDisplay(data);
           } else {
             console.warn("[DEBUG] No stats.data found, using defaults");
             useDefaultStatistics();
@@ -2460,13 +2459,166 @@
         }
       }
 
+      // Load user statistics from API (admin only)
+      async function loadUserStatistics(statsData) {
+        try {
+          const user = authManager.getCachedUser();
+          console.log("[DEBUG] Current user for statistics:", user);
+          console.log("[DEBUG] User role:", user?.role);
+
+          if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+            console.log(
+              "[DEBUG] User is not admin, using estimated stakeholders count. Role:",
+              user?.role
+            );
+            // For non-admin users, estimate stakeholders as a portion of total projects
+            // or use a default value
+            const estimatedStakeholders = Math.max(
+              1,
+              Math.floor((statsData.totalProjects || 0) * 0.3)
+            ); // Estimate 30% of projects have stakeholders
+            statsData.totalStakeholders = estimatedStakeholders;
+
+            // Update the display
+            const totalStakeholdersElement = document.getElementById(
+              "totalStakeholdersCount"
+            );
+            if (totalStakeholdersElement) {
+              totalStakeholdersElement.textContent = estimatedStakeholders;
+              console.log(
+                "✅ Updated total stakeholders count (estimated):",
+                estimatedStakeholders
+              );
+            }
+            return;
+          }
+
+          console.log(
+            "[DEBUG] User is admin, proceeding with user statistics load"
+          );
+
+          console.log("[DEBUG] Loading user statistics...");
+          const response = await fetch(
+            `${window.BASE_URL}/api/auth/admin/users`,
+            {
+              headers: {
+                Authorization: `Bearer ${authManager.getToken()}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            const usersData = await response.json();
+            console.log("[DEBUG] Users API response status:", response.status);
+            console.log("[DEBUG] Users data loaded:", usersData);
+            console.log("[DEBUG] Users data structure:", {
+              hasData: !!usersData.data,
+              isArray: Array.isArray(usersData.data),
+              dataLength: usersData.data?.length,
+            });
+
+            if (usersData.data && Array.isArray(usersData.data)) {
+              const totalUsers = usersData.data.length;
+              statsData.totalUsers = totalUsers;
+
+              // Debug: Log all unique roles and organization types
+              const roles = [...new Set(usersData.data.map((u) => u.role))];
+              const orgTypes = [
+                ...new Set(
+                  usersData.data
+                    .map((u) => u.organization?.organizationType)
+                    .filter(Boolean)
+                ),
+              ];
+              console.log("[DEBUG] Available user roles:", roles);
+              console.log("[DEBUG] Available organization types:", orgTypes);
+              console.log(
+                "[DEBUG] Sample user data:",
+                usersData.data.slice(0, 3)
+              );
+
+              // Calculate stakeholders as partners + donors
+              // Stakeholders = PARTNER role users + users from DONOR_AGENCY organizations
+              const stakeholders = usersData.data.filter((user) => {
+                const isPartner = user.role === "PARTNER";
+                const isFromDonorAgency =
+                  user.organization &&
+                  (user.organization.organizationType === "DONOR_AGENCY" ||
+                    user.organization.type === "DONOR_AGENCY");
+                return isPartner || isFromDonorAgency;
+              }).length;
+              console.log("[DEBUG] Stakeholders calculation:", {
+                totalUsers,
+                stakeholders,
+                partnerCount: usersData.data.filter((u) => u.role === "PARTNER")
+                  .length,
+                donorAgencyUsersCount: usersData.data.filter((u) => {
+                  const org = u.organization;
+                  return (
+                    org &&
+                    (org.organizationType === "DONOR_AGENCY" ||
+                      org.type === "DONOR_AGENCY")
+                  );
+                }).length,
+                filteredStakeholders: usersData.data
+                  .filter((user) => {
+                    const isPartner = user.role === "PARTNER";
+                    const isFromDonorAgency =
+                      user.organization &&
+                      (user.organization.organizationType === "DONOR_AGENCY" ||
+                        user.organization.type === "DONOR_AGENCY");
+                    return isPartner || isFromDonorAgency;
+                  })
+                  .map((u) => ({
+                    id: u.id,
+                    role: u.role,
+                    orgType:
+                      u.organization?.organizationType || u.organization?.type,
+                  })),
+              });
+              statsData.totalStakeholders = stakeholders;
+
+              // Update stakeholders count
+              const totalStakeholdersElement = document.getElementById(
+                "totalStakeholdersCount"
+              );
+              if (totalStakeholdersElement) {
+                totalStakeholdersElement.textContent = stakeholders;
+                console.log(
+                  "✅ Updated total stakeholders count from API:",
+                  stakeholders
+                );
+              }
+
+              // Update Alpine.js stats data
+              if (window.statsData) {
+                window.statsData.users = stakeholders;
+                window.statsData.stakeholders = stakeholders;
+                window.dispatchEvent(
+                  new CustomEvent("stats-loaded", {
+                    detail: window.statsData,
+                  })
+                );
+              }
+            }
+          } else {
+            console.warn(
+              "[DEBUG] Failed to load user statistics, keeping default"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading user statistics:", error);
+        }
+      }
+
       // Use default statistics if API calls fail
       function useDefaultStatistics() {
         const defaultStats = {
           totalProjects: 0,
           countyCounts: {},
           statusCounts: {},
-          totalStakeholders: 0,
+          totalStakeholders: 5, // Default stakeholders count
+          totalUsers: 97, // Default users count for Alpine.js
           totalBudget: 0,
           coordinatesCoveragePercentage: 0,
         };
