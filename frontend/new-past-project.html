@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>New Project - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS (with custom config using inline script) -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="styles/main.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-50">
+	<!-- Navigation -->
+	<div class="" id="nav-placeholder"></div>
+
+	<!-- Main Content -->
+	<div class="pt-24 pb-12">
+
+		<div class="max-w-7xl mx-auto bg-white rounded-xl shadow-md p-8 my-10">
+			<!-- Progress Header -->
+			<div class="mb-8">
+				<h2 class="text-2xl font-semibold text-blue-900 mb-4">Project Submission Form</h2>
+				<div class="w-full bg-gray-200 rounded-full h-2.5">
+					<div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 16.6%"></div>
+				</div>
+				<p id="progressText" class="text-sm text-gray-600 mt-2">Step 1 of 6: Project Location</p>
+			</div>
+
+			<!-- Form Sections -->
+			<form id="projectForm" class="space-y-8">
+				<!-- Step 1: Project Location -->
+				<div class="form-step block" data-step="1">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">1</span>
+							Project Location
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">Select the geographical areas where your
+							project will be
+							implemented
+						</p>
+						<hr class="mt-4">
+					</div>
+					<!-- Location Selection -->
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div>
+							<label for="countySelect"
+								class="block text-sm font-medium text-gray-700 mb-2">County</label>
+							<select id="countySelect"
+								class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+								<option value="">All Counties</option>
+							</select>
+						</div>
+						<div>
+							<label for="subCountySelect"
+								class="block text-sm font-medium text-gray-700 mb-2">Sub-County</label>
+							<select id="subCountySelect"
+								class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+								<option value="">All Sub-Counties</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- Map Section -->
+					<div class="mt-2">
+						<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Locations on
+							Map (Click to add
+							multiple
+							locations)</label>
+						<div id="newProjectMap" style="
+									height: 400px;
+									width: 100%;
+									border-radius: 8px;
+									margin-bottom: 8px;
+									border: 1px solid #e5e7eb;
+									background-color: #f3f4f6;
+									position: relative;
+									overflow: hidden;
+									"></div>
+						<input type="hidden" id="project_locations" name="locations" />
+						<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+							<strong>Selected Locations:</strong>
+							<div id="selectedLocationsList" class="mt-2 space-y-1">
+								<p class="text-gray-500 italic">
+									Click on map to add locations
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Step 2: Basic Information -->
+				<div class="form-step hidden" data-step="2">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">2</span>
+							Basic Information
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide essential details about your project
+						</p>
+						<hr class="mt-4">
+					</div>
+					<!-- Title -->
+					<div class="mb-6">
+						<label for="title" class="block text-sm font-medium text-gray-700">Project Title
+							*</label>
+						<input required type="text" id="title" name="title"
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+					</div>
+
+					<!-- Time Period -->
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+						<div>
+							<label for="starttime_period" class="block text-sm font-medium text-gray-700">Start
+								Date *</label>
+							<input required type="date" id="starttime_period" name="start_date"
+								class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+						</div>
+						<div>
+							<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+								Date</label>
+							<input type="date" id="endtime_period" name="end_date"
+								class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+						</div>
+					</div>
+
+					<!-- Activity Type -->
+					<div>
+						<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
+							(Description)
+							*</label>
+						<textarea required id="activity_type" name="activity_type" rows="3"
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+					</div>
+				</div>
+
+				<!-- Step 3: Project Themes -->
+				<div class="form-step hidden" data-step="3">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">3</span>
+							Project Themes
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide essential details about your project
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div
+						class="theme-selection bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md">
+						<div class="flex items-center justify-between mb-4">
+							<label class="block text-lg font-semibold text-gray-800">
+								Project Themes *
+							</label>
+							<div id="selectedThemesDisplay"
+								class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+								<i class="fas fa-check-circle mr-1"></i>
+								<span id="themesCount">0</span> selected
+							</div>
+						</div>
+
+						<p class="text-sm text-gray-600 mb-4">
+							Select all themes that apply to your project (minimum 1
+							required)
+						</p>
+
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="GBV"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Gender
+										Based Violence</span>
+									<p class="text-xs text-gray-500 mt-1">
+										GBV prevention and support programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="AYPSRH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Adolescent
+										& Youth SRH</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Sexual and reproductive health for young people
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="MNH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Maternal &
+										Newborn Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Maternal care and newborn health programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="FP"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Family
+										Planning</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Contraception and family planning services
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="CH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Child
+										Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Child healthcare and nutrition programs
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+
+							<label
+								class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group">
+								<input type="checkbox" name="themes" value="AH"
+									class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3" />
+								<div class="flex-1">
+									<span class="font-medium text-gray-800 group-hover:text-blue-800">Adolescent
+										Health</span>
+									<p class="text-xs text-gray-500 mt-1">
+										Adolescent healthcare and development
+									</p>
+								</div>
+								<div class="checkmark hidden text-green-500 ml-2">
+									<i class="fas fa-check"></i>
+								</div>
+							</label>
+						</div>
+
+						<input type="hidden" id="selected_themes" name="selected_themes" value="[]" />
+
+						<div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden"
+							id="themeValidationError">
+							<div class="flex items-center">
+								<i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+								<span class="text-red-700 text-sm">Please select at least one project
+									theme.</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Step 4: Contact Information -->
+				<div class="form-step hidden" data-step="4">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">4</span>
+							Contact Information
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide details for project coordination
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div>
+							<label for="contact_person_name" class="block text-sm font-medium text-gray-700">Contact
+								Person Name
+								*</label>
+							<input required type="text" id="contact_person_name" name="contact_person_name"
+								placeholder="Name"
+								class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+						</div>
+						<div>
+							<label for="contact_person_role" class="block text-sm font-medium text-gray-700">Contact
+								Person Role
+								*</label>
+							<input required type="text" id="contact_person_role" name="contact_person_role"
+								placeholder="Role"
+								class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+						</div>
+						<div>
+							<label for="contact_person_email" class="block text-sm font-medium text-gray-700">Contact
+								Person
+								Email *</label>
+							<input required type="email" id="contact_person_email" name="contact_person_mail"
+								placeholder="Email"
+								class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+						</div>
+					</div>
+				</div>
+
+				<!-- Step 5: Budget & Objectives -->
+				<div class="form-step hidden" data-step="5">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">5</span>
+							Budget & Objectives
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Provide budget estimates and project goals
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div>
+						<label for="currency" class="block text-sm font-medium text-gray-700">
+							Currency*</label>
+						<select id="currency" name="currency" required
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+							<option value="">
+								Select Currency
+							</option>
+							<option value="EUR">
+								Euro
+							</option>
+							<option value="KES">
+								Kenyan Shilling
+							</option>
+							<option value="USD">
+								US Dollar
+							</option>
+						</select>
+
+					</div>
+					<div>
+						<label for="budget" class="block text-sm font-medium text-gray-700">Amount *</label>
+						<input required type="text" id="budget" name="budget" placeholder="1,000,000"
+							class="block w-full p-2 mt-1 numbers-only text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+					</div>
+
+					<!-- Objectives -->
+					<div>
+						<label for="objectives" class="block text-sm font-medium text-gray-700">Project
+							Objectives *</label>
+						<textarea required id="objectives" name="objectives" rows="3"
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+					</div>
+				</div>
+
+				<!-- Step 6: Supporting Documents -->
+				<div class="form-step hidden" data-step="6">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">6</span>
+							Completion Report
+						</h2>
+						<p class="text-sm text-gray-600 mt-1 ">
+							Upload the completion report for your project
+						</p>
+						<hr class="mt-4">
+					</div>
+					<div
+						class="supporting-documents bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md">
+						<div class="flex items-center justify-between mb-4">
+							<label class="block text-lg font-semibold text-gray-800">
+								Supporting Documents <span class="font-light text-sm ml-1">(optional)</span>
+
+							</label>
+							<div id="documentsCount"
+								class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+								<i class="fas fa-file mr-1"></i>
+								<span id="docsCount">0</span> files
+							</div>
+						</div>
+
+						<p class="text-sm text-gray-600 mb-4">
+							Upload relevant documents such as to support
+							your project proposal
+							(PDF, DOC, DOCX, XLS, XLSX - Max 10MB each)
+						</p>
+
+						<!-- File Upload Area -->
+						<div class="file-upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+							id="fileUploadArea">
+							<div class="upload-icon text-gray-400 mb-4">
+								<i class="fas fa-cloud-upload-alt text-4xl"></i>
+							</div>
+							<div class="upload-text">
+								<p class="text-lg font-medium text-gray-700 mb-2">
+									Drop files here or click to browse
+								</p>
+								<p class="text-sm text-gray-500">
+									Supported formats: PDF, DOC, DOCX, XLS, XLSX
+								</p>
+								<p class="text-xs text-gray-400 mt-1">
+									Maximum file size: 10MB per file
+								</p>
+							</div>
+							<input type="file" id="documentFiles" name="documents" multiple
+								accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" />
+						</div>
+
+						<!-- Selected Files Display -->
+						<div id="selectedFiles" class="mt-4 space-y-2 hidden">
+							<h4 class="text-sm font-medium text-gray-700 mb-3">
+								Selected Files:
+							</h4>
+							<div id="filesList" class="space-y-2">
+								<!-- Files will be added here dynamically -->
+							</div>
+						</div>
+
+						<!-- File Upload Error -->
+						<div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden" id="fileUploadError">
+							<div class="flex items-center">
+								<i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+								<span class="text-red-700 text-sm" id="fileErrorMessage"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Navigation Buttons -->
+				<div class="flex justify-between mt-10">
+					<button type="button" id="prevBtn"
+						class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300">Previous</button>
+					<button type="button" id="nextBtn"
+						class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">Next</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="styles/numbersOnly.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="styles/projectSteps.js"></script>
+	<script src="auth.js"></script>
+	<script src="config.js"></script>
+	<script src="kenya-locations.js"></script>
+	<script src="set-base-url.js"></script>
+	<script>
+		// Initialize everything when DOM is loaded
+		document.addEventListener("DOMContentLoaded", function () {
+			initializeCountyDropdown("countySelect", "subCountySelect");
+			initializeMap();
+			initializeThemeSelection();
+			initializeFileUpload();
+			initializeFormProgress();
+			initializeBudgetFormatting();
+		});
+
+		// Map initialization
+		let map;
+		let markers = [];
+		let selectedLocations = [];
+
+		function updateLocation(marker, newLngLat) {
+			// Find the location in our array and update it
+			const locationIndex = selectedLocations.findIndex(
+				(loc) => loc.marker === marker
+			);
+			if (locationIndex !== -1) {
+				selectedLocations[locationIndex].lat = newLngLat.lat;
+				selectedLocations[locationIndex].lng = newLngLat.lng;
+				updateLocationsDisplay();
+				updateFormData();
+			}
+		}
+
+		function removeLocation(locationId) {
+			const locationIndex = selectedLocations.findIndex(
+				(loc) => loc.id === locationId
+			);
+			if (locationIndex !== -1) {
+				// Remove marker from map
+				selectedLocations[locationIndex].marker.remove();
+
+				// Remove from arrays
+				selectedLocations.splice(locationIndex, 1);
+				markers.splice(locationIndex, 1);
+
+				updateLocationsDisplay();
+				updateFormData();
+			}
+		}
+
+		function updateLocationsDisplay() {
+			const container = document.getElementById("selectedLocationsList");
+
+			if (selectedLocations.length === 0) {
+				container.innerHTML =
+					'<p class="text-gray-500 italic">Click on map to add locations</p>';
+				return;
+			}
+
+			// Clear container first
+			container.innerHTML = "";
+
+			// Process each location
+			selectedLocations.forEach((location) => {
+				const locationDiv = document.createElement("div");
+				locationDiv.className =
+					"flex items-center justify-between bg-white p-2 rounded border";
+				locationDiv.innerHTML = `
+            <span class="text-sm text-blue-600">
+              <i class="fas fa-spinner fa-spin mr-2"></i>Loading location...
+            </span>
+            <button type="button" onclick="removeLocation(${location.id})"
+                    class="text-red-500 hover:text-red-700 ml-2">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+				container.appendChild(locationDiv);
+
+				// Reverse geocode to get place name
+				fetch(
+					`https://api.mapbox.com/geocoding/v5/mapbox.places/${location.lng},${location.lat}.json?access_token=${mapboxgl.accessToken}&types=place,region,country`
+				)
+					.then((response) => response.json())
+					.then((data) => {
+						let placeName = `${location.lat.toFixed(
+							4
+						)}, ${location.lng.toFixed(4)}`; // fallback
+
+						if (data.features && data.features.length > 0) {
+							// Try to get a meaningful place name
+							const place = data.features.find((f) =>
+								f.place_type.includes("place")
+							);
+							const region = data.features.find((f) =>
+								f.place_type.includes("region")
+							);
+							const country = data.features.find((f) =>
+								f.place_type.includes("country")
+							);
+
+							if (place) {
+								placeName = `${place.text}, ${country ? country.text : "Kenya"
+									}`;
+							} else if (region) {
+								placeName = `${region.text}, Kenya`;
+							} else if (country) {
+								placeName = `${country.text}`;
+							}
+						}
+
+						locationDiv.innerHTML = `
+                <span class="text-sm text-blue-600">
+                  ${placeName}
+                </span>
+                <button type="button" onclick="removeLocation(${location.id})"
+                        class="text-red-500 hover:text-red-700 ml-2">
+                  <i class="fas fa-times"></i>
+                </button>
+              `;
+					})
+					.catch((error) => {
+						console.error("Geocoding error:", error);
+						locationDiv.innerHTML = `
+                <span class="text-sm text-blue-600">
+                  ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}
+                </span>
+                <button type="button" onclick="removeLocation(${location.id})"
+                        class="text-red-500 hover:text-red-700 ml-2">
+                  <i class="fas fa-times"></i>
+                </button>
+              `;
+					});
+			});
+		}
+
+		function updateFormData() {
+			const locationsData = selectedLocations.map((loc) => ({
+				latitude: loc.lat,
+				longitude: loc.lng,
+			}));
+			document.getElementById("project_locations").value =
+				JSON.stringify(locationsData);
+		}
+
+		// Make removeLocation function globally available
+		window.removeLocation = removeLocation;
+
+		function initializeMap() {
+			try {
+				mapboxgl.accessToken =
+					"pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+				map = new mapboxgl.Map({
+					container: "newProjectMap",
+					style: "mapbox://styles/mapbox/streets-v11",
+					center: [37.9062, -0.0236], // Center of Kenya
+					zoom: 6,
+				});
+
+				map.on("click", function (e) {
+					const lngLat = e.lngLat;
+
+					// Create a new marker
+					const marker = new mapboxgl.Marker({
+						color: "#3B82F6",
+						draggable: true,
+					})
+						.setLngLat(lngLat)
+						.addTo(map);
+
+					// Add drag functionality
+					marker.on("dragend", function () {
+						updateLocation(marker, marker.getLngLat());
+					});
+
+					// Store the location
+					const locationData = {
+						id: Date.now(),
+						lat: lngLat.lat,
+						lng: lngLat.lng,
+						marker: marker,
+					};
+
+					selectedLocations.push(locationData);
+					markers.push(marker);
+
+					updateLocationsDisplay();
+					updateFormData();
+				});
+			} catch (error) {
+				console.error("Map initialization failed:", error);
+				document.getElementById("newProjectMap").innerHTML =
+					'<div class="flex items-center justify-center h-full text-gray-500"><div class="text-center"><i class="fas fa-map-marked-alt text-4xl mb-2"></i><p>Map unavailable</p><p class="text-sm">Please check Mapbox configuration</p></div></div>';
+			}
+		}
+
+		// Theme selection handling
+		function initializeThemeSelection() {
+			const themeCheckboxes = document.querySelectorAll(
+				'input[name="themes"]'
+			);
+			const selectedThemesInput = document.getElementById("selected_themes");
+			const themesCountDisplay = document.getElementById("themesCount");
+			const themeValidationError = document.getElementById(
+				"themeValidationError"
+			);
+			const selectedThemesDisplay = document.getElementById(
+				"selectedThemesDisplay"
+			);
+
+			function updateSelectedThemes() {
+				const selectedThemes = Array.from(themeCheckboxes)
+					.filter((checkbox) => checkbox.checked)
+					.map((checkbox) => checkbox.value);
+
+				selectedThemesInput.value = JSON.stringify(selectedThemes);
+				themesCountDisplay.textContent = selectedThemes.length;
+
+				// Update visual feedback for each theme option
+				themeCheckboxes.forEach((checkbox) => {
+					const themeOption = checkbox.closest(".theme-option");
+					const checkmark = themeOption.querySelector(".checkmark");
+
+					if (checkbox.checked) {
+						themeOption.classList.add("border-blue-500", "bg-blue-50");
+						themeOption.classList.remove(
+							"border-gray-200",
+							"hover:border-blue-400"
+						);
+						checkmark.classList.remove("hidden");
+					} else {
+						themeOption.classList.remove("border-blue-500", "bg-blue-50");
+						themeOption.classList.add("border-gray-200");
+						checkmark.classList.add("hidden");
+					}
+				});
+
+				// Update counter styling
+				if (selectedThemes.length > 0) {
+					selectedThemesDisplay.classList.remove(
+						"bg-gray-100",
+						"text-gray-600"
+					);
+					selectedThemesDisplay.classList.add("bg-blue-50", "text-blue-700");
+				} else {
+					selectedThemesDisplay.classList.remove(
+						"bg-blue-50",
+						"text-blue-700"
+					);
+					selectedThemesDisplay.classList.add("bg-gray-100", "text-gray-600");
+				}
+
+				// Update form validation
+				const themeContainer = document.querySelector(".theme-selection");
+				if (selectedThemes.length === 0) {
+					themeContainer.classList.add("border-red-500");
+					themeContainer.classList.remove(
+						"border-gray-200",
+						"hover:border-blue-300"
+					);
+					themeValidationError.classList.remove("hidden");
+				} else {
+					themeContainer.classList.remove("border-red-500");
+					themeContainer.classList.add("border-gray-200");
+					themeValidationError.classList.add("hidden");
+				}
+			}
+
+			themeCheckboxes.forEach((checkbox) => {
+				checkbox.addEventListener("change", updateSelectedThemes);
+			});
+
+			// Initial update
+			updateSelectedThemes();
+		}
+
+		// File upload handling
+		let selectedFiles = [];
+
+		function initializeFileUpload() {
+			const fileUploadArea = document.getElementById("fileUploadArea");
+			const documentFilesInput = document.getElementById("documentFiles");
+			const selectedFilesDiv = document.getElementById("selectedFiles");
+			const filesList = document.getElementById("filesList");
+			const docsCount = document.getElementById("docsCount");
+			const documentsCount = document.getElementById("documentsCount");
+
+			// Click to open file dialog
+			fileUploadArea.addEventListener("click", function () {
+				documentFilesInput.click();
+			});
+
+			// Drag and drop functionality
+			fileUploadArea.addEventListener("dragover", function (e) {
+				e.preventDefault();
+				fileUploadArea.classList.add("border-blue-500", "bg-blue-50");
+			});
+
+			fileUploadArea.addEventListener("dragleave", function (e) {
+				e.preventDefault();
+				fileUploadArea.classList.remove("border-blue-500", "bg-blue-50");
+			});
+
+			fileUploadArea.addEventListener("drop", function (e) {
+				e.preventDefault();
+				fileUploadArea.classList.remove("border-blue-500", "bg-blue-50");
+
+				const files = Array.from(e.dataTransfer.files);
+				handleFileSelection(files);
+			});
+
+			// File input change
+			documentFilesInput.addEventListener("change", function (e) {
+				const files = Array.from(e.target.files);
+				handleFileSelection(files);
+			});
+
+			function handleFileSelection(files) {
+				const validFiles = [];
+				const errors = [];
+
+				files.forEach((file) => {
+					// Validate file type
+					const allowedTypes = [
+						"application/pdf",
+						"application/msword",
+						"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+						"application/vnd.ms-excel",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					];
+					const allowedExtensions = [
+						".pdf",
+						".doc",
+						".docx",
+						".xls",
+						".xlsx",
+					];
+
+					const fileExtension = file.name
+						.toLowerCase()
+						.substring(file.name.lastIndexOf("."));
+					const isValidType =
+						allowedTypes.includes(file.type) ||
+						allowedExtensions.includes(fileExtension);
+
+					if (!isValidType) {
+						errors.push(
+							`${file.name}: Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX allowed.`
+						);
+						return;
+					}
+
+					// Validate file size (10MB max)
+					const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+					if (file.size > maxSize) {
+						errors.push(
+							`${file.name}: File too large. Maximum size is 10MB.`
+						);
+						return;
+					}
+
+					// Check for duplicates
+					const isDuplicate = selectedFiles.some(
+						(existingFile) =>
+							existingFile.name === file.name &&
+							existingFile.size === file.size
+					);
+
+					if (isDuplicate) {
+						errors.push(`${file.name}: File already selected.`);
+						return;
+					}
+
+					validFiles.push(file);
+				});
+
+				// Show errors if any
+				if (errors.length > 0) {
+					showFileError(errors.join("<br>"));
+					return;
+				}
+
+				// Hide error if shown
+				hideFileError();
+
+				// Add valid files
+				selectedFiles.push(...validFiles);
+				updateFileDisplay();
+
+				// Clear input
+				documentFilesInput.value = "";
+			}
+
+			function updateFileDisplay() {
+				if (selectedFiles.length === 0) {
+					selectedFilesDiv.classList.add("hidden");
+					documentsCount.classList.remove("bg-blue-50", "text-blue-700");
+					documentsCount.classList.add("bg-gray-100", "text-gray-600");
+				} else {
+					selectedFilesDiv.classList.remove("hidden");
+					documentsCount.classList.remove("bg-gray-100", "text-gray-600");
+					documentsCount.classList.add("bg-blue-50", "text-blue-700");
+				}
+
+				docsCount.textContent = selectedFiles.length;
+
+				// Clear existing list
+				filesList.innerHTML = "";
+
+				// Add files to list
+				selectedFiles.forEach((file, index) => {
+					const fileDiv = document.createElement("div");
+					fileDiv.className =
+						"flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200";
+
+					const fileIcon = getFileIcon(file.name);
+					const fileSize = formatFileSize(file.size);
+
+					fileDiv.innerHTML = `
+              <div class="flex items-center space-x-3">
+                <div class="text-blue-500">
+                  <i class="${fileIcon}"></i>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-800">${file.name}</p>
+                  <p class="text-xs text-gray-500">${fileSize}</p>
+                </div>
+              </div>
+              <button type="button" onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 transition-colors">
+                <i class="fas fa-times"></i>
+              </button>
+            `;
+
+					filesList.appendChild(fileDiv);
+				});
+			}
+
+			function getFileIcon(filename) {
+				const extension = filename.toLowerCase().split(".").pop();
+				switch (extension) {
+					case "pdf":
+						return "fas fa-file-pdf";
+					case "doc":
+					case "docx":
+						return "fas fa-file-word";
+					case "xls":
+					case "xlsx":
+						return "fas fa-file-excel";
+					default:
+						return "fas fa-file";
+				}
+			}
+
+			function formatFileSize(bytes) {
+				if (bytes === 0) return "0 Bytes";
+				const k = 1024;
+				const sizes = ["Bytes", "KB", "MB", "GB"];
+				const i = Math.floor(Math.log(bytes) / Math.log(k));
+				return (
+					parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+				);
+			}
+
+			function showFileError(message) {
+				const errorDiv = document.getElementById("fileUploadError");
+				const errorMessage = document.getElementById("fileErrorMessage");
+				errorMessage.innerHTML = message;
+				errorDiv.classList.remove("hidden");
+			}
+
+			function hideFileError() {
+				const errorDiv = document.getElementById("fileUploadError");
+				errorDiv.classList.add("hidden");
+			}
+
+			// Make removeFile function globally available
+			window.removeFile = function (index) {
+				selectedFiles.splice(index, 1);
+				updateFileDisplay();
+			};
+		}
+
+		// Form progress tracking
+		function initializeFormProgress() {
+			const progressSteps = document.querySelectorAll('.progress-step');
+			let currentSection = 1;
+
+			// Update progress when user scrolls or focuses on sections
+			function updateProgress() {
+				const sections = document.querySelectorAll('.form-section');
+				const scrollPosition = window.scrollY + 200; // Offset for header
+
+				sections.forEach((section, index) => {
+					const sectionTop = section.offsetTop;
+					const sectionBottom = sectionTop + section.offsetHeight;
+
+					if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+						currentSection = index + 1;
+						updateProgressIndicator(currentSection);
+					}
+				});
+			}
+
+			function updateProgressIndicator(activeSection) {
+				progressSteps.forEach((step, index) => {
+					const stepNumber = index + 1;
+
+					// Remove all classes
+					step.classList.remove('current', 'completed', 'pending');
+
+					if (stepNumber < activeSection) {
+						step.classList.add('completed');
+					} else if (stepNumber === activeSection) {
+						step.classList.add('current');
+					} else {
+						step.classList.add('pending');
+					}
+				});
+			}
+
+			// Add scroll listener
+			window.addEventListener('scroll', updateProgress);
+
+			// Initial progress update
+			updateProgress();
+		}
+
+		// Budget input formatting
+		function initializeBudgetFormatting() {
+			const budgetInput = document.getElementById('budget');
+
+			budgetInput.addEventListener('input', function (e) {
+				// Remove all non-digit characters except decimal point
+				let value = e.target.value.replace(/[^\d]/g, '');
+
+				// Format with commas
+				if (value) {
+					value = parseInt(value).toLocaleString('en-US');
+				}
+
+				// Update the input value
+				e.target.value = value;
+			});
+
+			// Prevent non-numeric input on keypress
+			budgetInput.addEventListener('keypress', function (e) {
+				// Allow backspace, delete, tab, escape, enter, and decimal point
+				if ([8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
+					// Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
+					(e.ctrlKey && [65, 67, 86, 88, 90].includes(e.keyCode))) {
+					return;
+				}
+
+				// Block non-numeric characters
+				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+					e.preventDefault();
+				}
+			});
+		}
+
+		// Add event listeners for county/sub-county dropdowns to zoom map
+		document
+			.getElementById("countySelect")
+			.addEventListener("change", function () {
+				const selectedCounty = this.value;
+				if (
+					selectedCounty &&
+					window.countyCoordinates &&
+					window.countyCoordinates[selectedCounty] &&
+					map
+				) {
+					const [lng, lat] = window.countyCoordinates[selectedCounty];
+					map.flyTo({
+						center: [lng, lat],
+						zoom: 9,
+					});
+				}
+			});
+
+		document
+			.getElementById("subCountySelect")
+			.addEventListener("change", function () {
+				const selectedSubCounty = this.value;
+				if (
+					selectedSubCounty &&
+					window.subCountyCoordinates &&
+					window.subCountyCoordinates[selectedSubCounty] &&
+					map
+				) {
+					const [lng, lat] = window.subCountyCoordinates[selectedSubCounty];
+					map.flyTo({
+						center: [lng, lat],
+						zoom: 11,
+					});
+				}
+			});
+
+		// Form submission
+		document
+			.getElementById("newProjectForm")
+			.addEventListener("submit", async function (e) {
+				e.preventDefault();
+
+				// Don't use FormData(this) to avoid including empty file inputs
+				// Instead, collect form data manually
+				const formData = new FormData();
+
+				// Add all form fields except file inputs
+				const formElements = this.querySelectorAll('input:not([type="file"]), textarea, select');
+				formElements.forEach(element => {
+					if (element.name && element.value) {
+						formData.append(element.name, element.value);
+					}
+				});
+
+				// Add selected files to FormData (only valid files)
+				selectedFiles.filter(f => f.size > 0).forEach((file) => {
+					formData.append(`documents`, file);
+				});
+
+				// Get form data as object for validation and logging
+				const data = {};
+				for (let [key, value] of formData.entries()) {
+					if (key !== "documents") {
+						// Skip files for validation
+						data[key] = value;
+					}
+				}
+
+				console.log("=== FORM SUBMISSION DEBUG ===");
+				console.log("Raw FormData entries:");
+				for (let [key, value] of formData.entries()) {
+					if (key === "documents") {
+						console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
+					} else {
+						console.log(`${key}: ${value}`);
+					}
+				}
+				console.log("Parsed data object:", data);
+
+				// Parse locations and themes from JSON strings
+				try {
+					if (data.locations) {
+						data.locations = JSON.parse(data.locations);
+						console.log("Parsed locations:", data.locations);
+					}
+					if (data.selected_themes) {
+						data.themes = JSON.parse(data.selected_themes);
+						formData.delete("selected_themes"); // Remove from FormData
+						formData.append("themes", JSON.stringify(data.themes)); // Add parsed themes
+						console.log("Parsed themes:", data.themes);
+					}
+
+					// Clean budget value (remove commas for submission)
+					if (data.budget) {
+						const cleanBudget = data.budget.replace(/,/g, '');
+						formData.set("budget", cleanBudget);
+						data.budget = cleanBudget;
+						console.log("Cleaned budget:", data.budget);
+					}
+
+					// Validate required fields
+					if (!data.themes || data.themes.length === 0) {
+						const themeValidationError = document.getElementById(
+							"themeValidationError"
+						);
+						themeValidationError.classList.remove("hidden");
+						const themeContainer = document.querySelector(".theme-selection");
+						themeContainer.classList.add("border-red-500");
+						themeContainer.classList.remove(
+							"border-gray-200",
+							"hover:border-blue-300"
+						);
+						themeContainer.scrollIntoView({
+							behavior: "smooth",
+							block: "center",
+						});
+						return;
+					}
+
+					if (!data.locations || data.locations.length === 0) {
+						alert("Please select at least one location on the map.");
+						return;
+					}
+
+					// Get current user for partner field
+					const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+					// Create project object as expected by backend
+					const projectData = {
+						title: data.title,
+						partner: currentUser.email || data.contact_person_mail, // Use current user email or fallback
+						startDate: data.start_date,
+						endDate: data.end_date,
+						activityType: data.activity_type,
+						budget: parseFloat(data.budget) || 0,
+						objectives: data.objectives,
+						locations: data.locations.map(loc => ({
+							latitude: loc.latitude,
+							longitude: loc.longitude,
+							county: loc.county || "Meru", // Default county for Kenya locations
+							subCounty: loc.subCounty || null,
+							mapsAddress: loc.mapsAddress || `${loc.latitude},${loc.longitude}`
+						})),
+						themes: data.themes,
+						contactPersonName: data.contact_person_name,
+						contactPersonRole: data.contact_person_role,
+						contactPersonEmail: data.contact_person_mail,
+						projectCategory: "IMPLEMENTING" // Default category for new projects
+					};
+
+					console.log("Project data object to send:", projectData);
+
+					// Backend expects a 'project' field with JSON data
+					const finalFormData = new FormData();
+
+					// Add project data as a Blob with correct content-type
+					const projectBlob = new Blob([JSON.stringify(projectData)], { type: 'application/json' });
+					finalFormData.append("project", projectBlob);
+
+					// Add files (filter out empty files)
+					selectedFiles.filter(f => f.size > 0).forEach((file) => {
+						finalFormData.append("supporting_documents", file);
+					});
+
+					console.log("Final FormData with project field:");
+					for (let [key, value] of finalFormData.entries()) {
+						if (key === "supporting_documents") {
+							console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
+						} else if (key === "project") {
+							console.log(`${key}: [Blob - ${value.size} bytes, type: ${value.type}]`);
+						} else {
+							console.log(`${key}: ${value}`);
+						}
+					}
+
+					const response = await fetch(`${window.BASE_URL}/api/projects`, {
+						method: "POST",
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem("token")}`,
+						},
+						body: finalFormData,
+					});
+
+					console.log("Response status:", response.status);
+					console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+
+					if (response.ok) {
+						console.log("Project created successfully!");
+						alert("Project created successfully!");
+						window.location.href = "projects.html";
+					} else {
+						let errorMessage = "Unknown error";
+						let errorDetails = {};
+
+						try {
+							const errorResponse = await response.text();
+							console.log("Raw error response:", errorResponse);
+
+							try {
+								errorDetails = JSON.parse(errorResponse);
+								console.log("Parsed error response:", errorDetails);
+								errorMessage = errorDetails.message || errorDetails.error || errorMessage;
+							} catch (parseError) {
+								console.log("Could not parse error as JSON:", parseError);
+								errorMessage = errorResponse || errorMessage;
+							}
+						} catch (textError) {
+							console.error("Error reading response text:", textError);
+						}
+
+						console.error("Final error message:", errorMessage);
+						console.error("Full error details:", errorDetails);
+
+						alert(
+							"Failed to create project: " + errorMessage
+						);
+					}
+				} catch (error) {
+					console.error("Error processing form data:", error);
+					console.error("Error stack:", error.stack);
+					alert("Error processing form data. Please try again. Check console for details.");
+				}
+			});
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+</body>
+
+</html>
