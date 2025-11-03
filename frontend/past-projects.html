@@ -8,28 +8,25 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!-- Tailwind CSS (with custom config using in          selectedProject: null,
-          userEmail: "",>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af", // Custom Blue
-              secondary: "#f59e0b", // Custom Amber
-              accent: "#10b981", // Custom Green
-              dark: "#1f2937", // Gray-800
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <!-- WARNING: cdn.tailwindcss.com should not be used in production. Use PostCSS or CLI for production builds. -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
 	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script src="./set-base-url.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -73,107 +70,108 @@
 	</style>
 
 
-<script>
-      // Populate user dropdown with data from authManager
-      document.addEventListener("DOMContentLoaded", function () {
-        (async function () {
-          let user = authManager.getCachedUser();
-          if (!user) {
-            try {
-              await authManager.getCurrentUser();
-              user = authManager.getCachedUser();
-            } catch (err) {
-              console.error("[ERROR] Could not fetch user profile:", err);
-            }
-          }
-          // Wait a bit for authManager to initialize
-          setTimeout(() => {
-            const user = authManager.getCachedUser();
-            console.log("[DEBUG] Loading user data for dropdown:", user);
+	<script src="auth.js"></script>
+	<script>
+		// Populate user dropdown with data from authManager
+		document.addEventListener("DOMContentLoaded", function () {
+			(async function () {
+				let user = authManager.getCachedUser();
+				if (!user) {
+					try {
+						await authManager.getCurrentUser();
+						user = authManager.getCachedUser();
+					} catch (err) {
+						console.error("[ERROR] Could not fetch user profile:", err);
+					}
+				}
+				// Wait a bit for authManager to initialize
+				setTimeout(() => {
+					const user = authManager.getCachedUser();
+					console.log("[DEBUG] Loading user data for dropdown:", user);
 
-            if (user) {
-              // Update user display name in button
-              const userDisplayName =
-                document.getElementById("userDisplayName");
-              if (userDisplayName) {
-                userDisplayName.textContent = user.name || user.email || "User";
-              }
+					if (user) {
+						// Update user display name in button
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						if (userDisplayName) {
+							userDisplayName.textContent = user.name || user.email || "User";
+						}
 
-              // Update user name in dropdown
-              const userNameDisplay =
-                document.getElementById("userNameDisplay");
-              if (userNameDisplay) {
-                userNameDisplay.textContent = user.name || "User";
-              }
+						// Update user name in dropdown
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						if (userNameDisplay) {
+							userNameDisplay.textContent = user.name || "User";
+						}
 
-              // Update email
-              const userEmailDisplay =
-                document.getElementById("userEmailDisplay");
-              if (userEmailDisplay) {
-                userEmailDisplay.textContent = user.email || "";
-              }
+						// Update email
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						if (userEmailDisplay) {
+							userEmailDisplay.textContent = user.email || "";
+						}
 
-              // Update role
-              const userRoleDisplay =
-                document.getElementById("userRoleDisplay");
-              if (userRoleDisplay) {
-                userRoleDisplay.textContent = user.role || "USER";
-              }
+						// Update role
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						if (userRoleDisplay) {
+							userRoleDisplay.textContent = user.role || "USER";
+						}
 
-              // Update status
-              const userStatusDisplay =
-                document.getElementById("userStatusDisplay");
-              if (userStatusDisplay) {
-                userStatusDisplay.textContent =
-                  user.approvalStatus || "PENDING";
-              }
+						// Update status
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent =
+								user.approvalStatus || "PENDING";
+						}
 
-              // Show admin nav if user is admin
-              console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
-              if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
-                console.log(
-                  "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
-                );
+						// Show admin nav if user is admin
+						console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+						if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+							console.log(
+								"[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+							);
 
-                const adminNavItems = document.querySelectorAll("#adminNav");
-                adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+							const adminNavItems = document.querySelectorAll("#adminNav");
+							adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
 
-                // Show admin collaboration menu item
-                const adminCollabItem =
-                  document.getElementById("admin-collab-item");
-                if (adminCollabItem) {
-                  adminCollabItem.style.display = "block";
-                  console.log(
-                    "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
-                  );
-                }
+							// Show admin collaboration menu item
+							const adminCollabItem =
+								document.getElementById("admin-collab-item");
+							if (adminCollabItem) {
+								adminCollabItem.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+								);
+							}
 
-                const adminCollabMobile = document.getElementById(
-                  "admin-collab-mobile"
-                );
-                if (adminCollabMobile) {
-                  adminCollabMobile.style.display = "block";
-                  console.log(
-                    "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
-                  );
-                }
+							const adminCollabMobile = document.getElementById(
+								"admin-collab-mobile"
+							);
+							if (adminCollabMobile) {
+								adminCollabMobile.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+								);
+							}
 
-                // Load pending requests count
-                loadPendingRequestsCount();
-              } else if (user.role === "DONOR") {
-                const donorNavItems = document.querySelectorAll("#donorNav");
-                donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
-              }
-            } else {
-              console.warn("[DEBUG] No user data found in cache");
-            }
-          }, 500);
-        })();
-      });
-    </script>
+							// Load pending requests count
+							loadPendingRequestsCount();
+						} else if (user.role === "DONOR") {
+							const donorNavItems = document.querySelectorAll("#donorNav");
+							donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+						}
+					} else {
+						console.warn("[DEBUG] No user data found in cache");
+					}
+				}, 500);
+			})();
+		});
+	</script>
 </head>
 
-<body class="text-gray-800 bg-gray-50" x-data="pastProjectsApp()">
+<body class="text-gray-800 bg-gray-50 w-full" x-data="pastProjectsApp()">
 	<!-- Navigation -->
 	<div data-twe-modal-init
 		class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
@@ -340,618 +338,344 @@
 			</div>
 		</div>
 	</div>
-	<!-- Nav Start -->
-	<nav x-data="{ open: false }"
-		class="fixed z-50 border shadow-sm bg-white/70 top-4 left-0 right-0 backdrop-blur-md border-white/10 rounded-xl">
-		<div class="flex items-center justify-between px-6 py-4">
-			<a href="index.html"
-				class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
-				<img src="resources/images/log2.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
-				<img src="resources/images/moh.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
-			</a>
-
-			<button @click="open = !open"
-				class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800">
-				<i class="fal fa-bars" x-show="!open"></i>
-				<i class="fal fa-times" x-show="open" x-cloak></i>
-			</button>
-
-			<ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
-				<li>
-					<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
-				</li>
-
-				<!-- Projects Dropdown -->
-				<li x-data="{ showprojectDropdown: false }" class="relative">
-					<button @click="showprojectDropdown = !showprojectDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Projects <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-800">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
-									<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="projects.html#my-projects">
-									<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="all-projects.html">
-									<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-									Projects
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<!-- Collaborations Dropdown -->
-				<li x-data="{ collabDropdown: false }" class="relative">
-					<button @click="collabDropdown = !collabDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-700">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="priorities.html">
-									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-									Proirities
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="my-collaborations.html">
-									<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-									Collaborations
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="announcements.html">
-									<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-			</ul>
-
-			<!-- Right-aligned Items (Admin + User) -->
-			<ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
-				<!-- Admin -->
-				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-					<button @click="showDropdown = !showDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Admin <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-700">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="dashboard.html">Dashboard</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="projects.html">Project Management</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="members.html">Stakeholder Management</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<!-- User Dropdown -->
-				<li x-data="{ showUserDropdown: false }" class="relative">
-					<button @click="showUserDropdown = !showUserDropdown"
-						class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100">
-						<i class="mr-2 fas fa-user-circle"></i>
-						<span id="userDisplayName">User</span>
-						<i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-						class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
-						<div class="px-4 py-3">
-							<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
-								Loading...
-							</div>
-							<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-							<div class="text-xs text-slate-400 mt-1">
-								Role:
-								<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
-								| Status:
-								<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
-							</div>
-						</div>
-						<ul class="py-2 text-sm text-teal-700">
-							<li>
-								<a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-user"></i> Profile
-								</a>
-							</li>
-							<li>
-								<a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-cog"></i> Settings
-								</a>
-							</li>
-							<li id="donorNav" class="hidden">
-								<a href="donor-management.html"
-									class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-								</a>
-							</li>
-						</ul>
-						<div class="py-2">
-							<button onclick="authManager.logout()"
-								class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
-								<i class="mr-2 fas fa-sign-out-alt"></i> Logout
-							</button>
-						</div>
-					</div>
-				</li>
-
-				<li>
-					<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
-						<i class="mr-2 fas fa-question-square"></i> FAQ's
-					</a>
-				</li>
-			</ul>
-		</div>
-
-		<!-- Nav Links - Mobile -->
-		<div x-show="open" x-transition:enter="transition ease-out duration-200"
-			x-transition:enter-start="opacity-0 transform -translate-y-2"
-			x-transition:enter-end="opacity-100 transform translate-y-0"
-			x-transition:leave="transition ease-in duration-150"
-			x-transition:leave-start="opacity-100 transform translate-y-0"
-			x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-			<ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
-				<li>
-					<a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
-				</li>
-
-				<!-- Projects Dropdown -->
-				<li x-data="{ showprojectDropdown: false }" class="relative">
-					<button @click="showprojectDropdown = !showprojectDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Projects <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-800">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a data-twe-toggle="modal" data-twe-target="#createNewProject">
-									<i class="far fa-plus mr-3 text-emerald-500"></i> New Project
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="projects.html#my-projects">
-									<i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="all-projects.html">
-									<i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-									Projects
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<!-- Collaborations Dropdown -->
-				<li x-data="{ collabDropdown: false }" class="relative">
-					<button @click="collabDropdown = !collabDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-700">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="priorities.html">
-									<i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-									Proirities
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="my-collaborations.html">
-									<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-									Collaborations
-								</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="announcements.html">
-									<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<!-- Admin -->
-				<li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-					<button @click="showDropdown = !showDropdown"
-						class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-						Admin <i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-						class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-						<ul class="py-2 text-sm text-left text-teal-700">
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="dashboard.html">Dashboard</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="projects.html">Project Management</a>
-							</li>
-							<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-								<a href="members.html">Stakeholder Management</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<!-- User Dropdown -->
-				<li x-data="{ showUserDropdown: false }" class="relative">
-					<button @click="showUserDropdown = !showUserDropdown"
-						class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100">
-						<i class="mr-2 fas fa-user-circle"></i>
-						<span id="userDisplayName">User</span>
-						<i class="ml-2 fad fa-chevron-down"></i>
-					</button>
-					<div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-						class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
-						<div class="px-4 py-3">
-							<div class="text-base font-semibold text-teal-900" id="userNameDisplay">
-								Loading...
-							</div>
-							<div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-							<div class="text-xs text-slate-400 mt-1">
-								Role:
-								<span id="userRoleDisplay" class="font-medium text-teal-600"></span>
-								| Status:
-								<span id="userStatusDisplay" class="font-medium text-lime-500"></span>
-							</div>
-						</div>
-						<ul class="py-2 text-sm text-teal-700">
-							<li>
-								<a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-user"></i> Profile
-								</a>
-							</li>
-							<li>
-								<a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-cog"></i> Settings
-								</a>
-							</li>
-							<li id="donorNav" class="hidden">
-								<a href="donor-management.html"
-									class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-									<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-								</a>
-							</li>
-						</ul>
-						<div class="py-2">
-							<button onclick="authManager.logout()"
-								class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
-								<i class="mr-2 fas fa-sign-out-alt"></i> Logout
-							</button>
-						</div>
-					</div>
-				</li>
-
-				<li>
-					<a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
-						<i class="mr-2 fas fa-question-square"></i> FAQ's
-					</a>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<!-- Nav End -->
+	<div class="" id="nav-placeholder"></div>
 
 	<!-- Main Content -->
 	<div class="max-w-7xl mt-20 mx-auto py-6 sm:px-6 lg:px-8">
 		<!-- Header -->
 		<div class="md:flex md:items-center md:justify-between mb-6">
 			<div class="flex-1 min-w-0">
-				<h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+				<h1 class="mb-2 text-3xl text-blue-900 font-semibold md:text-3xl">
 					Past Projects Repository
-				</h2>
-				<p class="mt-1 text-sm text-gray-500">
-					Past projects (completed and stalled) for learning and reference
-				</p>
+					</h2>
+					<p class="mt-1 text-sm text-gray-500">
+						Past projects (completed and stalled) for learning and reference
+					</p>
 			</div>
 		</div>
+		<div class="grid lg:grid-cols-4 gap-6">
+			<!-- Filters and Search -->
+			<div class="bg-white shadow rounded-lg mb-6">
+				<div class="px-4 py-5 sm:p-6">
+					<!-- Active Filters Display -->
+					<div x-show="hasActiveFilters()" class="mb-4">
+						<div class="flex flex-wrap gap-2 items-center">
+							<span class="text-sm font-medium text-gray-700">Active filters:</span>
 
-		<!-- Filters and Search -->
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-4 py-5 sm:p-6">
-				<!-- Active Filters Display -->
-				<div x-show="hasActiveFilters()" class="mb-4">
-					<div class="flex flex-wrap gap-2 items-center">
-						<span class="text-sm font-medium text-gray-700">Active filters:</span>
-						
-						<!-- Search Filter Chip -->
-						<span x-show="filters.search" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-							Search: <span x-text="filters.search" class="ml-1 font-medium"></span>
-							<button @click="filters.search = ''; loadPastProjects()" class="ml-2 text-blue-600 hover:text-blue-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+							<!-- Search Filter Chip -->
+							<span x-show="filters.search"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+								Search: <span x-text="filters.search" class="ml-1 font-medium"></span>
+								<button @click="filters.search = ''; loadPastProjects()"
+									class="ml-2 text-blue-600 hover:text-blue-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Status Filter Chip -->
+							<span x-show="filters.finalStatus"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+								Status: <span x-text="filters.finalStatus" class="ml-1 font-medium"></span>
+								<button @click="filters.finalStatus = ''; loadPastProjects()"
+									class="ml-2 text-green-600 hover:text-green-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- County Filter Chip -->
+							<span x-show="filters.county"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800">
+								County: <span x-text="filters.county" class="ml-1 font-medium"></span>
+								<button @click="filters.county = ''; loadPastProjects()"
+									class="ml-2 text-purple-600 hover:text-purple-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Theme Filter Chip -->
+							<span x-show="filters.theme"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
+								Theme: <span x-text="filters.theme" class="ml-1 font-medium"></span>
+								<button @click="filters.theme = ''; loadPastProjects()"
+									class="ml-2 text-indigo-600 hover:text-indigo-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Budget Range Filter Chip -->
+							<span x-show="filters.minBudget || filters.maxBudget"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">
+								Budget: <span x-text="formatBudgetRange()" class="ml-1 font-medium"></span>
+								<button @click="filters.minBudget = ''; filters.maxBudget = ''; loadPastProjects()"
+									class="ml-2 text-yellow-600 hover:text-yellow-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Date Range Filter Chip -->
+							<span x-show="filters.startDateFrom || filters.endDateTo"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-pink-100 text-pink-800">
+								Date: <span
+									x-text="(filters.startDateFrom ? 'From ' + filters.startDateFrom : '') + (filters.startDateFrom && filters.endDateTo ? ' to ' : '') + (filters.endDateTo ? 'To ' + filters.endDateTo : '')"
+									class="ml-1 font-medium"></span>
+								<button @click="filters.startDateFrom = ''; filters.endDateTo = ''; loadPastProjects()"
+									class="ml-2 text-pink-600 hover:text-pink-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Partner Filter Chip -->
+							<span x-show="filters.partner"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-teal-100 text-teal-800">
+								Partner: <span x-text="filters.partner" class="ml-1 font-medium"></span>
+								<button @click="filters.partner = ''; loadPastProjects()"
+									class="ml-2 text-teal-600 hover:text-teal-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Contact Person Filter Chip -->
+							<span x-show="filters.contactPerson"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-800">
+								Contact: <span x-text="filters.contactPerson" class="ml-1 font-medium"></span>
+								<button @click="filters.contactPerson = ''; loadPastProjects()"
+									class="ml-2 text-orange-600 hover:text-orange-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Clear All Button -->
+							<button @click="clearFilters()"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
+								Clear all
+								<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+										d="M6 18L18 6M6 6l12 12"></path>
 								</svg>
 							</button>
-						</span>
-
-						<!-- Status Filter Chip -->
-						<span x-show="filters.finalStatus" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-							Status: <span x-text="filters.finalStatus" class="ml-1 font-medium"></span>
-							<button @click="filters.finalStatus = ''; loadPastProjects()" class="ml-2 text-green-600 hover:text-green-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- County Filter Chip -->
-						<span x-show="filters.county" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800">
-							County: <span x-text="filters.county" class="ml-1 font-medium"></span>
-							<button @click="filters.county = ''; loadPastProjects()" class="ml-2 text-purple-600 hover:text-purple-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Theme Filter Chip -->
-						<span x-show="filters.theme" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
-							Theme: <span x-text="filters.theme" class="ml-1 font-medium"></span>
-							<button @click="filters.theme = ''; loadPastProjects()" class="ml-2 text-indigo-600 hover:text-indigo-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Budget Range Filter Chip -->
-						<span x-show="filters.minBudget || filters.maxBudget" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">
-							Budget: <span x-text="formatBudgetRange()" class="ml-1 font-medium"></span>
-							<button @click="filters.minBudget = ''; filters.maxBudget = ''; loadPastProjects()" class="ml-2 text-yellow-600 hover:text-yellow-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Date Range Filter Chip -->
-						<span x-show="filters.startDateFrom || filters.endDateTo" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-pink-100 text-pink-800">
-							Date: <span x-text="(filters.startDateFrom ? 'From ' + filters.startDateFrom : '') + (filters.startDateFrom && filters.endDateTo ? ' to ' : '') + (filters.endDateTo ? 'To ' + filters.endDateTo : '')" class="ml-1 font-medium"></span>
-							<button @click="filters.startDateFrom = ''; filters.endDateTo = ''; loadPastProjects()" class="ml-2 text-pink-600 hover:text-pink-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Partner Filter Chip -->
-						<span x-show="filters.partner" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-teal-100 text-teal-800">
-							Partner: <span x-text="filters.partner" class="ml-1 font-medium"></span>
-							<button @click="filters.partner = ''; loadPastProjects()" class="ml-2 text-teal-600 hover:text-teal-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Contact Person Filter Chip -->
-						<span x-show="filters.contactPerson" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-800">
-							Contact: <span x-text="filters.contactPerson" class="ml-1 font-medium"></span>
-							<button @click="filters.contactPerson = ''; loadPastProjects()" class="ml-2 text-orange-600 hover:text-orange-800">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-								</svg>
-							</button>
-						</span>
-
-						<!-- Clear All Button -->
-						<button @click="clearFilters()" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
-							Clear all
-							<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-							</svg>
-						</button>
+						</div>
 					</div>
-				</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-					<!-- Search -->
-					<div class="xl:col-span-2">
-						<label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-						<div class="relative">
-							<input type="text" id="search" x-model="filters.search" @input.debounce.300ms="applyFilters"
+					<div class="grid gap-4">
+						<!-- Search -->
+						<div class="">
+							<label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+							<div class="relative">
+								<input type="text" id="search" x-model="filters.search"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Project title, partner, description..." />
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-search text-gray-400"></i>
+								</div>
+							</div>
+						</div>
+
+						<!-- Status Filter -->
+						<div>
+							<label for="status" class="block text-sm font-medium text-gray-700">Final Status</label>
+							<select id="status" x-model="filters.finalStatus" @change="applyFilters"
+								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+								<option value="">All Statuses</option>
+								<option value="completed">Completed</option>
+								<option value="stalled">Stalled</option>
+								<option value="abandoned">Abandoned</option>
+							</select>
+						</div>
+
+						<!-- County Filter -->
+						<div>
+							<label for="county" class="block text-sm font-medium text-gray-700">County</label>
+							<input type="text" id="county" x-model="filters.county" @input.debounce.300ms="applyFilters"
 								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-								placeholder="Project title, partner, description..." />
-							<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<i class="fas fa-search text-gray-400"></i>
+								placeholder="County name" />
+						</div>
+
+						<!-- Theme Filter -->
+						<div>
+							<label for="theme" class="block text-sm font-medium text-gray-700">Theme</label>
+							<select id="theme" x-model="filters.theme" @change="applyFilters"
+								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+								<option value="">All Themes</option>
+								<option value="GBV">Gender Based Violence</option>
+								<option value="AYPSRH">Adolescent & Young People SRH</option>
+								<option value="MNH">Maternal & Newborn Health</option>
+								<option value="FP">Family Planning</option>
+								<option value="CH">Child Health</option>
+								<option value="AH">Adolescent Health</option>
+								<option value="RMNCH">RMNCH</option>
+							</select>
+						</div>
+
+						<!-- Budget Range -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700">Budget Range (KES)</label>
+							<div class="grid gap-2">
+								<input type="number" x-model="filters.minBudget" @input.debounce.500ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Min" />
+								<input type="number" x-model="filters.maxBudget" @input.debounce.500ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Max" />
 							</div>
 						</div>
 					</div>
 
-					<!-- Status Filter -->
-					<div>
-						<label for="status" class="block text-sm font-medium text-gray-700">Final Status</label>
-						<select id="status" x-model="filters.finalStatus" @change="applyFilters"
-							class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
-							<option value="">All Statuses</option>
-							<option value="completed">Completed</option>
-							<option value="stalled">Stalled</option>
-							<option value="abandoned">Abandoned</option>
-						</select>
-					</div>
-
-					<!-- County Filter -->
-					<div>
-						<label for="county" class="block text-sm font-medium text-gray-700">County</label>
-						<input type="text" id="county" x-model="filters.county" @input.debounce.300ms="applyFilters"
-							class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-							placeholder="County name" />
-					</div>
-
-					<!-- Theme Filter -->
-					<div>
-						<label for="theme" class="block text-sm font-medium text-gray-700">Theme</label>
-						<select id="theme" x-model="filters.theme" @change="applyFilters"
-							class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
-							<option value="">All Themes</option>
-							<option value="GBV">Gender Based Violence</option>
-							<option value="AYPSRH">Adolescent & Young People SRH</option>
-							<option value="MNH">Maternal & Newborn Health</option>
-							<option value="FP">Family Planning</option>
-							<option value="CH">Child Health</option>
-							<option value="AH">Adolescent Health</option>
-							<option value="RMNCH">RMNCH</option>
-						</select>
-					</div>
-
-					<!-- Budget Range -->
-					<div>
-						<label class="block text-sm font-medium text-gray-700">Budget Range (KES)</label>
-						<div class="flex space-x-2">
-							<input type="number" x-model="filters.minBudget" @input.debounce.500ms="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-								placeholder="Min" />
-							<input type="number" x-model="filters.maxBudget" @input.debounce.500ms="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-								placeholder="Max" />
-						</div>
-					</div>
-				</div>
-
-				<!-- Advanced Filters Toggle -->
-				<div class="mt-4">
-					<button @click="showAdvancedFilters = !showAdvancedFilters"
-						class="text-sm text-primary hover:text-blue-700 font-medium flex items-center">
-						<i class="fas fa-sliders-h mr-2"></i>
-						<span x-text="showAdvancedFilters ? 'Hide Advanced Filters' : 'Show Advanced Filters'"></span>
-						<i class="fas fa-chevron-down ml-2 transition-transform" :class="showAdvancedFilters ? 'rotate-180' : ''"></i>
-					</button>
-				</div>
-
-				<!-- Advanced Filters -->
-				<div x-show="showAdvancedFilters" x-transition class="mt-4 pt-4 border-t border-gray-200">
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-						<!-- Start Date -->
-						<div>
-							<label for="startDate" class="block text-sm font-medium text-gray-700">Start Date From</label>
-							<input type="date" id="startDate" x-model="filters.startDateFrom" @change="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
-						</div>
-
-						<!-- End Date -->
-						<div>
-							<label for="endDate" class="block text-sm font-medium text-gray-700">End Date To</label>
-							<input type="date" id="endDate" x-model="filters.endDateTo" @change="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
-						</div>
-
-						<!-- Partner Filter -->
-						<div>
-							<label for="partner" class="block text-sm font-medium text-gray-700">Partner</label>
-							<input type="text" id="partner" x-model="filters.partner" @input.debounce.300ms="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-								placeholder="Partner name" />
-						</div>
-
-						<!-- Contact Person -->
-						<div>
-							<label for="contactPerson" class="block text-sm font-medium text-gray-700">Contact Person</label>
-							<input type="text" id="contactPerson" x-model="filters.contactPerson" @input.debounce.300ms="applyFilters"
-								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-								placeholder="Contact name" />
-						</div>
-					</div>
-				</div>
-
-				<div class="mt-4 flex justify-between items-center">
-					<div class="text-sm text-gray-600">
-						<span x-show="totalItems > 0" x-text="`Showing ${Math.min((currentPage + 1) * size, totalItems)} of ${totalItems} projects`"></span>
-						<span x-show="totalItems === 0 && !loading" x-text="'No projects match your filters'"></span>
-					</div>
-					<div class="flex space-x-2">
-						<button @click="clearFilters"
-							class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-							<i class="fas fa-times mr-2"></i>Clear All
+					<!-- Advanced Filters Toggle -->
+					<div class="mt-4">
+						<button @click="showAdvancedFilters = !showAdvancedFilters"
+							class="text-sm text-primary hover:text-blue-700 font-medium flex items-center">
+							<i class="fas fa-sliders-h mr-2"></i>
+							<span
+								x-text="showAdvancedFilters ? 'Hide Advanced Filters' : 'Show Advanced Filters'"></span>
+							<i class="fas fa-chevron-down ml-2 transition-transform"
+								:class="showAdvancedFilters ? 'rotate-180' : ''"></i>
 						</button>
-						<button @click="applyFilters"
-							class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-							<i class="fas fa-search mr-2"></i>Apply Filters
-						</button>
+					</div>
+
+					<!-- Advanced Filters -->
+					<div x-show="showAdvancedFilters" x-transition class="mt-4 pt-4 border-t border-gray-200">
+						<div class="grid  gap-4">
+							<!-- Start Date -->
+							<div>
+								<label for="startDate" class="block text-sm font-medium text-gray-700">Start Date
+									From</label>
+								<input type="date" id="startDate" x-model="filters.startDateFrom" @change="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
+							</div>
+
+							<!-- End Date -->
+							<div>
+								<label for="endDate" class="block text-sm font-medium text-gray-700">End Date To</label>
+								<input type="date" id="endDate" x-model="filters.endDateTo" @change="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
+							</div>
+
+							<!-- Partner Filter -->
+							<div>
+								<label for="partner" class="block text-sm font-medium text-gray-700">Partner</label>
+								<input type="text" id="partner" x-model="filters.partner"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Partner name" />
+							</div>
+
+							<!-- Contact Person -->
+							<div>
+								<label for="contactPerson" class="block text-sm font-medium text-gray-700">Contact
+									Person</label>
+								<input type="text" id="contactPerson" x-model="filters.contactPerson"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Contact name" />
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-4 flex flex-wrap justify-between items-center">
+						<div class="text-sm text-gray-600">
+							<span x-show="totalItems > 0"
+								x-text="`Showing ${Math.min((currentPage + 1) * size, totalItems)} of ${totalItems} projects`"></span>
+							<span x-show="totalItems === 0 && !loading"
+								x-text="'No projects match your filters'"></span>
+						</div>
+						<div class="flex space-x-2 mt-2 flex-wrap">
+							<button @click="clearFilters"
+								class="bg-gray-500 whitespace-nowrap hover:bg-gray-600 text-white px-2 py-2 rounded-md text-sm font-normal transition duration-200">
+								<i class="fas fa-times mr-2"></i>Clear All
+							</button>
+							<button @click="applyFilters"
+								class="bg-primary whitespace-nowrap hover:bg-blue-700 text-white px-2 py-2 rounded-md text-sm font-normal transition duration-200">
+								<i class="fas fa-search mr-2"></i>Apply Filters
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<!-- Projects List -->
-		<div class="bg-white shadow overflow-hidden sm:rounded-md">
-			<div x-show="loading" class="text-center py-12">
-				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
-				<p class="mt-4 text-gray-500">Loading past projects...</p>
-			</div>
-
-			<div x-show="!loading && pastProjects.length === 0" class="text-center py-12">
-				<i class="fas fa-archive text-4xl text-gray-400"></i>
-				<h3 class="mt-2 text-sm font-medium text-gray-900">
-					No past projects
-				</h3>
-				<p class="mt-1 text-sm text-gray-500">
-					No archived projects match your criteria.
-				</p>
-			</div>
-
-			<ul x-show="!loading && pastProjects.length > 0" class="divide-y divide-gray-200"
-				x-html="renderProjectsList()">
-
-				<!-- Pagination -->
-				<div x-show="!loading && pastProjects.length > 0"
-					class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-					<div class="flex-1 flex justify-between sm:hidden">
-						<button @click="prevPage" :disabled="currentPage === 0"
-							class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
-							Previous
-						</button>
-						<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
-							class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
-							Next
-						</button>
-					</div>
-					<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-						<div>
-							<p class="text-sm text-gray-700">
-								Showing
-								<span class="font-medium" x-text="currentPage * size + 1"></span>
-								to
-								<span class="font-medium"
-									x-text="Math.min((currentPage + 1) * size, totalItems)"></span>
-								of <span class="font-medium" x-text="totalItems"></span> results
-							</p>
-						</div>
-						<div>
-							<nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-								<button @click="prevPage" :disabled="currentPage === 0"
-									class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
-									<i class="fas fa-chevron-left"></i>
-								</button>
-								<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
-									class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
-									<i class="fas fa-chevron-right"></i>
-								</button>
-							</nav>
-						</div>
-					</div>
+			<!-- Projects List -->
+			<div class="lg:col-span-3 shadow overflow-hidden sm:rounded-md">
+				<div x-show="loading" class="text-center py-12">
+					<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+					<p class="mt-4 text-gray-500">Loading past projects...</p>
 				</div>
+
+				<div x-show="!loading && pastProjects.length === 0" class="text-center py-12">
+					<i class="fas fa-archive text-4xl text-gray-400"></i>
+					<h3 class="mt-2 text-sm font-medium text-gray-900">
+						No past projects
+					</h3>
+					<p class="mt-1 text-sm text-gray-500">
+						No archived projects match your criteria.
+					</p>
+				</div>
+
+				<ul x-show="!loading && pastProjects.length > 0" class="divide-y divide-gray-200"
+					x-html="renderProjectsList()">
+
+					<!-- Pagination -->
+					<div x-show="!loading && pastProjects.length > 0"
+						class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+						<div class="flex-1 flex justify-between sm:hidden">
+							<button @click="prevPage" :disabled="currentPage === 0"
+								class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+								Previous
+							</button>
+							<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
+								class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+								Next
+							</button>
+						</div>
+						<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+							<div>
+								<p class="text-sm text-gray-700">
+									Showing
+									<span class="font-medium" x-text="currentPage * size + 1"></span>
+									to
+									<span class="font-medium"
+										x-text="Math.min((currentPage + 1) * size, totalItems)"></span>
+									of <span class="font-medium" x-text="totalItems"></span> results
+								</p>
+							</div>
+							<div>
+								<nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+									<button @click="prevPage" :disabled="currentPage === 0"
+										class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+										<i class="fas fa-chevron-left"></i>
+									</button>
+									<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
+										class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+										<i class="fas fa-chevron-right"></i>
+									</button>
+								</nav>
+							</div>
+						</div>
+					</div>
+			</div>
 		</div>
 	</div>
 
@@ -1000,9 +724,11 @@
 												Location
 											</dt>
 											<dd class="text-sm text-gray-900">
-												<span x-text="selectedProject?.locations && selectedProject.locations.length > 0 ? selectedProject.locations[0].county : selectedProject?.county || 'N/A'"></span>
-												<span x-show="selectedProject?.locations && selectedProject.locations.length > 0 && selectedProject.locations[0].subCounty" 
-													  x-text="', ' + selectedProject.locations[0].subCounty"></span>
+												<span
+													x-text="selectedProject?.locations && selectedProject.locations.length > 0 ? selectedProject.locations[0].county : selectedProject?.county || 'N/A'"></span>
+												<span
+													x-show="selectedProject?.locations && selectedProject.locations.length > 0 && selectedProject.locations[0].subCounty"
+													x-text="', ' + selectedProject.locations[0].subCounty"></span>
 											</dd>
 										</div>
 										<div>
@@ -1026,9 +752,10 @@
 												Final Status
 											</dt>
 											<dd class="text-sm text-gray-900">
-												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
-													  :class="getStatusBadge(selectedProject?.status?.toLowerCase())"
-													  x-text="selectedProject?.status || 'N/A'">
+												<span
+													class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+													:class="getStatusBadge(selectedProject?.status?.toLowerCase())"
+													x-text="selectedProject?.status || 'N/A'">
 												</span>
 											</dd>
 										</div>
@@ -1051,7 +778,7 @@
 									<p class="text-sm text-gray-700"
 										x-text="selectedProject?.objectives || selectedProject?.description || 'Not available'">
 									</p>
-									
+
 									<h4 class="text-md font-medium text-gray-900 mb-2 mt-4">
 										Contact Information
 									</h4>
@@ -1229,8 +956,8 @@
 								console.log("Filtering for past projects...");
 								// Filter for past projects (completed, stalled, abandoned)
 								let allProjects = data.data.projects;
-								let pastProjectsFiltered = allProjects.filter(project => 
-									project.status && 
+								let pastProjectsFiltered = allProjects.filter(project =>
+									project.status &&
 									['completed', 'stalled', 'abandoned'].includes(project.status.toLowerCase())
 								);
 
@@ -1256,7 +983,7 @@
 									const countyTerm = this.filters.county.toLowerCase();
 									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
 										if (project.locations && project.locations.length > 0) {
-											return project.locations.some(loc => 
+											return project.locations.some(loc =>
 												loc.county && loc.county.toLowerCase().includes(countyTerm)
 											);
 										}
@@ -1267,7 +994,7 @@
 								if (this.filters.theme) {
 									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
 										if (project.themes && Array.isArray(project.themes)) {
-											return project.themes.some(theme => 
+											return project.themes.some(theme =>
 												theme.toLowerCase().includes(this.filters.theme.toLowerCase())
 											);
 										}
@@ -1280,10 +1007,10 @@
 										if (!project.budget) return false;
 										const budget = parseFloat(project.budget);
 										if (isNaN(budget)) return false;
-										
+
 										const minBudget = this.filters.minBudget ? parseFloat(this.filters.minBudget) : 0;
 										const maxBudget = this.filters.maxBudget ? parseFloat(this.filters.maxBudget) : Infinity;
-										
+
 										return budget >= minBudget && budget <= maxBudget;
 									});
 								}
@@ -1458,25 +1185,21 @@
 												</div>
 												<div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
 													<span><i class="fas fa-user mr-1"></i>${project.partner || "N/A"}</span>
-													<span><i class="fas fa-map-marker-alt mr-1"></i>${
-														project.locations && project.locations.length > 0 
-															? project.locations[0].county || project.county || "N/A"
-															: project.county || "N/A"
-													}</span>
-													<span><i class="fas fa-calendar mr-1"></i>${
-														project.startDate 
-															? new Date(project.startDate).toLocaleDateString() 
-															: "N/A"
-													} - ${
-														project.endDate 
-															? new Date(project.endDate).toLocaleDateString() 
-															: "N/A"
-													}</span>
-													<span><i class="fas fa-dollar-sign mr-1"></i>${
-														project.budget 
-															? "KES " + Number(project.budget).toLocaleString() 
-															: "N/A"
-													}</span>
+													<span><i class="fas fa-map-marker-alt mr-1"></i>${project.locations && project.locations.length > 0
+								? project.locations[0].county || project.county || "N/A"
+								: project.county || "N/A"
+							}</span>
+													<span><i class="fas fa-calendar mr-1"></i>${project.startDate
+								? new Date(project.startDate).toLocaleDateString()
+								: "N/A"
+							} - ${project.endDate
+								? new Date(project.endDate).toLocaleDateString()
+								: "N/A"
+							}</span>
+													<span><i class="fas fa-dollar-sign mr-1"></i>${project.budget
+								? "KES " + Number(project.budget).toLocaleString()
+								: "N/A"
+							}</span>
 												</div>
 											</div>
 										</div>
@@ -1504,7 +1227,7 @@
 				getStatusColor(status) {
 					const colors = {
 						'completed': '#10b981',
-						'stalled': '#ef4444', 
+						'stalled': '#ef4444',
 						'abandoned': '#6b7280',
 						'active': '#22c55e',
 						'pending': '#eab308'
@@ -1535,16 +1258,16 @@
 				},
 
 				hasActiveFilters() {
-					return this.filters.search || 
-						   this.filters.finalStatus || 
-						   this.filters.county || 
-						   this.filters.theme || 
-						   this.filters.minBudget || 
-						   this.filters.maxBudget || 
-						   this.filters.startDateFrom || 
-						   this.filters.endDateTo || 
-						   this.filters.partner || 
-						   this.filters.contactPerson;
+					return this.filters.search ||
+						this.filters.finalStatus ||
+						this.filters.county ||
+						this.filters.theme ||
+						this.filters.minBudget ||
+						this.filters.maxBudget ||
+						this.filters.startDateFrom ||
+						this.filters.endDateTo ||
+						this.filters.partner ||
+						this.filters.contactPerson;
 				},
 
 				formatBudgetRange() {
