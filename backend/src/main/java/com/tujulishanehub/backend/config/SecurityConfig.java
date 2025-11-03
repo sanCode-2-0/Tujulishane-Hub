@@ -65,15 +65,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow origins configured via environment variable FRONTEND_ORIGIN (comma-separated) or allow all for demo
-        // Explicitly allow local and production frontend origins
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:8081",
-            "https://tujulishane-hub.onrender.com"
-        ));
+        configuration.addAllowedOriginPattern("*"); // allow all origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // must be false when using wildcard
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
