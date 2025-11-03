@@ -17,6 +17,11 @@
         theme: {
           extend: {
             colors: {
+          <li>
+            <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
+              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+            </a>
+          </li>
               primary: "#1e40af", // Custom Blue
               secondary: "#f59e0b", // Custom Amber
               accent: "#10b981", // Custom Green
@@ -543,6 +548,14 @@
               </ul>
             </div>
           </li>
+          <li>
+            <a
+              href="announcements.html"
+              class="uppercase transition hover:text-indigo-600"
+            >
+              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+            </a>
+          </li>
         </ul>
 
         <!-- Right-aligned Items (Admin + User) -->
@@ -687,6 +700,14 @@
             >
           </li>
 
+          <li>
+            <a
+              href="announcements.html"
+              class="uppercase transition hover:text-indigo-600"
+            >
+              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+            </a>
+          </li>
           <!-- Projects Dropdown -->
           <li x-data="{ showprojectDropdown: false }" class="relative">
             <button
@@ -720,6 +741,12 @@
                 <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                   <a href="all-projects.html">
                     <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                    Projects
+                  </a>
+                </li>
+                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                  <a href="past-projects.html">
+                    <i class="far fa-history mr-2 text-gray-500"></i> Past
                     Projects
                   </a>
                 </li>
@@ -763,8 +790,21 @@
               </ul>
             </div>
           </li>
+          <li>
+            <a
+              href="announcements.html"
+              class="uppercase transition hover:text-indigo-600"
+            >
+              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+            </a>
+          </li>
 
-          <!-- Admin -->
+          <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+            <!-- Announcements link moved to standalone nav item -->
+
+            <!-- Admin -->
+          </li>
+
           <li
             x-data="{ showDropdown: false }"
             class="relative hidden"
