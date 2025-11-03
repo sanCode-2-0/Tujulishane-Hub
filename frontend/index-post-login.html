@@ -1278,32 +1278,38 @@
                 </select>
               </div>
 
-              <!-- Sort By Theme -->
+              <!-- Thematic Areas Filter -->
               <div class="flex flex-col gap-2">
                 <label
-                  for="sortSelect"
+                  for="themeFilter"
                   class="text-sm font-medium text-gray-700"
-                  >Thematic Areas :</label
+                  >Thematic Areas:</label
                 >
                 <select
-                  id="sortSelect"
+                  id="themeFilter"
                   class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="date">Date (Newest First)</option>
+                  <option value="all">All Themes</option>
+                  <option value="GBV">Gender-Based Violence</option>
+                  <option value="AYPSRH">
+                    Adolescent and Young People Sexual and Reproductive Health
+                  </option>
+                  <option value="MNH">Maternal and Newborn Health</option>
+                  <option value="FP">Family Planning</option>
+                  <option value="CH">Child Health</option>
+                  <option value="AH">Adolescent Health</option>
                 </select>
               </div>
 
-              <!-- Sort By Theme -->
+              <!-- Status Filter -->
               <div class="flex flex-col gap-2">
                 <label for="status" class="text-sm font-medium text-gray-700"
                   >Status:</label
                 >
                 <select
-                  autocomplete="off"
-                  id="status"
+                  id="statusFilter"
                   class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onchange="highlightMarkers(this.value)"
+                  onchange="applyStatusFilter(this.value)"
                 >
                   <option value="all">Show All</option>
                   <option value="active">Active</option>
@@ -1658,6 +1664,7 @@
       let searchQuery = "";
       let dateRangeFrom = null;
       let dateRangeTo = null;
+      let themeFilter = "all";
 
       const mapMarkers = [];
       let stores = {
@@ -1732,6 +1739,14 @@
           .getElementById("sortSelect")
           .addEventListener("change", (e) => {
             sortProjects(e.target.value);
+          });
+
+        document
+          .getElementById("themeFilter")
+          .addEventListener("change", (e) => {
+            themeFilter = e.target.value;
+            currentPage = 1;
+            highlightMarkers(currentFilter);
           });
       });
 
@@ -2540,6 +2555,12 @@
         highlightMarkers(currentFilter);
       }
 
+      function applyStatusFilter(status) {
+        currentFilter = status;
+        currentPage = 1;
+        highlightMarkers(currentFilter);
+      }
+
       function highlightMarkers(tag) {
         currentFilter = tag;
         console.log("highlightMarkers called with tag:", tag);
@@ -2556,13 +2577,44 @@
         let filteredProjects = projects.filter((project) => {
           if (tag !== "all" && project.status?.toLowerCase() !== tag)
             return false;
-          if (
-            searchQuery &&
-            !project.projectName
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-            return false;
+
+          // Text search in multiple fields (project name, number, code, etc.)
+          if (searchQuery) {
+            const searchFields = [
+              project.projectName,
+              project.title,
+              project.projectNo,
+              project.id?.toString(),
+              project.name,
+              project.code,
+              project.projectCode,
+            ].filter((field) => field != null);
+
+            // Also search in all string properties as fallback
+            const allStringFields = Object.values(project).filter(
+              (val) =>
+                typeof val === "string" &&
+                val.toLowerCase().includes(searchQuery)
+            );
+
+            const nameMatch =
+              searchFields.some((field) =>
+                field.toString().toLowerCase().includes(searchQuery)
+              ) || allStringFields.length > 0;
+
+            console.log(
+              `Project ${project.id} (${
+                project.title
+              }): searchQuery="${searchQuery}", searchFields=[${searchFields.join(
+                ", "
+              )}], allStringFields=${
+                allStringFields.length
+              }, nameMatch=${nameMatch}`
+            );
+
+            if (!nameMatch) return false;
+          }
+
           if (
             dateRangeFrom &&
             new Date(project.startDate) < new Date(dateRangeFrom)
@@ -2573,6 +2625,20 @@
             new Date(project.startDate) > new Date(dateRangeTo)
           )
             return false;
+          // Theme filtering
+          if (themeFilter !== "all") {
+            let projectThemes = [];
+            if (project.themes && Array.isArray(project.themes)) {
+              projectThemes = project.themes;
+            } else if (project.theme) {
+              projectThemes = [project.theme];
+            }
+            const hasMatchingTheme = projectThemes.some((theme) => {
+              const themeCode = typeof theme === "string" ? theme : theme?.code;
+              return themeCode === themeFilter;
+            });
+            if (!hasMatchingTheme) return false;
+          }
           return true;
         });
 
@@ -2627,9 +2693,10 @@
 
           item.innerHTML = `
 			<div class="px-6 py-5" style="background-color: ${color}10;">
-				<h4 class="text-lg font-semibold text-gray-800 mb-2">${
-          project.projectName || project.title || "Untitled Project"
-        }</h4>
+				<span>${project.projectNo ? ` (${project.projectNo})` : ""}</span>
+				<h4 class="text-lg font-semibold text-gray-800 mb-2">
+					
+					${project.projectName || project.title || "Untitled Project"}</h4>
 				
 				<p class="text-sm text-gray-700 leading-relaxed mb-3">
 					${
@@ -2732,14 +2799,37 @@
           "Budget",
           "Status",
           "Start Date",
+          "Themes",
         ];
         const rows = projects
           .filter((p) => {
-            if (
-              searchQuery &&
-              !p.projectName?.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-              return false;
+            // Text search in multiple fields (same as highlightMarkers)
+            if (searchQuery) {
+              const searchFields = [
+                p.projectName,
+                p.title,
+                p.projectNo,
+                p.id?.toString(),
+                p.name,
+                p.code,
+                p.projectCode,
+              ].filter((field) => field != null);
+
+              // Also search in all string properties as fallback
+              const allStringFields = Object.values(p).filter(
+                (val) =>
+                  typeof val === "string" &&
+                  val.toLowerCase().includes(searchQuery)
+              );
+
+              const nameMatch =
+                searchFields.some((field) =>
+                  field.toString().toLowerCase().includes(searchQuery)
+                ) || allStringFields.length > 0;
+
+              if (!nameMatch) return false;
+            }
+
             const date = new Date(p.startDate);
             if (dateRangeFrom && date < dateRangeFrom) return false;
             if (dateRangeTo && date > dateRangeTo) return false;
@@ -2748,16 +2838,49 @@
               p.status?.toLowerCase() !== currentFilter
             )
               return false;
+            // Theme filtering
+            if (themeFilter !== "all") {
+              let projectThemes = [];
+              if (p.themes && Array.isArray(p.themes)) {
+                projectThemes = p.themes;
+              } else if (p.theme) {
+                projectThemes = [p.theme];
+              }
+              const hasMatchingTheme = projectThemes.some((theme) => {
+                const themeCode =
+                  typeof theme === "string" ? theme : theme?.code;
+                return themeCode === themeFilter;
+              });
+              if (!hasMatchingTheme) return false;
+            }
             return true;
           })
-          .map((p) => [
-            p.projectName || "",
-            (p.description || "").replace(/,/g, ";"),
-            p.region || p.county || "",
-            p.budget || "",
-            p.status || "",
-            p.startDate ? new Date(p.startDate).toLocaleDateString() : "",
-          ]);
+          .map((p) => {
+            // Get theme names
+            let projectThemes = [];
+            if (p.themes && Array.isArray(p.themes)) {
+              projectThemes = p.themes;
+            } else if (p.theme) {
+              projectThemes = [p.theme];
+            }
+            const themeNames = projectThemes
+              .map((theme) => {
+                const themeCode =
+                  typeof theme === "string" ? theme : theme?.code;
+                return themeDefinitions[themeCode]?.name || themeCode;
+              })
+              .join("; ");
+
+            return [
+              p.projectName || "",
+              (p.description || "").replace(/,/g, ";"),
+              p.region || p.county || "",
+              p.budget || "",
+              p.status || "",
+              p.startDate ? new Date(p.startDate).toLocaleDateString() : "",
+              themeNames,
+            ];
+          });
 
         let csvContent = [headers.join(",")];
         rows.forEach((r) =>
