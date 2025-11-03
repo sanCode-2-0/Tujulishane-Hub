@@ -1680,18 +1680,7 @@
             console.log("Loaded projects for map:", projectsData.length);
             console.log("Projects data (with coordinates):", projectsData);
 
-            // Log each project's coordinates
-            projectsData.forEach((project, idx) => {
-              console.log(`Map Project ${idx + 1}:`, {
-                name: project.projectName || project.name,
-                latitude: project.latitude,
-                longitude: project.longitude,
-                hasCoordinates: !!(project.latitude && project.longitude),
-              });
-            });
-
-            // ONLY add markers to map - don't overwrite the main projects array
-            // The main projects array is managed by loadProjects() which includes ALL projects
+            // Process projects for map display
             addMarkersToMap(projectsData);
           } else {
             console.warn("API response not OK, loading sample projects");
@@ -1763,12 +1752,26 @@
               ? [{ latitude: project.latitude, longitude: project.longitude }]
               : [];
 
-          locs.forEach((loc, locIndex) => {
+          locs.forEach(async (loc, locIndex) => {
             const lat = loc.latitude;
             const lng = loc.longitude;
 
             if (!lat || !lng) {
               return; // Skip invalid locations
+            }
+
+            // Get detailed location information from Mapbox
+            const detailedLocation = await getDetailedLocationFromCoordinates(
+              lng,
+              lat
+            );
+            if (detailedLocation) {
+              loc.neighborhood = detailedLocation.neighborhood;
+              loc.locality = detailedLocation.locality;
+              loc.place = detailedLocation.place;
+              loc.region = detailedLocation.region;
+              loc.country = detailedLocation.country;
+              loc.address = detailedLocation.address;
             }
 
             // Create marker element
@@ -1783,30 +1786,102 @@
             el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
 
             // Create popup — include location-specific info when available
+            const statusColor =
+              project.status?.toLowerCase() === "active"
+                ? "bg-green-100 text-green-800 border-green-200"
+                : project.status?.toLowerCase() === "pending"
+                ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                : project.status?.toLowerCase() === "completed"
+                ? "bg-blue-100 text-blue-800 border-blue-200"
+                : project.status?.toLowerCase() === "stalled"
+                ? "bg-red-100 text-red-800 border-red-200"
+                : "bg-gray-100 text-gray-800 border-gray-200";
+
             const popupHtml = `
-                <div style="padding: 10px; min-width: 200px;">
-                  <h3 style="font-weight: bold; margin-bottom: 8px;">${
-                    project.projectName || project.title || "Project"
-                  }</h3>
-                  <p style="margin: 4px 0;"><strong>Status:</strong> <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded ${statusBadge(
-                    project.status?.toLowerCase()
-                  )}">${project.status || "N/A"}</span></p>
-                  <p style="margin: 4px 0;"><strong>Region/County:</strong> ${
-                    loc.county ||
-                    loc.region ||
-                    project.region ||
-                    project.county ||
-                    "N/A"
-                  }</p>
-                  <p style="margin: 4px 0;"><strong>Budget:</strong> ${
-                    project.budget || "N/A"
-                  }</p>
-                  <button onclick="viewProject(${
-                    project.id
-                  })" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
+                <div class="max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden relative">
+                  <div class="px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-900 leading-tight pr-2">${
+                      project.projectName || project.title || "Project"
+                    }</h3>
+                    <button onclick="this.closest('.mapboxgl-popup').style.display='none'"
+                      class="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-800 flex items-center justify-center transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+
+                  <div class="px-4 py-3 space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-medium text-gray-600">Status:</span>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColor}">
+                        ${project.status || "N/A"}
+                      </span>
+                    </div>
+
+                    <div class="space-y-1">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-map-marker-alt text-gray-400 text-sm"></i>
+                        <span class="text-sm text-gray-700 font-medium">${
+                          loc.subCounty ||
+                          loc.county ||
+                          loc.neighborhood ||
+                          loc.locality ||
+                          loc.place ||
+                          project.region ||
+                          project.county ||
+                          "N/A"
+                        }</span>
+                      </div>
+                      ${
+                        loc.county
+                          ? `
+                      <div class="flex items-center space-x-2 ml-5">
+                        <i class="fas fa-map text-gray-400 text-xs"></i>
+                        <span class="text-xs text-gray-600">${loc.county}</span>
+                      </div>
+                      `
+                          : ""
+                      }
+                      ${
+                        loc.mapsAddress || loc.address
+                          ? `
+                      <div class="flex items-center space-x-2 ml-5">
+                        <i class="fas fa-location-arrow text-gray-400 text-xs"></i>
+                        <span class="text-xs text-gray-600">${
+                          loc.mapsAddress || loc.address
+                        }</span>
+                      </div>
+                      `
+                          : ""
+                      }
+                    </div>
+
+                    ${
+                      project.budget
+                        ? `
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm font-medium text-gray-400">KES</span>
+                      <span class="text-sm text-gray-700">${Number(
+                        project.budget
+                      ).toLocaleString()}</span>
+                    </div>
+                    `
+                        : ""
+                    }
+
+                    <div class="pt-2 border-t border-gray-100">
+                      <button onclick="viewProject(${project.id})"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        <i class="fas fa-eye mr-2"></i>View Details
+                      </button>
+                    </div>
+                  </div>
                 </div>`;
 
-            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupHtml);
+            const popup = new mapboxgl.Popup({
+              offset: 25,
+              closeButton: false,
+              closeOnClick: false,
+            }).setHTML(popupHtml);
 
             // Create and add marker
             const marker = new mapboxgl.Marker(el)
@@ -1830,15 +1905,35 @@
             el.addEventListener("click", async () => {
               map.flyTo({ center: [lng, lat], zoom: 12 });
 
-              // If county is missing, try to get it from coordinates
-              if (!project.county && !project.region && (!loc || !loc.county)) {
-                const countyName = await getCountyFromCoordinates(lng, lat);
-                if (countyName) {
-                  if (loc) loc.county = countyName;
-                  else project.county = countyName;
-                  const projectIndex = projects.indexOf(project);
-                  if (projectIndex !== -1)
-                    updateProjectAccordionItem(projectIndex);
+              // If detailed location is missing, try to get it from coordinates
+              if (
+                !loc.neighborhood &&
+                !loc.locality &&
+                !loc.place &&
+                !loc.region
+              ) {
+                const detailedLocation =
+                  await getDetailedLocationFromCoordinates(lng, lat);
+                if (detailedLocation) {
+                  loc.neighborhood = detailedLocation.neighborhood;
+                  loc.locality = detailedLocation.locality;
+                  loc.place = detailedLocation.place;
+                  loc.region = detailedLocation.region;
+                  loc.country = detailedLocation.country;
+                  loc.address = detailedLocation.address;
+                  // Update popup content with new location data
+                  const popup = marker.getPopup();
+                  if (popup) {
+                    // Re-render popup with updated location data
+                    const updatedPopupHtml = popupHtml.replace(
+                      /loc\.neighborhood|\bloc\.locality|\bloc\.place|\bloc\.region|\bloc\.address/g,
+                      (match) => {
+                        const prop = match.split(".")[1];
+                        return loc[prop] || "N/A";
+                      }
+                    );
+                    popup.setHTML(updatedPopupHtml);
+                  }
                 }
               }
             });
@@ -1848,18 +1943,54 @@
         });
       }
 
-      // Get county name from coordinates using Mapbox Geocoding API
-      async function getCountyFromCoordinates(longitude, latitude) {
+      // Get detailed location info from coordinates using Mapbox Geocoding API
+      async function getDetailedLocationFromCoordinates(longitude, latitude) {
         try {
           const response = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=region&access_token=${mapboxgl.accessToken}`
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=address,poi,neighborhood,locality,place,region,country&access_token=${mapboxgl.accessToken}`
           );
           const data = await response.json();
+          console.log(
+            `Mapbox API response for [${longitude}, ${latitude}]:`,
+            data
+          );
           if (data.features && data.features.length > 0) {
-            return data.features[0].text;
+            const feature = data.features[0];
+            const context = feature.context || [];
+
+            // Extract different location components
+            const locationInfo = {
+              address: feature.place_name,
+              neighborhood: null,
+              locality: null,
+              place: null,
+              region: null,
+              country: null,
+            };
+
+            // Parse context for detailed information
+            context.forEach((ctx) => {
+              if (ctx.id.startsWith("neighborhood.")) {
+                locationInfo.neighborhood = ctx.text;
+              } else if (ctx.id.startsWith("locality.")) {
+                locationInfo.locality = ctx.text;
+              } else if (ctx.id.startsWith("place.")) {
+                locationInfo.place = ctx.text;
+              } else if (ctx.id.startsWith("region.")) {
+                locationInfo.region = ctx.text;
+              } else if (ctx.id.startsWith("country.")) {
+                locationInfo.country = ctx.text;
+              }
+            });
+
+            console.log(`Parsed location info:`, locationInfo);
+            return locationInfo;
           }
         } catch (error) {
-          console.error("Error getting county from coordinates:", error);
+          console.error(
+            "Error getting detailed location from coordinates:",
+            error
+          );
         }
         return null;
       }
