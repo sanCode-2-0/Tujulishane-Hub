@@ -11,7 +11,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="stylesheet" href="styles/main.css" />
     <!-- Tailwind CSS (with custom config using inline script) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -29,85 +31,155 @@
         },
       };
     </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
-    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+                const formatCoordinates =
+                  window.formatKenyaCoordinatePair ||
+                  function (lat, lng) {
+                    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                  };
+
+                const buildLocationMarkup = (
+                  locationId,
+                  {
+                    primaryLabel = null,
+                    secondaryLabel = null,
+                    coordinateLabel = null,
+                    isLoading = false,
+                  }
+                ) => {
+                  const loadingIcon =
+                    '<i class="fas fa-spinner fa-spin text-blue-400"></i>';
+                  const primaryIcon =
+                    '<i class="fas fa-map-marker-alt text-gray-400 text-sm"></i>';
+                  const secondaryIcon =
+                    '<i class="fas fa-map text-gray-400 text-xs"></i>';
+                  const coordinateIcon =
+                    '<i class="fas fa-location-arrow text-gray-400 text-xs"></i>';
+
+                  const primaryContent = primaryLabel
+                    ? `<div class="flex items-center space-x-2">$${
+                        isLoading ? loadingIcon : primaryIcon
+                      }<span class="text-sm text-gray-700 font-medium">${primaryLabel}</span></div>`
+                    : "";
+
+                  const secondaryContent = secondaryLabel
+                    ? `<div class="flex items-center space-x-2 ml-5">${secondaryIcon}<span class="text-xs text-gray-600">${secondaryLabel}</span></div>`
+                    : "";
+
+                  const coordinateContent = coordinateLabel
+                    ? `<div class="flex items-center space-x-2 ml-5">${coordinateIcon}<span class="text-xs text-gray-600">${coordinateLabel}</span></div>`
+                    : "";
+
+                  return `
+                    <div class="flex items-start justify-between w-full">
+                      <div class="space-y-1">
+                        ${primaryContent ||
+                          (isLoading
+                            ? `<div class="flex items-center space-x-2">${loadingIcon}<span class="text-sm text-blue-600">Loading location...</span></div>`
+                            : "")}
+                        ${secondaryContent}
+                        ${coordinateContent}
+                      </div>
+                      <button type="button" onclick="removeLocation(${locationId})"
+                              class="text-red-500 hover:text-red-700 ml-3">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  `;
+                };
+
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
       crossorigin="anonymous"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+                  const adminSnapshot =
+                    typeof window.resolveKenyaLocation === "function"
+                      ? window.resolveKenyaLocation(location.lat, location.lng, {
+                          selectedCounty: location.selectedCountySnapshot,
+                          selectedSubCounty: location.selectedSubCountySnapshot,
+                        })
+                      : {
+                          fallbackLabel: null,
+                          coordinateLabel: formatCoordinates(
+                            location.lat,
+                            location.lng
+                          ),
+                        };
+
+                  locationDiv.innerHTML = buildLocationMarkup(location.id, {
+                    primaryLabel: adminSnapshot.fallbackLabel || "Loading location...",
+                    secondaryLabel: adminSnapshot.subCountyLabel || adminSnapshot.countyLabel,
+                    coordinateLabel:
+                      adminSnapshot.coordinateLabel ||
+                      formatCoordinates(location.lat, location.lng),
+                    isLoading: true,
+                  });
     <script
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
-  </head>
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${location.lng},${location.lat}.json?access_token=${mapboxgl.accessToken}&types=place,locality,district,region,country&limit=5&language=en`
   <body class="bg-gray-50">
     <!-- Navigation -->
     <nav
-      x-data="{ open: false }"
-      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <a
-          href="index.html"
-          class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
-        >
-          <img
-            src="resources/images/log2.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-          <img
-            src="resources/images/moh.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-        </a>
+                      let primaryLabel = adminSnapshot.fallbackLabel;
+                      let secondaryLabel =
+                        adminSnapshot.subCountyLabel || adminSnapshot.countyLabel;
 
-        <button
-          @click="open = !open"
-          class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
-        >
-          <i class="fal fa-bars" x-show="!open"></i>
-          <i class="fal fa-times" x-show="open" x-cloak></i>
-        </button>
+                      if (data.features && data.features.length > 0) {
+                        const topFeature = data.features[0];
+                        if (topFeature.place_name) {
+                          const parts = topFeature.place_name
+                            .split(",")
+                            .map((part) => part.trim())
+                            .filter(Boolean);
+                          if (parts.length > 0) {
+                            primaryLabel = parts.shift();
+                            const filteredSecondary = parts.filter(
+                              (part) => part.toLowerCase() !== "kenya"
+                            );
+                            if (filteredSecondary.length > 0) {
+                              secondaryLabel = filteredSecondary.slice(0, 2).join(", ");
+                            }
+                          }
+                        } else if (topFeature.text) {
+                          primaryLabel = topFeature.text;
+                        }
 
-        <ul
-          class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
-        >
-          <li>
-            <a
-              href="index.html"
-              class="uppercase transition hover:text-lime-600"
-              >Home</a
+                        if (!secondaryLabel && topFeature.context) {
+                          const regionContext = topFeature.context.find((ctx) =>
+                            ctx.id.startsWith("region.")
+                          );
+                          if (regionContext) {
+                            secondaryLabel = regionContext.text;
+                          }
+                        }
+                      }
+
+                      locationDiv.innerHTML = buildLocationMarkup(location.id, {
+                        primaryLabel: primaryLabel || "Unnamed location",
+                        secondaryLabel,
+                        coordinateLabel:
+                          adminSnapshot.coordinateLabel ||
+                          formatCoordinates(location.lat, location.lng),
+                      });
             >
           </li>
 
-          <!-- Projects Dropdown -->
-          <li x-data="{ showprojectDropdown: false }" class="relative">
-            <button
-              @click="showprojectDropdown = !showprojectDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Projects <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
+                      locationDiv.innerHTML = buildLocationMarkup(location.id, {
+                        primaryLabel: adminSnapshot.fallbackLabel || "Approximate location",
+                        secondaryLabel:
+                          adminSnapshot.subCountyLabel || adminSnapshot.countyLabel,
+                        coordinateLabel:
+                          adminSnapshot.coordinateLabel ||
+                          formatCoordinates(location.lat, location.lng),
+                      });
               x-show="showprojectDropdown"
               @click.outside="showprojectDropdown = false"
               x-transition
@@ -827,13 +899,37 @@
     </div>
 
     <!-- Scripts -->
-    <script src="auth.js"></script>
-    <script src="config.js"></script>
+  <script src="auth.js"></script>
     <script src="kenya-locations.js"></script>
     <script src="set-base-url.js"></script>
     <script>
+      const auth = window.authManager || null;
+
       // Initialize everything when DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("newProjectForm");
+
+        if (!auth) {
+          console.error("Authentication manager not available — blocking form");
+          if (form) {
+            form.classList.add("hidden");
+          }
+          showAuthWarning(
+            "Authentication module failed to load. Reload the page and try again."
+          );
+          return;
+        }
+
+        if (!auth.requireAuth()) {
+          if (form) {
+            form.classList.add("hidden");
+          }
+          showAuthWarning(
+            "You must be logged in with an approved partner account before creating a project."
+          );
+          return;
+        }
+
         initializeCountyDropdown("countySelect", "subCountySelect");
         initializeMap();
         initializeThemeSelection();
@@ -841,6 +937,22 @@
         initializeFormProgress();
         initializeBudgetFormatting();
       });
+
+      function showAuthWarning(message) {
+        const container = document.querySelector(".p-6");
+        if (!container) return;
+        const warning = document.createElement("div");
+        warning.className =
+          "mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700";
+        warning.setAttribute("role", "alert");
+        warning.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-lock text-red-500"></i>
+            <span>${message}</span>
+          </div>
+        `;
+        container.prepend(warning);
+      }
 
       // Map initialization
       let map;
@@ -879,6 +991,7 @@
 
       function updateLocationsDisplay() {
         const container = document.getElementById("selectedLocationsList");
+        if (!container) return;
 
         if (selectedLocations.length === 0) {
           container.innerHTML =
@@ -886,79 +999,194 @@
           return;
         }
 
-        // Clear container first
         container.innerHTML = "";
 
-        // Process each location
+        const coordinateFormatter =
+          typeof window.formatKenyaCoordinatePair === "function"
+            ? window.formatKenyaCoordinatePair
+            : function (lat, lng) {
+                return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+              };
+
+        const buildLocationMarkup = (locationId, options = {}) => {
+          const {
+            primaryLabel = null,
+            secondaryLabel = null,
+            coordinateLabel = null,
+            isLoading = false,
+          } = options;
+
+          const loadingIcon =
+            '<i class="fas fa-spinner fa-spin text-blue-400"></i>';
+          const primaryIcon =
+            '<i class="fas fa-map-marker-alt text-gray-400 text-sm"></i>';
+          const secondaryIcon =
+            '<i class="fas fa-map text-gray-400 text-xs"></i>';
+          const coordinateIcon =
+            '<i class="fas fa-location-arrow text-gray-400 text-xs"></i>';
+
+          const primaryText =
+            primaryLabel || (isLoading ? "Loading location..." : "");
+          const primaryContent = primaryText
+            ? `<div class="flex items-center space-x-2">${
+                isLoading ? loadingIcon : primaryIcon
+              }<span class="text-sm text-gray-700 font-medium">${primaryText}</span></div>`
+            : "";
+
+          const secondaryContent = secondaryLabel
+            ? `<div class="flex items-center space-x-2 ml-5">${secondaryIcon}<span class="text-xs text-gray-600">${secondaryLabel}</span></div>`
+            : "";
+
+          const coordinateContent = coordinateLabel
+            ? `<div class="flex items-center space-x-2 ml-5">${coordinateIcon}<span class="text-xs text-gray-600">${coordinateLabel}</span></div>`
+            : "";
+
+          return `
+            <div class="flex items-start justify-between w-full">
+              <div class="space-y-1">
+                ${primaryContent}
+                ${secondaryContent}
+                ${coordinateContent}
+              </div>
+              <button type="button" onclick="removeLocation(${locationId})"
+                      class="text-red-500 hover:text-red-700 ml-3">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          `;
+        };
+
         selectedLocations.forEach((location) => {
           const locationDiv = document.createElement("div");
-          locationDiv.className =
-            "flex items-center justify-between bg-white p-2 rounded border";
-          locationDiv.innerHTML = `
-            <span class="text-sm text-blue-600">
-              <i class="fas fa-spinner fa-spin mr-2"></i>Loading location...
-            </span>
-            <button type="button" onclick="removeLocation(${location.id})"
-                    class="text-red-500 hover:text-red-700 ml-2">
-              <i class="fas fa-times"></i>
-            </button>
-          `;
+          locationDiv.className = "bg-white p-2 rounded border";
+
+          const fallbackCoordinateLabel = coordinateFormatter(
+            location.lat,
+            location.lng
+          );
+
+          const adminSnapshotRaw =
+            typeof window.resolveKenyaLocation === "function"
+              ? window.resolveKenyaLocation(location.lat, location.lng, {
+                  selectedCounty: location.selectedCountySnapshot,
+                  selectedSubCounty: location.selectedSubCountySnapshot,
+                })
+              : null;
+
+          const adminSnapshot = Object.assign(
+            {
+              fallbackLabel: null,
+              subCountyLabel: null,
+              countyLabel: null,
+              coordinateLabel: fallbackCoordinateLabel,
+            },
+            adminSnapshotRaw || {}
+          );
+
+          locationDiv.innerHTML = buildLocationMarkup(location.id, {
+            primaryLabel: adminSnapshot.fallbackLabel,
+            secondaryLabel:
+              adminSnapshot.subCountyLabel || adminSnapshot.countyLabel,
+            coordinateLabel: adminSnapshot.coordinateLabel,
+            isLoading: true,
+          });
+
           container.appendChild(locationDiv);
 
-          // Reverse geocode to get place name
-          fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${location.lng},${location.lat}.json?access_token=${mapboxgl.accessToken}&types=place,region,country`
-          )
+          if (
+            typeof mapboxgl === "undefined" ||
+            !mapboxgl.accessToken ||
+            !window.fetch
+          ) {
+            locationDiv.innerHTML = buildLocationMarkup(location.id, {
+              primaryLabel:
+                adminSnapshot.fallbackLabel || "Approximate location",
+              secondaryLabel:
+                adminSnapshot.subCountyLabel || adminSnapshot.countyLabel,
+              coordinateLabel: adminSnapshot.coordinateLabel,
+            });
+            return;
+          }
+
+          const geocodeUrl =
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${location.lng},${location.lat}.json?access_token=${mapboxgl.accessToken}&types=place,locality,district,region,country&limit=5&language=en`;
+
+          fetch(geocodeUrl)
             .then((response) => response.json())
             .then((data) => {
-              let placeName = `${location.lat.toFixed(
-                4
-              )}, ${location.lng.toFixed(4)}`; // fallback
+              let primaryLabel = adminSnapshot.fallbackLabel;
+              let secondaryLabel =
+                adminSnapshot.subCountyLabel || adminSnapshot.countyLabel;
 
-              if (data.features && data.features.length > 0) {
-                // Try to get a meaningful place name
-                const place = data.features.find((f) =>
-                  f.place_type.includes("place")
-                );
-                const region = data.features.find((f) =>
-                  f.place_type.includes("region")
-                );
-                const country = data.features.find((f) =>
-                  f.place_type.includes("country")
-                );
+              if (Array.isArray(data.features) && data.features.length > 0) {
+                const topFeature = data.features[0];
 
-                if (place) {
-                  placeName = `${place.text}, ${
-                    country ? country.text : "Kenya"
-                  }`;
-                } else if (region) {
-                  placeName = `${region.text}, Kenya`;
-                } else if (country) {
-                  placeName = `${country.text}`;
+                if (typeof topFeature.place_name === "string") {
+                  const parts = topFeature.place_name
+                    .split(",")
+                    .map((part) => part.trim())
+                    .filter(Boolean);
+
+                  if (parts.length > 0) {
+                    primaryLabel = parts.shift();
+                    const filteredSecondary = parts.filter(
+                      (part) => part.toLowerCase() !== "kenya"
+                    );
+                    if (filteredSecondary.length > 0) {
+                      secondaryLabel = filteredSecondary
+                        .slice(0, 2)
+                        .join(", ");
+                    }
+                  }
+                } else if (topFeature.text) {
+                  primaryLabel = topFeature.text;
+                }
+
+                if (!secondaryLabel && Array.isArray(topFeature.context)) {
+                  const contextLabels = topFeature.context
+                    .filter(
+                      (ctx) =>
+                        ctx &&
+                        typeof ctx.id === "string" &&
+                        (ctx.id.startsWith("district.") ||
+                          ctx.id.startsWith("region."))
+                    )
+                    .map((ctx) => ctx.text)
+                    .filter(Boolean);
+
+                  if (!contextLabels.length) {
+                    const countryContext = topFeature.context.find(
+                      (ctx) =>
+                        ctx &&
+                        typeof ctx.id === "string" &&
+                        ctx.id.startsWith("country.")
+                    );
+                    if (countryContext) {
+                      contextLabels.push(countryContext.text);
+                    }
+                  }
+
+                  if (contextLabels.length) {
+                    secondaryLabel = contextLabels.slice(0, 2).join(", ");
+                  }
                 }
               }
 
-              locationDiv.innerHTML = `
-                <span class="text-sm text-blue-600">
-                  ${placeName}
-                </span>
-                <button type="button" onclick="removeLocation(${location.id})"
-                        class="text-red-500 hover:text-red-700 ml-2">
-                  <i class="fas fa-times"></i>
-                </button>
-              `;
+              locationDiv.innerHTML = buildLocationMarkup(location.id, {
+                primaryLabel: primaryLabel || "Unnamed location",
+                secondaryLabel,
+                coordinateLabel: adminSnapshot.coordinateLabel,
+              });
             })
             .catch((error) => {
               console.error("Geocoding error:", error);
-              locationDiv.innerHTML = `
-                <span class="text-sm text-blue-600">
-                  ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}
-                </span>
-                <button type="button" onclick="removeLocation(${location.id})"
-                        class="text-red-500 hover:text-red-700 ml-2">
-                  <i class="fas fa-times"></i>
-                </button>
-              `;
+              locationDiv.innerHTML = buildLocationMarkup(location.id, {
+                primaryLabel:
+                  adminSnapshot.fallbackLabel || "Approximate location",
+                secondaryLabel:
+                  adminSnapshot.subCountyLabel || adminSnapshot.countyLabel,
+                coordinateLabel: adminSnapshot.coordinateLabel,
+              });
             });
         });
       }
@@ -1003,12 +1231,22 @@
               updateLocation(marker, marker.getLngLat());
             });
 
+            const countySelectEl = document.getElementById("countySelect");
+            const subCountySelectEl =
+              document.getElementById("subCountySelect");
+
             // Store the location
             const locationData = {
               id: Date.now(),
               lat: lngLat.lat,
               lng: lngLat.lng,
               marker: marker,
+              selectedCountySnapshot: countySelectEl
+                ? countySelectEl.value || null
+                : null,
+              selectedSubCountySnapshot: subCountySelectEl
+                ? subCountySelectEl.value || null
+                : null,
             };
 
             selectedLocations.push(locationData);
@@ -1514,12 +1752,24 @@
             }
 
             // Get current user for partner field
-            const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+            const currentUser = auth?.getCachedUser?.() || {};
+            const partnerEmail =
+              currentUser.email ||
+              currentUser.username ||
+              currentUser.name ||
+              data.contact_person_mail;
+
+            if (!partnerEmail) {
+              alert(
+                "We're unable to determine the partner for this project. Please ensure you're logged in and that your profile has an email address."
+              );
+              return;
+            }
 
             // Create project object as expected by backend
             const projectData = {
               title: data.title,
-              partner: currentUser.email || data.contact_person_mail, // Use current user email or fallback
+              partner: partnerEmail,
               startDate: data.start_date,
               endDate: data.end_date,
               activityType: data.activity_type,
@@ -1544,9 +1794,8 @@
             // Backend expects a 'project' field with JSON data
             const finalFormData = new FormData();
 
-            // Add project data as a Blob with correct content-type
-            const projectBlob = new Blob([JSON.stringify(projectData)], { type: 'application/json' });
-            finalFormData.append("project", projectBlob);
+            // Add project data as JSON string
+            finalFormData.append("project", JSON.stringify(projectData));
 
             // Add files (filter out empty files)
             selectedFiles.filter(f => f.size > 0).forEach((file) => {
@@ -1557,17 +1806,27 @@
             for (let [key, value] of finalFormData.entries()) {
               if (key === "supporting_documents") {
                 console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
-              } else if (key === "project") {
-                console.log(`${key}: [Blob - ${value.size} bytes, type: ${value.type}]`);
               } else {
                 console.log(`${key}: ${value}`);
               }
             }
 
-            const response = await fetch(`${window.BASE_URL}/api/projects`, {
+            const token = auth.getToken ? auth.getToken() : null;
+            if (!token || token.split(".").length !== 3) {
+              alert(
+                "Your login token is missing or invalid. Please log in again before submitting a project."
+              );
+              auth.logout?.();
+              return;
+            }
+
+            const resolvedBaseUrl =
+              window.BASE_URL || auth.baseUrl || "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+
+            const response = await fetch(`${resolvedBaseUrl}/api/projects`, {
               method: "POST",
               headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${token}`,
               },
               body: finalFormData,
             });

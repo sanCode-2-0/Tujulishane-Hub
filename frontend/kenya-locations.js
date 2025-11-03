@@ -478,6 +478,105 @@ window.kenyaLocations = kenyaLocations;
 window.countyCoordinates = countyCoordinates;
 window.subCountyCoordinates = subCountyCoordinates;
 
+// Geospatial helpers
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371; // Earth radius in km
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function findNearestEntry(coordinateMap, lat, lng, allowedKeys = null) {
+  const entries = allowedKeys
+    ? allowedKeys
+        .map((key) =>
+          coordinateMap[key] ? [key, coordinateMap[key]] : null
+        )
+        .filter(Boolean)
+    : Object.entries(coordinateMap);
+
+  let closest = null;
+  let minDistance = Number.POSITIVE_INFINITY;
+
+  entries.forEach(([name, coords]) => {
+    if (!Array.isArray(coords) || coords.length !== 2) return;
+    const [entryLng, entryLat] = coords;
+    const distance = haversineDistance(lat, lng, entryLat, entryLng);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closest = { name, distance };
+    }
+  });
+
+  return closest;
+}
+
+function getNearestCounty(lat, lng) {
+  return findNearestEntry(countyCoordinates, lat, lng);
+}
+
+function getNearestSubCounty(county, lat, lng) {
+  if (!county || !kenyaLocations[county]) return null;
+  const subCounties = kenyaLocations[county].filter(
+    (subCounty) => subCountyCoordinates[subCounty]
+  );
+  return findNearestEntry(subCountyCoordinates, lat, lng, subCounties);
+}
+
+function formatCoordinatePair(lat, lng) {
+  const latHemisphere = lat >= 0 ? "N" : "S";
+  const lngHemisphere = lng >= 0 ? "E" : "W";
+  return `${Math.abs(lat).toFixed(4)}° ${latHemisphere}, ${Math.abs(lng).toFixed(
+    4
+  )}° ${lngHemisphere}`;
+}
+
+function resolveKenyaLocation(lat, lng, options = {}) {
+  const { selectedCounty = null, selectedSubCounty = null } = options;
+
+  const nearestCounty = getNearestCounty(lat, lng);
+  const county = selectedCounty || (nearestCounty ? nearestCounty.name : null);
+
+  let subCounty = selectedSubCounty || null;
+  if (!subCounty && county) {
+    const nearestSub = getNearestSubCounty(county, lat, lng);
+    if (nearestSub) {
+      subCounty = nearestSub.name;
+    }
+  }
+
+  const countyLabel = county ? `${county} County` : null;
+  const subCountyLabel = subCounty ? `${subCounty} Sub-County` : null;
+
+  const fallbackLabel = [subCountyLabel, countyLabel]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    county,
+    countyLabel,
+    subCounty,
+    subCountyLabel,
+    nearestCounty: nearestCounty ? nearestCounty.name : null,
+    fallbackLabel: fallbackLabel || (nearestCounty ? nearestCounty.name : "Kenya"),
+    coordinateLabel: formatCoordinatePair(lat, lng),
+  };
+}
+
+window.resolveKenyaLocation = resolveKenyaLocation;
+window.formatKenyaCoordinatePair = formatCoordinatePair;
+
 // Function to initialize county dropdown
 function initializeCountyDropdown(countySelectId, subCountySelectId) {
   const countySelect = document.getElementById(countySelectId);
