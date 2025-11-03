@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>User Profile</title>
+<title>Organization Profile</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<!-- Alpine.js -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
 <script>
       tailwind.config = {
-        darkMode: "class",
         theme: {
           extend: {
             colors: {
@@ -25,117 +28,985 @@
         },
       }
     </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Tailwind CSS (with custom config using inline script) -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <!-- Mapbox CSS -->
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <!-- Mapbox JS -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Authentication utilities -->
+    <script type="module">
+      // Try to load a local config override (frontend/config.local.js) if present.
+      (function () {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) {}
+      })();
+
+      import { BASE_URL } from "./config.js";
+      window.BASE_URL = BASE_URL;
+    </script>
+
+    <!-- Optional: Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#272E28",
+              secondary: "#f59e0b",
+              accent: "#00474C",
+              button: "#14B04C",
+              button_two: "#3482FF",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .fade-slide-enter {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .fade-slide-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.4s ease;
+      }
+
+      .fade-slide-leave {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .fade-slide-leave-active {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+    </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
-<div class="relative flex min-h-screen w-full flex-col group/design-root">
+<body class="bg-background-light font-display text-slate-800">
+<!-- Nav Start -->
+<nav
+  x-data="{ open: false }"
+  class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
+>
+  <div class="flex items-center justify-between px-6 py-4">
+    <a
+      href="index.html"
+      class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
+    >
+      <img
+        src="resources/images/log2.png"
+        class="object-contain h-10 lg:h-12"
+        alt="Site Logo"
+      />
+      <img
+        src="resources/images/moh.png"
+        class="object-contain h-10 lg:h-12"
+        alt="Site Logo"
+      />
+    </a>
+
+    <button
+      @click="open = !open"
+      class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
+    >
+      <i class="fal fa-bars" x-show="!open"></i>
+      <i class="fal fa-times" x-show="open" x-cloak></i>
+    </button>
+
+    <ul
+      class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
+    >
+      <li>
+        <a
+          href="index.html"
+          class="uppercase transition hover:text-lime-600"
+          >Home</a
+        >
+      </li>
+      <!-- Projects Dropdown -->
+      <li x-data="{ showprojectDropdown: false }" class="relative">
+        <button
+          @click="showprojectDropdown = !showprojectDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Projects <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showprojectDropdown"
+          @click.outside="showprojectDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-800">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a data-twe-toggle="modal" data-twe-target="#createNewProject">
+                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html#my-projects">
+                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="all-projects.html">
+                <i class="far fa-folder-open mr-2 text-yellow-600"></i> All Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="past-projects.html">
+                <i class="far fa-history mr-2 text-gray-500"></i> Past Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- Collaborations Dropdown -->
+      <li x-data="{ collabDropdown: false }" class="relative">
+        <button
+          @click="collabDropdown = !collabDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="collabDropdown"
+          @click.outside="collabDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="priorities.html">
+                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Proirities
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="my-collaborations.html">
+                <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My Collaborations
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="announcements.html">
+                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a
+          href="announcements.html"
+          class="uppercase transition hover:text-indigo-600"
+        >
+          <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+        </a>
+      </li>
+    </ul>
+    <!-- Right-aligned Items (Admin + User) -->
+    <ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
+      <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+        <button
+          @click="showDropdown = !showDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Admin <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showDropdown"
+          @click.outside="showDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html">Project Management</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="members.html">Stakeholder Management</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- User Dropdown -->
+      <li x-data="{ showUserDropdown: false }" class="relative">
+        <button
+          @click="showUserDropdown = !showUserDropdown"
+          class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100"
+        >
+          <i class="mr-2 fas fa-user-circle"></i>
+          <span id="userDisplayName">User</span>
+          <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showUserDropdown"
+          @click.outside="showUserDropdown = false"
+          x-transition
+          class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+        >
+          <div class="px-4 py-3">
+            <div class="text-base font-semibold text-teal-900" id="userNameDisplay">Loading...</div>
+            <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+            <div class="text-xs text-slate-400 mt-1">
+              Role:
+              <span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+              | Status:
+              <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+            </div>
+          </div>
+          <ul class="py-2 text-sm text-teal-700">
+            <li>
+              <a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-user"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-cog"></i> Settings
+              </a>
+            </li>
+            <li id="donorNav" class="hidden">
+              <a href="donor-management.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+              </a>
+            </li>
+          </ul>
+          <div class="py-2">
+            <button onclick="authManager.logout()" class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+              <i class="mr-2 fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+          <i class="mr-2 fas fa-question-square"></i> FAQ's
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Nav Links - Mobile -->
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 transform -translate-y-2"
+    x-transition:enter-end="opacity-100 transform translate-y-0"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 transform translate-y-0"
+    x-transition:leave-end="opacity-0 transform -translate-y-2"
+    class="px-6 pb-6 lg:hidden"
+  >
+    <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
+      <li>
+        <a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
+      </li>
+      <li>
+        <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
+          <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+        </a>
+      </li>
+      <!-- Projects Dropdown -->
+      <li x-data="{ showprojectDropdown: false }" class="relative">
+        <button
+          @click="showprojectDropdown = !showprojectDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Projects <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showprojectDropdown"
+          @click.outside="showprojectDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-800">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a data-twe-toggle="modal" data-twe-target="#createNewProject">
+                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html#my-projects">
+                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="all-projects.html">
+                <i class="far fa-folder-open mr-2 text-yellow-600"></i> All Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="past-projects.html">
+                <i class="far fa-history mr-2 text-gray-500"></i> Past Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- Collaborations Dropdown -->
+      <li x-data="{ collabDropdown: false }" class="relative">
+        <button
+          @click="collabDropdown = !collabDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="collabDropdown"
+          @click.outside="collabDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="priorities.html">
+                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Proirities
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="my-collaborations.html">
+                <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My Collaborations
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="announcements.html">
+                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
+          <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+        </a>
+      </li>
+      <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+        <!-- Announcements link moved to standalone nav item -->
+        <!-- Admin -->
+      </li>
+      <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+        <button
+          @click="showDropdown = !showDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Admin <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showDropdown"
+          @click.outside="showDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html">Project Management</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="members.html">Stakeholder Management</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- User Dropdown -->
+      <li x-data="{ showUserDropdown: false }" class="relative">
+        <button
+          @click="showUserDropdown = !showUserDropdown"
+          class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100"
+        >
+          <i class="mr-2 fas fa-user-circle"></i>
+          <span id="userDisplayName">User</span>
+          <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showUserDropdown"
+          @click.outside="showUserDropdown = false"
+          x-transition
+          class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+        >
+          <div class="px-4 py-3">
+            <div class="text-base font-semibold text-teal-900" id="userNameDisplay">Loading...</div>
+            <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+            <div class="text-xs text-slate-400 mt-1">
+              Role:
+              <span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+              | Status:
+              <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+            </div>
+          </div>
+          <ul class="py-2 text-sm text-teal-700">
+            <li>
+              <a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-user"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-cog"></i> Settings
+              </a>
+            </li>
+            <li id="donorNav" class="hidden">
+              <a href="donor-management.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+              </a>
+            </li>
+          </ul>
+          <div class="py-2">
+            <button onclick="authManager.logout()" class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+              <i class="mr-2 fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+          <i class="mr-2 fas fa-question-square"></i> FAQ's
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Nav Links - Mobile -->
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 transform -translate-y-2"
+    x-transition:enter-end="opacity-100 transform translate-y-0"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 transform translate-y-0"
+    x-transition:leave-end="opacity-0 transform -translate-y-2"
+    class="px-6 pb-6 lg:hidden"
+  >
+    <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
+      <li>
+        <a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
+      </li>
+      <li>
+        <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
+          <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+        </a>
+      </li>
+      <!-- Projects Dropdown -->
+      <li x-data="{ showprojectDropdown: false }" class="relative">
+        <button
+          @click="showprojectDropdown = !showprojectDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Projects <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showprojectDropdown"
+          @click.outside="showprojectDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-800">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a data-twe-toggle="modal" data-twe-target="#createNewProject">
+                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html#my-projects">
+                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="all-projects.html">
+                <i class="far fa-folder-open mr-2 text-yellow-600"></i> All Projects
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="past-projects.html">
+                <i class="far fa-history mr-2 text-gray-500"></i> Past Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- Collaborations Dropdown -->
+      <li x-data="{ collabDropdown: false }" class="relative">
+        <button
+          @click="collabDropdown = !collabDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Collaborations <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="collabDropdown"
+          @click.outside="collabDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="priorities.html">
+                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Proirities
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="my-collaborations.html">
+                <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My Collaborations
+              </a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="announcements.html">
+                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
+          <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+        </a>
+      </li>
+      <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+        <!-- Announcements link moved to standalone nav item -->
+        <!-- Admin -->
+      </li>
+      <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
+        <button
+          @click="showDropdown = !showDropdown"
+          class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
+        >
+          Admin <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showDropdown"
+          @click.outside="showDropdown = false"
+          x-transition
+          class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
+        >
+          <ul class="py-2 text-sm text-left text-teal-700">
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="dashboard.html">Dashboard</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="projects.html">Project Management</a>
+            </li>
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+              <a href="members.html">Stakeholder Management</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!-- User Dropdown -->
+      <li x-data="{ showUserDropdown: false }" class="relative">
+        <button
+          @click="showUserDropdown = !showUserDropdown"
+          class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100"
+        >
+          <i class="mr-2 fas fa-user-circle"></i>
+          <span id="userDisplayName">User</span>
+          <i class="ml-2 fad fa-chevron-down"></i>
+        </button>
+        <div
+          x-show="showUserDropdown"
+          @click.outside="showUserDropdown = false"
+          x-transition
+          class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
+        >
+          <div class="px-4 py-3">
+            <div class="text-base font-semibold text-teal-900" id="userNameDisplay">Loading...</div>
+            <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
+            <div class="text-xs text-slate-400 mt-1">
+              Role:
+              <span id="userRoleDisplay" class="font-medium text-teal-600"></span>
+              | Status:
+              <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
+            </div>
+          </div>
+          <ul class="py-2 text-sm text-teal-700">
+            <li>
+              <a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-user"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-cog"></i> Settings
+              </a>
+            </li>
+            <li id="donorNav" class="hidden">
+              <a href="donor-management.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+              </a>
+            </li>
+          </ul>
+          <div class="py-2">
+            <button onclick="authManager.logout()" class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
+              <i class="mr-2 fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
+          <i class="mr-2 fas fa-question-square"></i> FAQ's
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!-- Nav End -->
+<div class="mt-20 relative flex min-h-screen w-full flex-col group/design-root">
 <div class="layout-container flex h-full grow flex-col">
 <main class="flex-1 p-4 sm:p-6 lg:p-8">
-<div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-<!-- Left Column: User Identity -->
-<aside class="flex flex-col gap-6 lg:col-span-1">
-<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
-<div class="relative mx-auto mb-4 size-32 group">
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-32" data-alt="User's profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZmlcTeocMS5Cy_Kj5WDA7yLMeakj6iTdSfavV_ZdTeWvLr2dWdcaiv5O6NlZwcYFbMi2Xvoo_5f9WldLW9PCvMeuscLoP6MmqFJTG2Id-A3E8QT0J-3-V_o8nPt7dMac0aRhJuNO5Dcf-FDRZRGe9uFOIdkrYKzbWUQsPHxko0dEFnvNNZXFgPbhrLSaGgLKsXlWnAU7_BBsu5_72ugnb2yIlWV2QQ-lYc_foyK-Tb7FKVTWBGZnmwXHGKxt0Avx4ouklsAdw2I1w');"></div>
-<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+<div class="mx-auto flex max-w-6xl flex-col gap-8">
+<div class="w-full">
+<div class="rounded-xl border border-slate-200 bg-white">
+<div class="p-6 border-b border-slate-200">
+<h2 class="text-2xl font-bold text-slate-900">Organization Details</h2>
+<p class="mt-1 text-slate-500">Update your organization's logo and details.</p>
+</div>
+<form class="p-6 space-y-6">
+<div class="flex flex-col items-start gap-6 sm:flex-row">
+<div class="relative shrink-0 group">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-32" data-alt="Organization's logo" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZmlcTeocMS5Cy_Kj5WDA7yLMeakj6iTdSfavV_ZdTeWvLr2dWdcaiv5O6NlZwcYFbMi2Xvoo_5f9WldLW9PCvMeuscLoP6MmqFJTG2Id-A3E8QT0J-3-V_o8nPt7dMac0aRhJuNO5Dcf-FDRZRGe9uFOIdkrYKzbWUQsPHxko0dEFnvNNZXFgPbhrLSaGgLKsXlWnAU7_BBsu5_72ugnb2yIlWV2QQ-lYc_foyK-Tb7FKVTWBGZnmwXHGKxt0Avx4ouklsAdw2I1w');"></div>
+<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
 <span class="material-symbols-outlined text-white" style="font-size: 36px;">photo_camera</span>
 </div>
 </div>
-<h1 id="userName" class="text-2xl font-bold text-slate-900 dark:text-white">Aria Montgomery</h1>
-<p id="userRole" class="text-slate-500 dark:text-slate-400">Administrator</p>
-<div id="userStatus" class="mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-300">
+<div class="flex-grow w-full">
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800">Organization Name</p>
+<input id="orgNameInput" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-4 text-base font-normal" value=""/>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800">Primary Contact Email</p>
+<input id="orgEmailInput" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-4 text-base font-normal" type="email" value=""/>
+</label>
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800">Organization Type</p>
+<select id="orgTypeSelect" class="form-select flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-3 text-base font-normal">
+<option>Technology</option>
+<option selected="">Non-Profit</option>
+<option>Education</option>
+<option>Healthcare</option>
+</select>
+</label>
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800">Account Status</p>
+<div class="flex items-center h-12 px-4 rounded-lg bg-slate-100">
+<div id="orgStatusDiv" class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
 <span class="size-2 rounded-full bg-green-500"></span>
-                                Active
-                            </div>
+                                        Active
+                                    </div>
 </div>
-<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-<div class="flex flex-col">
-<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-primary/10 dark:bg-primary/20 border-l-4 border-primary" href="#">
-<span class="material-symbols-outlined text-primary text-2xl">person</span>
-<span class="font-semibold text-primary">Profile Information</span>
-</a>
-<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-4 border-transparent" href="#">
-<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-2xl">lock</span>
-<span class="font-medium text-slate-700 dark:text-slate-300">Security</span>
-</a>
-<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-4 border-transparent" href="#">
-<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-2xl">history</span>
-<span class="font-medium text-slate-700 dark:text-slate-300">Recent Activity</span>
-</a>
-</div>
-</div>
-</aside>
-<!-- Right Column: Tabbed Content -->
-<div class="flex flex-col gap-8 lg:col-span-2">
-<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-<div class="p-6 border-b border-slate-200 dark:border-slate-800">
-<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Profile Information</h2>
-<p class="mt-1 text-slate-500 dark:text-slate-400">Update your photo and personal details.</p>
-</div>
-<form class="p-6 space-y-6">
-<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-<label class="flex flex-col">
-<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Full Name</p>
-<input id="profileName" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-4 text-base font-normal" value="Aria Montgomery"/>
-</label>
-<label class="flex flex-col">
-<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Email</p>
-<input id="profileEmail" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-500 dark:text-slate-400 focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 h-12 px-4 text-base font-normal cursor-not-allowed" disabled="" value="aria.m@example.com"/>
-</label>
-</div>
-<div>
-<label class="flex flex-col">
-<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Bio</p>
-<textarea id="profileBio" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary min-h-32 p-4 text-base font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500" placeholder="Tell us a little about yourself">Dedicated administrator with a passion for efficient workflows and team collaboration.</textarea>
 </label>
 </div>
 <div class="flex justify-end pt-4">
-<button class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900" type="submit">
+<button class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2" type="submit">
                                         Save Changes
                                     </button>
 </div>
 </form>
 </div>
 </div>
+<div class="w-full">
+<div class="rounded-xl border border-slate-200 bg-white">
+<div class="p-6 border-b border-slate-200">
+<h2 class="text-2xl font-bold text-slate-900">Recent Activity</h2>
+<p class="mt-1 text-slate-500">A log of recent changes and updates to the organization's account.</p>
 </div>
-</main>
-  <script src="auth.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const user = authManager.getCachedUser();
-      if (user) {
-        document.getElementById("profileName").value = user.name || "";
-        document.getElementById("profileEmail").value = user.email || "";
-        document.getElementById("userName").textContent = user.name || "User";
-        document.getElementById("userRole").textContent = user.role || "User";
-        const statusElement = document.getElementById("userStatus");
-        const statusText = statusElement.querySelector('span:last-child');
-        statusText.textContent = user.approvalStatus === 'approved' ? 'Active' : user.approvalStatus || 'Pending';
-        statusElement.className = user.approvalStatus === 'approved' ? 'mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-300' : 'mt-4 inline-flex items-center gap-2 rounded-full bg-yellow-100 dark:bg-yellow-900/40 px-3 py-1 text-sm font-medium text-yellow-700 dark:text-yellow-300';
-        const statusDot = statusElement.querySelector('span:first-child');
-        statusDot.className = user.approvalStatus === 'approved' ? 'size-2 rounded-full bg-green-500' : 'size-2 rounded-full bg-yellow-500';
-        // If bio exists in user, set it
-        if (user.bio) document.getElementById("profileBio").value = user.bio;
+<div class="p-6">
+<div class="flow-root">
+<ul class="-mb-8">
+<li>
+<div class="relative pb-8">
+<span aria-hidden="true" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-slate-200"></span>
+<div class="relative flex space-x-3">
+<div>
+<span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-8 ring-white">
+<span class="material-symbols-outlined text-slate-500 text-lg">person</span>
+</span>
+</div>
+<div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+<div>
+<p class="text-sm text-slate-500"><strong class="font-medium text-slate-900">Aria Montgomery</strong> updated the primary contact email.</p>
+</div>
+<div class="text-right text-sm whitespace-nowrap text-slate-500">
+<time>2 days ago</time>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="relative pb-8">
+<span aria-hidden="true" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-slate-200 dark:bg-slate-700"></span>
+<script src="auth.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  if (!authManager.isAuthenticated()) {
+    // Redirect to login if not authenticated
+    window.location.href = "index.html";
+    return;
+  }
+  try {
+    const org = await authManager.getCurrentUser();
+    if (org) {
+      // Organization Details
+      document.getElementById('orgNameInput').value = org.organizationName || org.name || "";
+      document.getElementById('orgEmailInput').value = org.email || "";
+      const typeSelect = document.getElementById('orgTypeSelect');
+      if (typeSelect && org.organizationType) {
+        Array.from(typeSelect.options).forEach(opt => {
+          opt.selected = (opt.text === org.organizationType);
+        });
       }
-      document.querySelector('form').addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const name = document.getElementById("profileName").value;
-        const bio = document.getElementById("profileBio").value;
-        let message = "";
-        try {
-          const payload = { name, bio };
-          const res = await authManager.apiCall("/api/auth/profile", "PUT", payload);
-          if (res.ok) {
-            message = "Profile updated successfully.";
-            const updatedUser = { ...user, name, bio };
-            authManager.setUser(updatedUser);
-          } else {
-            message = "Failed to update profile.";
-          }
-        } catch (err) {
-          message = "Error updating profile.";
+      // Account Status
+      const statusDiv = document.getElementById('orgStatusDiv');
+      if (statusDiv) {
+        if (org.approvalStatus === 'APPROVED') {
+          statusDiv.className = 'inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700';
+          statusDiv.innerHTML = '<span class="size-2 rounded-full bg-green-500"></span> Active';
+        } else {
+          statusDiv.className = 'inline-flex items-center gap-2 rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700';
+          statusDiv.innerHTML = '<span class="size-2 rounded-full bg-yellow-500"></span> ' + (org.approvalStatus || 'Pending');
         }
-        alert(message);
+      }
+      // Recent Activity (account created, last login, etc)
+      const activityList = document.querySelector('.flow-root ul');
+      if (activityList) {
+        activityList.innerHTML = '';
+        // Account Created
+        if (org.createdAt) {
+          const li = document.createElement('li');
+          li.innerHTML = `<div class="relative pb-8">
+            <span aria-hidden="true" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-slate-200"></span>
+            <div class="relative flex space-x-3">
+              <div>
+                <span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-8 ring-white">
+                  <span class="material-symbols-outlined text-slate-500 text-lg">person_add</span>
+                </span>
+              </div>
+              <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                <div>
+                  <p class="text-sm text-slate-500"><strong class="font-medium text-slate-900">${org.name || org.organizationName}</strong> account created.</p>
+                </div>
+                <div class="text-right text-sm whitespace-nowrap text-slate-500">
+                  <time>${new Date(org.createdAt).toLocaleString()}</time>
+                </div>
+              </div>
+            </div>
+          </div>`;
+          activityList.appendChild(li);
+        }
+        // Last Login
+        if (org.lastLogin) {
+          const li = document.createElement('li');
+          li.innerHTML = `<div class="relative pb-8">
+            <span aria-hidden="true" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-slate-200"></span>
+            <div class="relative flex space-x-3">
+              <div>
+                <span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-8 ring-white">
+                  <span class="material-symbols-outlined text-slate-500 text-lg">login</span>
+                </span>
+              </div>
+              <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                <div>
+                  <p class="text-sm text-slate-500"><strong class="font-medium text-slate-900">${org.name || org.organizationName}</strong> last login.</p>
+                </div>
+                <div class="text-right text-sm whitespace-nowrap text-slate-500">
+                  <time>${new Date(org.lastLogin).toLocaleString()}</time>
+                </div>
+              </div>
+            </div>
+          </div>`;
+          activityList.appendChild(li);
+        }
+        // If no activity
+        if (!org.createdAt && !org.lastLogin) {
+          activityList.innerHTML = '<li><div class="relative"><div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5"><div><p class="text-sm text-slate-500">No recent activity.</p></div></div></div></li>';
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load user profile:", error);
+    // Optionally show an error message or redirect
+    alert("Failed to load profile. Please try logging in again.");
+    authManager.logout();
+  }
+});
+</script>
+<script>
+      // Populate user dropdown with data from authManager
+      document.addEventListener("DOMContentLoaded", function () {
+        (async function () {
+          let user = authManager.getCachedUser();
+          if (!user) {
+            try {
+              await authManager.getCurrentUser();
+              user = authManager.getCachedUser();
+            } catch (err) {
+              console.error("[ERROR] Could not fetch user profile:", err);
+            }
+          }
+          // Wait a bit for authManager to initialize
+          setTimeout(() => {
+            const user = authManager.getCachedUser();
+            console.log("[DEBUG] Loading user data for dropdown:", user);
+
+            if (user) {
+              // Update user display name in button
+              const userDisplayName =
+                document.getElementById("userDisplayName");
+              if (userDisplayName) {
+                userDisplayName.textContent = user.name || user.email || "User";
+              }
+
+              // Update user name in dropdown
+              const userNameDisplay =
+                document.getElementById("userNameDisplay");
+              if (userNameDisplay) {
+                userNameDisplay.textContent = user.name || "User";
+              }
+
+              // Update email
+              const userEmailDisplay =
+                document.getElementById("userEmailDisplay");
+              if (userEmailDisplay) {
+                userEmailDisplay.textContent = user.email || "";
+              }
+
+              // Update role
+              const userRoleDisplay =
+                document.getElementById("userRoleDisplay");
+              if (userRoleDisplay) {
+                userRoleDisplay.textContent = user.role || "USER";
+              }
+
+              // Update status
+              const userStatusDisplay =
+                document.getElementById("userStatusDisplay");
+              if (userStatusDisplay) {
+                userStatusDisplay.textContent =
+                  user.approvalStatus || "PENDING";
+              }
+
+              // Show admin nav if user is admin
+              console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+              if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+                console.log(
+                  "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+                );
+
+                const adminNavItems = document.querySelectorAll("#adminNav");
+                adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+                // Show admin collaboration menu item
+                const adminCollabItem =
+                  document.getElementById("admin-collab-item");
+                if (adminCollabItem) {
+                  adminCollabItem.style.display = "block";
+                  console.log(
+                    "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+                  );
+                }
+
+                const adminCollabMobile = document.getElementById(
+                  "admin-collab-mobile"
+                );
+                if (adminCollabMobile) {
+                  adminCollabMobile.style.display = "block";
+                  console.log(
+                    "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+                  );
+                }
+
+                // Load pending requests count
+                loadPendingRequestsCount();
+              } else if (user.role === "DONOR") {
+                const donorNavItems = document.querySelectorAll("#donorNav");
+                donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+              }
+            } else {
+              console.warn("[DEBUG] No user data found in cache");
+            }
+          }, 500);
+        })();
       });
-    });
-  </script>
-</body></html>
+    </script>
+</html>
