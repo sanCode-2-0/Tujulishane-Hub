@@ -711,14 +711,14 @@
                 <!-- Objectives -->
                 <div>
                   <label
-                    for="gaps"
+                    for="objectives"
                     class="block text-sm font-medium text-gray-700"
                     >Project Objectives *</label
                   >
                   <textarea
                     required
-                    id="gaps"
-                    name="gaps"
+                    id="objectives"
+                    name="objectives"
                     rows="3"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   ></textarea>
@@ -1438,7 +1438,7 @@
             formData.append(`documents`, file);
           });
 
-          // Get form data as object for validation
+          // Get form data as object for validation and logging
           const data = {};
           for (let [key, value] of formData.entries()) {
             if (key !== "documents") {
@@ -1447,15 +1447,28 @@
             }
           }
 
+          console.log("=== FORM SUBMISSION DEBUG ===");
+          console.log("Raw FormData entries:");
+          for (let [key, value] of formData.entries()) {
+            if (key === "documents") {
+              console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
+            } else {
+              console.log(`${key}: ${value}`);
+            }
+          }
+          console.log("Parsed data object:", data);
+
           // Parse locations and themes from JSON strings
           try {
             if (data.locations) {
               data.locations = JSON.parse(data.locations);
+              console.log("Parsed locations:", data.locations);
             }
             if (data.selected_themes) {
               data.themes = JSON.parse(data.selected_themes);
               formData.delete("selected_themes"); // Remove from FormData
               formData.append("themes", JSON.stringify(data.themes)); // Add parsed themes
+              console.log("Parsed themes:", data.themes);
             }
 
             // Clean budget value (remove commas for submission)
@@ -1463,6 +1476,7 @@
               const cleanBudget = data.budget.replace(/,/g, '');
               formData.set("budget", cleanBudget);
               data.budget = cleanBudget;
+              console.log("Cleaned budget:", data.budget);
             }
 
             // Validate required fields
@@ -1489,33 +1503,95 @@
               return;
             }
 
-            console.log(
-              "Submitting form data with files:",
-              selectedFiles.length,
-              "files"
-            );
+            // Create project object as expected by backend
+            const projectData = {
+              title: data.title,
+              start_date: data.start_date,
+              end_date: data.end_date,
+              activity_type: data.activity_type,
+              budget: parseInt(data.budget) || 0,
+              objectives: data.objectives,
+              locations: data.locations,
+              themes: data.themes,
+              contact_person_name: data.contact_person_name,
+              contact_person_role: data.contact_person_role,
+              contact_person_email: data.contact_person_mail // Backend expects 'email' not 'mail'
+            };
+
+            console.log("Project data object to send:", projectData);
+
+            // Try sending individual fields instead of wrapped project object
+            const finalFormData = new FormData();
+
+            // Add project fields individually
+            Object.keys(projectData).forEach(key => {
+              if (key === 'locations' || key === 'themes') {
+                finalFormData.append(key, JSON.stringify(projectData[key]));
+              } else {
+                finalFormData.append(key, projectData[key]);
+              }
+            });
+
+            // Add files
+            selectedFiles.filter(f => f.size > 0).forEach((file, index) => {
+              finalFormData.append(`documents`, file);
+            });
+
+            console.log("Final FormData with individual fields:");
+            for (let [key, value] of finalFormData.entries()) {
+              if (key === "documents") {
+                console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
+              } else {
+                console.log(`${key}: ${value}`);
+              }
+            }
 
             const response = await fetch(`${window.BASE_URL}/api/projects`, {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
-              body: formData, // Send as FormData for file uploads
+              body: finalFormData,
             });
 
+            console.log("Response status:", response.status);
+            console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+
             if (response.ok) {
+              console.log("Project created successfully!");
               alert("Project created successfully!");
               window.location.href = "projects.html";
             } else {
-              const error = await response.json();
+              let errorMessage = "Unknown error";
+              let errorDetails = {};
+
+              try {
+                const errorResponse = await response.text();
+                console.log("Raw error response:", errorResponse);
+
+                try {
+                  errorDetails = JSON.parse(errorResponse);
+                  console.log("Parsed error response:", errorDetails);
+                  errorMessage = errorDetails.message || errorDetails.error || errorMessage;
+                } catch (parseError) {
+                  console.log("Could not parse error as JSON:", parseError);
+                  errorMessage = errorResponse || errorMessage;
+                }
+              } catch (textError) {
+                console.error("Error reading response text:", textError);
+              }
+
+              console.error("Final error message:", errorMessage);
+              console.error("Full error details:", errorDetails);
+
               alert(
-                "Failed to create project: " +
-                  (error.message || "Unknown error")
+                "Failed to create project: " + errorMessage
               );
             }
           } catch (error) {
             console.error("Error processing form data:", error);
-            alert("Error processing form data. Please try again.");
+            console.error("Error stack:", error.stack);
+            alert("Error processing form data. Please try again. Check console for details.");
           }
         });
     </script>
