@@ -83,486 +83,7 @@
 </head>
 
 <body class="text-gray-800">
-    <div data-twe-modal-init
-        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-        id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-        <div data-twe-modal-dialog-ref
-            class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-            <div
-                class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                <div
-                    class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                    <!-- Modal title -->
-                    <h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
-                        New Project
-                    </h5>
-                    <!-- Close button -->
-                    <button type="button"
-                        class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                        data-twe-modal-dismiss aria-label="Close">
-                        <span class="[&>svg]:h-6 [&>svg]:w-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- Modal body -->
-                <div class="relative p-4">
-                    <form id="newProjectForm">
-                        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                            <!-- Map Picker for Location -->
-                            <div class="col-span-2 lg:col-span-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
-                                    Map</label>
-                                <div class="text-xs text-gray-600 mb-2">
-                                    Search for a location or click on the map to select the
-                                    project coordinates.
-                                </div>
-                                <div id="newProjectMap" style="
-                      height: 400px;
-                      width: 100%;
-                      border-radius: 8px;
-                      margin-bottom: 8px;
-                      border: 1px solid #e5e7eb;
-                      background-color: #f3f4f6;
-                      position: relative;
-                      overflow: hidden;
-                    "></div>
-                                <input type="hidden" id="project_latitude" name="latitude" />
-                                <input type="hidden" id="project_longitude" name="longitude" />
-                                <input type="hidden" id="project_county" name="county" />
-                                <input type="hidden" id="project_subcounty" name="subcounty" />
-                                <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-                                    <strong>Selected Location:</strong>
-                                    <span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-                                        location</span>
-                                    <br />
-                                    <span id="selectedCounty" class="text-gray-600"></span>
-                                </div>
-                            </div>
-                            <!-- Title -->
-                            <div>
-                                <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
-                                <input required type="text" id="title" name="title"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-
-                            <!-- Project Theme -->
-                            <div>
-                                <label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-                                    *</label>
-                                <select id="theme" name="theme"
-                                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                    <option value="">Select Theme</option>
-                                    <option value="GBV">Gender based violence</option>
-                                    <option value="AYPSRH">
-                                        Adolescent and Young People Sexual and Reproductive Health
-                                    </option>
-                                    <option value="MNH">Maternal and Newborn Health</option>
-                                    <option value="FP">Family planning</option>
-                                    <option value="CH">Child Health</option>
-                                    <option value="AH">Adolescent Health</option>
-                                </select>
-                            </div>
-
-                            <!-- Time Period -->
-                            <div>
-                                <label for="starttime_period" class="block text-sm font-medium text-gray-700">
-                                    Start *
-                                </label>
-                                <input required type="date" id="starttime_period" name="start_date"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="endtime_period" class="block text-sm font-medium text-gray-700">End
-                                    *</label>
-                                <input type="date" id="endtime_period" name="end_date"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <!-- Activity Type -->
-                            <div class="col-span-2 md:col-span-4">
-                                <label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
-                                    (Description) *
-                                </label>
-                                <textarea required id="activity_type" name="activity_type" rows="3"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                            </div>
-
-                            <!-- County and Sub-county fields removed (not required) -->
-
-                            <!-- Contact Person -->
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Name *
-                                </label>
-                                <input required type="text" id="contact_person" name="contact_person_name"
-                                    placeholder="Name"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Role *
-                                </label>
-                                <input required type="text" id="contact_person" name="contact_person_role"
-                                    placeholder="Role"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                    Contact Person Email *
-                                </label>
-                                <input required type="email" id="contact_person" name="contact_person_mail"
-                                    placeholder="Email"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label for="budget" class="block text-sm font-medium text-gray-700">
-                                    Budget in KES
-                                </label>
-                                <input required type="number" id="budget" name="budget" placeholder="amount"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-                            </div>
-
-                            <!-- Gaps -->
-                            <div class="col-span-2 lg:col-span-4">
-                                <label for="gaps" class="block text-sm font-medium text-gray-700">
-                                    Objectives *
-                                </label>
-                                <textarea required id="gaps" name="gaps" rows="3"
-                                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Button -->
-                        <div class="mt-3">
-                            <button type="submit"
-                                class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Submit Project
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Nav Start -->
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
-            <a href="index.html"
-                class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
-                <img src="resources/images/log2.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
-                <img src="resources/images/moh.png" class="object-contain h-10 lg:h-12" alt="Site Logo" />
-            </a>
-
-            <button @click="open = !open"
-                class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800">
-                <i class="fal fa-bars" x-show="!open"></i>
-                <i class="fal fa-times" x-show="open" x-cloak></i>
-            </button>
-
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex">
-                <li>
-                    <a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
-                </li>
-
-                <!-- Projects Dropdown -->
-                <li x-data="{ showprojectDropdown: false }" class="relative">
-                    <button @click="showprojectDropdown = !showprojectDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Projects <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-800">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                                    <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="projects.html#my-projects">
-                                    <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="all-projects.html">
-                                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                                    Projects
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Collaborations Dropdown -->
-                <li x-data="{ collabDropdown: false }" class="relative">
-                    <button @click="collabDropdown = !collabDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-700">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="priorities.html">
-                                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                                    Proirities
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="my-collaborations.html">
-                                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                                    Collaborations
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="announcements.html">
-                                    <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
-
-            <!-- Right-aligned Items (Admin + User) -->
-            <ul class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800">
-                <!-- Admin -->
-                <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-                    <button @click="showDropdown = !showDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Admin <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-700">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="projects.html">Project Management</a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="members.html">Stakeholder Management</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- User Dropdown -->
-                <li x-data="{ showUserDropdown: false }" class="relative">
-                    <button @click="showUserDropdown = !showUserDropdown"
-                        class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100">
-                        <i class="mr-2 fas fa-user-circle"></i>
-                        <span id="userDisplayName">User</span>
-                        <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-                        class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
-                        <div class="px-4 py-3">
-                            <div class="text-base font-semibold text-teal-900" id="userNameDisplay">
-                                Loading...
-                            </div>
-                            <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                            <div class="text-xs text-slate-400 mt-1">
-                                Role:
-                                <span id="userRoleDisplay" class="font-medium text-teal-600"></span>
-                                | Status:
-                                <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
-                            </div>
-                        </div>
-                        <ul class="py-2 text-sm text-teal-700">
-                            <li>
-                                <a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-user"></i> Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-cog"></i> Settings
-                                </a>
-                            </li>
-                            <li id="donorNav" class="hidden">
-                                <a href="donor-management.html"
-                                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="py-2">
-                            <button onclick="authManager.logout()"
-                                class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
-                                <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </div>
-                    </div>
-                </li>
-
-                <li>
-                    <a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
-                        <i class="mr-2 fas fa-question-square"></i> FAQ's
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-            <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
-                <li>
-                    <a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
-                </li>
-
-                <!-- Projects Dropdown -->
-                <li x-data="{ showprojectDropdown: false }" class="relative">
-                    <button @click="showprojectDropdown = !showprojectDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Projects <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-800">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                                    <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="projects.html#my-projects">
-                                    <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="all-projects.html">
-                                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                                    Projects
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Collaborations Dropdown -->
-                <li x-data="{ collabDropdown: false }" class="relative">
-                    <button @click="collabDropdown = !collabDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-700">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="priorities.html">
-                                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                                    Proirities
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="my-collaborations.html">
-                                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                                    Collaborations
-                                </a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="announcements.html">
-                                    <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Admin -->
-                <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-                    <button @click="showDropdown = !showDropdown"
-                        class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
-                        Admin <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
-                        <ul class="py-2 text-sm text-left text-teal-700">
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="projects.html">Project Management</a>
-                            </li>
-                            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                                <a href="members.html">Stakeholder Management</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- User Dropdown -->
-                <li x-data="{ showUserDropdown: false }" class="relative">
-                    <button @click="showUserDropdown = !showUserDropdown"
-                        class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100">
-                        <i class="mr-2 fas fa-user-circle"></i>
-                        <span id="userDisplayName">User</span>
-                        <i class="ml-2 fad fa-chevron-down"></i>
-                    </button>
-                    <div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-                        class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
-                        <div class="px-4 py-3">
-                            <div class="text-base font-semibold text-teal-900" id="userNameDisplay">
-                                Loading...
-                            </div>
-                            <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                            <div class="text-xs text-slate-400 mt-1">
-                                Role:
-                                <span id="userRoleDisplay" class="font-medium text-teal-600"></span>
-                                | Status:
-                                <span id="userStatusDisplay" class="font-medium text-lime-500"></span>
-                            </div>
-                        </div>
-                        <ul class="py-2 text-sm text-teal-700">
-                            <li>
-                                <a href="profile.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-user"></i> Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href="settings.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-cog"></i> Settings
-                                </a>
-                            </li>
-                            <li id="donorNav" class="hidden">
-                                <a href="donor-management.html"
-                                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="py-2">
-                            <button onclick="authManager.logout()"
-                                class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100">
-                                <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </div>
-                    </div>
-                </li>
-
-                <li>
-                    <a href="faq.html" class="uppercase font-semibold transition text-blue-800 md:mr-3">
-                        <i class="mr-2 fas fa-question-square"></i> FAQ's
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <!-- Nav End -->
-
+    <div class="" id="nav-placeholder"></div>
     <section class="relative z-0 overflow-hidden" id="top">
         <div class="w-full overflow-hidden">
             <div x-data="{
@@ -599,7 +120,7 @@
                             <span class="tracking-wide">RMNCAH</span> Frequently Asked
                             Questions (<span class="font-normal px-2">F A Q's</span>)
                         </h1>
-                        <p class="text-sm sm:text-base mb-6 max-w-4xl">
+                        <p class="text-base sm:text-base mb-6 max-w-4xl">
                             Find answers to the most common questions related to RMNCAH
                             Coordination Hub.
                         </p>
@@ -649,152 +170,702 @@
         </div>
     </section>
 
-    <section class="">
+    <section class="px-4">
         <div class="py-4 bg-white">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between">
-                <ul class="mt-8">
-                    <li class="text-left mb-10">
-                        <div class="flex flex-row items-center mb-5">
-                            <div
-                                class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                Q
-                            </div>
-                            <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
-                                <h4 class="text-md leading-6 font-medium text-gray-900">
-                                    What is RMNCAH Coordination Hub?
-                                </h4>
-                            </div>
-                        </div>
+            <!--Pills navigation-->
+            <ul class="mb-5 flex list-none flex-wrap ps-0 flex-row" role="tablist" data-twe-nav-ref>
+                <li role="presentation" class="flex-auto text-center">
+                    <a href="#pills-home01"
+                        class="my-2 block rounded bg-zinc-100 px-4 md:px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 data-[twe-nav-active]:!bg-primary-100 data-[twe-nav-active]:text-primary-700 me-2 md:me-4"
+                        id="pills-home-tab01" data-twe-toggle="pill" data-twe-target="#pills-home01" data-twe-nav-active
+                        role="tab" aria-controls="pills-home01" aria-selected="true">
+                        General Knowledge
+                    </a>
+                </li>
+                <li role="profile" class="flex-auto text-center">
+                    <a href="#pills-profile01"
+                        class="my-2 block rounded bg-zinc-100 px-4 md:px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 data-[twe-nav-active]:!bg-primary-100 data-[twe-nav-active]:text-primary-700 me-2 md:me-4"
+                        id="pills-profile-tab01" data-twe-toggle="pill" data-twe-target="#pills-profile01" role="tab"
+                        aria-controls="pills-profile01" aria-selected="false">
+                        Platform Access & Use
+                    </a>
+                </li>
+                <li role="contact" class="flex-auto text-center">
+                    <a href="#pills-contact01"
+                        class="my-2 block rounded bg-zinc-100 px-4 md:px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 data-[twe-nav-active]:!bg-primary-100 data-[twe-nav-active]:text-primary-700 me-2 md:me-4"
+                        id="pills-contact-tab01" data-twe-toggle="pill" data-twe-target="#pills-contact01" role="tab"
+                        aria-controls="pills-contact01" aria-selected="false">
+                        Troubleshooting & Technical Support
+                    </a>
+                </li>
+            </ul>
 
-                        <div class="flex flex-row items-center">
-                            <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
-                                <p class="text-gray-700 text-sm">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                                    Maiores impedit perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione. Lorem ipsum, dolor sit amet
-                                    consectetur adipisicing elit.
-                                </p>
-                            </div>
-                            <div
-                                class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                A
-                            </div>
-                        </div>
-                    </li>
-                    <li class="text-left mb-10">
-                        <div class="flex flex-row items-center mb-5">
-                            <div
-                                class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                Q
-                            </div>
-                            <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
-                                <h4 class="text-md leading-6 font-medium text-gray-900">
-                                    Why should I use the RMNCAH Coordination Hub?
-                                </h4>
-                            </div>
-                        </div>
+            <!--Pills content-->
+            <div class="mb-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between">
+                <div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                    id="pills-home01" role="tabpanel" aria-labelledby="pills-home-tab01" data-twe-tab-active>
+                    <div class="">
+                        <ul class="mt-8">
+                            <li class="text-left mb-10">
+                                <div class="flex flex-row items-center mb-5">
+                                    <div
+                                        class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        Q
+                                    </div>
+                                    <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                        <h4 class="text-md leading-6 font-medium text-gray-900">
+                                            What is RMNCAH Coordination Hub?
+                                        </h4>
+                                    </div>
+                                </div>
 
-                        <div class="flex flex-row items-center">
-                            <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
-                                <p class="text-gray-700 text-sm">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                                    Maiores impedit perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione. Lorem ipsum, dolor sit amet
-                                    consectetur adipisicing elit.
-                                </p>
-                            </div>
-                            <div
-                                class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                A
-                            </div>
-                        </div>
-                    </li>
-                    <li class="text-left mb-10">
-                        <div class="flex flex-row items-center mb-5">
-                            <div
-                                class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                Q
-                            </div>
-                            <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
-                                <h4 class="text-md leading-6 font-medium text-gray-900">
-                                    How can I create an account on the RMNCAH Coordination Hub?
-                                </h4>
-                            </div>
-                        </div>
+                                <div class="flex flex-row items-center">
+                                    <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
+                                        <p class="text-gray-700 text-base">
+                                            The RMNCAH Coordination Hub is an official Ministry of Health digital
+                                            platform designed to enhance visibility, coordination, and accountability
+                                            among stakeholders implementing projects in Reproductive, Maternal, Newborn,
+                                            Child, and Adolescent Health (RMNCAH). It enables partners and donors to
+                                            register, submit projects, collaborate, and align efforts with national
+                                            health priorities.
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        A
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="text-left mb-10">
+                                <div class="flex flex-row items-center mb-5">
+                                    <div
+                                        class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        Q
+                                    </div>
+                                    <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                        <h4 class="text-md leading-6 font-medium text-gray-900">
+                                            Why should I use the RMNCAH Coordination Hub?
+                                        </h4>
+                                    </div>
+                                </div>
 
-                        <div class="flex flex-row items-center">
-                            <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
-                                <p class="text-gray-700 text-sm">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                                    Maiores impedit perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione. Lorem ipsum, dolor sit amet
-                                    consectetur adipisicing elit.
-                                </p>
-                            </div>
-                            <div
-                                class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                A
-                            </div>
-                        </div>
-                    </li>
-                    <li class="text-left mb-10">
-                        <div class="flex flex-row items-center mb-5">
-                            <div
-                                class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                Q
-                            </div>
-                            <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
-                                <h4 class="text-md leading-6 font-medium text-gray-900">
-                                    Where are the RMNCAH Coordination Hub offices located ?
-                                </h4>
-                            </div>
-                        </div>
+                                <div class="flex flex-row items-center">
+                                    <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
+                                        <p class="text-gray-700 text-base">
+                                            The platform streamlines coordination between the Ministry of Health,
+                                            implementing partners, and donors. It ensures transparency in project
+                                            implementation, minimizes duplication of efforts, and provides an up-to-date
+                                            view of ongoing initiatives through interactive maps and project dashboards.
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        A
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="text-left mb-10">
+                                <div class="flex flex-row items-center mb-5">
+                                    <div
+                                        class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        Q
+                                    </div>
+                                    <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                        <h4 class="text-md leading-6 font-medium text-gray-900">
+                                            How can I create an account on the RMNCAH Coordination Hub?
+                                        </h4>
+                                    </div>
+                                </div>
 
-                        <div class="flex flex-row items-center">
-                            <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
-                                <p class="text-gray-700 text-sm">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                                    Maiores impedit perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione. Lorem ipsum, dolor sit amet
-                                    consectetur adipisicing elit.
-                                </p>
+                                <div class="flex flex-row items-center">
+                                    <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
+                                        <p class="text-gray-700 text-base">
+                                        <ol class="list-decimal text-base gap-4">
+                                            <li class="px-2 lg:py-2 lg:px-4">
+                                                Visit the <a href="/frontend/index.html"
+                                                    class="underline font-medium">RMNCAH Coordination Hub
+                                                    registration page.</a>
+                                            </li>
+                                            <li class="px-2 lg:py-2 lg:px-4">
+                                                Select your account type (Partner, Donor, or MOH Official).
+                                            </li>
+                                            <li class="px-2 lg:py-2 lg:px-4">
+                                                Fill in the registration form with accurate organizational details.
+                                            </li>
+                                            <li class="px-2 lg:py-2 lg:px-4">
+                                                Upload the required documents (if applicable).
+                                            </li>
+                                            <li class="px-2 lg:py-2 lg:px-4">
+                                                Submit for review.
+                                                Once submitted, your account will undergo a two-step approval process by
+                                                the MOH reviewer and admin. You will receive an email notification once
+                                                your account is approved.
+                                            </li>
+                                        </ol>
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                        A
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                    id="pills-profile01" role="tabpanel" aria-labelledby="pills-profile-tab01">
+                    <ul class="mt-8">
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Who can use the platform ?
+                                    </h4>
+                                </div>
                             </div>
-                            <div
-                                class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                A
-                            </div>
-                        </div>
-                    </li>
-                    <li class="text-left mb-10">
-                        <div class="flex flex-row items-center mb-5">
-                            <div
-                                class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                Q
-                            </div>
-                            <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
-                                <h4 class="text-md leading-6 font-medium text-gray-900">
-                                    How can I get in touch with RMNCAH support for assistance?
-                                </h4>
-                            </div>
-                        </div>
 
-                        <div class="flex flex-row items-center">
-                            <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
-                                <p class="text-gray-700 text-sm">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                    Eveniet tenetur ullam saepe sunt nisi in illum adipisci,
-                                    incidunt, maiores quos earum neque dolores nobis, cum
-                                    mollitia quo praesentium rerum ut?
-                                </p>
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
+                                    <p class="text-gray-700 text-base">
+                                        Approved RMNCAH stakeholders including partner organizations, donor
+                                        organizations, and Ministry of Health team can register. Each account type
+                                        requires verification to ensure authenticity and relevance to RMNCAH objectives.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
                             </div>
-                            <div
-                                class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
-                                A
+                        </li>
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What causes an account to be rejected ?
+                                    </h4>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                </ul>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full items-center">
+                                    <p class="text-gray-700">
+                                        Accounts may be rejected due to:
+                                    </p>
+                                    <ul class="list-disc">
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Duplicate registration.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Unverified organization credentials.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Inconsistent or incorrect contact information.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Other specified reasons (included in the rejection email)
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How do I create a new project ?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row text-base items-center">
+                                <div class="bg-indigo-100 p-5 px-10 w-full flex items-center">
+                                    <ol class="list-decimal">
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            <a href="/frontend/index.html" class="underline font-medium">Log in </a> to
+                                            your approved RMNCAH account.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Navigate to Projects > Submit New Project.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Complete all mandatory fields in the online form.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Upload the following required documents:
+                                            <ul class="list-none">
+                                                <li class="px-2 lg:py-2 lg:px-4">
+                                                    Introduction letter or MOU from MOH (mandatory).
+                                                </li>
+                                                <li class="px-2 lg:py-2 lg:px-4">
+                                                    Project or research brief (mandatory).
+                                                </li>
+                                                <li class="px-2 lg:py-2 lg:px-4">
+                                                    Nacosti number (for research projects, optional for now).
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Submit during the allowed timeframe (8:00 a.m. – 5:00 p.m.). Submissions
+                                            outside this window will be rejected automatically.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Await system validation and MOH review. You will receive an email
+                                            notification once reviewed.
+                                        </li>
+                                    </ol>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li><!-- 8. What causes project rejection? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What causes project rejection?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">
+                                        A project may be rejected if:
+                                    </p>
+                                    <ul class="list-disc pl-6 text-gray-700">
+                                        <li>The form is incomplete.</li>
+                                        <li>Required documents are missing.</li>
+                                        <li>The project does not align with RMNCAH platform objectives.</li>
+                                        <li>Other reasons specified in your rejection email.</li>
+                                    </ul>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 9. How do I use the Interactive Map? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How do I use the Interactive Map?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">
+                                        The map provides a visual overview of approved RMNCAH projects by region,
+                                        implementing partner, and thematic area.
+                                    </p>
+                                    <ul class="list-disc pl-6 text-gray-700">
+                                        <li>Use filters to narrow results by county, donor, or partner.</li>
+                                        <li>Click on markers to view specific project details and timelines.</li>
+                                        <li>The map updates automatically as new projects are approved.</li>
+                                    </ul>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 10. What is the Collaborations Management feature? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What is the Collaborations Management feature?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">
+                                        The Collaborations tab allows stakeholders to invite partners to join projects.
+                                    </p>
+                                    <ul class="list-disc pl-6 text-gray-700">
+                                        <li>Project leads post collaboration requests under their active projects.</li>
+                                        <li>Interested stakeholders can respond or request more details.</li>
+                                        <li>MOH reviewers monitor all collaboration activities for compliance.</li>
+                                    </ul>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 11. How long does it take to process approvals? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How long does it take to process account or project approvals?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700">
+                                        The standard turnaround time for both account and project approvals is
+                                        <span class="font-semibold">five (5) working days</span> from the date of
+                                        submission,
+                                        provided all information and documents are complete.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 12. What happens after project approval? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What happens after project approval?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700">
+                                        Once approved, the project becomes visible on the platform’s public dashboard
+                                        and interactive map
+                                        for registered and approved users to view. The submitting organization receives
+                                        a confirmation email
+                                        with the project ID and details.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 13. How do I contact the Ministry of Health (MOH)? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How do I contact the Ministry of Health (MOH)?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">
+                                        All official communication to MOH should be done via email.
+                                    </p>
+                                    <ul class="list-disc pl-6 text-gray-700 mb-2">
+                                        <li>Use the “Contact MOH” option available on your dashboard or contact page.
+                                        </li>
+                                        <li>Ensure your email includes your registered organization name, project title,
+                                            and inquiry details.</li>
+                                    </ul>
+                                    <p class="text-gray-700">
+                                        Responses are typically provided within <span class="font-semibold">3–5 working
+                                            days</span>.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden text-right sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                    id="pills-contact01" role="tabpanel" aria-labelledby="pills-contact-tab01">
+                    <ul class="mt-8">
+                        <!-- 14. Why has my account been rejected? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why has my account been rejected?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700">
+                                        Account rejection typically occurs due to incomplete or incorrect details,
+                                        duplicate registration, or unverified organization credentials. Review the
+                                        reason stated in your rejection email, correct the issue, and reapply.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 15. Why has my project been rejected? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why has my project been rejected?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">
+                                        Your project may be rejected if:
+                                    </p>
+                                    <ul class="list-disc pl-6 text-gray-700">
+                                        <li>Required documents (MOU or project brief) were missing.</li>
+                                        <li>Submission occurred outside the allowed 8 a.m.–5 p.m. window.</li>
+                                        <li>The project lacks alignment with MOH’s RMNCAH objectives.</li>
+                                    </ul>
+                                    <p class="text-gray-700 mt-2">
+                                        Rejections include specific explanations via email; you can resubmit once
+                                        corrections are made.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 16. Why has my One-Time Password (OTP) not worked? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why has my One-Time Password (OTP) not worked?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">This may occur due to:</p>
+                                    <ul class="list-disc pl-6 text-gray-700">
+                                        <li>Expired OTP (validity is time-limited).</li>
+                                        <li>Incorrect entry (check spacing and case sensitivity).</li>
+                                        <li>Delayed email delivery due to network issues.</li>
+                                    </ul>
+                                    <p class="text-gray-700 mt-2">
+                                        If the issue persists, click <span class="font-medium">“Resend OTP”</span> or
+                                        contact MOH support.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 17. Why didn’t I receive an OTP? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why didn’t I receive an OTP?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <ul class="list-disc pl-6 text-gray-700 mb-2">
+                                        <li>Check your spam or junk mail folder.</li>
+                                        <li>Ensure the email address used during registration is correct.</li>
+                                        <li>Wait a few minutes for system processing before retrying.</li>
+                                    </ul>
+                                    <p class="text-gray-700">
+                                        If still unsuccessful, contact MOH support for manual verification.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 18. Why can’t I upload my project documents? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why can’t I upload my project documents?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700 mb-2">Ensure:</p>
+                                    <ul class="list-disc pl-6 text-gray-700 mb-2">
+                                        <li>Your document format is PDF or DOCX.</li>
+                                        <li>File size does not exceed the specified limit.</li>
+                                        <li>You are uploading during system-active hours (8 a.m.–5 p.m.).</li>
+                                    </ul>
+                                    <p class="text-gray-700">
+                                        If the issue persists, clear your browser cache or try again using another
+                                        browser.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 19. What should I do if my project submission is not visible after approval? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What should I do if my project submission is not visible after approval?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700">
+                                        Visibility may take a few hours due to system synchronization. Refresh your
+                                        dashboard after some time or contact MOH support if the issue persists beyond 24
+                                        hours.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 20. Who should I contact for technical assistance? -->
+                        <li class="text-left mb-10">
+                            <div class="flex flex-row items-center mb-5">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 mr-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    Q
+                                </div>
+                                <div class="bg-green-800/5 p-5 px-10 w-full flex items-center rounded-lg">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Who should I contact for technical assistance?
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-center">
+                                <div class="bg-indigo-100 text-base p-5 px-10 w-full rounded-lg">
+                                    <p class="text-gray-700">
+                                        For technical or operational issues, reach out via the <span
+                                            class="font-medium">“Contact MOH”</span> button on the dashboard or send an
+                                        email to the official RMNCAH support email provided in your user dashboard.
+                                    </p>
+                                </div>
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-12 w-12 p-3 ml-3 rounded-xl bg-indigo-500 text-white border-4 border-white text-xl font-semibold">
+                                    A
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
             </div>
+
         </div>
     </section>
 
@@ -1133,11 +1204,11 @@
             <p><strong>Budget:</strong> ${project.budget || ""}</p>
             <p><strong>Partner:</strong> ${project.partner || ""}</p>
             <p><strong>Status:</strong> 
-                <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBg}">
+                <span class="inline-block px-2 py-1 rounded-full text-base font-medium ${statusBg}">
                     ${project.status || ""}
                 </span>
             </p>
-            <button onclick="focusMarker(${index})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+            <button onclick="focusMarker(${index})" class="px-5 py-2 mt-3 text-base font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                 Show on Map
             </button>
           `;
@@ -1172,7 +1243,7 @@
                 <p><strong>Start Date:</strong> ${new Date(
                     project.start_date
                 ).toLocaleDateString()}</p>
-                <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
+                <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-base font-medium ${statusBadge(
                     project.status
                 )}">${project.status}</span></p>
             </div>
@@ -1293,13 +1364,13 @@
                     <div>
                         <h4 class="text-lg font-semibold text-gray-800">${project.title || project.projectName || ""
                     }</h4>
-                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${(
+                        <p id="desc-${i}" class="mt-2 text-base text-gray-600">${(
                         project.objectives ||
                         project.description ||
                         ""
                     ).substring(0, 150)}...</p>
                     </div>
-                    <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
+                    <div class="flex items-center mt-2 text-base font-semibold tracking-wider text-gray-500 sm:mt-0">
                         ${project.startDate
                         ? new Date(project.startDate).toLocaleDateString()
                         : ""
@@ -1319,13 +1390,13 @@
                         : "Partner information pending"
                     }</p>
                 <p><strong>Status:</strong> 
-                    <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
+                    <span class="inline-block px-2 py-1 rounded-full text-base font-medium ${statusBadge(
                         project.status?.toLowerCase()
                     )}">
                         ${project.status || ""}
                     </span>
                 </p>
-                <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
+                <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-base font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                     Show on Map
                 </button>
             </div>
@@ -1361,8 +1432,8 @@
                 const btn = document.createElement("button");
                 btn.textContent = i;
                 btn.className = `px-3 py-1 rounded ${i === currentPage
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                     }`;
                 btn.onclick = () => {
                     currentPage = i;
@@ -1603,7 +1674,7 @@
                         <i class="fas fa-exclamation-triangle text-yellow-500"></i>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm text-yellow-700">
+                        <p class="text-base text-yellow-700">
                             <strong>API Connection Issue:</strong> Unable to load live data. Showing default values. 
                             This may be due to server maintenance or connectivity issues.
                         </p>
@@ -2000,19 +2071,19 @@
                 <div>
                   <h4 class=\"text-lg font-semibold text-gray-800\">${project.title || ""
                     }</h4>
-                  <p id=\"desc-${idx}\" class=\"mt-2 text-sm text-gray-600\">${project.objectives
+                  <p id=\"desc-${idx}\" class=\"mt-2 text-base text-gray-600\">${project.objectives
                         ? project.objectives.substring(0, 100) +
                         (project.objectives.length > 100 ? "..." : "")
                         : ""
                     }</p>
                 </div>
-                <div class=\"flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0\">
+                <div class=\"flex items-center mt-2 text-base font-semibold tracking-wider text-gray-500 sm:mt-0\">
                   ${project.projectTheme
                         ? `<span class='px-2 py-1 rounded-full bg-gray-100 text-gray-700 mr-2'>${project.projectTheme}</span>`
                         : ""
                     }
                   ${project.status
-                        ? `<span class='px-2 py-1 rounded-full text-sm font-medium ${statusBadge}'>${project.status}</span>`
+                        ? `<span class='px-2 py-1 rounded-full text-base font-medium ${statusBadge}'>${project.status}</span>`
                         : ""
                     }
                 </div>
@@ -2027,11 +2098,11 @@
                         : "Partner information pending"
                     }</p>
               <p><strong>Status:</strong> 
-                <span class=\"inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge}\">
+                <span class=\"inline-block px-2 py-1 rounded-full text-base font-medium ${statusBadge}\">
                   ${project.status || ""}
                 </span>
               </p>
-              <button onclick=\"focusMarker(${idx})\" class=\"px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105\">
+              <button onclick=\"focusMarker(${idx})\" class=\"px-5 py-2 mt-3 text-base font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105\">
                 Show on Map
               </button>
             </div>
@@ -2076,20 +2147,20 @@
                 </div>
                 
                 <div class="space-y-2 mb-4">
-                    <p class="text-sm text-gray-600">
+                    <p class="text-base text-gray-600">
                         <i class="fas fa-building mr-2"></i>${project.partner}
                     </p>
-                    <p class="text-sm text-gray-600">
+                    <p class="text-base text-gray-600">
                         <i class="fas fa-map-marker-alt mr-2"></i>${project.county
                 }${project.subCounty ? ", " + project.subCounty : ""}
                     </p>
-                    <p class="text-sm text-gray-600">
+                    <p class="text-base text-gray-600">
                         <i class="fas fa-calendar mr-2"></i>${project.startDate
                 } - ${project.endDate}
                     </p>
                     ${project.budget
                     ? `
-                        <p class="text-sm text-gray-600">
+                        <p class="text-base text-gray-600">
                             <i class="fas fa-dollar-sign mr-2"></i>$${project.budget.toLocaleString()}
                         </p>
                     `
@@ -2102,7 +2173,7 @@
                         ${project.projectTheme}
                     </span>
                     <button onclick="viewProject(${project.id})" 
-                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        class="text-blue-600 hover:text-blue-800 text-base font-medium">
                         View Details →
                     </button>
                 </div>
@@ -2157,7 +2228,7 @@
                         <i class="fas fa-exclamation-circle text-red-500"></i>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm text-red-700">
+                        <p class="text-base text-red-700">
                             Failed to load some dashboard data. Showing cached or default information.
                         </p>
                     </div>
@@ -2307,7 +2378,7 @@
                             <i class="fas fa-exclamation-triangle text-yellow-500"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm text-yellow-700">
+                            <p class="text-base text-yellow-700">
                                 Your account is pending approval. Some features may be limited until an administrator approves your account.
                             </p>
                         </div>
@@ -2402,10 +2473,10 @@
                                 ${project.status || "Unknown"}
                             </span>
                         </div>
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                        <p class="text-gray-600 text-base mb-4 line-clamp-3">
                             ${project.description || "No description available"}
                         </p>
-                        <div class="space-y-2 text-sm text-gray-500">
+                        <div class="space-y-2 text-base text-gray-500">
                             <div class="flex justify-between">
                                 <span>Budget:</span>
                                 <span class="font-medium">$${project.budget
@@ -2432,7 +2503,7 @@
                         </div>
                         <div class="mt-4 pt-4 border-t border-gray-200">
                             <button onclick="viewProjectDetails(${project.id})" 
-                                    class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                                    class="w-full px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md hover:bg-blue-700 transition-colors">
                                 View Details
                             </button>
                         </div>

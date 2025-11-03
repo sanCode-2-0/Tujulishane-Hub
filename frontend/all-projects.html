@@ -1,230 +1,175 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RMNCAH</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <!-- Tailwind CSS (with custom config using inline script) -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af", // Custom Blue
-              secondary: "#f59e0b", // Custom Amber
-              accent: "#10b981", // Custom Green
-              dark: "#1f2937", // Gray-800
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
-    />
-    <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
-      rel="stylesheet"
-    />
-    <!-- Alpine.js -->
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <!-- Mapbox CSS -->
-    <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <!-- Mapbox JS -->
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Authentication utilities -->
-    <script>
-      // Try to load a local config override (frontend/config.local.js) if present.
-      (function () {
-        try {
-          var s = document.createElement("script");
-          s.src = "./config.local.js";
-          s.async = false;
-          document.head.appendChild(s);
-        } catch (e) {}
-      })();
-    </script>
-    <script type="module">
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
-    </script>
-    <script src="auth.js"></script>
-    <!-- Optional: Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
-    />
-    <style>
-      .fade-slide-enter {
-        opacity: 0;
-        transform: translateY(20px);
-      }
 
-      .fade-slide-enter-active {
-        opacity: 1;
-        transform: translateY(0);
-        transition: all 0.4s ease;
-      }
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS (with custom config using inline script) -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="styles/main.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Mapbox CSS -->
+	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+	<!-- Mapbox JS -->
+	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<!-- Authentication utilities -->
+	<script>
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+	</script>
+	<script type="module">
+		import { BASE_URL } from "./config.js";
+		window.BASE_URL = BASE_URL;
+	</script>
+	<script src="auth.js"></script>
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
 
-      .fade-slide-leave {
-        opacity: 1;
-        transform: translateY(0);
-      }
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
 
-      .fade-slide-leave-active {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-      }
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
 
-      /* Enhanced Mapbox Popup Close Button */
-      .mapboxgl-popup-close-button {
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 24px !important;
-        line-height: 32px !important;
-        color: #374151 !important;
-        background-color: #f3f4f6 !important;
-        border-radius: 6px !important;
-        right: 8px !important;
-        top: 8px !important;
-        transition: all 0.2s ease !important;
-        font-weight: 300 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-      }
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
 
-      .mapboxgl-popup-close-button:hover {
-        background-color: #ef4444 !important;
-        color: white !important;
-        transform: scale(1.1) !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
-      }
+		/* Enhanced Mapbox Popup Close Button */
+		.mapboxgl-popup-close-button {
+			width: 32px !important;
+			height: 32px !important;
+			font-size: 24px !important;
+			line-height: 32px !important;
+			color: #374151 !important;
+			background-color: #f3f4f6 !important;
+			border-radius: 6px !important;
+			right: 8px !important;
+			top: 8px !important;
+			transition: all 0.2s ease !important;
+			font-weight: 300 !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+		}
 
-      .mapboxgl-popup-close-button:active {
-        transform: scale(0.95) !important;
-      }
+		.mapboxgl-popup-close-button:hover {
+			background-color: #ef4444 !important;
+			color: white !important;
+			transform: scale(1.1) !important;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+		}
 
-      /* Enhanced Mapbox Popup Styling */
-      .mapboxgl-popup-content {
-        padding: 20px !important;
-        border-radius: 12px !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-        min-width: 250px !important;
-      }
+		.mapboxgl-popup-close-button:active {
+			transform: scale(0.95) !important;
+		}
 
-      .mapboxgl-popup-tip {
-        border-top-color: white !important;
-      }
-    </style>
-  </head>
+		/* Enhanced Mapbox Popup Styling */
+		.mapboxgl-popup-content {
+			padding: 20px !important;
+			border-radius: 12px !important;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+			min-width: 250px !important;
+		}
 
-  <body class="text-gray-800">
-    <div
-      data-twe-modal-init
-      class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-      id="createNewProject"
-      tabindex="-1"
-      aria-labelledby="createNewProjectTitle"
-      aria-modal="true"
-      role="dialog"
-    >
-      <div
-        data-twe-modal-dialog-ref
-        class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]"
-      >
-        <div
-          class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
-        >
-          <div
-            class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
-          >
-            <!-- Modal title -->
-            <h5
-              class="text-xl font-light uppercase leading-normal text-surface"
-              id="createNewProjectTitle"
-            >
-              New Project
-            </h5>
-            <!-- Close button -->
-            <button
-              type="button"
-              class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-              data-twe-modal-dismiss
-              aria-label="Close"
-            >
-              <span class="[&>svg]:h-6 [&>svg]:w-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </span>
-            </button>
-          </div>
+		.mapboxgl-popup-tip {
+			border-top-color: white !important;
+		}
+	</style>
+</head>
 
-          <!-- Modal body -->
-          <div class="relative p-4">
-            <form id="newProjectForm">
-              <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <!-- Map Picker for Location -->
-                <div class="col-span-2 lg:col-span-4">
-                  <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Pick Project Location on Map</label
-                  >
-                  <div class="text-xs text-gray-600 mb-2">
-                    Search for a location or click on the map to select the
-                    project coordinates.
-                  </div>
-                  <div
-                    id="newProjectMap"
-                    style="
+<body class="text-gray-800">
+	<div data-twe-modal-init
+		class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+		id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
+		<div data-twe-modal-dialog-ref
+			class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+			<div
+				class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+				<div
+					class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+					<!-- Modal title -->
+					<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
+						New Project
+					</h5>
+					<!-- Close button -->
+					<button type="button"
+						class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+						data-twe-modal-dismiss aria-label="Close">
+						<span class="[&>svg]:h-6 [&>svg]:w-6">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+								stroke-width="1.5" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</span>
+					</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="relative p-4">
+					<form id="newProjectForm">
+						<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+							<!-- Map Picker for Location -->
+							<div class="col-span-2 lg:col-span-4">
+								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
+									Map</label>
+								<div class="text-xs text-gray-600 mb-2">
+									Search for a location or click on the map to select the
+									project coordinates.
+								</div>
+								<div id="newProjectMap" style="
                       height: 400px;
                       width: 100%;
                       border-radius: 8px;
@@ -233,1423 +178,759 @@
                       background-color: #f3f4f6;
                       position: relative;
                       overflow: hidden;
-                    "
-                  ></div>
-                  <input type="hidden" id="project_latitude" name="latitude" />
-                  <input
-                    type="hidden"
-                    id="project_longitude"
-                    name="longitude"
-                  />
-                  <input type="hidden" id="project_county" name="county" />
-                  <input
-                    type="hidden"
-                    id="project_subcounty"
-                    name="subcounty"
-                  />
-                  <div
-                    class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded"
-                  >
-                    <strong>Selected Location:</strong>
-                    <span id="selectedLatLng" class="font-mono text-blue-600"
-                      >Click on map to select location</span
-                    >
-                    <br />
-                    <span id="selectedCounty" class="text-gray-600"></span>
-                  </div>
-                </div>
-                <!-- Title -->
-                <div>
-                  <label
-                    for="title"
-                    class="block text-sm font-medium text-gray-700"
-                    >Title *</label
-                  >
-                  <input
-                    required
-                    type="text"
-                    id="title"
-                    name="title"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <!-- Project Theme -->
-                <div>
-                  <label
-                    for="theme"
-                    class="block text-sm font-medium text-gray-700"
-                    >Project Theme *</label
-                  >
-                  <select
-                    id="theme"
-                    name="theme"
-                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="">Select Theme</option>
-                    <option value="GBV">Gender based violence</option>
-                    <option value="AYPSRH">
-                      Adolescent and Young People Sexual and Reproductive Health
-                    </option>
-                    <option value="MNH">Maternal and Newborn Health</option>
-                    <option value="FP">Family planning</option>
-                    <option value="CH">Child Health</option>
-                    <option value="AH">Adolescent Health</option>
-                  </select>
-                </div>
-
-                <!-- Time Period -->
-                <div>
-                  <label
-                    for="starttime_period"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Start *
-                  </label>
-                  <input
-                    required
-                    type="date"
-                    id="starttime_period"
-                    name="start_date"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    for="endtime_period"
-                    class="block text-sm font-medium text-gray-700"
-                    >End *</label
-                  >
-                  <input
-                    type="date"
-                    id="endtime_period"
-                    name="end_date"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <!-- Activity Type -->
-                <div class="col-span-2 md:col-span-4">
-                  <label
-                    for="activity_type"
-                    class="block text-sm font-medium text-gray-700"
-                    >Activity Type (Description) *
-                  </label>
-                  <textarea
-                    required
-                    id="activity_type"
-                    name="activity_type"
-                    rows="3"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  ></textarea>
-                </div>
-
-                <!-- County and Sub-county fields removed (not required) -->
-
-                <!-- Contact Person -->
-                <div>
-                  <label
-                    for="contact_person"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Contact Person Name *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    id="contact_person"
-                    name="contact_person_name"
-                    placeholder="Name"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    for="contact_person"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Contact Person Role *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    id="contact_person"
-                    name="contact_person_role"
-                    placeholder="Role"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    for="contact_person"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Contact Person Email *
-                  </label>
-                  <input
-                    required
-                    type="email"
-                    id="contact_person"
-                    name="contact_person_mail"
-                    placeholder="Email"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    for="budget"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Budget in KES
-                  </label>
-                  <input
-                    required
-                    type="number"
-                    id="budget"
-                    name="budget"
-                    placeholder="amount"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <!-- Gaps -->
-                <div class="col-span-2 lg:col-span-4">
-                  <label
-                    for="gaps"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Objectives *
-                  </label>
-                  <textarea
-                    required
-                    id="gaps"
-                    name="gaps"
-                    rows="3"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  ></textarea>
-                </div>
-              </div>
-
-              <!-- Button -->
-              <div class="mt-3">
-                <button
-                  type="submit"
-                  class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Submit Project
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <nav
-      x-data="{ open: false }"
-      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <a
-          href="index.html"
-          class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
-        >
-          <img
-            src="resources/images/log2.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-          <img
-            src="resources/images/moh.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-        </a>
-
-        <button
-          @click="open = !open"
-          class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
-        >
-          <i class="fal fa-bars" x-show="!open"></i>
-          <i class="fal fa-times" x-show="open" x-cloak></i>
-        </button>
-
-        <ul
-          class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
-        >
-          <li>
-            <a
-              href="index.html"
-              class="uppercase transition hover:text-lime-600"
-              >Home</a
-            >
-          </li>
-
-          <!-- Projects Dropdown -->
-          <li x-data="{ showprojectDropdown: false }" class="relative">
-            <button
-              @click="showprojectDropdown = !showprojectDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Projects <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showprojectDropdown"
-              @click.outside="showprojectDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-800">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a
-                    data-twe-toggle="modal"
-                    data-twe-target="#createNewProject"
-                  >
-                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
-                    Project
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html#my-projects">
-                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="all-projects.html">
-                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <!-- Collaborations Dropdown -->
-          <li x-data="{ collabDropdown: false }" class="relative">
-            <button
-              @click="collabDropdown = !collabDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="collabDropdown"
-              @click.outside="collabDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="priorities.html">
-                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                    Proirities
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="my-collaborations.html">
-                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                    Collaborations
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="announcements.html">
-                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-
-        <!-- Right-aligned Items (Admin + User) -->
-        <ul
-          class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800"
-        >
-          <!-- Admin -->
-          <li
-            x-data="{ showDropdown: false }"
-            class="relative hidden"
-            id="adminNav"
-          >
-            <button
-              @click="showDropdown = !showDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Admin <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showDropdown"
-              @click.outside="showDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="dashboard.html">Dashboard</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html">Project Management</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="members.html">Stakeholder Management</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <!-- User Dropdown -->
-          <li x-data="{ showUserDropdown: false }" class="relative">
-            <button
-              @click="showUserDropdown = !showUserDropdown"
-              class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100"
-            >
-              <i class="mr-2 fas fa-user-circle"></i>
-              <span id="userDisplayName">User</span>
-              <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showUserDropdown"
-              @click.outside="showUserDropdown = false"
-              x-transition
-              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-            >
-              <div class="px-4 py-3">
-                <div
-                  class="text-base font-semibold text-teal-900"
-                  id="userNameDisplay"
-                >
-                  Loading...
-                </div>
-                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                <div class="text-xs text-slate-400 mt-1">
-                  Role:
-                  <span
-                    id="userRoleDisplay"
-                    class="font-medium text-teal-600"
-                  ></span>
-                  | Status:
-                  <span
-                    id="userStatusDisplay"
-                    class="font-medium text-lime-500"
-                  ></span>
-                </div>
-              </div>
-              <ul class="py-2 text-sm text-teal-700">
-                <li>
-                  <a
-                    href="profile.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-user"></i> Profile
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="settings.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-cog"></i> Settings
-                  </a>
-                </li>
-                <li id="donorNav" class="hidden">
-                  <a
-                    href="donor-management.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
-                    Management
-                  </a>
-                </li>
-              </ul>
-              <div class="py-2">
-                <button
-                  onclick="authManager.logout()"
-                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
-                >
-                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                </button>
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <a
-              href="faq.html"
-              class="uppercase font-semibold transition text-blue-800 md:mr-3"
-            >
-              <i class="mr-2 fas fa-question-square"></i> FAQ's
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Nav Links - Mobile -->
-      <div
-        x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="px-6 pb-6 lg:hidden"
-      >
-        <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
-          <li>
-            <a
-              href="index.html"
-              class="uppercase transition hover:text-lime-600"
-              >Home</a
-            >
-          </li>
-
-          <!-- Projects Dropdown -->
-          <li x-data="{ showprojectDropdown: false }" class="relative">
-            <button
-              @click="showprojectDropdown = !showprojectDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Projects <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showprojectDropdown"
-              @click.outside="showprojectDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-800">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a
-                    data-twe-toggle="modal"
-                    data-twe-target="#createNewProject"
-                  >
-                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
-                    Project
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html#my-projects">
-                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="all-projects.html">
-                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <!-- Collaborations Dropdown -->
-          <li x-data="{ collabDropdown: false }" class="relative">
-            <button
-              @click="collabDropdown = !collabDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="collabDropdown"
-              @click.outside="collabDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="priorities.html">
-                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                    Proirities
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="my-collaborations.html">
-                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                    Collaborations
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="announcements.html">
-                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <!-- Admin -->
-          <li
-            x-data="{ showDropdown: false }"
-            class="relative hidden"
-            id="adminNav"
-          >
-            <button
-              @click="showDropdown = !showDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Admin <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showDropdown"
-              @click.outside="showDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="dashboard.html">Dashboard</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html">Project Management</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="members.html">Stakeholder Management</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <!-- User Dropdown -->
-          <li x-data="{ showUserDropdown: false }" class="relative">
-            <button
-              @click="showUserDropdown = !showUserDropdown"
-              class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100"
-            >
-              <i class="mr-2 fas fa-user-circle"></i>
-              <span id="userDisplayName">User</span>
-              <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showUserDropdown"
-              @click.outside="showUserDropdown = false"
-              x-transition
-              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-            >
-              <div class="px-4 py-3">
-                <div
-                  class="text-base font-semibold text-teal-900"
-                  id="userNameDisplay"
-                >
-                  Loading...
-                </div>
-                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                <div class="text-xs text-slate-400 mt-1">
-                  Role:
-                  <span
-                    id="userRoleDisplay"
-                    class="font-medium text-teal-600"
-                  ></span>
-                  | Status:
-                  <span
-                    id="userStatusDisplay"
-                    class="font-medium text-lime-500"
-                  ></span>
-                </div>
-              </div>
-              <ul class="py-2 text-sm text-teal-700">
-                <li>
-                  <a
-                    href="profile.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-user"></i> Profile
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="settings.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-cog"></i> Settings
-                  </a>
-                </li>
-                <li id="donorNav" class="hidden">
-                  <a
-                    href="donor-management.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
-                    Management
-                  </a>
-                </li>
-              </ul>
-              <div class="py-2">
-                <button
-                  onclick="authManager.logout()"
-                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
-                >
-                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                </button>
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <a
-              href="faq.html"
-              class="uppercase font-semibold transition text-blue-800 md:mr-3"
-            >
-              <i class="mr-2 fas fa-question-square"></i> FAQ's
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <section class="bg-cyan-50/50">
-      <div id="localMap" class="h-[450px] mt-20 sm:h-[550px] z-0 w-full"></div>
-    </section>
-    <section class="bg-white">
-      <div class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <!-- Status Filter Buttons -->
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-7">
-          <!-- Main Content Area -->
-          <div class="flex flex-col md:col-span-3 fade fade-left lg:col-span-5">
-            <!-- Project Info -->
-            <div
-              id="projectInfo"
-              class="flex-grow hidden p-6 mb-4 bg-white border border-gray-200 shadow-lg rounded-xl"
-            >
-              <h3 class="mb-4 text-xl font-semibold text-gray-800">
-                Selected Project Details
-              </h3>
-              <p class="text-gray-700">
-                Details of the selected project will appear here.
-              </p>
-            </div>
-
-            <!-- Accordion -->
-            <div
-              id="projectAccordion"
-              class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0"
-            >
-              <!-- Project cards will be rendered here dynamically by JS -->
-            </div>
-
-            <!-- Active Filters Indicator -->
-            <div
-              id="activeFilters"
-              class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-            >
-              <div class="flex items-start justify-between">
-                <div>
-                  <h4 class="text-sm font-semibold text-blue-800 mb-2">
-                    Active Filters:
-                  </h4>
-                  <div id="filterTags" class="flex flex-wrap gap-2"></div>
-                </div>
-                <button
-                  onclick="clearAllFilters()"
-                  class="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Clear All
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sticky Filter Sidebar (Right Side) -->
-          <div
-            class="sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6"
-          >
-            <h2
-              class="mb-2 -mt-10 text-sm font-semibold text-right text-gray-800 transform rounded-xl"
-            >
-              <i
-                class="p-2 text-black bg-white rounded-sm shadow fas fa-filter"
-              ></i>
-            </h2>
-
-            <div class="flex flex-col gap-5">
-              <!-- Search -->
-              <div class="relative w-full">
-                <label for="searchInput" class="sr-only"
-                  >Search by name...</label
-                >
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="Search by name or project number..."
-                  class="block w-full py-2 pl-10 pr-4 text-base text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <div
-                  class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                >
-                  <i class="text-gray-400 fas fa-search"></i>
-                </div>
-              </div>
-              <div class="grid gap-2 lg:grid-cols-2">
-                <!-- From Date -->
-                <div class="flex flex-col gap-2">
-                  <label
-                    for="dateFrom"
-                    class="text-sm font-medium text-gray-700"
-                    >From Date:</label
-                  >
-                  <input
-                    type="date"
-                    id="dateFrom"
-                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <!-- To Date -->
-                <div class="flex flex-col gap-2">
-                  <label for="dateTo" class="text-sm font-medium text-gray-700"
-                    >To Date:</label
-                  >
-                  <input
-                    type="date"
-                    id="dateTo"
-                    class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <!-- Sort By -->
-              <div class="flex flex-col gap-2">
-                <label
-                  for="sortSelect"
-                  class="text-sm font-medium text-gray-700"
-                  >Sort By:</label
-                >
-                <select
-                  id="sortSelect"
-                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="date">Date (Newest First)</option>
-                </select>
-              </div>
-
-              <!-- Filter By Theme -->
-              <div class="flex flex-col gap-2">
-                <label
-                  for="themeSelect"
-                  class="text-sm font-medium text-gray-700"
-                  >Themes:</label
-                >
-                <select
-                  id="themeSelect"
-                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="all">All Themes</option>
-                  <option value="MATERNAL_HEALTH">Maternal Health</option>
-                  <option value="NEWBORN_HEALTH">Newborn Health</option>
-                  <option value="CHILD_HEALTH">Child Health</option>
-                  <option value="ADOLESCENT_HEALTH">Adolescent Health</option>
-                  <option value="NUTRITION">Nutrition</option>
-                  <option value="FAMILY_PLANNING">Family Planning</option>
-                  <option value="HIV_AIDS">HIV/AIDS</option>
-                  <option value="IMMUNIZATION">Immunization</option>
-                  <option value="WATER_SANITATION">Water & Sanitation</option>
-                  <option value="OTHER">Other</option>
-                </select>
-              </div>
-
-              <!-- Filter By Status -->
-              <div class="flex flex-col gap-2">
-                <label for="status" class="text-sm font-medium text-gray-700"
-                  >Status:</label
-                >
-                <select
-                  autocomplete="off"
-                  id="status"
-                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onchange="highlightMarkers(this.value)"
-                >
-                  <option value="all">Show All</option>
-                  <option value="active">Active</option>
-                  <option value="pending">Pending</option>
-                  <option value="stalled">Stalled</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-
-              <!-- Filter By Category -->
-              <div class="flex flex-col gap-2">
-                <label
-                  for="categorySelect"
-                  class="text-sm font-medium text-gray-700"
-                  >Category:</label
-                >
-                <select
-                  id="categorySelect"
-                  class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="all">All Categories</option>
-                  <option value="IMPLEMENTING">Implementing Projects</option>
-                  <option value="RESEARCH">Research Projects</option>
-                </select>
-              </div>
-              <button
-                onclick="exportCSV()"
-                class="flex items-center justify-center px-5 py-2 mt-6 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <i class="mr-2 fas fa-file-csv"></i> Export Data
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-center px-4 my-4">
-        <div id="paginationControls" class="space-x-2"></div>
-      </div>
-
-      <div class="max-w-6xl px-4 mx-auto mt-12 sm:px-6 lg:px-8">
-        <h2
-          class="mb-10 text-xl font-light leading-tight text-center text-gray-900 uppercase opacity-70"
-        >
-          Impact
-        </h2>
-        <div
-          id="statsContainer"
-          class="flex flex-wrap justify-center gap-6 mb-8"
-          x-data="countdownStats()"
-          @stats-loaded.window="handleStatsLoaded($event.detail)"
-        >
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-blue-700"
-              x-text="locations"
-            ></div>
-            <p class="mt-3 text-base font-thin font-medium text-gray-600">
-              Locations
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-pink-600"
-              x-text="projects"
-            ></div>
-            <p class="mt-3 text-base font-thin font-medium text-gray-600">
-              Projects
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-green-600"
-              x-text="regions"
-            ></div>
-            <p class="mt-3 text-base font-thin font-medium text-gray-600">
-              Regions
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-purple-600"
-              x-text="users"
-            ></div>
-            <p class="mt-3 text-base font-thin font-medium text-gray-600">
-              Teams
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-yellow-600"
-              x-text="amountDisplay"
-            ></div>
-            <p class="mt-3 text-base font-thin font-medium text-gray-600">
-              Raised (KES)
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!--Footer container-->
-    <footer
-      class="flex flex-col items-center text-center bg-white text-surface"
-    >
-      <div class="">
-        <!-- Social media icons container -->
-        <div class="flex items-center justify-center mb-6 space-x-2">
-          <a
-            href="#!"
-            type="button"
-            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-            data-twe-ripple-init
-          >
-            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 512 512"
-              >
-                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                  d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
-                />
-              </svg>
-            </span>
-          </a>
-
-          <a
-            href="#!"
-            type="button"
-            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-            data-twe-ripple-init
-          >
-            <i class="fab fa-facebook-f"></i>
-          </a>
-
-          <a
-            href="#!"
-            type="button"
-            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-            data-twe-ripple-init
-          >
-            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 448 512"
-              >
-                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                  d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
-                />
-              </svg>
-            </span>
-          </a>
-
-          <a
-            href="#!"
-            type="button"
-            class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
-            data-twe-ripple-init
-          >
-            <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 448 512"
-              >
-                <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                  d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"
-                />
-              </svg>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <!--Copyright section-->
-      <div class="w-full p-4 text-xs text-center bg-black/5">
-        © 2025 Copyright:
-        <a href=""> RMNCAH Hub </a>
-      </div>
-    </footer>
-
-    <script src="styles/effects.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-
-    <script>
-      // Populate user dropdown with data from authManager
-      document.addEventListener("DOMContentLoaded", function () {
-        // Wait a bit for authManager to initialize
-        setTimeout(() => {
-          const user = authManager.getCachedUser();
-          console.log("[DEBUG] Loading user data for dropdown:", user);
-
-          if (user) {
-            // Update user display name in button
-            const userDisplayName = document.getElementById("userDisplayName");
-            if (userDisplayName) {
-              userDisplayName.textContent = user.name || user.email || "User";
-            }
-
-            // Update user name in dropdown
-            const userNameDisplay = document.getElementById("userNameDisplay");
-            if (userNameDisplay) {
-              userNameDisplay.textContent = user.name || "User";
-            }
-
-            // Update email
-            const userEmailDisplay =
-              document.getElementById("userEmailDisplay");
-            if (userEmailDisplay) {
-              userEmailDisplay.textContent = user.email || "";
-            }
-
-            // Update role
-            const userRoleDisplay = document.getElementById("userRoleDisplay");
-            if (userRoleDisplay) {
-              userRoleDisplay.textContent = user.role || "USER";
-            }
-
-            // Update status
-            const userStatusDisplay =
-              document.getElementById("userStatusDisplay");
-            if (userStatusDisplay) {
-              userStatusDisplay.textContent = user.approvalStatus || "PENDING";
-            }
-
-            // Show admin nav if user is admin
-            if (user.role === "ADMIN") {
-              const adminNavItems = document.querySelectorAll("#adminNav");
-              adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
-
-              const adminCollabMobile = document.getElementById(
-                "admin-collab-mobile"
-              );
-              if (adminCollabMobile) {
-                adminCollabMobile.style.display = "block";
-              }
-            }
-
-            // Show donor nav if user is donor
-            if (user.role === "DONOR") {
-              const donorNavItems = document.querySelectorAll("#donorNav");
-              donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
-            }
-          } else {
-            console.warn("[DEBUG] No user data found in cache");
-          }
-        }, 500);
-      });
-    </script>
-
-    <script>
-      // Try to load a local config override (frontend/config.local.js) if present.
-      (function () {
-        try {
-          var s = document.createElement("script");
-          s.src = "./config.local.js";
-          s.async = false;
-          document.head.appendChild(s);
-        } catch (e) {}
-      })();
-    </script>
-    <script type="module">
-      import { BASE_URL } from "./config.js";
-      // Always use global authManager from auth.js, fallback if not present
-      const authManager = window.authManager || {
-        apiCall: () => {
-          throw new Error("authManager is not defined");
-        },
-      };
-
-      let map, selectedMarker;
-      let projects = [];
-      let markers = [];
-      let sortBy = "name";
-      let sortOrder = "asc";
-      let currentPage = 1;
-      const itemsPerPage = 5;
-      let currentFilter = "all";
-      let currentTheme = "all";
-      let currentCategory = "all";
-      let searchQuery = "";
-      let dateRangeFrom = null;
-      let dateRangeTo = null;
-
-      const bgColors = {
-        active: "bg-green-50",
-        pending: "bg-yellow-50",
-        stalled: "bg-red-50",
-        completed: "bg-cyan-100",
-        default: "bg-white",
-      };
-
-      const statusBadge = (tag) => {
-        return (
-          {
-            active: "bg-green-200 text-green-800",
-            pending: "bg-yellow-200 text-yellow-800",
-            stalled: "bg-red-200 text-red-800",
-            completed: "bg-cyan-300 text-gray-800",
-          }[tag] || "bg-gray-200 text-gray-800"
-        );
-      };
-
-      // Get status color for map markers
-      const getStatusColor = (status) => {
-        const colors = {
-          ACTIVE: "#22c55e",
-          active: "#22c55e",
-          PENDING: "#eab308",
-          pending: "#eab308",
-          STALLED: "#ef4444",
-          stalled: "#ef4444",
-          COMPLETED: "#06b6d4",
-          completed: "#06b6d4",
-          default: "#6b7280",
-        };
-        return colors[status] || colors.default;
-      };
-
-      document.addEventListener("DOMContentLoaded", async function () {
-        // Set Mapbox access token
-        mapboxgl.accessToken =
-          "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
-
-        // Initialize Mapbox map
-        map = new mapboxgl.Map({
-          container: "localMap",
-          style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
-          center: [37.9062, -0.0236],
-          zoom: 6.3,
-        });
-
-        // Add zoom and rotation controls to the map
-        map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-        // Load projects with coordinates from backend
-        await loadProjectsWithCoordinates();
-        // Load statistics - this will trigger the stats animation
-        await loadStatistics();
-        console.log("[DEBUG] All data loaded successfully");
-
-        // Event listeners for filters
-        document
-          .getElementById("searchInput")
-          .addEventListener("input", (e) => {
-            searchQuery = e.target.value.trim().toLowerCase();
-            currentPage = 1;
-            highlightMarkers(currentFilter);
-          });
-        document.getElementById("dateFrom").addEventListener("change", (e) => {
-          dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-          currentPage = 1;
-          highlightMarkers(currentFilter);
-        });
-        document.getElementById("dateTo").addEventListener("change", (e) => {
-          dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-          currentPage = 1;
-          highlightMarkers(currentFilter);
-        });
-        document
-          .getElementById("sortSelect")
-          .addEventListener("change", (e) => {
-            sortProjects(e.target.value);
-          });
-
-        // Status filter
-        document.getElementById("status").addEventListener("change", (e) => {
-          currentFilter = e.target.value;
-          currentPage = 1;
-          highlightMarkers(e.target.value);
-        });
-
-        // Theme filter
-        document
-          .getElementById("themeSelect")
-          .addEventListener("change", (e) => {
-            currentTheme = e.target.value;
-            currentPage = 1;
-            highlightMarkers(currentFilter);
-          });
-
-        // Category filter
-        document
-          .getElementById("categorySelect")
-          .addEventListener("change", (e) => {
-            currentCategory = e.target.value;
-            currentPage = 1;
-            highlightMarkers(currentFilter);
-          });
-      });
-
-      async function loadProjectsWithCoordinates() {
-        try {
-          console.log(
-            "[DEBUG] Fetching projects from /api/projects/with-coordinates..."
-          );
-          const response = await authManager.apiCall(
-            "/api/projects/with-coordinates",
-            "GET"
-          );
-          console.log("[DEBUG] API response:", response);
-          if (!response || !response.ok) {
-            console.error("[DEBUG] API response not ok:", response);
-            throw new Error("Failed to fetch projects");
-          }
-          const data = await response.json();
-          console.log("[DEBUG] API data:", data);
-          projects = data.data || [];
-          console.log("[DEBUG] Projects array:", projects);
-          // Remove old markers
-          if (markers.length > 0) {
-            markers.forEach((m) => m.remove());
-          }
-          markers = [];
-          projects.forEach((project, idx) => {
-            // Defensive: ensure required fields
-            if (project.latitude && project.longitude) {
-              const tag = project.status || "default";
-              const statusColor = getStatusColor(tag);
-
-              // Create marker element
-              const el = document.createElement("div");
-              el.className = "marker";
-              el.style.backgroundColor = statusColor;
-              el.style.width = "20px";
-              el.style.height = "20px";
-              el.style.borderRadius = "50%";
-              el.style.border = "2px solid white";
-              el.style.cursor = "pointer";
-
-              // Create popup
-              const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+                    "></div>
+								<input type="hidden" id="project_latitude" name="latitude" />
+								<input type="hidden" id="project_longitude" name="longitude" />
+								<input type="hidden" id="project_county" name="county" />
+								<input type="hidden" id="project_subcounty" name="subcounty" />
+								<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+									<strong>Selected Location:</strong>
+									<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
+										location</span>
+									<br />
+									<span id="selectedCounty" class="text-gray-600"></span>
+								</div>
+							</div>
+							<!-- Title -->
+							<div>
+								<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+								<input required type="text" id="title" name="title"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+
+							<!-- Project Theme -->
+							<div>
+								<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
+									*</label>
+								<select id="theme" name="theme"
+									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+									<option value="">Select Theme</option>
+									<option value="GBV">Gender based violence</option>
+									<option value="AYPSRH">
+										Adolescent and Young People Sexual and Reproductive Health
+									</option>
+									<option value="MNH">Maternal and Newborn Health</option>
+									<option value="FP">Family planning</option>
+									<option value="CH">Child Health</option>
+									<option value="AH">Adolescent Health</option>
+								</select>
+							</div>
+
+							<!-- Time Period -->
+							<div>
+								<label for="starttime_period" class="block text-sm font-medium text-gray-700">
+									Start *
+								</label>
+								<input required type="date" id="starttime_period" name="start_date"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
+									*</label>
+								<input type="date" id="endtime_period" name="end_date"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<!-- Activity Type -->
+							<div class="col-span-2 md:col-span-4">
+								<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
+									(Description) *
+								</label>
+								<textarea required id="activity_type" name="activity_type" rows="3"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+							</div>
+
+							<!-- County and Sub-county fields removed (not required) -->
+
+							<!-- Contact Person -->
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Name *
+								</label>
+								<input required type="text" id="contact_person" name="contact_person_name"
+									placeholder="Name"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Role *
+								</label>
+								<input required type="text" id="contact_person" name="contact_person_role"
+									placeholder="Role"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="contact_person" class="block text-sm font-medium text-gray-700">
+									Contact Person Email *
+								</label>
+								<input required type="email" id="contact_person" name="contact_person_mail"
+									placeholder="Email"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+							<div>
+								<label for="budget" class="block text-sm font-medium text-gray-700">
+									Budget in KES
+								</label>
+								<input required type="number" id="budget" name="budget" placeholder="amount"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+							</div>
+
+							<!-- Gaps -->
+							<div class="col-span-2 lg:col-span-4">
+								<label for="gaps" class="block text-sm font-medium text-gray-700">
+									Objectives *
+								</label>
+								<textarea required id="gaps" name="gaps" rows="3"
+									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+							</div>
+						</div>
+
+						<!-- Button -->
+						<div class="mt-3">
+							<button type="submit"
+								class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+								Submit Project
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="" id="nav-placeholder"></div>
+
+	<section class="bg-cyan-50/50">
+		<div id="localMap" class="h-[450px] mt-20 sm:h-[550px] z-0 w-full"></div>
+	</section>
+	<section class="bg-white">
+		<div class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+			<!-- Status Filter Buttons -->
+			<div class="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-7">
+				<!-- Main Content Area -->
+				<div class="flex flex-col md:col-span-3 fade fade-left lg:col-span-5">
+					<!-- Project Info -->
+					<div id="projectInfo"
+						class="flex-grow hidden p-6 mb-4 bg-white border border-gray-200 shadow-lg rounded-xl">
+						<h3 class="mb-4 text-xl font-semibold text-gray-800">
+							Selected Project Details
+						</h3>
+						<p class="text-gray-700">
+							Details of the selected project will appear here.
+						</p>
+					</div>
+
+					<!-- Accordion -->
+					<div id="projectAccordion"
+						class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0">
+						<!-- Project cards will be rendered here dynamically by JS -->
+					</div>
+
+					<!-- Active Filters Indicator -->
+					<div id="activeFilters" class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+						<div class="flex items-start justify-between">
+							<div>
+								<h4 class="text-sm font-semibold text-blue-800 mb-2">
+									Active Filters:
+								</h4>
+								<div id="filterTags" class="flex flex-wrap gap-2"></div>
+							</div>
+							<button onclick="clearAllFilters()"
+								class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+								Clear All
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Sticky Filter Sidebar (Right Side) -->
+				<div
+					class="sticky p-6 bg-white rounded-lg shadow-md md:col-span-2 lg:col-span-2 fade fade-right h-fit top-6">
+					<h2 class="mb-2 -mt-10 text-sm font-semibold text-right text-gray-800 transform rounded-xl">
+						<i class="p-2 text-black bg-white rounded-sm shadow fas fa-filter"></i>
+					</h2>
+
+					<div class="flex flex-col gap-5">
+						<!-- Search -->
+						<div class="relative w-full">
+							<label for="searchInput" class="sr-only">Search by name...</label>
+							<input type="text" id="searchInput" placeholder="Search by name or project number..."
+								class="block w-full py-2 pl-10 pr-4 text-base text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+							<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+								<i class="text-gray-400 fas fa-search"></i>
+							</div>
+						</div>
+						<div class="grid gap-2 lg:grid-cols-2">
+							<!-- From Date -->
+							<div class="flex flex-col gap-2">
+								<label for="dateFrom" class="text-sm font-medium text-gray-700">From Date:</label>
+								<input type="date" id="dateFrom"
+									class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+							</div>
+
+							<!-- To Date -->
+							<div class="flex flex-col gap-2">
+								<label for="dateTo" class="text-sm font-medium text-gray-700">To Date:</label>
+								<input type="date" id="dateTo"
+									class="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+							</div>
+						</div>
+
+						<!-- Sort By -->
+						<div class="flex flex-col gap-2">
+							<label for="sortSelect" class="text-sm font-medium text-gray-700">Sort By:</label>
+							<select id="sortSelect"
+								class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+								<option value="name">Name (A-Z)</option>
+								<option value="date">Date (Newest First)</option>
+							</select>
+						</div>
+
+						<!-- Filter By Theme -->
+						<div class="flex flex-col gap-2">
+							<label for="themeSelect" class="text-sm font-medium text-gray-700">Themes:</label>
+							<select id="themeSelect"
+								class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+								<option value="all">All Themes</option>
+								<option value="MATERNAL_HEALTH">Maternal Health</option>
+								<option value="NEWBORN_HEALTH">Newborn Health</option>
+								<option value="CHILD_HEALTH">Child Health</option>
+								<option value="ADOLESCENT_HEALTH">Adolescent Health</option>
+								<option value="NUTRITION">Nutrition</option>
+								<option value="FAMILY_PLANNING">Family Planning</option>
+								<option value="HIV_AIDS">HIV/AIDS</option>
+								<option value="IMMUNIZATION">Immunization</option>
+								<option value="WATER_SANITATION">Water & Sanitation</option>
+								<option value="OTHER">Other</option>
+							</select>
+						</div>
+
+						<!-- Filter By Status -->
+						<div class="flex flex-col gap-2">
+							<label for="status" class="text-sm font-medium text-gray-700">Status:</label>
+							<select autocomplete="off" id="status"
+								class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								onchange="highlightMarkers(this.value)">
+								<option value="all">Show All</option>
+								<option value="active">Active</option>
+								<option value="pending">Pending</option>
+								<option value="stalled">Stalled</option>
+								<option value="completed">Completed</option>
+							</select>
+						</div>
+
+						<!-- Filter By Category -->
+						<div class="flex flex-col gap-2">
+							<label for="categorySelect" class="text-sm font-medium text-gray-700">Category:</label>
+							<select id="categorySelect"
+								class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+								<option value="all">All Categories</option>
+								<option value="IMPLEMENTING">Implementing Projects</option>
+								<option value="RESEARCH">Research Projects</option>
+							</select>
+						</div>
+						<button onclick="exportCSV()"
+							class="flex items-center justify-center px-5 py-2 mt-6 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+							<i class="mr-2 fas fa-file-csv"></i> Export Data
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex items-center justify-center px-4 my-4">
+			<div id="paginationControls" class="space-x-2"></div>
+		</div>
+
+		<div class="max-w-6xl px-4 mx-auto mt-12 sm:px-6 lg:px-8">
+			<h2 class="mb-10 text-xl font-light leading-tight text-center text-gray-900 uppercase opacity-70">
+				Impact
+			</h2>
+			<div id="statsContainer" class="flex flex-wrap justify-center gap-6 mb-8" x-data="countdownStats()"
+				@stats-loaded.window="handleStatsLoaded($event.detail)">
+				<div
+					class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
+					<div class="text-5xl font-light font-extrabold text-blue-700" x-text="locations"></div>
+					<p class="mt-3 text-base font-thin font-medium text-gray-600">
+						Locations
+					</p>
+				</div>
+
+				<div
+					class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
+					<div class="text-5xl font-light font-extrabold text-pink-600" x-text="projects"></div>
+					<p class="mt-3 text-base font-thin font-medium text-gray-600">
+						Projects
+					</p>
+				</div>
+
+				<div
+					class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
+					<div class="text-5xl font-light font-extrabold text-green-600" x-text="regions"></div>
+					<p class="mt-3 text-base font-thin font-medium text-gray-600">
+						Regions
+					</p>
+				</div>
+
+				<div
+					class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
+					<div class="text-5xl font-light font-extrabold text-purple-600" x-text="users"></div>
+					<p class="mt-3 text-base font-thin font-medium text-gray-600">
+						Teams
+					</p>
+				</div>
+
+				<div
+					class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105">
+					<div class="text-5xl font-light font-extrabold text-yellow-600" x-text="amountDisplay"></div>
+					<p class="mt-3 text-base font-thin font-medium text-gray-600">
+						Raised (KES)
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--Footer container-->
+	<footer class="flex flex-col items-center text-center bg-white text-surface">
+		<div class="">
+			<!-- Social media icons container -->
+			<div class="flex items-center justify-center mb-6 space-x-2">
+				<a href="#!" type="button"
+					class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+					data-twe-ripple-init>
+					<span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512">
+							<!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+							<path
+								d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+						</svg>
+					</span>
+				</a>
+
+				<a href="#!" type="button"
+					class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+					data-twe-ripple-init>
+					<i class="fab fa-facebook-f"></i>
+				</a>
+
+				<a href="#!" type="button"
+					class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+					data-twe-ripple-init>
+					<span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+							<!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+							<path
+								d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+						</svg>
+					</span>
+				</a>
+
+				<a href="#!" type="button"
+					class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+					data-twe-ripple-init>
+					<span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+							<!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+							<path
+								d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z" />
+						</svg>
+					</span>
+				</a>
+			</div>
+		</div>
+
+		<!--Copyright section-->
+		<div class="w-full p-4 text-xs text-center bg-black/5">
+			© 2025 Copyright:
+			<a href=""> RMNCAH Hub </a>
+		</div>
+	</footer>
+
+	<script src="styles/authnav.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script src="styles/effects.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+
+	<script>
+		// Populate user dropdown with data from authManager
+		document.addEventListener("DOMContentLoaded", function () {
+			// Wait a bit for authManager to initialize
+			setTimeout(() => {
+				const user = authManager.getCachedUser();
+				console.log("[DEBUG] Loading user data for dropdown:", user);
+
+				if (user) {
+					// Update user display name in button
+					const userDisplayName = document.getElementById("userDisplayName");
+					if (userDisplayName) {
+						userDisplayName.textContent = user.name || user.email || "User";
+					}
+
+					// Update user name in dropdown
+					const userNameDisplay = document.getElementById("userNameDisplay");
+					if (userNameDisplay) {
+						userNameDisplay.textContent = user.name || "User";
+					}
+
+					// Update email
+					const userEmailDisplay =
+						document.getElementById("userEmailDisplay");
+					if (userEmailDisplay) {
+						userEmailDisplay.textContent = user.email || "";
+					}
+
+					// Update role
+					const userRoleDisplay = document.getElementById("userRoleDisplay");
+					if (userRoleDisplay) {
+						userRoleDisplay.textContent = user.role || "USER";
+					}
+
+					// Update status
+					const userStatusDisplay =
+						document.getElementById("userStatusDisplay");
+					if (userStatusDisplay) {
+						userStatusDisplay.textContent = user.approvalStatus || "PENDING";
+					}
+
+					// Show admin nav if user is admin
+					if (user.role === "ADMIN") {
+						const adminNavItems = document.querySelectorAll("#adminNav");
+						adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+						const adminCollabMobile = document.getElementById(
+							"admin-collab-mobile"
+						);
+						if (adminCollabMobile) {
+							adminCollabMobile.style.display = "block";
+						}
+					}
+
+					// Show donor nav if user is donor
+					if (user.role === "DONOR") {
+						const donorNavItems = document.querySelectorAll("#donorNav");
+						donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+					}
+				} else {
+					console.warn("[DEBUG] No user data found in cache");
+				}
+			}, 500);
+		});
+	</script>
+
+	<script>
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+	</script>
+	<script type="module">
+		import { BASE_URL } from "./config.js";
+		// Always use global authManager from auth.js, fallback if not present
+		const authManager = window.authManager || {
+			apiCall: () => {
+				throw new Error("authManager is not defined");
+			},
+		};
+
+		let map, selectedMarker;
+		let projects = [];
+		let markers = [];
+		let sortBy = "name";
+		let sortOrder = "asc";
+		let currentPage = 1;
+		const itemsPerPage = 5;
+		let currentFilter = "all";
+		let currentTheme = "all";
+		let currentCategory = "all";
+		let searchQuery = "";
+		let dateRangeFrom = null;
+		let dateRangeTo = null;
+
+		const bgColors = {
+			active: "bg-green-50",
+			pending: "bg-yellow-50",
+			stalled: "bg-red-50",
+			completed: "bg-cyan-100",
+			default: "bg-white",
+		};
+
+		const statusBadge = (tag) => {
+			return (
+				{
+					active: "bg-green-200 text-green-800",
+					pending: "bg-yellow-200 text-yellow-800",
+					stalled: "bg-red-200 text-red-800",
+					completed: "bg-cyan-300 text-gray-800",
+				}[tag] || "bg-gray-200 text-gray-800"
+			);
+		};
+
+		// Get status color for map markers
+		const getStatusColor = (status) => {
+			const colors = {
+				ACTIVE: "#22c55e",
+				active: "#22c55e",
+				PENDING: "#eab308",
+				pending: "#eab308",
+				STALLED: "#ef4444",
+				stalled: "#ef4444",
+				COMPLETED: "#06b6d4",
+				completed: "#06b6d4",
+				default: "#6b7280",
+			};
+			return colors[status] || colors.default;
+		};
+
+		document.addEventListener("DOMContentLoaded", async function () {
+			// Set Mapbox access token
+			mapboxgl.accessToken =
+				"pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+			// Initialize Mapbox map
+			map = new mapboxgl.Map({
+				container: "localMap",
+				style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+				center: [37.9062, -0.0236],
+				zoom: 6.3,
+			});
+
+			// Add zoom and rotation controls to the map
+			map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+			// Load projects with coordinates from backend
+			await loadProjectsWithCoordinates();
+			// Load statistics - this will trigger the stats animation
+			await loadStatistics();
+			console.log("[DEBUG] All data loaded successfully");
+
+			// Event listeners for filters
+			document
+				.getElementById("searchInput")
+				.addEventListener("input", (e) => {
+					searchQuery = e.target.value.trim().toLowerCase();
+					currentPage = 1;
+					highlightMarkers(currentFilter);
+				});
+			document.getElementById("dateFrom").addEventListener("change", (e) => {
+				dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+				currentPage = 1;
+				highlightMarkers(currentFilter);
+			});
+			document.getElementById("dateTo").addEventListener("change", (e) => {
+				dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+				currentPage = 1;
+				highlightMarkers(currentFilter);
+			});
+			document
+				.getElementById("sortSelect")
+				.addEventListener("change", (e) => {
+					sortProjects(e.target.value);
+				});
+
+			// Status filter
+			document.getElementById("status").addEventListener("change", (e) => {
+				currentFilter = e.target.value;
+				currentPage = 1;
+				highlightMarkers(e.target.value);
+			});
+
+			// Theme filter
+			document
+				.getElementById("themeSelect")
+				.addEventListener("change", (e) => {
+					currentTheme = e.target.value;
+					currentPage = 1;
+					highlightMarkers(currentFilter);
+				});
+
+			// Category filter
+			document
+				.getElementById("categorySelect")
+				.addEventListener("change", (e) => {
+					currentCategory = e.target.value;
+					currentPage = 1;
+					highlightMarkers(currentFilter);
+				});
+		});
+
+		async function loadProjectsWithCoordinates() {
+			try {
+				console.log(
+					"[DEBUG] Fetching projects from /api/projects/with-coordinates..."
+				);
+				const response = await authManager.apiCall(
+					"/api/projects/with-coordinates",
+					"GET"
+				);
+				console.log("[DEBUG] API response:", response);
+				if (!response || !response.ok) {
+					console.error("[DEBUG] API response not ok:", response);
+					throw new Error("Failed to fetch projects");
+				}
+				const data = await response.json();
+				console.log("[DEBUG] API data:", data);
+				projects = data.data || [];
+				console.log("[DEBUG] Projects array:", projects);
+				// Remove old markers
+				if (markers.length > 0) {
+					markers.forEach((m) => m.remove());
+				}
+				markers = [];
+				projects.forEach((project, idx) => {
+					// Defensive: ensure required fields
+					if (project.latitude && project.longitude) {
+						const tag = project.status || "default";
+						const statusColor = getStatusColor(tag);
+
+						// Create marker element
+						const el = document.createElement("div");
+						el.className = "marker";
+						el.style.backgroundColor = statusColor;
+						el.style.width = "20px";
+						el.style.height = "20px";
+						el.style.borderRadius = "50%";
+						el.style.border = "2px solid white";
+						el.style.cursor = "pointer";
+
+						// Create popup
+						const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
 							<div style="padding: 10px; min-width: 200px;">
-								<h3 style="font-weight: bold; margin-bottom: 8px;">${
-                  project.name || project.title || "Unnamed Project"
-                }</h3>
-								<p style="margin: 4px 0;"><strong>County:</strong> ${
-                  project.county || "N/A"
-                }</p>
-								<p style="margin: 4px 0;"><strong>Status:</strong> ${
-                  project.status || "N/A"
-                }</p>
-								<p style="margin: 4px 0;"><strong>Budget:</strong> ${
-                  project.budget || "N/A"
-                }</p>
+								<h3 style="font-weight: bold; margin-bottom: 8px;">${project.name || project.title || "Unnamed Project"
+							}</h3>
+								<p style="margin: 4px 0;"><strong>County:</strong> ${project.county || "N/A"
+							}</p>
+								<p style="margin: 4px 0;"><strong>Status:</strong> ${project.status || "N/A"
+							}</p>
+								<p style="margin: 4px 0;"><strong>Budget:</strong> ${project.budget || "N/A"
+							}</p>
 							</div>
 						`);
 
-              // Create marker
-              const marker = new mapboxgl.Marker(el)
-                .setLngLat([project.longitude, project.latitude])
-                .setPopup(popup)
-                .addTo(map);
+						// Create marker
+						const marker = new mapboxgl.Marker(el)
+							.setLngLat([project.longitude, project.latitude])
+							.setPopup(popup)
+							.addTo(map);
 
-              // Add click event
-              el.addEventListener("click", () => {
-                if (selectedMarker && selectedMarker !== marker) {
-                  const oldEl = selectedMarker.getElement();
-                  oldEl.style.width = "20px";
-                  oldEl.style.height = "20px";
-                }
-                el.style.width = "30px";
-                el.style.height = "30px";
-                selectedMarker = marker;
-                showProjectInfo(project);
-              });
+						// Add click event
+						el.addEventListener("click", () => {
+							if (selectedMarker && selectedMarker !== marker) {
+								const oldEl = selectedMarker.getElement();
+								oldEl.style.width = "20px";
+								oldEl.style.height = "20px";
+							}
+							el.style.width = "30px";
+							el.style.height = "30px";
+							selectedMarker = marker;
+							showProjectInfo(project);
+						});
 
-              marker.data = project;
-              marker.tag = tag;
-              markers.push(marker);
-            }
-          });
-          console.log("[DEBUG] Markers array:", markers);
-          highlightMarkers(currentFilter);
-        } catch (err) {
-          console.error("Error loading projects:", err);
-        }
-      }
+						marker.data = project;
+						marker.tag = tag;
+						markers.push(marker);
+					}
+				});
+				console.log("[DEBUG] Markers array:", markers);
+				highlightMarkers(currentFilter);
+			} catch (err) {
+				console.error("Error loading projects:", err);
+			}
+		}
 
-      async function loadStatistics() {
-        try {
-          const response = await authManager.apiCall(
-            "/api/projects/statistics",
-            "GET"
-          );
-          if (!response || !response.ok)
-            throw new Error("Failed to fetch statistics");
-          const stats = await response.json();
-          console.log("[DEBUG] Statistics loaded:", stats);
+		async function loadStatistics() {
+			try {
+				const response = await authManager.apiCall(
+					"/api/projects/statistics",
+					"GET"
+				);
+				if (!response || !response.ok)
+					throw new Error("Failed to fetch statistics");
+				const stats = await response.json();
+				console.log("[DEBUG] Statistics loaded:", stats);
 
-          // Calculate statistics from the API response
-          if (stats.data) {
-            const data = stats.data;
+				// Calculate statistics from the API response
+				if (stats.data) {
+					const data = stats.data;
 
-            // Calculate regions/counties from countyCounts
-            const regions = data.countyCounts ? data.countyCounts.length : 0;
+					// Calculate regions/counties from countyCounts
+					const regions = data.countyCounts ? data.countyCounts.length : 0;
 
-            // Locations is the number of projects with coordinates
-            const locations =
-              data.projectsWithCoordinates || data.totalProjects || 0;
+					// Locations is the number of projects with coordinates
+					const locations =
+						data.projectsWithCoordinates || data.totalProjects || 0;
 
-            // Projects is the total number of projects
-            const projects = data.totalProjects || 0;
+					// Projects is the total number of projects
+					const projects = data.totalProjects || 0;
 
-            // Calculate total active status count (you can adjust this logic)
-            let activeCount = 0;
-            if (data.statusCounts) {
-              data.statusCounts.forEach(([status, count]) => {
-                if (status === "active" || status === "ACTIVE") {
-                  activeCount += count;
-                }
-              });
-            }
+					// Calculate total active status count (you can adjust this logic)
+					let activeCount = 0;
+					if (data.statusCounts) {
+						data.statusCounts.forEach(([status, count]) => {
+							if (status === "active" || status === "ACTIVE") {
+								activeCount += count;
+							}
+						});
+					}
 
-            // Store the statistics in a global variable that Alpine.js can access
-            window.statsData = {
-              locations: locations,
-              projects: projects,
-              regions: regions,
-              users: activeCount || projects, // Use active projects or total as "teams"
-              amount: projects * 1000000, // Estimate: 1M KES per project (adjust as needed)
-            };
+					// Store the statistics in a global variable that Alpine.js can access
+					window.statsData = {
+						locations: locations,
+						projects: projects,
+						regions: regions,
+						users: activeCount || projects, // Use active projects or total as "teams"
+						amount: projects * 1000000, // Estimate: 1M KES per project (adjust as needed)
+					};
 
-            console.log("[DEBUG] Calculated statsData:", window.statsData);
+					console.log("[DEBUG] Calculated statsData:", window.statsData);
 
-            // Dispatch a custom event that Alpine.js will listen to
-            window.dispatchEvent(
-              new CustomEvent("stats-loaded", {
-                detail: window.statsData,
-              })
-            );
-          }
-        } catch (err) {
-          console.error("Error loading statistics:", err);
-          // Use fallback data if API fails
-          window.statsData = {
-            locations: 35,
-            projects: 120,
-            regions: 15,
-            users: 500,
-            amount: 4500000,
-          };
-        }
-      }
-      function showProjectInfo(project) {
-        const infoBox = document.getElementById("projectInfo");
-        infoBox.classList.remove("hidden");
-        infoBox.innerHTML = `
+					// Dispatch a custom event that Alpine.js will listen to
+					window.dispatchEvent(
+						new CustomEvent("stats-loaded", {
+							detail: window.statsData,
+						})
+					);
+				}
+			} catch (err) {
+				console.error("Error loading statistics:", err);
+				// Use fallback data if API fails
+				window.statsData = {
+					locations: 35,
+					projects: 120,
+					regions: 15,
+					users: 500,
+					amount: 4500000,
+				};
+			}
+		}
+		function showProjectInfo(project) {
+			const infoBox = document.getElementById("projectInfo");
+			infoBox.classList.remove("hidden");
+			infoBox.innerHTML = `
             <div class="space-y-4">
                 <!-- Project Header -->
                 <div class="flex items-start justify-between pb-4 border-b border-gray-200">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-1">${
-                          project.title || project.name || "Untitled Project"
-                        }</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-1">${project.title || project.name || "Untitled Project"
+				}</h3>
                         <p class="text-sm text-gray-500">Project Details</p>
                     </div>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${statusBadge(
-                      project.status?.toLowerCase()
-                    )}">
-                        <span class="w-2 h-2 mr-2 rounded-full ${
-                          project.status?.toLowerCase() === "active"
-                            ? "bg-green-600"
-                            : project.status?.toLowerCase() === "pending"
-                            ? "bg-yellow-600"
-                            : project.status?.toLowerCase() === "stalled"
-                            ? "bg-red-600"
-                            : project.status?.toLowerCase() === "completed"
-                            ? "bg-cyan-600"
-                            : "bg-gray-600"
-                        }"></span>
+					project.status?.toLowerCase()
+				)}">
+                        <span class="w-2 h-2 mr-2 rounded-full ${project.status?.toLowerCase() === "active"
+					? "bg-green-600"
+					: project.status?.toLowerCase() === "pending"
+						? "bg-yellow-600"
+						: project.status?.toLowerCase() === "stalled"
+							? "bg-red-600"
+							: project.status?.toLowerCase() === "completed"
+								? "bg-cyan-600"
+								: "bg-gray-600"
+				}"></span>
                         ${project.status || "N/A"}
                     </span>
                 </div>
@@ -1666,9 +947,8 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">County</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${
-                              project.county || "Not specified"
-                            }</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${project.county || "Not specified"
+				}</p>
                         </div>
                     </div>
 
@@ -1681,11 +961,10 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Budget</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-0.5">KES ${
-                              project.budget
-                                ? Number(project.budget).toLocaleString()
-                                : "N/A"
-                            }</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5">KES ${project.budget
+					? Number(project.budget).toLocaleString()
+					: "N/A"
+				}</p>
                         </div>
                     </div>
 
@@ -1698,9 +977,8 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Partner</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-0.5 truncate">${
-                              project.partner || "Not assigned"
-                            }</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5 truncate">${project.partner || "Not assigned"
+				}</p>
                         </div>
                     </div>
 
@@ -1713,13 +991,12 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Category</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${
-                              project.category === "IMPLEMENTING"
-                                ? "Implementing Project"
-                                : project.category === "RESEARCH"
-                                ? "Research Project"
-                                : "N/A"
-                            }</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${project.category === "IMPLEMENTING"
+					? "Implementing Project"
+					: project.category === "RESEARCH"
+						? "Research Project"
+						: "N/A"
+				}</p>
                         </div>
                     </div>
 
@@ -1732,34 +1009,31 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Start Date</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${
-                              project.startDate || project.start_date
-                                ? new Date(
-                                    project.startDate || project.start_date
-                                  ).toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })
-                                : "Not specified"
-                            }</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-0.5">${project.startDate || project.start_date
+					? new Date(
+						project.startDate || project.start_date
+					).toLocaleDateString("en-US", {
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+					})
+					: "Not specified"
+				}</p>
                         </div>
                     </div>
                 </div>
 
-                ${
-                  project.description || project.objectives
-                    ? `
+                ${project.description || project.objectives
+					? `
                     <!-- Description -->
                     <div class="pt-4 border-t border-gray-200">
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Description</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">${
-                          project.description || project.objectives || ""
-                        }</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">${project.description || project.objectives || ""
+					}</p>
                     </div>
                 `
-                    : ""
-                }
+					: ""
+				}
 
                 <!-- Action Button -->
                 <div class="pt-2">
@@ -1770,231 +1044,228 @@
                 </div>
             </div>
         `;
-      }
+		}
 
-      function focusMarker(index) {
-        const marker = markers[index];
-        if (marker && marker.data) {
-          const project = marker.data;
-          map.flyTo({
-            center: [project.longitude, project.latitude],
-            zoom: 12,
-          });
-          marker.togglePopup();
-          document
-            .getElementById("localMap")
-            .scrollIntoView({ behavior: "smooth" });
-        }
-      }
+		function focusMarker(index) {
+			const marker = markers[index];
+			if (marker && marker.data) {
+				const project = marker.data;
+				map.flyTo({
+					center: [project.longitude, project.latitude],
+					zoom: 12,
+				});
+				marker.togglePopup();
+				document
+					.getElementById("localMap")
+					.scrollIntoView({ behavior: "smooth" });
+			}
+		}
 
-      function sortProjects(field) {
-        if (sortBy === field) {
-          sortOrder = sortOrder === "asc" ? "desc" : "asc";
-        } else {
-          sortBy = field;
-          sortOrder = "asc";
-        }
-        currentPage = 1;
-        highlightMarkers(currentFilter);
-      }
+		function sortProjects(field) {
+			if (sortBy === field) {
+				sortOrder = sortOrder === "asc" ? "desc" : "asc";
+			} else {
+				sortBy = field;
+				sortOrder = "asc";
+			}
+			currentPage = 1;
+			highlightMarkers(currentFilter);
+		}
 
-      // Update active filters display
-      function updateActiveFilters() {
-        const filterContainer = document.getElementById("activeFilters");
-        const filterTags = document.getElementById("filterTags");
+		// Update active filters display
+		function updateActiveFilters() {
+			const filterContainer = document.getElementById("activeFilters");
+			const filterTags = document.getElementById("filterTags");
 
-        if (!filterContainer || !filterTags) return;
+			if (!filterContainer || !filterTags) return;
 
-        const activeFilters = [];
+			const activeFilters = [];
 
-        // Check each filter type
-        if (currentFilter !== "all") {
-          activeFilters.push({
-            type: "Status",
-            value:
-              currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1),
-          });
-        }
-        if (currentTheme !== "all") {
-          const themeName = currentTheme
-            .split("_")
-            .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
-            .join(" ");
-          activeFilters.push({ type: "Theme", value: themeName });
-        }
-        if (currentCategory !== "all") {
-          const categoryName =
-            currentCategory === "IMPLEMENTING"
-              ? "Implementing Projects"
-              : "Research Projects";
-          activeFilters.push({ type: "Category", value: categoryName });
-        }
-        if (searchQuery) {
-          activeFilters.push({ type: "Search", value: searchQuery });
-        }
-        if (dateRangeFrom) {
-          activeFilters.push({
-            type: "From",
-            value: new Date(dateRangeFrom).toLocaleDateString(),
-          });
-        }
-        if (dateRangeTo) {
-          activeFilters.push({
-            type: "To",
-            value: new Date(dateRangeTo).toLocaleDateString(),
-          });
-        }
+			// Check each filter type
+			if (currentFilter !== "all") {
+				activeFilters.push({
+					type: "Status",
+					value:
+						currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1),
+				});
+			}
+			if (currentTheme !== "all") {
+				const themeName = currentTheme
+					.split("_")
+					.map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+					.join(" ");
+				activeFilters.push({ type: "Theme", value: themeName });
+			}
+			if (currentCategory !== "all") {
+				const categoryName =
+					currentCategory === "IMPLEMENTING"
+						? "Implementing Projects"
+						: "Research Projects";
+				activeFilters.push({ type: "Category", value: categoryName });
+			}
+			if (searchQuery) {
+				activeFilters.push({ type: "Search", value: searchQuery });
+			}
+			if (dateRangeFrom) {
+				activeFilters.push({
+					type: "From",
+					value: new Date(dateRangeFrom).toLocaleDateString(),
+				});
+			}
+			if (dateRangeTo) {
+				activeFilters.push({
+					type: "To",
+					value: new Date(dateRangeTo).toLocaleDateString(),
+				});
+			}
 
-        // Show/hide filter container
-        if (activeFilters.length > 0) {
-          filterContainer.classList.remove("hidden");
-          filterTags.innerHTML = activeFilters
-            .map(
-              (filter) => `
+			// Show/hide filter container
+			if (activeFilters.length > 0) {
+				filterContainer.classList.remove("hidden");
+				filterTags.innerHTML = activeFilters
+					.map(
+						(filter) => `
             <span class="inline-flex items-center px-3 py-1 bg-white border border-blue-300 rounded-full text-sm text-blue-800">
               <strong class="mr-1">${filter.type}:</strong> ${filter.value}
             </span>
           `
-            )
-            .join("");
-        } else {
-          filterContainer.classList.add("hidden");
-        }
-      }
+					)
+					.join("");
+			} else {
+				filterContainer.classList.add("hidden");
+			}
+		}
 
-      // Clear all filters
-      window.clearAllFilters = function () {
-        currentFilter = "all";
-        currentTheme = "all";
-        currentCategory = "all";
-        searchQuery = "";
-        dateRangeFrom = null;
-        dateRangeTo = null;
-        currentPage = 1;
+		// Clear all filters
+		window.clearAllFilters = function () {
+			currentFilter = "all";
+			currentTheme = "all";
+			currentCategory = "all";
+			searchQuery = "";
+			dateRangeFrom = null;
+			dateRangeTo = null;
+			currentPage = 1;
 
-        // Reset form inputs
-        document.getElementById("searchInput").value = "";
-        document.getElementById("dateFrom").value = "";
-        document.getElementById("dateTo").value = "";
-        document.getElementById("status").value = "all";
-        document.getElementById("themeSelect").value = "all";
-        document.getElementById("categorySelect").value = "all";
-        document.getElementById("sortSelect").value = "name";
+			// Reset form inputs
+			document.getElementById("searchInput").value = "";
+			document.getElementById("dateFrom").value = "";
+			document.getElementById("dateTo").value = "";
+			document.getElementById("status").value = "all";
+			document.getElementById("themeSelect").value = "all";
+			document.getElementById("categorySelect").value = "all";
+			document.getElementById("sortSelect").value = "name";
 
-        sortBy = "name";
-        sortOrder = "asc";
+			sortBy = "name";
+			sortOrder = "asc";
 
-        highlightMarkers("all");
-      };
+			highlightMarkers("all");
+		};
 
-      function highlightMarkers(tag) {
-        currentFilter = tag;
-        const accordion = document.getElementById("projectAccordion");
-        const infoBox = document.getElementById("projectInfo");
-        if (!accordion) {
-          console.error("[DEBUG] #projectAccordion not found in DOM");
-          return;
-        }
-        if (!infoBox) {
-          console.error("[DEBUG] #projectInfo not found in DOM");
-          return;
-        }
-        infoBox.classList.add("hidden");
-        accordion.innerHTML = "";
-        accordion.classList.remove("hidden");
-        accordion.classList.add("opacity-0", "translate-y-4");
+		function highlightMarkers(tag) {
+			currentFilter = tag;
+			const accordion = document.getElementById("projectAccordion");
+			const infoBox = document.getElementById("projectInfo");
+			if (!accordion) {
+				console.error("[DEBUG] #projectAccordion not found in DOM");
+				return;
+			}
+			if (!infoBox) {
+				console.error("[DEBUG] #projectInfo not found in DOM");
+				return;
+			}
+			infoBox.classList.add("hidden");
+			accordion.innerHTML = "";
+			accordion.classList.remove("hidden");
+			accordion.classList.add("opacity-0", "translate-y-4");
 
-        let filteredMarkers = markers.filter((marker) => {
-          const p = marker.data;
-          // Filter by status
-          if (tag !== "all" && marker.tag !== tag) return false;
-          // Filter by theme
-          if (currentTheme !== "all" && p.projectTheme !== currentTheme)
-            return false;
-          // Filter by category
-          if (currentCategory !== "all" && p.category !== currentCategory)
-            return false;
-          // Filter by search query
-          if (
-            searchQuery &&
-            !p.name.toLowerCase().includes(searchQuery) &&
-            !(p.projectNo && p.projectNo.toLowerCase().includes(searchQuery))
-          )
-            return false;
-          // Filter by date range
-          const pDate = p.start_date ? new Date(p.start_date) : null;
-          if (dateRangeFrom && pDate && pDate < dateRangeFrom) return false;
-          if (dateRangeTo && pDate && pDate > dateRangeTo) return false;
-          return true;
-        });
-        console.log(
-          "[DEBUG] highlightMarkers: filteredMarkers:",
-          filteredMarkers
-        );
+			let filteredMarkers = markers.filter((marker) => {
+				const p = marker.data;
+				// Filter by status
+				if (tag !== "all" && marker.tag !== tag) return false;
+				// Filter by theme
+				if (currentTheme !== "all" && p.projectTheme !== currentTheme)
+					return false;
+				// Filter by category
+				if (currentCategory !== "all" && p.category !== currentCategory)
+					return false;
+				// Filter by search query
+				if (
+					searchQuery &&
+					!p.name.toLowerCase().includes(searchQuery) &&
+					!(p.projectNo && p.projectNo.toLowerCase().includes(searchQuery))
+				)
+					return false;
+				// Filter by date range
+				const pDate = p.start_date ? new Date(p.start_date) : null;
+				if (dateRangeFrom && pDate && pDate < dateRangeFrom) return false;
+				if (dateRangeTo && pDate && pDate > dateRangeTo) return false;
+				return true;
+			});
+			console.log(
+				"[DEBUG] highlightMarkers: filteredMarkers:",
+				filteredMarkers
+			);
 
-        filteredMarkers.sort((a, b) => {
-          const aVal =
-            sortBy === "name" ? a.data.name : new Date(a.data.start_date);
-          const bVal =
-            sortBy === "name" ? b.data.name : new Date(b.data.start_date);
-          return sortOrder === "asc"
-            ? aVal > bVal
-              ? 1
-              : -1
-            : aVal < bVal
-            ? 1
-            : -1;
-        });
+			filteredMarkers.sort((a, b) => {
+				const aVal =
+					sortBy === "name" ? a.data.name : new Date(a.data.start_date);
+				const bVal =
+					sortBy === "name" ? b.data.name : new Date(b.data.start_date);
+				return sortOrder === "asc"
+					? aVal > bVal
+						? 1
+						: -1
+					: aVal < bVal
+						? 1
+						: -1;
+			});
 
-        const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-        const paginated = filteredMarkers.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        );
-        console.log("[DEBUG] highlightMarkers: paginated:", paginated);
-        updatePaginationControls(totalPages);
+			const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
+			const paginated = filteredMarkers.slice(
+				(currentPage - 1) * itemsPerPage,
+				currentPage * itemsPerPage
+			);
+			console.log("[DEBUG] highlightMarkers: paginated:", paginated);
+			updatePaginationControls(totalPages);
 
-        // Update marker visibility
-        markers.forEach((marker) => {
-          const el = marker.getElement();
-          if (el) {
-            el.style.opacity = filteredMarkers.includes(marker) ? "1" : "0.3";
-          }
-        });
+			// Update marker visibility
+			markers.forEach((marker) => {
+				const el = marker.getElement();
+				if (el) {
+					el.style.opacity = filteredMarkers.includes(marker) ? "1" : "0.3";
+				}
+			});
 
-        setTimeout(
-          () => accordion.classList.remove("opacity-0", "translate-y-4"),
-          10
-        );
+			setTimeout(
+				() => accordion.classList.remove("opacity-0", "translate-y-4"),
+				10
+			);
 
-        // Update active filters display
-        updateActiveFilters();
+			// Update active filters display
+			updateActiveFilters();
 
-        paginated.forEach((marker, idx) => {
-          const i = markers.indexOf(marker);
-          const project = marker.data;
-          const bg = bgColors[project.status] || bgColors.default;
+			paginated.forEach((marker, idx) => {
+				const i = markers.indexOf(marker);
+				const project = marker.data;
+				const bg = bgColors[project.status] || bgColors.default;
 
-          const item = document.createElement("div");
-          item.className = `rounded shadow-sm ${bg}`;
+				const item = document.createElement("div");
+				item.className = `rounded shadow-sm ${bg}`;
 
-          item.innerHTML = `
+				item.innerHTML = `
             <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <div>
-                        <h4 class="text-lg font-semibold text-gray-800">${
-                          project.projectNo || ""
-                        } - ${project.title || ""}</h4>
-                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${
-            project.objectives || ""
-          }</p>
+                        <h4 class="text-lg font-semibold text-gray-800">${project.projectNo || ""
+					} - ${project.title || ""}</h4>
+                        <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${project.objectives || ""
+					}</p>
                     </div>
                     <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
-                        ${
-                          project.startDate
-                            ? new Date(project.startDate).toLocaleDateString()
-                            : ""
-                        }
+                        ${project.startDate
+						? new Date(project.startDate).toLocaleDateString()
+						: ""
+					}
                     </div>
                 </div>
             </button>
@@ -2004,215 +1275,213 @@
                 <p><strong>Partner:</strong> ${project.partner || ""}</p>
                 <p><strong>Status:</strong> 
                     <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(
-                      project.status
-                    )}">
+						project.status
+					)}">
                         ${project.status || ""}
                     </span>
                 </p>
-                <p><strong>Category:</strong> ${
-                  project.projectCategory === "IMPLEMENTING"
-                    ? "Implementing Project"
-                    : project.projectCategory === "RESEARCH"
-                    ? "Research Project"
-                    : project.projectCategory === "PRIORITY"
-                    ? "Priority Project"
-                    : "N/A"
-                }</p>
+                <p><strong>Category:</strong> ${project.projectCategory === "IMPLEMENTING"
+						? "Implementing Project"
+						: project.projectCategory === "RESEARCH"
+							? "Research Project"
+							: project.projectCategory === "PRIORITY"
+								? "Priority Project"
+								: "N/A"
+					}</p>
                 <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                     Show on Map
                 </button>
             </div>
           `;
 
-          accordion.appendChild(item);
+				accordion.appendChild(item);
 
-          // Toggle description between truncated and full
-          const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
-          btn.addEventListener("click", () => {
-            const collapse = document.getElementById(`collapse-${i}`);
-            const desc = document.getElementById(`desc-${i}`);
-            if (!collapse || !desc) return;
-            collapse.classList.toggle("hidden");
-            if (!collapse.classList.contains("hidden")) {
-              desc.textContent =
-                project.fullDescription || project.description || "";
-            } else {
-              desc.textContent = project.description || "";
-            }
-          });
-        });
-      }
+				// Toggle description between truncated and full
+				const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
+				btn.addEventListener("click", () => {
+					const collapse = document.getElementById(`collapse-${i}`);
+					const desc = document.getElementById(`desc-${i}`);
+					if (!collapse || !desc) return;
+					collapse.classList.toggle("hidden");
+					if (!collapse.classList.contains("hidden")) {
+						desc.textContent =
+							project.fullDescription || project.description || "";
+					} else {
+						desc.textContent = project.description || "";
+					}
+				});
+			});
+		}
 
-      function updatePaginationControls(totalPages) {
-        const container = document.getElementById("paginationControls");
-        container.innerHTML = "";
-        for (let i = 1; i <= totalPages; i++) {
-          const btn = document.createElement("button");
-          btn.textContent = i;
-          btn.className = `px-3 py-1 rounded ${
-            i === currentPage
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-          }`;
-          btn.onclick = () => {
-            currentPage = i;
-            highlightMarkers(currentFilter);
-          };
-          container.appendChild(btn);
-        }
-      }
+		function updatePaginationControls(totalPages) {
+			const container = document.getElementById("paginationControls");
+			container.innerHTML = "";
+			for (let i = 1; i <= totalPages; i++) {
+				const btn = document.createElement("button");
+				btn.textContent = i;
+				btn.className = `px-3 py-1 rounded ${i === currentPage
+					? "bg-blue-600 text-white"
+					: "bg-gray-100 text-gray-800 hover:bg-gray-200"
+					}`;
+				btn.onclick = () => {
+					currentPage = i;
+					highlightMarkers(currentFilter);
+				};
+				container.appendChild(btn);
+			}
+		}
 
-      window.exportCSV = function exportCSV() {
-        const headers = [
-          "Name",
-          "Description",
-          "County/Region",
-          "Budget",
-          "Partner",
-          "Theme",
-          "Category",
-          "Start Date",
-          "Status",
-        ];
-        const rows = markers
-          .map((m) => m.data)
-          .filter((p) => {
-            if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
-              return false;
-            const date = p.start_date ? new Date(p.start_date) : null;
-            if (dateRangeFrom && date && date < dateRangeFrom) return false;
-            if (dateRangeTo && date && date > dateRangeTo) return false;
-            if (
-              currentFilter !== "all" &&
-              p.status?.toLowerCase() !== currentFilter
-            )
-              return false;
-            if (currentTheme !== "all" && p.projectTheme !== currentTheme)
-              return false;
-            if (currentCategory !== "all" && p.category !== currentCategory)
-              return false;
-            return true;
-          })
-          .map((p) => [
-            p.name || p.title || "",
-            p.description || p.objectives || "",
-            p.county || p.region || "",
-            p.budget || "",
-            p.partner || "",
-            p.projectTheme || "",
-            p.category === "IMPLEMENTING"
-              ? "Implementing Project"
-              : p.category === "RESEARCH"
-              ? "Research Project"
-              : "",
-            p.start_date ? new Date(p.start_date).toLocaleDateString() : "",
-            p.status,
-          ]);
+		window.exportCSV = function exportCSV() {
+			const headers = [
+				"Name",
+				"Description",
+				"County/Region",
+				"Budget",
+				"Partner",
+				"Theme",
+				"Category",
+				"Start Date",
+				"Status",
+			];
+			const rows = markers
+				.map((m) => m.data)
+				.filter((p) => {
+					if (searchQuery && !p.name.toLowerCase().includes(searchQuery))
+						return false;
+					const date = p.start_date ? new Date(p.start_date) : null;
+					if (dateRangeFrom && date && date < dateRangeFrom) return false;
+					if (dateRangeTo && date && date > dateRangeTo) return false;
+					if (
+						currentFilter !== "all" &&
+						p.status?.toLowerCase() !== currentFilter
+					)
+						return false;
+					if (currentTheme !== "all" && p.projectTheme !== currentTheme)
+						return false;
+					if (currentCategory !== "all" && p.category !== currentCategory)
+						return false;
+					return true;
+				})
+				.map((p) => [
+					p.name || p.title || "",
+					p.description || p.objectives || "",
+					p.county || p.region || "",
+					p.budget || "",
+					p.partner || "",
+					p.projectTheme || "",
+					p.category === "IMPLEMENTING"
+						? "Implementing Project"
+						: p.category === "RESEARCH"
+							? "Research Project"
+							: "",
+					p.start_date ? new Date(p.start_date).toLocaleDateString() : "",
+					p.status,
+				]);
 
-        let csvContent = [headers.join(",")];
-        rows.forEach((r) =>
-          csvContent.push(r.map((field) => `"${field}"`).join(","))
-        );
+			let csvContent = [headers.join(",")];
+			rows.forEach((r) =>
+				csvContent.push(r.map((field) => `"${field}"`).join(","))
+			);
 
-        const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `projects_${
-          new Date().toISOString().split("T")[0]
-        }.csv`;
-        link.click();
-      };
-    </script>
+			const blob = new Blob([csvContent.join("\n")], { type: "text/csv" });
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = `projects_${new Date().toISOString().split("T")[0]
+				}.csv`;
+			link.click();
+		};
+	</script>
 
-    <script>
-      function countdownStats() {
-        return {
-          locations: 0,
-          projects: 0,
-          regions: 0,
-          users: 0,
-          amount: 0,
-          amountDisplay: "Loading...",
+	<script>
+		function countdownStats() {
+			return {
+				locations: 0,
+				projects: 0,
+				regions: 0,
+				users: 0,
+				amount: 0,
+				amountDisplay: "Loading...",
 
-          targets: {
-            locations: 0,
-            projects: 0,
-            regions: 0,
-            users: 0,
-            amount: 0,
-          },
+				targets: {
+					locations: 0,
+					projects: 0,
+					regions: 0,
+					users: 0,
+					amount: 0,
+				},
 
-          duration: 1500, // in ms
-          steps: 30,
+				duration: 1500, // in ms
+				steps: 30,
 
-          // Handle stats loaded event
-          handleStatsLoaded(data) {
-            console.log("[DEBUG] handleStatsLoaded called with:", data);
-            this.targets = { ...data };
-            this.start();
-          },
+				// Handle stats loaded event
+				handleStatsLoaded(data) {
+					console.log("[DEBUG] handleStatsLoaded called with:", data);
+					this.targets = { ...data };
+					this.start();
+				},
 
-          // number formatter
-          formatAmount(value) {
-            if (value >= 1e12) return (value / 1e12).toFixed(2) + "Tn";
-            if (value >= 1e9) return (value / 1e9).toFixed(2) + "Bn";
-            if (value >= 1e6) return (value / 1e6).toFixed(2) + "Mn";
-            if (value >= 1e3) return (value / 1e3).toFixed(2) + "K";
-            return value.toString();
-          },
+				// number formatter
+				formatAmount(value) {
+					if (value >= 1e12) return (value / 1e12).toFixed(2) + "Tn";
+					if (value >= 1e9) return (value / 1e9).toFixed(2) + "Bn";
+					if (value >= 1e6) return (value / 1e6).toFixed(2) + "Mn";
+					if (value >= 1e3) return (value / 1e3).toFixed(2) + "K";
+					return value.toString();
+				},
 
-          start() {
-            console.log("[DEBUG] start() called with targets:", this.targets);
+				start() {
+					console.log("[DEBUG] start() called with targets:", this.targets);
 
-            // Update targets if statsData is available
-            if (window.statsData) {
-              this.targets = { ...window.statsData };
-              console.log(
-                "[DEBUG] Updated targets from statsData:",
-                this.targets
-              );
-            }
+					// Update targets if statsData is available
+					if (window.statsData) {
+						this.targets = { ...window.statsData };
+						console.log(
+							"[DEBUG] Updated targets from statsData:",
+							this.targets
+						);
+					}
 
-            const interval = this.duration / this.steps;
+					const interval = this.duration / this.steps;
 
-            let currentStep = 0;
-            const timer = setInterval(() => {
-              currentStep++;
-              const progress = currentStep / this.steps;
+					let currentStep = 0;
+					const timer = setInterval(() => {
+						currentStep++;
+						const progress = currentStep / this.steps;
 
-              this.locations = Math.floor(this.targets.locations * progress);
-              this.projects = Math.floor(this.targets.projects * progress);
-              this.regions = Math.floor(this.targets.regions * progress);
-              this.users = Math.floor(this.targets.users * progress);
-              this.amount = Math.floor(this.targets.amount * progress);
+						this.locations = Math.floor(this.targets.locations * progress);
+						this.projects = Math.floor(this.targets.projects * progress);
+						this.regions = Math.floor(this.targets.regions * progress);
+						this.users = Math.floor(this.targets.users * progress);
+						this.amount = Math.floor(this.targets.amount * progress);
 
-              // use formatter here
-              this.amountDisplay = "" + this.formatAmount(this.amount);
+						// use formatter here
+						this.amountDisplay = "" + this.formatAmount(this.amount);
 
-              if (currentStep >= this.steps) {
-                // Ensure final values are exact
-                this.locations = this.targets.locations;
-                this.projects = this.targets.projects;
-                this.regions = this.targets.regions;
-                this.users = this.targets.users;
-                this.amount = this.targets.amount;
-                this.amountDisplay = "" + this.formatAmount(this.amount);
-                console.log("[DEBUG] Animation complete. Final values:", {
-                  locations: this.locations,
-                  projects: this.projects,
-                  regions: this.regions,
-                  users: this.users,
-                  amount: this.amount,
-                  amountDisplay: this.amountDisplay,
-                });
-                clearInterval(timer);
-              }
-            }, interval);
-          },
-        };
-      }
-    </script>
+						if (currentStep >= this.steps) {
+							// Ensure final values are exact
+							this.locations = this.targets.locations;
+							this.projects = this.targets.projects;
+							this.regions = this.targets.regions;
+							this.users = this.targets.users;
+							this.amount = this.targets.amount;
+							this.amountDisplay = "" + this.formatAmount(this.amount);
+							console.log("[DEBUG] Animation complete. Final values:", {
+								locations: this.locations,
+								projects: this.projects,
+								regions: this.regions,
+								users: this.users,
+								amount: this.amount,
+								amountDisplay: this.amountDisplay,
+							});
+							clearInterval(timer);
+						}
+					}, interval);
+				},
+			};
+		}
+	</script>
 
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-  </body>
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+</body>
+
 </html>

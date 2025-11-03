@@ -27,18 +27,26 @@
                     class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-800">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+                            <a href="../new-project.html">
+                                <i class="far fa-plus mr-3 text-emerald-500"></i> New
+                                Project
                             </a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../projects.html#my-projects">
-                                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+                                <i class="far fa-user-check mr-2 text-sky-500"></i> My
+                                Projects
                             </a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../all-projects.html">
                                 <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                                Projects
+                            </a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <a href="../past-projects.html">
+                                <i class="far fa-history mr-2 text-gray-500"></i> Past
                                 Projects
                             </a>
                         </li>
@@ -69,11 +77,18 @@
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../announcements.html">
-                                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+                                <i class="far fa-search mr-2 text-cyan-500"></i> Find
+                                Projects
                             </a>
                         </li>
                     </ul>
                 </div>
+            </li>
+            <li>
+                <a href="../announcements.html"
+                    class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
+                    Announcements
+                </a>
             </li>
         </ul>
 
@@ -137,7 +152,8 @@
                         <li id="donorNav" class="hidden">
                             <a href="../donor-management.html"
                                 class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+                                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+                                Management
                             </a>
                         </li>
                     </ul>
@@ -170,6 +186,11 @@
                 <a href="../index.html" class="uppercase transition hover:text-lime-600">Home</a>
             </li>
 
+            <li>
+                <a href="../announcements.html" class="uppercase transition hover:text-indigo-600">
+                    <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
+                </a>
+            </li>
             <!-- Projects Dropdown -->
             <li x-data="{ showprojectDropdown: false }" class="relative">
                 <button @click="showprojectDropdown = !showprojectDropdown"
@@ -180,18 +201,26 @@
                     class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-800">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a data-twe-toggle="modal" data-twe-target="#createNewProject">
-                                <i class="far fa-plus mr-3 text-emerald-500"></i> New Project
+                            <a href="../new-project.html">
+                                <i class="far fa-plus mr-3 text-emerald-500"></i> New
+                                Project
                             </a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../projects.html#my-projects">
-                                <i class="far fa-user-check mr-2 text-sky-500"></i> My Projects
+                                <i class="far fa-user-check mr-2 text-sky-500"></i> My
+                                Projects
                             </a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../all-projects.html">
                                 <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
+                                Projects
+                            </a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <a href="../past-projects.html">
+                                <i class="far fa-history mr-2 text-gray-500"></i> Past
                                 Projects
                             </a>
                         </li>
@@ -222,14 +251,25 @@
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <a href="../announcements.html">
-                                <i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+                                <i class="far fa-search mr-2 text-cyan-500"></i> Find
+                                Projects
                             </a>
                         </li>
                     </ul>
                 </div>
             </li>
+            <li>
+                <a href="../announcements.html" class="uppercase transition hover:text-indigo-600">
+                    Announcements
+                </a>
+            </li>
 
-            <!-- Admin -->
+            <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                <!-- Announcements link moved to standalone nav item -->
+
+                <!-- Admin -->
+            </li>
+
             <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
                 <button @click="showDropdown = !showDropdown"
                     class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600">
@@ -287,7 +327,8 @@
                         <li id="donorNav" class="hidden">
                             <a href="../donor-management.html"
                                 class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-                                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+                                <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+                                Management
                             </a>
                         </li>
                     </ul>
