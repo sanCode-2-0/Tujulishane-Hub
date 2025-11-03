@@ -1431,10 +1431,20 @@
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
-          const formData = new FormData(this);
+          // Don't use FormData(this) to avoid including empty file inputs
+          // Instead, collect form data manually
+          const formData = new FormData();
 
-          // Add selected files to FormData
-          selectedFiles.forEach((file, index) => {
+          // Add all form fields except file inputs
+          const formElements = this.querySelectorAll('input:not([type="file"]), textarea, select');
+          formElements.forEach(element => {
+            if (element.name && element.value) {
+              formData.append(element.name, element.value);
+            }
+          });
+
+          // Add selected files to FormData (only valid files)
+          selectedFiles.filter(f => f.size > 0).forEach((file) => {
             formData.append(`documents`, file);
           });
 
@@ -1506,41 +1516,45 @@
             // Create project object as expected by backend
             const projectData = {
               title: data.title,
-              start_date: data.start_date,
-              end_date: data.end_date,
-              activity_type: data.activity_type,
-              budget: parseInt(data.budget) || 0,
+              startDate: data.start_date,
+              endDate: data.end_date,
+              activityType: data.activity_type,
+              budget: parseFloat(data.budget) || 0,
               objectives: data.objectives,
-              locations: data.locations,
+              locations: data.locations.map(loc => ({
+                latitude: loc.latitude,
+                longitude: loc.longitude,
+                county: loc.county || "Meru", // Default county for Kenya locations
+                subCounty: loc.subCounty || null,
+                mapsAddress: loc.mapsAddress || `${loc.latitude},${loc.longitude}`
+              })),
               themes: data.themes,
-              contact_person_name: data.contact_person_name,
-              contact_person_role: data.contact_person_role,
-              contact_person_email: data.contact_person_mail // Backend expects 'email' not 'mail'
+              contactPersonName: data.contact_person_name,
+              contactPersonRole: data.contact_person_role,
+              contactPersonEmail: data.contact_person_mail,
+              projectCategory: "IMPLEMENTING" // Default category for new projects
             };
 
             console.log("Project data object to send:", projectData);
 
-            // Try sending individual fields instead of wrapped project object
+            // Backend expects a 'project' field with JSON data
             const finalFormData = new FormData();
 
-            // Add project fields individually
-            Object.keys(projectData).forEach(key => {
-              if (key === 'locations' || key === 'themes') {
-                finalFormData.append(key, JSON.stringify(projectData[key]));
-              } else {
-                finalFormData.append(key, projectData[key]);
-              }
+            // Add project data as a Blob with correct content-type
+            const projectBlob = new Blob([JSON.stringify(projectData)], { type: 'application/json' });
+            finalFormData.append("project", projectBlob);
+
+            // Add files (filter out empty files)
+            selectedFiles.filter(f => f.size > 0).forEach((file) => {
+              finalFormData.append("supporting_documents", file);
             });
 
-            // Add files
-            selectedFiles.filter(f => f.size > 0).forEach((file, index) => {
-              finalFormData.append(`documents`, file);
-            });
-
-            console.log("Final FormData with individual fields:");
+            console.log("Final FormData with project field:");
             for (let [key, value] of finalFormData.entries()) {
-              if (key === "documents") {
+              if (key === "supporting_documents") {
                 console.log(`${key}: [File - ${value.name}, ${value.size} bytes]`);
+              } else if (key === "project") {
+                console.log(`${key}: [Blob - ${value.size} bytes, type: ${value.type}]`);
               } else {
                 console.log(`${key}: ${value}`);
               }
