@@ -71,6 +71,106 @@
 			transition: all 0.3s ease;
 		}
 	</style>
+
+
+<script>
+      // Populate user dropdown with data from authManager
+      document.addEventListener("DOMContentLoaded", function () {
+        (async function () {
+          let user = authManager.getCachedUser();
+          if (!user) {
+            try {
+              await authManager.getCurrentUser();
+              user = authManager.getCachedUser();
+            } catch (err) {
+              console.error("[ERROR] Could not fetch user profile:", err);
+            }
+          }
+          // Wait a bit for authManager to initialize
+          setTimeout(() => {
+            const user = authManager.getCachedUser();
+            console.log("[DEBUG] Loading user data for dropdown:", user);
+
+            if (user) {
+              // Update user display name in button
+              const userDisplayName =
+                document.getElementById("userDisplayName");
+              if (userDisplayName) {
+                userDisplayName.textContent = user.name || user.email || "User";
+              }
+
+              // Update user name in dropdown
+              const userNameDisplay =
+                document.getElementById("userNameDisplay");
+              if (userNameDisplay) {
+                userNameDisplay.textContent = user.name || "User";
+              }
+
+              // Update email
+              const userEmailDisplay =
+                document.getElementById("userEmailDisplay");
+              if (userEmailDisplay) {
+                userEmailDisplay.textContent = user.email || "";
+              }
+
+              // Update role
+              const userRoleDisplay =
+                document.getElementById("userRoleDisplay");
+              if (userRoleDisplay) {
+                userRoleDisplay.textContent = user.role || "USER";
+              }
+
+              // Update status
+              const userStatusDisplay =
+                document.getElementById("userStatusDisplay");
+              if (userStatusDisplay) {
+                userStatusDisplay.textContent =
+                  user.approvalStatus || "PENDING";
+              }
+
+              // Show admin nav if user is admin
+              console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+              if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+                console.log(
+                  "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+                );
+
+                const adminNavItems = document.querySelectorAll("#adminNav");
+                adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+                // Show admin collaboration menu item
+                const adminCollabItem =
+                  document.getElementById("admin-collab-item");
+                if (adminCollabItem) {
+                  adminCollabItem.style.display = "block";
+                  console.log(
+                    "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+                  );
+                }
+
+                const adminCollabMobile = document.getElementById(
+                  "admin-collab-mobile"
+                );
+                if (adminCollabMobile) {
+                  adminCollabMobile.style.display = "block";
+                  console.log(
+                    "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+                  );
+                }
+
+                // Load pending requests count
+                loadPendingRequestsCount();
+              } else if (user.role === "DONOR") {
+                const donorNavItems = document.querySelectorAll("#donorNav");
+                donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+              }
+            } else {
+              console.warn("[DEBUG] No user data found in cache");
+            }
+          }, 500);
+        })();
+      });
+    </script>
 </head>
 
 <body class="text-gray-800 bg-gray-50" x-data="pastProjectsApp()">
@@ -242,7 +342,7 @@
 	</div>
 	<!-- Nav Start -->
 	<nav x-data="{ open: false }"
-		class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
+		class="fixed z-50 border shadow-sm bg-white/70 top-4 left-0 right-0 backdrop-blur-md border-white/10 rounded-xl">
 		<div class="flex items-center justify-between px-6 py-4">
 			<a href="index.html"
 				class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase">
@@ -555,7 +655,7 @@
 	<!-- Nav End -->
 
 	<!-- Main Content -->
-	<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+	<div class="max-w-7xl mt-20 mx-auto py-6 sm:px-6 lg:px-8">
 		<!-- Header -->
 		<div class="md:flex md:items-center md:justify-between mb-6">
 			<div class="flex-1 min-w-0">
@@ -710,6 +810,13 @@
 									<dl class="space-y-2">
 										<div>
 											<dt class="text-sm font-medium text-gray-500">
+												Project Number
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.projectNo || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
 												Partner
 											</dt>
 											<dd class="text-sm text-gray-900"
@@ -718,14 +825,16 @@
 										<div>
 											<dt class="text-sm font-medium text-gray-500">Theme</dt>
 											<dd class="text-sm text-gray-900"
-												x-text="selectedProject?.projectTheme || 'N/A'"></dd>
+												x-text="selectedProject?.themes?.join(', ') || 'N/A'"></dd>
 										</div>
 										<div>
 											<dt class="text-sm font-medium text-gray-500">
 												Location
 											</dt>
-											<dd class="text-sm text-gray-900"
-												x-text="selectedProject?.county + (selectedProject?.subCounty ? ', ' + selectedProject.subCounty : '') || 'N/A'">
+											<dd class="text-sm text-gray-900">
+												<span x-text="selectedProject?.locations && selectedProject.locations.length > 0 ? selectedProject.locations[0].county : selectedProject?.county || 'N/A'"></span>
+												<span x-show="selectedProject?.locations && selectedProject.locations.length > 0 && selectedProject.locations[0].subCounty" 
+													  x-text="', ' + selectedProject.locations[0].subCounty"></span>
 											</dd>
 										</div>
 										<div>
@@ -738,9 +847,21 @@
 										</div>
 										<div>
 											<dt class="text-sm font-medium text-gray-500">
+												Budget
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.budget ? 'KES ' + Number(selectedProject.budget).toLocaleString() : 'N/A'">
+											</dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
 												Final Status
 											</dt>
-											<dd class="text-sm text-gray-900" x-text="selectedProject?.status || 'N/A'">
+											<dd class="text-sm text-gray-900">
+												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
+													  :class="getStatusBadge(selectedProject?.status?.toLowerCase())"
+													  x-text="selectedProject?.status || 'N/A'">
+												</span>
 											</dd>
 										</div>
 										<div>
@@ -762,6 +883,24 @@
 									<p class="text-sm text-gray-700"
 										x-text="selectedProject?.objectives || selectedProject?.description || 'Not available'">
 									</p>
+									
+									<h4 class="text-md font-medium text-gray-900 mb-2 mt-4">
+										Contact Information
+									</h4>
+									<dl class="space-y-1 text-sm text-gray-700">
+										<div>
+											<dt class="font-medium text-gray-500">Contact Person:</dt>
+											<dd x-text="selectedProject?.contactPersonName || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="font-medium text-gray-500">Role:</dt>
+											<dd x-text="selectedProject?.contactPersonRole || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="font-medium text-gray-500">Email:</dt>
+											<dd x-text="selectedProject?.contactPersonEmail || 'N/A'"></dd>
+										</div>
+									</dl>
 								</div>
 							</div>
 						</div>
@@ -778,6 +917,7 @@
 	</div>
 
 	<script src="styles/loadNav.js"></script>
+	<script src="auth.js"></script>
 	<script>
 		function pastProjectsApp() {
 			return {
@@ -884,14 +1024,14 @@
 							return;
 						}
 
-						console.log("Making API request to /api/past-projects");
+						console.log("Making API request to /api/projects for past projects");
 						console.log(
 							"Request URL:",
-							`/api/past-projects?page=${this.currentPage}&size=${this.size}`
+							`/api/projects?page=${this.currentPage}&size=${this.size}`
 						);
 
 						const response = await fetch(
-							`https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/past-projects?page=${this.currentPage}&size=${this.size}`,
+							`https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api/projects?page=0&size=1000&sortBy=id&sortDir=desc`,
 							{
 								headers: {
 									Authorization: `Bearer ${token}`,
@@ -902,10 +1042,6 @@
 
 						console.log("API response status:", response.status);
 						console.log("API response ok:", response.ok);
-						console.log(
-							"Response headers:",
-							Object.fromEntries(response.headers.entries())
-						);
 
 						if (response.ok) {
 							const data = await response.json();
@@ -914,19 +1050,73 @@
 								JSON.stringify(data, null, 2)
 							);
 
-							if (data && data.data) {
+							if (data && data.data && data.data.projects) {
+								console.log("Filtering for past projects...");
+								// Filter for past projects (completed, stalled, abandoned)
+								let allProjects = data.data.projects;
+								let pastProjectsFiltered = allProjects.filter(project => 
+									project.status && 
+									['completed', 'stalled', 'abandoned'].includes(project.status.toLowerCase())
+								);
+
+								// Apply additional filters
+								if (this.filters.search) {
+									const searchTerm = this.filters.search.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										(project.title && project.title.toLowerCase().includes(searchTerm)) ||
+										(project.projectNo && project.projectNo.toLowerCase().includes(searchTerm)) ||
+										(project.partner && project.partner.toLowerCase().includes(searchTerm)) ||
+										(project.objectives && project.objectives.toLowerCase().includes(searchTerm)) ||
+										(project.description && project.description.toLowerCase().includes(searchTerm))
+									);
+								}
+
+								if (this.filters.finalStatus) {
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										project.status && project.status.toLowerCase() === this.filters.finalStatus.toLowerCase()
+									);
+								}
+
+								if (this.filters.county) {
+									const countyTerm = this.filters.county.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (project.locations && project.locations.length > 0) {
+											return project.locations.some(loc => 
+												loc.county && loc.county.toLowerCase().includes(countyTerm)
+											);
+										}
+										return project.county && project.county.toLowerCase().includes(countyTerm);
+									});
+								}
+
+								if (this.filters.theme) {
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (project.themes && Array.isArray(project.themes)) {
+											return project.themes.some(theme => 
+												theme.toLowerCase().includes(this.filters.theme.toLowerCase())
+											);
+										}
+										return false;
+									});
+								}
+
+								// Apply pagination
+								const totalFiltered = pastProjectsFiltered.length;
+								const startIndex = this.currentPage * this.size;
+								const endIndex = startIndex + this.size;
+								const paginatedProjects = pastProjectsFiltered.slice(startIndex, endIndex);
+
 								console.log("Setting pastProjects array...");
 								// Clear and repopulate the array to ensure reactivity
 								this.pastProjects.splice(0);
-								const projects = data.data.pastProjects || [];
-								for (let i = 0; i < projects.length; i++) {
-									this.pastProjects.push(projects[i]);
+								for (let i = 0; i < paginatedProjects.length; i++) {
+									this.pastProjects.push(paginatedProjects[i]);
 								}
 
-								this.totalItems = data.data.totalItems || 0;
-								this.totalPages = Math.ceil(this.totalItems / this.size);
+								this.totalItems = totalFiltered;
+								this.totalPages = Math.ceil(totalFiltered / this.size);
 								console.log(
-									`Successfully loaded ${this.pastProjects.length} past projects`
+									`Successfully loaded ${this.pastProjects.length} past projects (${totalFiltered} total filtered)`
 								);
 								console.log("Past projects data:", this.pastProjects);
 
@@ -946,7 +1136,7 @@
 							}
 						} else {
 							console.error(
-								"Past projects API not available:",
+								"Projects API not available:",
 								response.status,
 								response.statusText
 							);
@@ -971,27 +1161,7 @@
 					}
 				},
 
-				showFeatureNotAvailable() {
-					// Show message that feature is coming soon
-					const messageDiv = document.createElement("div");
-					messageDiv.style =
-						"background: #e3f2fd; color: #1976d2; padding: 2em; margin: 2em; border-radius: 8px; text-align: center; border: 1px solid #bbdefb;";
-					messageDiv.innerHTML = `
-              <i class="fas fa-tools" style="font-size: 3em; margin-bottom: 1em;"></i>
-              <h3 style="margin-bottom: 1em;">Past Projects Repository</h3>
-              <p>This feature is currently under development and will be available soon.</p>
-              <p>The backend is being updated to support archiving and viewing completed and stalled projects.</p>
-              <button onclick="window.location.href='index-post-login.html'" style="margin-top: 1em; padding: 0.5em 1em; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Return to Dashboard</button>
-            `;
 
-					// Insert after the header
-					const header = document.querySelector("nav");
-					if (header) {
-						header.insertAdjacentElement("afterend", messageDiv);
-					} else {
-						document.body.insertBefore(messageDiv, document.body.firstChild);
-					}
-				},
 
 				applyFilters() {
 					this.currentPage = 0;
@@ -1031,16 +1201,67 @@
 				renderProjectsList() {
 					console.log("renderProjectsList called, projects:", this.pastProjects);
 					if (!this.pastProjects || this.pastProjects.length === 0) {
-						return '<li class="p-4 text-center text-gray-500">No projects to display</li>';
+						return '<li class="p-4 text-center text-gray-500">No past projects to display</li>';
 					}
 
-					return this.pastProjects.map((project, index) => `
-              <li class="px-4 py-4 sm:px-6 hover:bg-gray-50">
-                <div class="text-lg font-medium text-primary">${project.title || 'Untitled Project'}</div>
-                <div class="text-sm text-gray-500">Status: ${project.status || 'Unknown'}</div>
-                <div class="text-sm text-gray-500">Partner: ${project.partner || 'N/A'}</div>
-              </li>
-            `).join('');
+					return this.pastProjects.map((project, index) => {
+						const color = this.getStatusColor(project.status);
+						const bg = this.getStatusBg(project.status);
+						const statusBadge = this.getStatusBadge(project.status?.toLowerCase());
+
+						return `
+							<li class="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer" @click="viewProjectDetails(pastProjects[${index}])">
+								<div class="flex items-center justify-between">
+									<div class="flex-1">
+										<div class="flex items-center">
+											<div class="flex-shrink-0 h-10 w-10">
+												<div class="h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium" 
+													 style="background-color: ${color};">
+													${project.status?.charAt(0).toUpperCase() || 'P'}
+												</div>
+											</div>
+											<div class="ml-4 flex-1">
+												<div class="text-lg font-semibold text-gray-800 mb-1">
+													${project.title || project.projectName || "Untitled Project"}
+													${project.projectNo ? ` (${project.projectNo})` : ''}
+												</div>
+												<div class="text-sm text-gray-600 mb-2">
+													${project.objectives || project.description || "This project currently has no description provided."}
+												</div>
+												<div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+													<span><i class="fas fa-user mr-1"></i>${project.partner || "N/A"}</span>
+													<span><i class="fas fa-map-marker-alt mr-1"></i>${
+														project.locations && project.locations.length > 0 
+															? project.locations[0].county || project.county || "N/A"
+															: project.county || "N/A"
+													}</span>
+													<span><i class="fas fa-calendar mr-1"></i>${
+														project.startDate 
+															? new Date(project.startDate).toLocaleDateString() 
+															: "N/A"
+													} - ${
+														project.endDate 
+															? new Date(project.endDate).toLocaleDateString() 
+															: "N/A"
+													}</span>
+													<span><i class="fas fa-dollar-sign mr-1"></i>${
+														project.budget 
+															? "KES " + Number(project.budget).toLocaleString() 
+															: "N/A"
+													}</span>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="flex-shrink-0 ml-4">
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge}">
+											${project.status || "Unknown"}
+										</span>
+									</div>
+								</div>
+							</li>
+						`;
+					}).join('');
 				},
 
 				closeModal() {
@@ -1050,6 +1271,39 @@
 				formatDate(dateString) {
 					if (!dateString) return "N/A";
 					return new Date(dateString).toLocaleDateString();
+				},
+
+				getStatusColor(status) {
+					const colors = {
+						'completed': '#10b981',
+						'stalled': '#ef4444', 
+						'abandoned': '#6b7280',
+						'active': '#22c55e',
+						'pending': '#eab308'
+					};
+					return colors[status?.toLowerCase()] || '#6b7280';
+				},
+
+				getStatusBg(status) {
+					const colors = {
+						'completed': 'bg-green-50',
+						'stalled': 'bg-red-50',
+						'abandoned': 'bg-gray-50',
+						'active': 'bg-green-50',
+						'pending': 'bg-yellow-50'
+					};
+					return colors[status?.toLowerCase()] || 'bg-gray-50';
+				},
+
+				getStatusBadge(status) {
+					const badges = {
+						'completed': 'bg-green-100 text-green-800',
+						'stalled': 'bg-red-100 text-red-800',
+						'abandoned': 'bg-gray-100 text-gray-800',
+						'active': 'bg-green-100 text-green-800',
+						'pending': 'bg-yellow-100 text-yellow-800'
+					};
+					return badges[status] || 'bg-gray-100 text-gray-800';
 				},
 			};
 		}
