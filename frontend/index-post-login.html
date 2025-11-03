@@ -1113,6 +1113,87 @@
     </section>
 
     <section class="p-4 lg:px-10 md:p-8">
+      <!-- Map Search Controls -->
+      <div
+        class="mb-6 bg-white rounded-xl shadow-lg border border-gray-200 p-6"
+      >
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+          Search & Filter Projects on Map
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- General Search -->
+          <div class="relative">
+            <label
+              for="mapSearchInput"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Search Projects</label
+            >
+            <input
+              type="text"
+              id="mapSearchInput"
+              placeholder="Search by project name or number..."
+              class="w-full px-4 py-2 pl-10 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <div
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none top-6"
+            >
+              <i class="text-gray-400 fas fa-search"></i>
+            </div>
+          </div>
+
+          <!-- County Dropdown -->
+          <div class="relative">
+            <label
+              for="mapCountySelect"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >County</label
+            >
+            <select
+              id="mapCountySelect"
+              class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Counties</option>
+            </select>
+          </div>
+
+          <!-- Status Dropdown -->
+          <div class="relative">
+            <label
+              for="mapStatusSelect"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Status</label
+            >
+            <select
+              id="mapStatusSelect"
+              class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="stalled">Stalled</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <!-- Search Button -->
+          <div class="flex items-end">
+            <button
+              id="mapSearchBtn"
+              class="w-full px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              <i class="fas fa-search mr-2"></i>Search & Zoom
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Results Info -->
+        <div id="searchResultsInfo" class="mt-4 text-sm text-gray-600 hidden">
+          <span id="resultsCount">0</span> projects found. Click on markers for
+          details.
+        </div>
+      </div>
+
+      <!-- Map Container -->
       <div
         id="localMap"
         class="h-[450px] sm:h-[550px] z-0 w-full border border-gray-200 rounded-xl shadow-lg"
@@ -1654,7 +1735,218 @@
           });
       });
 
-      // Load projects and add to map
+      // Initialize map search functionality
+      function initializeMapSearch() {
+        // Populate county dropdown when projects are loaded
+        populateCountyDropdown();
+
+        // Add search button event listener
+        document
+          .getElementById("mapSearchBtn")
+          .addEventListener("click", performMapSearch);
+      }
+
+      // Populate county dropdown with available counties
+      function populateCountyDropdown() {
+        const countySelect = document.getElementById("mapCountySelect");
+        const counties = new Set();
+
+        // Collect all unique counties from project locations
+        projects.forEach((project) => {
+          if (project.locations && Array.isArray(project.locations)) {
+            project.locations.forEach((loc) => {
+              if (loc.county) {
+                counties.add(loc.county);
+              }
+            });
+          }
+        });
+
+        // Clear existing options except "All Counties"
+        while (countySelect.children.length > 1) {
+          countySelect.removeChild(countySelect.lastChild);
+        }
+
+        // Add county options
+        Array.from(counties)
+          .sort()
+          .forEach((county) => {
+            const option = document.createElement("option");
+            option.value = county;
+            option.textContent = county;
+            countySelect.appendChild(option);
+          });
+      }
+
+      // Perform map search and zoom
+      function performMapSearch() {
+        console.log("performMapSearch called");
+        console.log("Total projects available:", projects.length);
+        console.log("Projects sample:", projects.slice(0, 3));
+
+        const searchText = document
+          .getElementById("mapSearchInput")
+          .value.trim()
+          .toLowerCase();
+        const selectedCounty = document.getElementById("mapCountySelect").value;
+        const selectedStatus = document.getElementById("mapStatusSelect").value;
+
+        console.log("Search criteria:", {
+          searchText,
+          selectedCounty,
+          selectedStatus,
+        });
+
+        // Filter projects based on search criteria
+        const matchingProjects = projects.filter((project) => {
+          // Text search in project name, title, or project number (id)
+          const nameMatch =
+            !searchText ||
+            project.projectName?.toLowerCase().includes(searchText) ||
+            project.title?.toLowerCase().includes(searchText) ||
+            (project.id && project.id.toString().includes(searchText));
+
+          // Status filter
+          const statusMatch =
+            !selectedStatus || project.status?.toLowerCase() === selectedStatus;
+
+          // County filter
+          let countyMatch = true;
+          if (selectedCounty) {
+            countyMatch = false;
+            if (project.locations && Array.isArray(project.locations)) {
+              countyMatch = project.locations.some(
+                (loc) => loc.county === selectedCounty
+              );
+            } else if (project.county === selectedCounty) {
+              countyMatch = true;
+            }
+          }
+
+          return nameMatch && statusMatch && countyMatch;
+        });
+
+        console.log("Matching projects found:", matchingProjects.length);
+        if (matchingProjects.length > 0) {
+          console.log("Sample matching project:", matchingProjects[0]);
+        }
+
+        // Get all matching locations
+        const matchingLocations = [];
+        matchingProjects.forEach((project) => {
+          if (project.locations && Array.isArray(project.locations)) {
+            project.locations.forEach((loc) => {
+              if (loc.latitude && loc.longitude) {
+                // Check county filter for this specific location
+                const countyMatch =
+                  !selectedCounty || loc.county === selectedCounty;
+                if (countyMatch) {
+                  matchingLocations.push({
+                    lat: loc.latitude,
+                    lng: loc.longitude,
+                    project: project,
+                  });
+                }
+              }
+            });
+          }
+          // Also check for direct latitude/longitude on the project
+          if (project.latitude && project.longitude) {
+            // For direct coordinates, check if county matches (if county filter is applied)
+            const countyMatch =
+              !selectedCounty || project.county === selectedCounty;
+            if (countyMatch) {
+              matchingLocations.push({
+                lat: project.latitude,
+                lng: project.longitude,
+                project: project,
+              });
+            }
+          }
+        });
+
+        console.log("Matching locations found:", matchingLocations.length);
+
+        if (matchingLocations.length === 0) {
+          alert("No projects found matching your search criteria.");
+          return;
+        }
+
+        // Update search results info
+        const resultsInfo = document.getElementById("searchResultsInfo");
+        const resultsCount = document.getElementById("resultsCount");
+        resultsCount.textContent = matchingProjects.length;
+        resultsInfo.classList.remove("hidden");
+
+        // Calculate bounds for all matching locations
+        let minLat = Infinity,
+          maxLat = -Infinity,
+          minLng = Infinity,
+          maxLng = -Infinity;
+
+        matchingLocations.forEach((loc) => {
+          minLat = Math.min(minLat, loc.lat);
+          maxLat = Math.max(maxLat, loc.lat);
+          minLng = Math.min(minLng, loc.lng);
+          maxLng = Math.max(maxLng, loc.lng);
+        });
+
+        // Add some padding to the bounds
+        const latPadding = (maxLat - minLat) * 0.1 || 0.01;
+        const lngPadding = (maxLng - minLng) * 0.1 || 0.01;
+
+        const bounds = [
+          [minLng - lngPadding, minLat - latPadding],
+          [maxLng + lngPadding, maxLat + latPadding],
+        ];
+
+        // Fit map to bounds
+        map.fitBounds(bounds, {
+          padding: 50,
+          maxZoom: 12,
+        });
+
+        // Highlight matching markers
+        mapMarkers.forEach((marker, index) => {
+          const markerElement = marker.getElement();
+          if (markerElement) {
+            const project = projects[index];
+            const isMatch = matchingProjects.includes(project);
+
+            // Change marker appearance based on match
+            if (isMatch) {
+              markerElement.style.opacity = "1";
+              markerElement.style.transform = "scale(1.2)";
+              markerElement.style.zIndex = "10";
+            } else {
+              markerElement.style.opacity = "0.3";
+              markerElement.style.transform = "scale(1)";
+              markerElement.style.zIndex = "1";
+            }
+          }
+        });
+
+        // If only one location, zoom in closer and open popup
+        if (matchingLocations.length === 1) {
+          const loc = matchingLocations[0];
+          setTimeout(() => {
+            map.flyTo({
+              center: [loc.lng, loc.lat],
+              zoom: 10,
+            });
+
+            // Find and open the popup for this marker
+            mapMarkers.forEach((marker, index) => {
+              const project = projects[index];
+              if (project.id === loc.project.id) {
+                marker.togglePopup();
+              }
+            });
+          }, 1000);
+        }
+      }
+
+      // Load projects for map display
       async function loadProjectsForMap() {
         try {
           const response = await fetch(
@@ -1682,6 +1974,9 @@
 
             // Process projects for map display
             addMarkersToMap(projectsData);
+
+            // Initialize map search functionality
+            initializeMapSearch();
           } else {
             console.warn("API response not OK, loading sample projects");
             loadSampleProjects();
