@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="relative flex min-h-screen w-full flex-col group/design-root">
+<div class="layout-container flex h-full grow flex-col">
+<main class="flex-1 p-4 sm:p-6 lg:p-8">
+<div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+<!-- Left Column: User Identity -->
+<aside class="flex flex-col gap-6 lg:col-span-1">
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
+<div class="relative mx-auto mb-4 size-32 group">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-32" data-alt="User's profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZmlcTeocMS5Cy_Kj5WDA7yLMeakj6iTdSfavV_ZdTeWvLr2dWdcaiv5O6NlZwcYFbMi2Xvoo_5f9WldLW9PCvMeuscLoP6MmqFJTG2Id-A3E8QT0J-3-V_o8nPt7dMac0aRhJuNO5Dcf-FDRZRGe9uFOIdkrYKzbWUQsPHxko0dEFnvNNZXFgPbhrLSaGgLKsXlWnAU7_BBsu5_72ugnb2yIlWV2QQ-lYc_foyK-Tb7FKVTWBGZnmwXHGKxt0Avx4ouklsAdw2I1w');"></div>
+<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-white" style="font-size: 36px;">photo_camera</span>
+</div>
+</div>
+<h1 id="userName" class="text-2xl font-bold text-slate-900 dark:text-white">Aria Montgomery</h1>
+<p id="userRole" class="text-slate-500 dark:text-slate-400">Administrator</p>
+<div id="userStatus" class="mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-300">
+<span class="size-2 rounded-full bg-green-500"></span>
+                                Active
+                            </div>
+</div>
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+<div class="flex flex-col">
+<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-primary/10 dark:bg-primary/20 border-l-4 border-primary" href="#">
+<span class="material-symbols-outlined text-primary text-2xl">person</span>
+<span class="font-semibold text-primary">Profile Information</span>
+</a>
+<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-2xl">lock</span>
+<span class="font-medium text-slate-700 dark:text-slate-300">Security</span>
+</a>
+<a class="flex items-center gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-2xl">history</span>
+<span class="font-medium text-slate-700 dark:text-slate-300">Recent Activity</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Right Column: Tabbed Content -->
+<div class="flex flex-col gap-8 lg:col-span-2">
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Profile Information</h2>
+<p class="mt-1 text-slate-500 dark:text-slate-400">Update your photo and personal details.</p>
+</div>
+<form class="p-6 space-y-6">
+<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Full Name</p>
+<input id="profileName" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-4 text-base font-normal" value="Aria Montgomery"/>
+</label>
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Email</p>
+<input id="profileEmail" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-500 dark:text-slate-400 focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 h-12 px-4 text-base font-normal cursor-not-allowed" disabled="" value="aria.m@example.com"/>
+</label>
+</div>
+<div>
+<label class="flex flex-col">
+<p class="text-base font-medium pb-2 text-slate-800 dark:text-slate-200">Bio</p>
+<textarea id="profileBio" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary min-h-32 p-4 text-base font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500" placeholder="Tell us a little about yourself">Dedicated administrator with a passion for efficient workflows and team collaboration.</textarea>
+</label>
+</div>
+<div class="flex justify-end pt-4">
+<button class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900" type="submit">
+                                        Save Changes
+                                    </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</main>
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const user = authManager.getCachedUser();
+      if (user) {
+        document.getElementById("profileName").value = user.name || "";
+        document.getElementById("profileEmail").value = user.email || "";
+        document.getElementById("userName").textContent = user.name || "User";
+        document.getElementById("userRole").textContent = user.role || "User";
+        const statusElement = document.getElementById("userStatus");
+        const statusText = statusElement.querySelector('span:last-child');
+        statusText.textContent = user.approvalStatus === 'approved' ? 'Active' : user.approvalStatus || 'Pending';
+        statusElement.className = user.approvalStatus === 'approved' ? 'mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-300' : 'mt-4 inline-flex items-center gap-2 rounded-full bg-yellow-100 dark:bg-yellow-900/40 px-3 py-1 text-sm font-medium text-yellow-700 dark:text-yellow-300';
+        const statusDot = statusElement.querySelector('span:first-child');
+        statusDot.className = user.approvalStatus === 'approved' ? 'size-2 rounded-full bg-green-500' : 'size-2 rounded-full bg-yellow-500';
+        // If bio exists in user, set it
+        if (user.bio) document.getElementById("profileBio").value = user.bio;
+      }
+      document.querySelector('form').addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const name = document.getElementById("profileName").value;
+        const bio = document.getElementById("profileBio").value;
+        let message = "";
+        try {
+          const payload = { name, bio };
+          const res = await authManager.apiCall("/api/auth/profile", "PUT", payload);
+          if (res.ok) {
+            message = "Profile updated successfully.";
+            const updatedUser = { ...user, name, bio };
+            authManager.setUser(updatedUser);
+          } else {
+            message = "Failed to update profile.";
+          }
+        } catch (err) {
+          message = "Error updating profile.";
+        }
+        alert(message);
+      });
+    });
+  </script>
+</body></html>
