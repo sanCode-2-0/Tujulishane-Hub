@@ -38,6 +38,7 @@
 	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 	<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-50">
@@ -417,7 +418,8 @@
 						class="supporting-documents bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md">
 						<div class="flex items-center justify-between mb-4">
 							<label class="block text-lg font-semibold text-gray-800">
-								Supporting Documents
+								Supporting Documents <span class="font-light text-sm ml-1">(optional)</span>
+
 							</label>
 							<div id="documentsCount"
 								class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
@@ -427,7 +429,8 @@
 						</div>
 
 						<p class="text-sm text-gray-600 mb-4">
-							Upload relevant documents to support your project proposal
+							Upload relevant documents such as to support
+							your project proposal
 							(PDF, DOC, DOCX, XLS, XLSX - Max 10MB each)
 						</p>
 
@@ -1272,6 +1275,8 @@
 				}
 			});
 	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </body>
 
 </html>

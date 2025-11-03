@@ -97,13 +97,13 @@
                 <ul class="flex list-none w-full flex-row flex-wrap border-b-0 ps-0" role="tablist" data-twe-nav-ref>
                     <li role="presentation" class="flex-grow basis-0 text-center">
                         <a href="#tabs-home02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[twe-nav-active]:border-primary data-[twe-nav-active]:text-primary"
+                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
                             data-twe-toggle="pill" data-twe-target="#tabs-home02" data-twe-nav-active role="tab"
                             aria-controls="tabs-home02" aria-selected="true">Login</a>
                     </li>
                     <li role="presentation" class="flex-grow basis-0 text-center">
                         <a href="#tabs-profile02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[twe-nav-active]:border-primary data-[twe-nav-active]:text-primary"
+                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
                             data-twe-toggle="pill" data-twe-target="#tabs-profile02" role="tab"
                             aria-controls="tabs-profile02" aria-selected="false">Become a Member</a>
                     </li>
@@ -146,56 +146,124 @@
                         <div id="registerCard" class=" top-0 left-0 z-10 w-full py-8 rounded-xl">
                             <form id="registerForm" onsubmit="return validateBeforeSubmit()"
                                 class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium">Full Name</label>
-                                    <input type="text" id="regName" placeholder="John Doe"
-                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                </div>
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium">Email Address</label>
-                                    <input type="email" id="regEmail" placeholder="email@example.com"
-                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                </div>
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium">Organization</label>
-                                    <input type="text" id="regOrganization" placeholder="Company or School"
-                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                </div>
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium">Account Type</label>
-                                    <select id="regAccountType" class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                        <option value="PARTNER">Partner Organization</option>
-                                        <option value="DONOR">Donor Organization</option>
-                                    </select>
-                                </div>
-                                <div id="parentDonorSection" class="hidden md:col-span-2">
-                                    <label class="block mb-1 text-sm font-medium">Parent Donor ID (Optional)</label>
-                                    <input type="number" id="regParentDonorId"
-                                        placeholder="Enter donor ID if linking to existing donor"
-                                        class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                    <p class="text-sm text-gray-600 mt-1">Leave empty if this is a standalone partner
-                                        account
-                                    </p>
-                                </div>
-
-
-                                <div class="gap-4 md:col-span-2 mt-6 space-x-4">
-                                    <button type="submit" id="registerBtn"
-                                        class="px-6 py-2 font-bold text-white w-full bg-blue-600 rounded hover:bg-blue-700">
-                                        <span id="registerBtnText">Create Account</span>
-                                        <span id="registerBtnSpinner" class="hidden">
-                                            <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                    stroke-width="4">
-                                                </circle>
-                                                <path class="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                            Creating...
-                                        </span>
+                                <div id="formTabs" class="md:col-span-2 mb-4 flex border-b">
+                                    <button type="button" id="tab1"
+                                        class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none">
+                                        Step 1: Account Details
                                     </button>
+                                    <button type="button" id="tab2"
+                                        class="px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent focus:outline-none">
+                                        Step 2: Supporting Documents
+                                    </button>
+                                </div>
+
+                                <div id="step1Content" class="md:col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Full Name</label>
+                                        <input type="text" id="regName" placeholder="John Doe"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Email Address</label>
+                                        <input type="email" id="regEmail" placeholder="email@example.com"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Organization</label>
+                                        <input type="text" id="regOrganization" placeholder="Company or School"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-medium">Account Type</label>
+                                        <select id="regAccountType"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                            <option value="PARTNER">Partner Organization</option>
+                                            <option value="DONOR">Donor Organization</option>
+                                        </select>
+                                    </div>
+                                    <div id="parentDonorSection" class="hidden md:col-span-2">
+                                        <label class="block mb-1 text-sm font-medium">Parent Donor ID (Optional)</label>
+                                        <input type="number" id="regParentDonorId"
+                                            placeholder="Enter donor ID if linking to existing donor"
+                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
+                                        <p class="text-sm text-gray-600 mt-1">Leave empty if this is a standalone
+                                            partner account</p>
+                                    </div>
+
+                                    <div class="md:col-span-2 mt-6">
+                                        <button type="button" id="nextStepBtn"
+                                            class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700 w-full md:w-auto">
+                                            Next : <span class="font-medium ml-1"> Supporting Documents</span> &rarr;
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="step2Content" class="md:col-span-2 hidden">
+                                    <div class="supporting-documents bg-white p-4 rounded-xl">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <label class="block text-sm font-semibold text-gray-800">
+                                                Supporting Documents <span
+                                                    class="font-light text-sm ml-1">(optional)</span>
+                                            </label>
+                                            <div id="documentsCount"
+                                                class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                                                <i class="fas fa-file mr-1"></i>
+                                                <span id="docsCount">0</span> files
+                                            </div>
+                                        </div>
+
+                                        <p class="text-sm text-gray-600 mb-4">
+                                            Upload relevant documents to support your project proposal
+                                            (PDF, DOC, DOCX, XLS, XLSX - Max 10MB each)
+                                        </p>
+
+                                        <div class="file-upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+                                            id="fileUploadArea">
+                                            <div class="upload-icon text-gray-400 mb-4">
+                                                <i class="fas fa-cloud-upload-alt text-4xl"></i>
+                                            </div>
+                                            <div class="upload-text">
+                                                <p class="text-lg font-medium text-gray-700 mb-2">
+                                                    Drop files here or click to browse
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    Supported formats: PDF, DOC, DOCX, XLS, XLSX
+                                                </p>
+                                                <p class="text-xs text-gray-400 mt-1">
+                                                    Maximum file size: 10MB per file
+                                                </p>
+                                            </div>
+                                            <input type="file" id="documentFiles" name="documents" multiple
+                                                accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" />
+                                        </div>
+
+                                        <div id="selectedFiles" class="mt-4 space-y-2 hidden">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-3">Selected Files:</h4>
+                                            <div id="filesList" class="space-y-2">
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden"
+                                            id="fileUploadError">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                                <span class="text-red-700 text-sm" id="fileErrorMessage"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="md:col-span-2 grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 flex flex-wrap justify-between">
+                                        <button type="button" id="prevStepBtn"
+                                            class="px-6 py-2 lg:col-span-2 font-bold text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                                            &larr; Previous Step
+                                        </button>
+                                        <button type="submit" id="registerBtn"
+                                            class="px-6 py-2 font-bold text-white lg:col-span-3 bg-blue-600 rounded hover:bg-blue-700">
+                                            <span id="registerBtnText">Create Account</span>
+                                            <span id="registerBtnSpinner" class="hidden">...Creating...</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -209,7 +277,49 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const step1Content = document.getElementById('step1Content');
+            const step2Content = document.getElementById('step2Content');
+            const nextBtn = document.getElementById('nextStepBtn');
+            const prevBtn = document.getElementById('prevStepBtn');
+            const tab1 = document.getElementById('tab1');
+            const tab2 = document.getElementById('tab2');
 
+            function showStep1() {
+                step1Content.classList.remove('hidden');
+                step2Content.classList.add('hidden');
+                tab1.classList.add('border-blue-600', 'text-blue-600');
+                tab1.classList.remove('border-transparent', 'text-gray-500');
+                tab2.classList.add('border-transparent', 'text-gray-500');
+                tab2.classList.remove('border-blue-600', 'text-blue-600');
+            }
+
+            function showStep2() {
+                // You might want to run client-side validation for Step 1 here first
+                // if (validateStep1() === false) { return; }
+
+                step1Content.classList.add('hidden');
+                step2Content.classList.remove('hidden');
+                tab2.classList.add('border-blue-600', 'text-blue-600');
+                tab2.classList.remove('border-transparent', 'text-gray-500');
+                tab1.classList.add('border-transparent', 'text-gray-500');
+                tab1.classList.remove('border-blue-600', 'text-blue-600');
+            }
+
+            // Event Listeners
+            nextBtn.addEventListener('click', showStep2);
+            prevBtn.addEventListener('click', showStep1);
+            tab1.addEventListener('click', showStep1);
+            tab2.addEventListener('click', showStep2);
+
+            // Initial state: Show Step 1
+            showStep1();
+        });
+
+        // NOTE: You will need to integrate your existing 'validateBeforeSubmit()' and 
+        // any 'regAccountType' change listeners with this new structure.
+    </script>
     <script>
         const images = [
             'resources/images/main-1.jpg',
@@ -222,7 +332,196 @@
     </script>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Element References
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const documentFilesInput = document.getElementById('documentFiles');
+            const docsCountSpan = document.getElementById('docsCount');
+            const selectedFilesDiv = document.getElementById('selectedFiles');
+            const filesListDiv = document.getElementById('filesList');
+            const fileUploadErrorDiv = document.getElementById('fileUploadError');
+            const fileErrorMessageSpan = document.getElementById('fileErrorMessage');
 
+            // State to hold the selected files (File objects)
+            let selectedFiles = [];
+            const MAX_FILE_SIZE_MB = 10;
+            const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+            const SUPPORTED_MIMES = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ];
+
+            /**
+             * Shows the error message div with the specified message.
+             * @param {string} message - The error message to display.
+             */
+            const showFileError = (message) => {
+                fileErrorMessageSpan.textContent = message;
+                fileUploadErrorDiv.classList.remove('hidden');
+                // Optionally hide after a delay
+                setTimeout(() => {
+                    fileUploadErrorDiv.classList.add('hidden');
+                }, 5000);
+            };
+
+            /**
+             * Updates the file count display and the visibility of the file list.
+             */
+            const updateFileCount = () => {
+                docsCountSpan.textContent = selectedFiles.length;
+                if (selectedFiles.length > 0) {
+                    selectedFilesDiv.classList.remove('hidden');
+                } else {
+                    selectedFilesDiv.classList.add('hidden');
+                }
+            };
+
+            /**
+             * Renders the list of currently selected files.
+             */
+            const renderFilesList = () => {
+                filesListDiv.innerHTML = ''; // Clear existing list
+                selectedFiles.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200';
+
+                    // Convert size to human-readable format
+                    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                    const fileName = file.name;
+
+                    fileItem.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-file-alt text-blue-500 mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800 truncate max-w-xs" title="${fileName}">
+                            ${fileName}
+                        </p>
+                        <p class="text-xs text-gray-500">${fileSize} MB</p>
+                    </div>
+                </div>
+                <button type="button" data-file-index="${index}" class="remove-file-btn text-red-500 hover:text-red-700 transition duration-150">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+                    filesListDiv.appendChild(fileItem);
+                });
+
+                updateFileCount();
+            };
+
+            /**
+             * Handles file removal from the list.
+             * @param {Event} e - The click event.
+             */
+            const handleRemoveFile = (e) => {
+                const removeButton = e.target.closest('.remove-file-btn');
+                if (removeButton) {
+                    const indexToRemove = parseInt(removeButton.dataset.fileIndex);
+                    if (!isNaN(indexToRemove) && indexToRemove >= 0) {
+                        selectedFiles.splice(indexToRemove, 1);
+                        // Re-render the list and update the input to reflect the change
+                        // Note: The hidden input cannot be easily updated with a FileList, 
+                        // but the `selectedFiles` array now holds the source of truth for submission.
+                        renderFilesList();
+                    }
+                }
+            };
+
+            /**
+             * Processes files added from either the file input or drag-and-drop.
+             * @param {FileList} files - The FileList object from the event.
+             */
+            const processFiles = (files) => {
+                fileUploadErrorDiv.classList.add('hidden'); // Clear previous errors
+
+                // Loop through the new files
+                Array.from(files).forEach(file => {
+                    // Basic Validation: Size and Type
+                    if (file.size > MAX_FILE_SIZE_BYTES) {
+                        showFileError(`File "${file.name}" is too large (>${MAX_FILE_SIZE_MB}MB) and was skipped.`);
+                        return;
+                    }
+                    // Check if the file's MIME type is supported
+                    if (!SUPPORTED_MIMES.includes(file.type)) {
+                        showFileError(`File type for "${file.name}" is not supported and was skipped.`);
+                        return;
+                    }
+
+                    // Check for duplicates by name (simple check)
+                    if (selectedFiles.some(existingFile => existingFile.name === file.name)) {
+                        showFileError(`File "${file.name}" is already selected.`);
+                        return;
+                    }
+
+                    // Add valid file to the state
+                    selectedFiles.push(file);
+                });
+
+                // Update the UI
+                renderFilesList();
+            };
+
+            // --- Event Listeners ---
+
+            // 1. Click-to-Browse
+            fileUploadArea.addEventListener('click', () => {
+                documentFilesInput.click(); // Programmatically click the hidden file input
+            });
+
+            // 2. File Selection (when the user selects files via browse)
+            documentFilesInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    processFiles(e.target.files);
+                }
+                // Reset the file input value so selecting the same file again triggers 'change'
+                e.target.value = '';
+            });
+
+            // 3. Remove File Button Listener (using event delegation)
+            filesListDiv.addEventListener('click', handleRemoveFile);
+
+
+            /* --- Optional: Drag-and-Drop Implementation --- */
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false); // For safety
+            });
+
+            // Add visual cue on dragover
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, () => {
+                    fileUploadArea.classList.add('border-blue-500', 'bg-blue-100');
+                }, false);
+            });
+
+            // Remove visual cue on dragleave/drop
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, () => {
+                    fileUploadArea.classList.remove('border-blue-500', 'bg-blue-100');
+                }, false);
+            });
+
+            // Handle dropped files
+            fileUploadArea.addEventListener('drop', handleDrop, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                processFiles(files);
+            }
+        });
+    </script>
     <script>
         async function requestOtp() {
             const email = document.getElementById("loginEmail").value;
