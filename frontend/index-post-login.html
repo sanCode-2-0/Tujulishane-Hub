@@ -1096,41 +1096,16 @@
         >
           Thematic Areas
         </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Card -->
-          <div
-            class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between"
-          >
-            <div class="flex items-center">
-              <div
-                class="text-left rounded-lg h-9 w-9 bg-gray-100/70 shadow-md flex items-center text-white justify-center mb-2"
-              >
-                <i class="far fa-venus-mars text-pink-400 text-lg"></i>
-              </div>
-              <h3 class="text-xl ml-3 font-medium uppercase text-black">
-                Gender-Based Violence
-              </h3>
-            </div>
-            <hr class="my-2" />
-            <p class="text-lg text-gray-600">
-              Programs focused on preventing and responding to gender-based
-              violence across communities.
-            </p>
-            <div class="mt-3 flex justify-between items-center">
-              <p class="text-md text-gray-500 mb-2">
-                <span class="font-bold text-gray-800">12</span> Projects
-              </p>
-              <p class="text-md text-gray-500 mb-2">
-                <span class="font-bold text-gray-800">4</span> Locations
-              </p>
-              <div class="flex gap-2">
-                <a
-                  href="#"
-                  class="text-md rounded-md flex-center text-button_two font-medium"
-                >
-                  More Info <i class="far fa-chevron-right text-xs ml-0.5"></i>
-                </a>
-              </div>
+        <div
+          id="thematicAreasContainer"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <!-- Theme cards will be dynamically inserted here -->
+          <div class="col-span-full text-center py-8">
+            <div class="animate-pulse">
+              <div class="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
+              <div class="h-32 bg-gray-200 rounded mb-4"></div>
+              <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
             </div>
           </div>
         </div>
@@ -1138,7 +1113,10 @@
     </section>
 
     <section class="p-4 lg:px-10 md:p-8">
-      <div id="localMap" class="h-[450px] sm:h-[550px] z-0 w-full"></div>
+      <div
+        id="localMap"
+        class="h-[450px] sm:h-[550px] z-0 w-full border border-gray-200 rounded-xl shadow-lg"
+      ></div>
     </section>
 
     <section class="bg-white">
@@ -1765,12 +1743,18 @@
 
       // Add markers to Mapbox map (supports multiple locations per project)
       function addMarkersToMap(projectsData) {
+        console.log(
+          "addMarkersToMap called with",
+          projectsData.length,
+          "projects"
+        );
+
         // Clear existing markers
         mapMarkers.forEach((marker) => marker.remove());
         mapMarkers.length = 0;
 
         // Add new markers
-        projectsData.forEach((project) => {
+        projectsData.forEach((project, projectIndex) => {
           // Determine location list: prefer project.locations array, fall back to single lat/lng
           const locs =
             Array.isArray(project.locations) && project.locations.length
@@ -1782,7 +1766,10 @@
           locs.forEach((loc, locIndex) => {
             const lat = loc.latitude;
             const lng = loc.longitude;
-            if (!lat || !lng) return;
+
+            if (!lat || !lng) {
+              return; // Skip invalid locations
+            }
 
             // Create marker element
             const el = document.createElement("div");
@@ -2049,7 +2036,7 @@
         );
         updatePaginationControls(totalPages);
 
-        // Update marker visibility
+        // Update marker visibility (don't recreate markers)
         mapMarkers.forEach((marker, idx) => {
           const project = projects[idx];
           const isVisible = filteredProjects.includes(project);
@@ -2374,6 +2361,8 @@
           await loadProjectStatistics();
           // Load projects list (default: all projects)
           await loadProjects();
+          // Load theme statistics (after projects are loaded)
+          await loadThemeStatistics();
           // Optionally, load map-only projects
           // await loadProjectsWithCoordinates();
           console.log("Dashboard data loaded successfully");
@@ -2381,6 +2370,242 @@
           console.error("Failed to load dashboard data:", error);
           showDashboardError();
         }
+      }
+
+      // Theme definitions with metadata
+      const themeDefinitions = {
+        GBV: {
+          name: "Gender-Based Violence",
+          description:
+            "Programs focused on preventing and responding to gender-based violence across communities.",
+          icon: "far fa-venus-mars",
+          color: "text-pink-400",
+        },
+        AYPSRH: {
+          name: "Adolescent and Young People Sexual and Reproductive Health",
+          description:
+            "Comprehensive sexual and reproductive health services for adolescents and young people.",
+          icon: "far fa-heart",
+          color: "text-red-400",
+        },
+        MNH: {
+          name: "Maternal and Newborn Health",
+          description:
+            "Programs dedicated to improving maternal and newborn health outcomes.",
+          icon: "far fa-baby",
+          color: "text-blue-400",
+        },
+        FP: {
+          name: "Family Planning",
+          description:
+            "Family planning services and education to support reproductive choices.",
+          icon: "far fa-users",
+          color: "text-green-400",
+        },
+        CH: {
+          name: "Child Health",
+          description: "Comprehensive child health programs and interventions.",
+          icon: "far fa-child",
+          color: "text-purple-400",
+        },
+        AH: {
+          name: "Adolescent Health",
+          description: "Health programs specifically designed for adolescents.",
+          icon: "far fa-user-graduate",
+          color: "text-orange-400",
+        },
+      };
+
+      // Load theme statistics from projects
+      async function loadThemeStatistics() {
+        try {
+          console.log("Loading theme statistics...");
+
+          // Use the projects that are already loaded by loadProjects
+          if (!projects || projects.length === 0) {
+            console.warn(
+              "No projects loaded yet, using defaults for theme statistics"
+            );
+            renderDefaultThematicAreas();
+            return;
+          }
+
+          console.log(
+            "Calculating theme statistics from",
+            projects.length,
+            "projects"
+          );
+
+          // Calculate theme statistics
+          const themeStats = {};
+
+          // Initialize all themes with zero counts
+          Object.keys(themeDefinitions).forEach((themeCode) => {
+            themeStats[themeCode] = {
+              projectCount: 0,
+              locationCount: 0,
+              locations: new Set(),
+            };
+          });
+
+          // Count projects and locations per theme
+          projects.forEach((project) => {
+            // Handle both single theme (legacy) and multiple themes
+            let projectThemes = [];
+            if (project.themes && Array.isArray(project.themes)) {
+              projectThemes = project.themes;
+            } else if (project.theme) {
+              // Legacy single theme support
+              projectThemes = [project.theme];
+            }
+
+            console.log(
+              "Project:",
+              project.title || project.name,
+              "themes:",
+              projectThemes
+            );
+
+            projectThemes.forEach((theme) => {
+              // Extract theme code - handle both string and object formats
+              let themeCode;
+              if (typeof theme === "string") {
+                themeCode = theme;
+              } else if (theme && theme.code) {
+                themeCode = theme.code;
+              } else {
+                return; // Skip invalid theme entries
+              }
+
+              if (themeStats[themeCode]) {
+                themeStats[themeCode].projectCount++;
+
+                // Count unique locations for this theme
+                if (project.locations && Array.isArray(project.locations)) {
+                  project.locations.forEach((location) => {
+                    if (location.county) {
+                      themeStats[themeCode].locations.add(location.county);
+                    }
+                  });
+                } else if (project.county) {
+                  // Legacy single location support
+                  themeStats[themeCode].locations.add(project.county);
+                }
+              }
+            });
+          });
+
+          // Update location counts
+          Object.keys(themeStats).forEach((themeCode) => {
+            themeStats[themeCode].locationCount =
+              themeStats[themeCode].locations.size;
+          });
+
+          console.log("Calculated theme statistics:", themeStats);
+
+          // Render thematic areas
+          renderThematicAreas(themeStats);
+        } catch (error) {
+          console.error("Error loading theme statistics:", error);
+          renderDefaultThematicAreas();
+        }
+      }
+
+      // Render thematic areas with dynamic data
+      function renderThematicAreas(themeStats) {
+        const container = document.getElementById("thematicAreasContainer");
+        if (!container) {
+          console.error("Thematic areas container not found");
+          return;
+        }
+
+        let html = "";
+
+        Object.keys(themeDefinitions).forEach((themeCode) => {
+          const theme = themeDefinitions[themeCode];
+          const stats = themeStats[themeCode] || {
+            projectCount: 0,
+            locationCount: 0,
+          };
+
+          html += `
+            <div class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between">
+              <div class="flex items-center">
+                <div class="text-left rounded-lg h-9 w-9 bg-gray-100/70 shadow-md flex items-center text-white justify-center mb-2">
+                  <i class="${theme.icon} ${theme.color} text-lg"></i>
+                </div>
+                <h3 class="text-xl ml-3 font-medium uppercase text-black">
+                  ${theme.name}
+                </h3>
+              </div>
+              <hr class="my-2" />
+              <p class="text-lg text-gray-600">
+                ${theme.description}
+              </p>
+              <div class="mt-3 flex justify-between items-center">
+                <p class="text-md text-gray-500 mb-2">
+                  <span class="font-bold text-gray-800">${stats.projectCount}</span> Projects
+                </p>
+                <p class="text-md text-gray-500 mb-2">
+                  <span class="font-bold text-gray-800">${stats.locationCount}</span> Locations
+                </p>
+                <div class="flex gap-2">
+                  <a href="#" class="text-md rounded-md flex-center text-button_two font-medium">
+                    More Info <i class="far fa-chevron-right text-xs ml-0.5"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        console.log("Rendered thematic areas with dynamic data");
+      }
+
+      // Render default thematic areas when API fails
+      function renderDefaultThematicAreas() {
+        const container = document.getElementById("thematicAreasContainer");
+        if (!container) return;
+
+        let html = "";
+
+        Object.keys(themeDefinitions).forEach((themeCode) => {
+          const theme = themeDefinitions[themeCode];
+
+          html += `
+            <div class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between">
+              <div class="flex items-center">
+                <div class="text-left rounded-lg h-9 w-9 bg-gray-100/70 shadow-md flex items-center text-white justify-center mb-2">
+                  <i class="${theme.icon} ${theme.color} text-lg"></i>
+                </div>
+                <h3 class="text-xl ml-3 font-medium uppercase text-black">
+                  ${theme.name}
+                </h3>
+              </div>
+              <hr class="my-2" />
+              <p class="text-lg text-gray-600">
+                ${theme.description}
+              </p>
+              <div class="mt-3 flex justify-between items-center">
+                <p class="text-md text-gray-500 mb-2">
+                  <span class="font-bold text-gray-800">0</span> Projects
+                </p>
+                <p class="text-md text-gray-500 mb-2">
+                  <span class="font-bold text-gray-800">0</span> Locations
+                </p>
+                <div class="flex gap-2">
+                  <a href="#" class="text-md rounded-md flex-center text-button_two font-medium">
+                    More Info <i class="far fa-chevron-right text-xs ml-0.5"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        console.log("Rendered default thematic areas");
       }
 
       // Load project statistics from API
@@ -2694,10 +2919,8 @@
               // Update the projects display (accordion)
               updateProjectsDisplay(allProjects);
 
-              // Also add map markers for projects that have coordinates
-              addMarkersToMap(
-                allProjects.filter((p) => p.latitude && p.longitude)
-              );
+              // NOTE: Map markers are managed by loadProjectsForMap() which loads only projects with coordinates
+              // Don't add markers here to avoid conflicts
 
               // Trigger the accordion display
               highlightMarkers("all");
@@ -2868,8 +3091,8 @@
         console.log("Updating map with", projectsWithCoords.length, "projects");
         console.log("Projects with coordinates:", projectsWithCoords);
 
-        // Add markers to Mapbox map
-        addMarkersToMap(projectsWithCoords);
+        // NOTE: Map markers are managed separately by loadProjectsForMap()
+        // Don't add markers here to avoid conflicts
 
         // Update project list
         projects = projectsData;
