@@ -1513,9 +1513,13 @@
               return;
             }
 
+            // Get current user for partner field
+            const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
             // Create project object as expected by backend
             const projectData = {
               title: data.title,
+              partner: currentUser.email || data.contact_person_mail, // Use current user email or fallback
               startDate: data.start_date,
               endDate: data.end_date,
               activityType: data.activity_type,
