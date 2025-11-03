@@ -336,6 +336,37 @@ function getAllCounties() {
   return Object.keys(kenyaLocations).sort();
 }
 
+// Function to get sub-counties for a specific county
+function getSubCountiesForCounty(county) {
+  return kenyaLocations[county] || [];
+}
+
+// Helper functions for searchable dropdown functionality
+function searchCounties(query) {
+  if (!query) return getAllCounties();
+  const lowerQuery = query.toLowerCase();
+  return getAllCounties().filter((county) =>
+    county.toLowerCase().includes(lowerQuery)
+  );
+}
+
+function searchSubCounties(county, query) {
+  if (!county) return [];
+  const subCounties = getSubCountiesForCounty(county);
+  if (!query) return subCounties;
+  const lowerQuery = query.toLowerCase();
+  return subCounties.filter((subCounty) =>
+    subCounty.toLowerCase().includes(lowerQuery)
+  );
+}
+
+// Expose functions and data to global scope for Alpine.js
+window.getAllCounties = getAllCounties;
+window.getSubCountiesForCounty = getSubCountiesForCounty;
+window.searchCounties = searchCounties;
+window.searchSubCounties = searchSubCounties;
+window.kenyaLocations = kenyaLocations;
+
 // Function to initialize county dropdown
 function initializeCountyDropdown(countySelectId, subCountySelectId) {
   const countySelect = document.getElementById(countySelectId);
