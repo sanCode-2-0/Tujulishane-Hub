@@ -2421,13 +2421,108 @@
       }
 
       function focusMarker(index) {
-        if (mapMarkers[index] && projects[index]) {
+        if (projects[index]) {
           const project = projects[index];
-          map.flyTo({
-            center: [project.longitude, project.latitude],
-            zoom: 12,
+
+          // Get all locations for this project (similar to search logic)
+          const projectLocations = [];
+          if (project.locations && Array.isArray(project.locations)) {
+            project.locations.forEach((loc) => {
+              if (loc.latitude && loc.longitude) {
+                projectLocations.push({
+                  lat: loc.latitude,
+                  lng: loc.longitude,
+                  project: project,
+                });
+              }
+            });
+          }
+          // Also check for direct latitude/longitude on the project
+          if (
+            project.latitude &&
+            project.longitude &&
+            projectLocations.length === 0
+          ) {
+            projectLocations.push({
+              lat: project.latitude,
+              lng: project.longitude,
+              project: project,
+            });
+          }
+
+          if (projectLocations.length === 0) {
+            console.warn("No valid locations found for project:", project.id);
+            return;
+          }
+
+          // Calculate bounds for all project locations
+          let minLat = Infinity,
+            maxLat = -Infinity,
+            minLng = Infinity,
+            maxLng = -Infinity;
+
+          projectLocations.forEach((loc) => {
+            minLat = Math.min(minLat, loc.lat);
+            maxLat = Math.max(maxLat, loc.lat);
+            minLng = Math.min(minLng, loc.lng);
+            maxLng = Math.max(maxLng, loc.lng);
           });
-          mapMarkers[index].togglePopup();
+
+          // Add some padding to the bounds
+          const latPadding = (maxLat - minLat) * 0.1 || 0.01;
+          const lngPadding = (maxLng - minLng) * 0.1 || 0.01;
+
+          const bounds = [
+            [minLng - lngPadding, minLat - latPadding],
+            [maxLng + lngPadding, maxLat + latPadding],
+          ];
+
+          // Fit map to bounds
+          map.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 12,
+          });
+
+          // Highlight this project's markers
+          mapMarkers.forEach((marker, markerIndex) => {
+            const markerElement = marker.getElement();
+            if (markerElement) {
+              const markerProject = projects[markerIndex];
+              const isMatch = markerProject && markerProject.id === project.id;
+
+              // Change marker appearance based on match
+              if (isMatch) {
+                markerElement.style.opacity = "1";
+                markerElement.style.transform = "scale(1.2)";
+                markerElement.style.zIndex = "10";
+              } else {
+                markerElement.style.opacity = "0.3";
+                markerElement.style.transform = "scale(1)";
+                markerElement.style.zIndex = "1";
+              }
+            }
+          });
+
+          // If only one location, zoom in closer and open popup
+          if (projectLocations.length === 1) {
+            const loc = projectLocations[0];
+            setTimeout(() => {
+              map.flyTo({
+                center: [loc.lng, loc.lat],
+                zoom: 12,
+              });
+
+              // Find and open the popup for this marker
+              mapMarkers.forEach((marker, markerIndex) => {
+                const markerProject = projects[markerIndex];
+                if (markerProject && markerProject.id === project.id) {
+                  marker.togglePopup();
+                }
+              });
+            }, 1000);
+          }
+
+          // Scroll map into view
           document
             .getElementById("localMap")
             .scrollIntoView({ behavior: "smooth" });
