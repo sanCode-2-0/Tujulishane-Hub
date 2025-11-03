@@ -105,3 +105,94 @@
   border-color: #ef4444 !important;
   box-shadow: 0 0 0 1px #ef4444;
 }
+
+/* Form sections and headers */
+.form-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+.section-header p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Progress indicator */
+.form-progress {
+  position: sticky;
+  top: 100px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-title {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.progress-title i {
+  margin-right: 0.5rem;
+  color: #3b82f6;
+}
+
+.progress-steps .progress-step + .progress-step {
+  margin-top: 0.5rem;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.progress-step.completed {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.progress-step.completed i {
+  color: #16a34a;
+}
+
+.progress-step.current {
+  background-color: #eff6ff;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.progress-step.current i {
+  color: #3b82f6;
+}
+
+.progress-step.pending {
+  color: #6b7280;
+}
+
+.progress-step i {
+  margin-right: 0.5rem;
+  width: 1rem;
+  text-align: center;
+}

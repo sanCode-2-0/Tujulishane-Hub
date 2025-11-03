@@ -249,84 +249,195 @@
           </div>
 
           <div class="p-6">
-            <form id="newProjectForm" class="space-y-6">
-              <!-- Location Selection -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    for="countySelect"
-                    class="block text-sm font-medium text-gray-700"
-                    >County</label
-                  >
-                  <select
-                    id="countySelect"
-                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="">All Counties</option>
-                  </select>
+            <!-- Form Progress Indicator -->
+            <div class="form-progress mb-8">
+              <div class="progress-title">
+                <i class="fas fa-tasks"></i>
+                Form Progress (6 sections)
+              </div>
+              <div class="progress-steps">
+                <div class="progress-step current" data-section="1">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>Project Location</span>
                 </div>
-                <div>
-                  <label
-                    for="subCountySelect"
-                    class="block text-sm font-medium text-gray-700"
-                    >Sub-County</label
-                  >
-                  <select
-                    id="subCountySelect"
-                    class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="">All Sub-Counties</option>
-                  </select>
+                <div class="progress-step pending" data-section="2">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Basic Information</span>
+                </div>
+                <div class="progress-step pending" data-section="3">
+                  <i class="fas fa-tags"></i>
+                  <span>Project Themes</span>
+                </div>
+                <div class="progress-step pending" data-section="4">
+                  <i class="fas fa-user"></i>
+                  <span>Contact Information</span>
+                </div>
+                <div class="progress-step pending" data-section="5">
+                  <i class="fas fa-dollar-sign"></i>
+                  <span>Budget & Objectives</span>
+                </div>
+                <div class="progress-step pending" data-section="6">
+                  <i class="fas fa-file-upload"></i>
+                  <span>Supporting Documents</span>
                 </div>
               </div>
+            </div>
 
-              <!-- Map Section -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Pick Project Locations on Map (Click to add multiple
-                  locations)</label
-                >
-                <div
-                  id="newProjectMap"
-                  style="
-                    height: 400px;
-                    width: 100%;
-                    border-radius: 8px;
-                    margin-bottom: 8px;
-                    border: 1px solid #e5e7eb;
-                    background-color: #f3f4f6;
-                    position: relative;
-                    overflow: hidden;
-                  "
-                ></div>
-                <input type="hidden" id="project_locations" name="locations" />
-                <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-                  <strong>Selected Locations:</strong>
-                  <div id="selectedLocationsList" class="mt-2 space-y-1">
-                    <p class="text-gray-500 italic">
-                      Click on map to add locations
-                    </p>
+            <form id="newProjectForm" class="space-y-8">
+              <!-- Section 1: Location Selection -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</span>
+                    Project Location
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Select the geographical areas where your project will be implemented</p>
+                </div>
+
+                <!-- Location Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      for="countySelect"
+                      class="block text-sm font-medium text-gray-700"
+                      >County</label
+                    >
+                    <select
+                      id="countySelect"
+                      class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">All Counties</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="subCountySelect"
+                      class="block text-sm font-medium text-gray-700"
+                      >Sub-County</label
+                    >
+                    <select
+                      id="subCountySelect"
+                      class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="">All Sub-Counties</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Map Section -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Pick Project Locations on Map (Click to add multiple
+                    locations)</label
+                  >
+                  <div
+                    id="newProjectMap"
+                    style="
+                      height: 400px;
+                      width: 100%;
+                      border-radius: 8px;
+                      margin-bottom: 8px;
+                      border: 1px solid #e5e7eb;
+                      background-color: #f3f4f6;
+                      position: relative;
+                      overflow: hidden;
+                    "
+                  ></div>
+                  <input type="hidden" id="project_locations" name="locations" />
+                  <div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
+                    <strong>Selected Locations:</strong>
+                    <div id="selectedLocationsList" class="mt-2 space-y-1">
+                      <p class="text-gray-500 italic">
+                        Click on map to add locations
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Title -->
-              <div>
-                <label
-                  for="title"
-                  class="block text-sm font-medium text-gray-700"
-                  >Title *</label
-                >
-                <input
-                  required
-                  type="text"
-                  id="title"
-                  name="title"
-                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
+              <!-- Section 2: Basic Information -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</span>
+                    Basic Information
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Provide essential details about your project</p>
+                </div>
+
+                <!-- Title -->
+                <div class="mb-6">
+                  <label
+                    for="title"
+                    class="block text-sm font-medium text-gray-700"
+                    >Project Title *</label
+                  >
+                  <input
+                    required
+                    type="text"
+                    id="title"
+                    name="title"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+
+                <!-- Time Period -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label
+                      for="starttime_period"
+                      class="block text-sm font-medium text-gray-700"
+                      >Start Date *</label
+                    >
+                    <input
+                      required
+                      type="date"
+                      id="starttime_period"
+                      name="start_date"
+                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="endtime_period"
+                      class="block text-sm font-medium text-gray-700"
+                      >End Date</label
+                    >
+                    <input
+                      type="date"
+                      id="endtime_period"
+                      name="end_date"
+                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+
+                <!-- Activity Type -->
+                <div>
+                  <label
+                    for="activity_type"
+                    class="block text-sm font-medium text-gray-700"
+                    >Activity Type (Description) *</label
+                  >
+                  <textarea
+                    required
+                    id="activity_type"
+                    name="activity_type"
+                    rows="3"
+                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  ></textarea>
+                </div>
               </div>
 
-              <!-- Project Theme -->
+              <!-- Section 3: Project Themes -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</span>
+                    Project Themes
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Select the health areas your project addresses</p>
+                </div>
               <div
                 class="theme-selection bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
               >
@@ -510,136 +621,119 @@
                 </div>
               </div>
 
-              <!-- Time Period -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    for="starttime_period"
-                    class="block text-sm font-medium text-gray-700"
-                    >Start *</label
-                  >
-                  <input
-                    required
-                    type="date"
-                    id="starttime_period"
-                    name="start_date"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
+              <!-- Section 4: Contact Information -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</span>
+                    Contact Information
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Provide details for project coordination</p>
                 </div>
-                <div>
-                  <label
-                    for="endtime_period"
-                    class="block text-sm font-medium text-gray-700"
-                    >End *</label
-                  >
-                  <input
-                    type="date"
-                    id="endtime_period"
-                    name="end_date"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
+
+                <!-- Contact Person -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label
+                      for="contact_person_name"
+                      class="block text-sm font-medium text-gray-700"
+                      >Contact Person Name *</label
+                    >
+                    <input
+                      required
+                      type="text"
+                      id="contact_person_name"
+                      name="contact_person_name"
+                      placeholder="Name"
+                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="contact_person_role"
+                      class="block text-sm font-medium text-gray-700"
+                      >Contact Person Role *</label
+                    >
+                    <input
+                      required
+                      type="text"
+                      id="contact_person_role"
+                      name="contact_person_role"
+                      placeholder="Role"
+                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="contact_person_email"
+                      class="block text-sm font-medium text-gray-700"
+                      >Contact Person Email *</label
+                    >
+                    <input
+                      required
+                      type="email"
+                      id="contact_person_email"
+                      name="contact_person_mail"
+                      placeholder="Email"
+                      class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <!-- Activity Type -->
-              <div>
-                <label
-                  for="activity_type"
-                  class="block text-sm font-medium text-gray-700"
-                  >Activity Type (Description) *</label
-                >
-                <textarea
-                  required
-                  id="activity_type"
-                  name="activity_type"
-                  rows="3"
-                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                ></textarea>
-              </div>
+              <!-- Section 5: Budget & Objectives -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</span>
+                    Budget & Objectives
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Define project funding and goals</p>
+                </div>
 
-              <!-- Contact Person -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Budget -->
                 <div>
                   <label
-                    for="contact_person_name"
+                    for="budget"
                     class="block text-sm font-medium text-gray-700"
-                    >Contact Person Name *</label
+                    >Budget in KES *</label
                   >
                   <input
                     required
                     type="text"
-                    id="contact_person_name"
-                    name="contact_person_name"
-                    placeholder="Name"
+                    id="budget"
+                    name="budget"
+                    placeholder="1,000,000"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   />
                 </div>
+
+                <!-- Objectives -->
                 <div>
                   <label
-                    for="contact_person_role"
+                    for="gaps"
                     class="block text-sm font-medium text-gray-700"
-                    >Contact Person Role *</label
+                    >Project Objectives *</label
                   >
-                  <input
+                  <textarea
                     required
-                    type="text"
-                    id="contact_person_role"
-                    name="contact_person_role"
-                    placeholder="Role"
+                    id="gaps"
+                    name="gaps"
+                    rows="3"
                     class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    for="contact_person_email"
-                    class="block text-sm font-medium text-gray-700"
-                    >Contact Person Email *</label
-                  >
-                  <input
-                    required
-                    type="email"
-                    id="contact_person_email"
-                    name="contact_person_mail"
-                    placeholder="Email"
-                    class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
+                  ></textarea>
                 </div>
               </div>
 
-              <!-- Budget -->
-              <div>
-                <label
-                  for="budget"
-                  class="block text-sm font-medium text-gray-700"
-                  >Budget in KES</label
-                >
-                <input
-                  required
-                  type="number"
-                  id="budget"
-                  name="budget"
-                  placeholder="amount"
-                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
-
-              <!-- Objectives -->
-              <div>
-                <label
-                  for="gaps"
-                  class="block text-sm font-medium text-gray-700"
-                  >Objectives *</label
-                >
-                <textarea
-                  required
-                  id="gaps"
-                  name="gaps"
-                  rows="3"
-                  class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                ></textarea>
-              </div>
-
-              <!-- Supporting Documents -->
+              <!-- Section 6: Supporting Documents -->
+              <div class="form-section">
+                <div class="section-header mb-6">
+                  <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</span>
+                    Supporting Documents
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-1 ml-11">Upload relevant documents to support your project proposal</p>
+                </div>
               <div
                 class="supporting-documents bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
               >
@@ -744,6 +838,8 @@
         initializeMap();
         initializeThemeSelection();
         initializeFileUpload();
+        initializeFormProgress();
+        initializeBudgetFormatting();
       });
 
       // Map initialization
@@ -1214,6 +1310,84 @@
         };
       }
 
+      // Form progress tracking
+      function initializeFormProgress() {
+        const progressSteps = document.querySelectorAll('.progress-step');
+        let currentSection = 1;
+
+        // Update progress when user scrolls or focuses on sections
+        function updateProgress() {
+          const sections = document.querySelectorAll('.form-section');
+          const scrollPosition = window.scrollY + 200; // Offset for header
+
+          sections.forEach((section, index) => {
+            const sectionTop = section.offsetTop;
+            const sectionBottom = sectionTop + section.offsetHeight;
+
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+              currentSection = index + 1;
+              updateProgressIndicator(currentSection);
+            }
+          });
+        }
+
+        function updateProgressIndicator(activeSection) {
+          progressSteps.forEach((step, index) => {
+            const stepNumber = index + 1;
+
+            // Remove all classes
+            step.classList.remove('current', 'completed', 'pending');
+
+            if (stepNumber < activeSection) {
+              step.classList.add('completed');
+            } else if (stepNumber === activeSection) {
+              step.classList.add('current');
+            } else {
+              step.classList.add('pending');
+            }
+          });
+        }
+
+        // Add scroll listener
+        window.addEventListener('scroll', updateProgress);
+
+        // Initial progress update
+        updateProgress();
+      }
+
+      // Budget input formatting
+      function initializeBudgetFormatting() {
+        const budgetInput = document.getElementById('budget');
+
+        budgetInput.addEventListener('input', function(e) {
+          // Remove all non-digit characters except decimal point
+          let value = e.target.value.replace(/[^\d]/g, '');
+
+          // Format with commas
+          if (value) {
+            value = parseInt(value).toLocaleString('en-US');
+          }
+
+          // Update the input value
+          e.target.value = value;
+        });
+
+        // Prevent non-numeric input on keypress
+        budgetInput.addEventListener('keypress', function(e) {
+          // Allow backspace, delete, tab, escape, enter, and decimal point
+          if ([8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
+              // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
+              (e.ctrlKey && [65, 67, 86, 88, 90].includes(e.keyCode))) {
+            return;
+          }
+
+          // Block non-numeric characters
+          if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+          }
+        });
+      }
+
       // Add event listeners for county/sub-county dropdowns to zoom map
       document
         .getElementById("countySelect")
@@ -1282,6 +1456,13 @@
               data.themes = JSON.parse(data.selected_themes);
               formData.delete("selected_themes"); // Remove from FormData
               formData.append("themes", JSON.stringify(data.themes)); // Add parsed themes
+            }
+
+            // Clean budget value (remove commas for submission)
+            if (data.budget) {
+              const cleanBudget = data.budget.replace(/,/g, '');
+              formData.set("budget", cleanBudget);
+              data.budget = cleanBudget;
             }
 
             // Validate required fields
