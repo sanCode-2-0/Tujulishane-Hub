@@ -414,16 +414,15 @@
 
         <!-- Reject Project Modal -->
         <div id="rejectProjectModal"
-            class="fixed inset-0 z-[1056] hidden items-center justify-center bg-black/50 px-4 py-6"
-            role="dialog" aria-modal="true" aria-labelledby="rejectProjectTitle">
+            class="fixed inset-0 z-[1056] hidden items-center justify-center bg-black/50 px-4 py-6" role="dialog"
+            aria-modal="true" aria-labelledby="rejectProjectTitle">
             <div class="w-full max-w-md rounded-xl bg-white shadow-2xl">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h3 class="text-lg font-semibold text-gray-900" id="rejectProjectTitle">Reject Project</h3>
                     <button type="button" class="text-gray-400 hover:text-gray-600" aria-label="Close"
                         onclick="closeRejectModal()">
                         <span class="sr-only">Close</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                            fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
                                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                 clip-rule="evenodd" />
@@ -440,9 +439,12 @@
                         <option value="" selected disabled>Choose a reason</option>
                         <option value="Incomplete supporting documents">Incomplete supporting documents</option>
                         <option value="Budget details are unclear">Budget details are unclear</option>
-                        <option value="Project scope does not align with priorities">Project scope does not align with priorities</option>
-                        <option value="Missing required compliance approvals">Missing required compliance approvals</option>
-                        <option value="Duplicate submission or already funded">Duplicate submission or already funded</option>
+                        <option value="Project scope does not align with priorities">Project scope does not align with
+                            priorities</option>
+                        <option value="Missing required compliance approvals">Missing required compliance approvals
+                        </option>
+                        <option value="Duplicate submission or already funded">Duplicate submission or already funded
+                        </option>
                     </select>
                     <p id="rejectReasonError" class="hidden text-sm text-red-600">Please choose a reason before
                         submitting.</p>
@@ -633,38 +635,45 @@
                                     <table class="min-w-full leading-normal">
                                         <thead>
                                             <tr>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Project No
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Title
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Partner
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Theme
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Location
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Start
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    End
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Contact
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
                                         <tbody id="tbody-stalled"></tbody>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Partner A
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Education
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Nairobi, Langata
-                                            <br>
-                                            <span class="text-xs">St. Marys Hospital</span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-01-01
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            2025-12-31
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-                                            Jane Doe
-                                        </td>
-                                        <td
-                                            class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-
-                                            <button
-                                                class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
-                                                Re-activate
-                                            </button>
-                                        </td>
-                                        </tr>
-                                        </tbody>
                                     </table>
                                 </div>
                             </div>
