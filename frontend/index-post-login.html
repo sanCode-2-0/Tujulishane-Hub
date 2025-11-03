@@ -80,6 +80,7 @@
       window.BASE_URL = BASE_URL;
     </script>
     <script src="auth.js"></script>
+    <script src="kenya-locations.js"></script>
 
     <!-- Optional: Google Font -->
     <link
@@ -1156,22 +1157,18 @@
             </select>
           </div>
 
-          <!-- Status Dropdown -->
+          <!-- Sub-County Dropdown -->
           <div class="relative">
             <label
-              for="mapStatusSelect"
+              for="mapSubCountySelect"
               class="block text-sm font-medium text-gray-700 mb-2"
-              >Status</label
+              >Sub-County</label
             >
             <select
-              id="mapStatusSelect"
+              id="mapSubCountySelect"
               class="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="stalled">Stalled</option>
-              <option value="completed">Completed</option>
+              <option value="">All Sub-Counties</option>
             </select>
           </div>
 
@@ -1752,49 +1749,13 @@
 
       // Initialize map search functionality
       function initializeMapSearch() {
-        // Populate county dropdown when projects are loaded
-        populateCountyDropdown();
+        // Initialize county and sub-county dropdowns with fixed Kenya locations
+        initializeCountyDropdown("mapCountySelect", "mapSubCountySelect");
 
         // Add search button event listener
         document
           .getElementById("mapSearchBtn")
           .addEventListener("click", performMapSearch);
-      }
-
-      // Populate county dropdown with available counties
-      function populateCountyDropdown() {
-        const countySelect = document.getElementById("mapCountySelect");
-        const counties = new Set();
-
-        // Collect all unique counties from project locations
-        projects.forEach((project) => {
-          if (project.locations && Array.isArray(project.locations)) {
-            project.locations.forEach((loc) => {
-              if (loc.county) {
-                counties.add(loc.county);
-              }
-            });
-          }
-          // Also check for direct county on project
-          if (project.county) {
-            counties.add(project.county);
-          }
-        });
-
-        // Clear existing options except "All Counties"
-        while (countySelect.children.length > 1) {
-          countySelect.removeChild(countySelect.lastChild);
-        }
-
-        // Add county options
-        Array.from(counties)
-          .sort()
-          .forEach((county) => {
-            const option = document.createElement("option");
-            option.value = county;
-            option.textContent = county;
-            countySelect.appendChild(option);
-          });
       }
 
       // Perform map search and zoom
@@ -1811,12 +1772,13 @@
           .value.trim()
           .toLowerCase();
         const selectedCounty = document.getElementById("mapCountySelect").value;
-        const selectedStatus = document.getElementById("mapStatusSelect").value;
+        const selectedSubCounty =
+          document.getElementById("mapSubCountySelect").value;
 
         console.log("Search criteria:", {
           searchText,
           selectedCounty,
-          selectedStatus,
+          selectedSubCounty,
         });
 
         // Filter projects based on search criteria
@@ -1854,9 +1816,18 @@
             );
           }
 
-          // Status filter
-          const statusMatch =
-            !selectedStatus || project.status?.toLowerCase() === selectedStatus;
+          // Sub-County filter
+          let subCountyMatch = true;
+          if (selectedSubCounty) {
+            subCountyMatch = false;
+            if (project.locations && Array.isArray(project.locations)) {
+              subCountyMatch = project.locations.some(
+                (loc) => loc.subCounty === selectedSubCounty
+              );
+            } else if (project.subCounty === selectedSubCounty) {
+              subCountyMatch = true;
+            }
+          }
 
           // County filter
           let countyMatch = true;
@@ -1871,7 +1842,7 @@
             }
           }
 
-          return nameMatch && statusMatch && countyMatch;
+          return nameMatch && subCountyMatch && countyMatch;
         });
 
         console.log("Matching projects found:", matchingProjects.length);
@@ -1885,10 +1856,12 @@
           if (project.locations && Array.isArray(project.locations)) {
             project.locations.forEach((loc) => {
               if (loc.latitude && loc.longitude) {
-                // Check county filter for this specific location
+                // Check county and sub-county filter for this specific location
                 const countyMatch =
                   !selectedCounty || loc.county === selectedCounty;
-                if (countyMatch) {
+                const subCountyMatch =
+                  !selectedSubCounty || loc.subCounty === selectedSubCounty;
+                if (countyMatch && subCountyMatch) {
                   matchingLocations.push({
                     lat: loc.latitude,
                     lng: loc.longitude,
@@ -1900,10 +1873,12 @@
           }
           // Also check for direct latitude/longitude on the project
           if (project.latitude && project.longitude) {
-            // For direct coordinates, check if county matches (if county filter is applied)
+            // For direct coordinates, check if county and sub-county matches (if filters are applied)
             const countyMatch =
               !selectedCounty || project.county === selectedCounty;
-            if (countyMatch) {
+            const subCountyMatch =
+              !selectedSubCounty || project.subCounty === selectedSubCounty;
+            if (countyMatch && subCountyMatch) {
               matchingLocations.push({
                 lat: project.latitude,
                 lng: project.longitude,
