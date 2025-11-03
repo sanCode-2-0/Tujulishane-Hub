@@ -4,6 +4,11 @@ import com.tujulishanehub.backend.config.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tujulishanehub.backend.payload.ApiResponse;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -27,6 +32,9 @@ public class SecurityConfig {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -39,12 +47,29 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register", "/api/users/verify-otp", "/api/users/resend-otp").permitAll()  // Public user registration and OTP endpoints
-                        .requestMatchers("/api/projects/**").permitAll()  // Allow public access to projects API
+            .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/projects").hasRole("PARTNER")
+            .requestMatchers(HttpMethod.PUT, "/api/projects/**").hasRole("PARTNER")
+            .requestMatchers(HttpMethod.DELETE, "/api/projects/**").hasRole("PARTNER")
                         .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
                         .requestMatchers("/api/organizations", "/api/organizations/**").permitAll()  // Allow public access to organizations
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                ApiResponse<Object> body = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Authentication required. Please log in and retry.", null);
+                objectMapper.writeValue(response.getOutputStream(), body);
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                ApiResponse<Object> body = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied: insufficient permissions to perform this action.", null);
+                objectMapper.writeValue(response.getOutputStream(), body);
+            })
+        )
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -67,7 +92,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("*"); // allow all origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "Accept", "User-Agent", "Pragma"));
         configuration.setAllowCredentials(false); // must be false when using wildcard
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

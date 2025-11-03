@@ -172,172 +172,7 @@
 </head>
 
 <body class="text-gray-800 bg-gray-50 w-full" x-data="pastProjectsApp()">
-	<!-- Navigation -->
-	<div data-twe-modal-init
-		class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-		id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-		<div data-twe-modal-dialog-ref
-			class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-			<div
-				class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-				<div
-					class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-					<!-- Modal title -->
-					<h5 class="text-xl font-light uppercase leading-normal text-surface" id="createNewProjectTitle">
-						New Project
-					</h5>
-					<!-- Close button -->
-					<button type="button"
-						class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-						data-twe-modal-dismiss aria-label="Close">
-						<span class="[&>svg]:h-6 [&>svg]:w-6">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-								stroke-width="1.5" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-							</svg>
-						</span>
-					</button>
-				</div>
 
-				<!-- Modal body -->
-				<div class="relative p-4">
-					<form id="newProjectForm">
-						<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-							<!-- Map Picker for Location -->
-							<div class="col-span-2 lg:col-span-4">
-								<label class="block text-sm font-medium text-gray-700 mb-2">Pick Project Location on
-									Map</label>
-								<div class="text-xs text-gray-600 mb-2">
-									Search for a location or click on the map to select the
-									project coordinates.
-								</div>
-								<div id="newProjectMap" style="
-                      height: 400px;
-                      width: 100%;
-                      border-radius: 8px;
-                      margin-bottom: 8px;
-                      border: 1px solid #e5e7eb;
-                      background-color: #f3f4f6;
-                      position: relative;
-                      overflow: hidden;
-                    "></div>
-								<input type="hidden" id="project_latitude" name="latitude" />
-								<input type="hidden" id="project_longitude" name="longitude" />
-								<input type="hidden" id="project_county" name="county" />
-								<input type="hidden" id="project_subcounty" name="subcounty" />
-								<div class="text-sm text-gray-700 mt-2 p-2 bg-gray-50 rounded">
-									<strong>Selected Location:</strong>
-									<span id="selectedLatLng" class="font-mono text-blue-600">Click on map to select
-										location</span>
-									<br />
-									<span id="selectedCounty" class="text-gray-600"></span>
-								</div>
-							</div>
-							<!-- Title -->
-							<div>
-								<label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
-								<input required type="text" id="title" name="title"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-
-							<!-- Project Theme -->
-							<div>
-								<label for="theme" class="block text-sm font-medium text-gray-700">Project Theme
-									*</label>
-								<select id="theme" name="theme"
-									class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-									<option value="">Select Theme</option>
-									<option value="GBV">Gender based violence</option>
-									<option value="AYPSRH">
-										Adolescent and Young People Sexual and Reproductive Health
-									</option>
-									<option value="MNH">Maternal and Newborn Health</option>
-									<option value="FP">Family planning</option>
-									<option value="CH">Child Health</option>
-									<option value="AH">Adolescent Health</option>
-								</select>
-							</div>
-
-							<!-- Time Period -->
-							<div>
-								<label for="starttime_period" class="block text-sm font-medium text-gray-700">
-									Start *
-								</label>
-								<input required type="date" id="starttime_period" name="start_date"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="endtime_period" class="block text-sm font-medium text-gray-700">End
-									*</label>
-								<input type="date" id="endtime_period" name="end_date"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<!-- Activity Type -->
-							<div class="col-span-2 md:col-span-4">
-								<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
-									(Description) *
-								</label>
-								<textarea required id="activity_type" name="activity_type" rows="3"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-							</div>
-
-							<!-- County and Sub-county fields removed (not required) -->
-
-							<!-- Contact Person -->
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Name *
-								</label>
-								<input required type="text" id="contact_person" name="contact_person_name"
-									placeholder="Name"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Role *
-								</label>
-								<input required type="text" id="contact_person" name="contact_person_role"
-									placeholder="Role"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="contact_person" class="block text-sm font-medium text-gray-700">
-									Contact Person Email *
-								</label>
-								<input required type="email" id="contact_person" name="contact_person_mail"
-									placeholder="Email"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-							<div>
-								<label for="budget" class="block text-sm font-medium text-gray-700">
-									Budget in KES
-								</label>
-								<input required type="number" id="budget" name="budget" placeholder="amount"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
-							</div>
-
-							<!-- Gaps -->
-							<div class="col-span-2 lg:col-span-4">
-								<label for="gaps" class="block text-sm font-medium text-gray-700">
-									Objectives *
-								</label>
-								<textarea required id="gaps" name="gaps" rows="3"
-									class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-							</div>
-						</div>
-
-						<!-- Button -->
-						<div class="mt-3">
-							<button type="submit"
-								class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-								Submit Project
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
 	<div class="" id="nav-placeholder"></div>
 
 	<!-- Main Content -->
@@ -634,8 +469,7 @@
 					</p>
 				</div>
 
-				<ul x-show="!loading && pastProjects.length > 0" class="divide-y divide-gray-200"
-					x-html="renderProjectsList()">
+				<ul x-show="!loading && pastProjects.length > 0" class="" x-html="renderProjectsList()">
 
 					<!-- Pagination -->
 					<div x-show="!loading && pastProjects.length > 0"
@@ -680,8 +514,8 @@
 	</div>
 
 	<!-- Project Details Modal -->
-	<div x-show="selectedProject" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
-		role="dialog" aria-modal="true">
+	<div x-show="selectedProject" x-cloak class="fixed inset-0 backdrop-blur-md z-50 overflow-y-auto"
+		aria-labelledby="modal-title" role="dialog" aria-modal="true">
 		<div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 			<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeModal"></div>
 
@@ -1165,53 +999,63 @@
 						const statusBadge = this.getStatusBadge(project.status?.toLowerCase());
 
 						return `
-							<li class="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer" @click="viewProjectDetails(pastProjects[${index}])">
-								<div class="flex items-center justify-between">
-									<div class="flex-1">
-										<div class="flex items-center">
-											<div class="flex-shrink-0 h-10 w-10">
-												<div class="h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-medium" 
-													 style="background-color: ${color};">
-													${project.status?.charAt(0).toUpperCase() || 'P'}
-												</div>
-											</div>
-											<div class="ml-4 flex-1">
-												<div class="text-lg font-semibold text-gray-800 mb-1">
-													${project.title || project.projectName || "Untitled Project"}
-													${project.projectNo ? ` (${project.projectNo})` : ''}
-												</div>
-												<div class="text-sm text-gray-600 mb-2">
-													${project.objectives || project.description || "This project currently has no description provided."}
-												</div>
-												<div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-													<span><i class="fas fa-user mr-1"></i>${project.partner || "N/A"}</span>
-													<span><i class="fas fa-map-marker-alt mr-1"></i>${project.locations && project.locations.length > 0
-								? project.locations[0].county || project.county || "N/A"
-								: project.county || "N/A"
-							}</span>
-													<span><i class="fas fa-calendar mr-1"></i>${project.startDate
-								? new Date(project.startDate).toLocaleDateString()
-								: "N/A"
-							} - ${project.endDate
-								? new Date(project.endDate).toLocaleDateString()
-								: "N/A"
-							}</span>
-													<span><i class="fas fa-dollar-sign mr-1"></i>${project.budget
-								? "KES " + Number(project.budget).toLocaleString()
-								: "N/A"
-							}</span>
-												</div>
-											</div>
+							<li class="p-4 sm:p-6 hover:bg-gray-50 bg-white cursor-pointer " 
+								@click="viewProjectDetails(pastProjects[${index}])">
+								<div class="flex items-start justify-between">
+									<div class="flex-shrink-0 h-10 w-10 mr-4 mt-1">
+										<div class="h-10 w-10 rounded-lg flex items-center justify-center text-white text-lg font-bold" 
+											style="background-color: ${color};">
+											${project.status?.charAt(0).toUpperCase() || 'P'}
 										</div>
 									</div>
-									<div class="flex-shrink-0 ml-4">
-										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge}">
-											${project.status || "Unknown"}
-										</span>
+
+									<div class="flex-1 min-w-0">
+										<div class="flex items-center justify-between mb-2">
+											<div class="text-xl font-bold text-gray-900 truncate">
+												${project.title || project.projectName || "Untitled Project"}
+												<span class="text-lg font-medium text-gray-500 ml-1">${project.projectNo ? `(${project.projectNo})` : ''}</span>
+											</div>
+											<span class="ml-4 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold ${statusBadge}">
+												${project.status || "Unknown"}
+											</span>
+										</div>
+
+										<p class="text-sm text-gray-600 mb-3 line-clamp-2">
+											${project.objectives || project.description || "This project currently has no description provided."}
+										</p>
+
+										<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500 border-t pt-3 mt-3">
+											<span class="flex items-center text-gray-700 font-medium">
+												<i class="far fa-user mr-1 text-xs"></i> ${project.partner || "N/A"}
+											</span>
+											<span class="flex items-center">
+												<i class="fas fa-map-marker-alt mr-1 text-xs"></i> ${project.locations?.[0]?.county ||
+							project.county || "N/A"}
+											</span>
+											<span class="flex items-center">
+												<i class="fas fa-calendar-alt mr-1 text-xs"></i> ${project.startDate
+								? new Date(project.startDate).toLocaleDateString()
+								: "N/A"}
+															– 
+											${project.endDate
+								? new Date(project.endDate).toLocaleDateString()
+								: "N/A"
+							}
+											</span>
+											<span class="flex items-center text-green-600 font-semibold">
+												<i class="fas fa-dollar-sign mr-1 text-sm"></i> ${project.budget
+								? "KES " + Number(project.budget).toLocaleString()
+								: "N/A"
+							}
+											</span>
+										</div>
 									</div>
 								</div>
 							</li>
-						`;
+							`;
+
+
+
 					}).join('');
 				},
 

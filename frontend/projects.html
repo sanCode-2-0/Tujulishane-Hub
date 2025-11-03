@@ -412,6 +412,52 @@
             </div>
         </div>
 
+        <!-- Reject Project Modal -->
+        <div id="rejectProjectModal"
+            class="fixed inset-0 z-[1056] hidden items-center justify-center bg-black/50 px-4 py-6"
+            role="dialog" aria-modal="true" aria-labelledby="rejectProjectTitle">
+            <div class="w-full max-w-md rounded-xl bg-white shadow-2xl">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="rejectProjectTitle">Reject Project</h3>
+                    <button type="button" class="text-gray-400 hover:text-gray-600" aria-label="Close"
+                        onclick="closeRejectModal()">
+                        <span class="sr-only">Close</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="px-6 py-5 space-y-4">
+                    <p class="text-sm text-gray-600">Select a reason to reject this project. The partner will be
+                        notified of the chosen reason.</p>
+                    <label class="block text-sm font-medium text-gray-700" for="rejectReasonSelect">Rejection
+                        reason</label>
+                    <select id="rejectReasonSelect"
+                        class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="" selected disabled>Choose a reason</option>
+                        <option value="Incomplete supporting documents">Incomplete supporting documents</option>
+                        <option value="Budget details are unclear">Budget details are unclear</option>
+                        <option value="Project scope does not align with priorities">Project scope does not align with priorities</option>
+                        <option value="Missing required compliance approvals">Missing required compliance approvals</option>
+                        <option value="Duplicate submission or already funded">Duplicate submission or already funded</option>
+                    </select>
+                    <p id="rejectReasonError" class="hidden text-sm text-red-600">Please choose a reason before
+                        submitting.</p>
+                </div>
+                <div class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
+                    <button type="button"
+                        class="rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                        onclick="closeRejectModal()">Cancel</button>
+                    <button type="button"
+                        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        onclick="submitProjectRejection()">Reject project</button>
+                </div>
+            </div>
+        </div>
+
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
@@ -681,6 +727,69 @@
                                 ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
                                 : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
 
+                            const rejectModalEl = document.getElementById('rejectProjectModal');
+                            const rejectReasonSelect = document.getElementById('rejectReasonSelect');
+                            const rejectReasonError = document.getElementById('rejectReasonError');
+                            let pendingRejectProjectId = null;
+
+                            function resetRejectModal() {
+                                if (rejectReasonSelect) {
+                                    rejectReasonSelect.value = '';
+                                }
+                                if (rejectReasonError) {
+                                    rejectReasonError.classList.add('hidden');
+                                }
+                            }
+
+                            window.openRejectModal = function (projectId) {
+                                pendingRejectProjectId = projectId;
+                                resetRejectModal();
+                                if (!rejectModalEl) {
+                                    console.error('Reject modal element not found');
+                                    return;
+                                }
+                                rejectModalEl.classList.remove('hidden');
+                                rejectModalEl.classList.add('flex');
+                                document.body.classList.add('overflow-hidden');
+                            };
+
+                            window.closeRejectModal = function () {
+                                pendingRejectProjectId = null;
+                                if (!rejectModalEl) {
+                                    return;
+                                }
+                                rejectModalEl.classList.add('hidden');
+                                rejectModalEl.classList.remove('flex');
+                                document.body.classList.remove('overflow-hidden');
+                            };
+
+                            window.submitProjectRejection = async function () {
+                                if (!pendingRejectProjectId) {
+                                    console.error('No project selected for rejection');
+                                    return;
+                                }
+                                const reason = rejectReasonSelect ? rejectReasonSelect.value : '';
+                                if (!reason) {
+                                    if (rejectReasonError) {
+                                        rejectReasonError.classList.remove('hidden');
+                                    }
+                                    if (rejectReasonSelect) {
+                                        rejectReasonSelect.focus();
+                                    }
+                                    return;
+                                }
+                                if (rejectReasonError) {
+                                    rejectReasonError.classList.add('hidden');
+                                }
+                                await dismissProject(pendingRejectProjectId, reason);
+                            };
+
+                            document.addEventListener('keydown', (event) => {
+                                if (event.key === 'Escape' && rejectModalEl && !rejectModalEl.classList.contains('hidden')) {
+                                    closeRejectModal();
+                                }
+                            });
+
                             // Fetch and display project statistics
                             async function loadProjectStats() {
                                 try {
@@ -734,7 +843,7 @@
                                 if (status === 'pending') {
                                     html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
                                     html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="approveProject(${project.id})">Approve</button> `;
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="dismissProject(${project.id})">Reject</button>`;
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="openRejectModal(${project.id})">Reject</button>`;
                                 } else if (status === 'active') {
                                     html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
                                     html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
@@ -1042,22 +1151,57 @@
                                 }
                             }
 
-                            async function dismissProject(id) {
-                                const reason = prompt('Enter reason for rejection:');
-                                if (!reason) return;
+                            async function dismissProject(id, reason) {
+                                if (!id) {
+                                    console.error('dismissProject requires a project id');
+                                    return;
+                                }
+                                const trimmedReason = (reason || '').trim();
+                                if (!trimmedReason) {
+                                    if (rejectReasonError) {
+                                        rejectReasonError.classList.remove('hidden');
+                                    }
+                                    return;
+                                }
+
                                 try {
-                                    const res = await fetch(`${API_BASE}/projects/admin/reject/${id}`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        credentials: 'include',
-                                        body: JSON.stringify({ reason })
-                                    });
-                                    const data = await res.json();
-                                    alert(data.message || 'Project Rejected');
-                                    loadProjectStats();
-                                    loadProjectsByStatus('pending', 'tbody-pending');
+                                    let res;
+                                    if (window.authManager && typeof window.authManager.apiCall === 'function') {
+                                        res = await window.authManager.apiCall(
+                                            `/api/projects/admin/reject/${id}`,
+                                            'POST',
+                                            { reason: trimmedReason }
+                                        );
+                                    } else {
+                                        const headers = { 'Content-Type': 'application/json' };
+                                        const token = localStorage.getItem('accessToken');
+                                        if (token) {
+                                            headers.Authorization = `Bearer ${token}`;
+                                        }
+                                        res = await fetch(`${API_BASE}/projects/admin/reject/${id}`, {
+                                            method: 'POST',
+                                            headers,
+                                            body: JSON.stringify({ reason: trimmedReason })
+                                        });
+                                    }
+                                    let data = null;
+                                    try {
+                                        data = await res.json();
+                                    } catch (jsonErr) {
+                                        console.error('Failed to parse rejection response JSON', jsonErr);
+                                    }
+
+                                    if (res.ok) {
+                                        alert((data && data.message) || 'Project rejected');
+                                        closeRejectModal();
+                                        loadProjectStats();
+                                        loadProjectsByStatus('pending', 'tbody-pending');
+                                    } else {
+                                        alert((data && data.message) || 'Failed to reject project.');
+                                    }
                                 } catch (e) {
-                                    alert('Failed to rejected project');
+                                    console.error('Failed to reject project', e);
+                                    alert('Failed to reject project');
                                 }
                             }
 

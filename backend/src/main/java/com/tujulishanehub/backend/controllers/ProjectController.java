@@ -66,12 +66,18 @@ public class ProjectController {
      * Create a new project (Partners/Donors only)
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('PARTNER') and @userService.canUserCreateProjects(authentication.name)")
+    @PreAuthorize("hasRole('PARTNER')")
     public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
-        @RequestPart("project") @Valid ProjectCreateRequest request,
+        @RequestPart("project") String projectJson,
         @RequestPart(value = "supporting_documents", required = false) List<MultipartFile> files
     ) {
         try {
+            // Parse the JSON string to ProjectCreateRequest
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            ProjectCreateRequest request = objectMapper.readValue(projectJson, ProjectCreateRequest.class);
+
             // Log brief info to console
             logger.info("Controller: Creating new project: {}", request.getTitle());
             logger.debug("Controller: Full request data - title: {}, themes: {}, locations: {}, partner: {}",
