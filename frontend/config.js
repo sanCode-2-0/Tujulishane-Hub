@@ -21,4 +21,14 @@ if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
 }
 
 console.log("BASE URL", BASE_URL);
-export { BASE_URL, DEV_URL, PROD_URL, USE_PROD };
+
+// Set as global variables for non-module scripts
+window.BASE_URL = BASE_URL;
+window.DEV_URL = DEV_URL;
+window.PROD_URL = PROD_URL;
+window.USE_PROD = USE_PROD;
+
+// Also export for module scripts (if needed)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { BASE_URL, DEV_URL, PROD_URL, USE_PROD };
+}

@@ -1,4 +1,3 @@
-
 let currentStep = 1;
 const totalSteps = 6;
 
@@ -25,7 +24,9 @@ function showStep(step) {
     "Supporting Documents",
   ];
 
-  progressText.textContent = `Step ${step} of ${totalSteps}: ${titles[step - 1]}`;
+  progressText.textContent = `Step ${step} of ${totalSteps}: ${
+    titles[step - 1]
+  }`;
 
   prevBtn.style.display = step === 1 ? "none" : "inline-flex";
   nextBtn.textContent = step === totalSteps ? "Submit" : "Next";
@@ -36,8 +37,13 @@ nextBtn.addEventListener("click", () => {
     currentStep++;
     showStep(currentStep);
   } else {
-    alert("✅ Form submitted successfully!");
-    // Add actual submission logic here
+    // On last step, trigger form submission
+    const form = document.getElementById("projectForm");
+    if (form) {
+      form.dispatchEvent(
+        new Event("submit", { bubbles: true, cancelable: true })
+      );
+    }
   }
 });
 

@@ -1,502 +1,694 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Project - RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <!-- Tailwind CSS (with custom config using inline script) -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#1e40af", // Custom Blue
-                        secondary: "#f59e0b", // Custom Amber
-                        accent: "#10b981", // Custom Green
-                        dark: "#1f2937", // Gray-800
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                    },
-                },
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af", // Custom Blue
+              secondary: "#f59e0b", // Custom Amber
+              accent: "#10b981", // Custom Green
+              dark: "#1f2937", // Gray-800
             },
-        };
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
     <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
+    />
     <script src="styles/main.js"></script>
     <script src="auth.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-</head>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<body class="bg-gray-50">
+  <body class="bg-gray-50">
     <div x-data="approvalApp()" x-init="init()">
-        <!-- Navigation -->
-        <div id="nav-placeholder">
+      <!-- Navigation -->
+      <div id="nav-placeholder"></div>
 
+      <!-- Loading Overlay -->
+      <div
+        x-show="loading"
+        class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin text-4xl text-white"></i>
+          <p class="text-white mt-4">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div
+        x-show="toast.show"
+        x-transition
+        :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+        class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50"
+      >
+        <span x-text="toast.message"></span>
+      </div>
+
+      <!-- Main Content -->
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">
+          Two-Tier Project Approval Management
+        </h1>
+
+        <!-- Debug Info Panel (Remove after debugging) -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+          <h3 class="font-bold text-blue-900 mb-2">
+            🔧 Debug Information (For Debugging Only)
+          </h3>
+          <div class="text-sm text-blue-800 space-y-1">
+            <p>
+              <strong>User Role:</strong>
+              <span x-text="userRole || 'Not loaded'"></span>
+            </p>
+            <p>
+              <strong>Thematic Area:</strong>
+              <span x-text="userThematicArea || 'Not assigned'"></span>
+            </p>
+            <p><strong>Active Tab:</strong> <span x-text="activeTab"></span></p>
+            <p>
+              <strong>Projects for Review:</strong>
+              <span x-text="projectsForReview.length"></span>
+            </p>
+            <p>
+              <strong>Projects for Approval:</strong>
+              <span x-text="projectsForApproval.length"></span>
+            </p>
+            <p>
+              <strong>Reviewers:</strong>
+              <span x-text="allReviewers.length"></span>
+            </p>
+            <p>
+              <strong>BASE_URL:</strong>
+              <span x-text="window.BASE_URL || 'Not set'"></span>
+            </p>
+            <p>
+              <strong>Access Token:</strong>
+              <span
+                x-text="localStorage.getItem('accessToken') ? 'Present' : 'Missing'"
+              ></span>
+            </p>
+          </div>
+          <p class="text-xs text-blue-600 mt-2">
+            Open browser console (F12) for detailed logs
+          </p>
         </div>
 
-        <!-- Loading Overlay -->
-        <div x-show="loading" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-            <div class="text-center">
-                <i class="fas fa-spinner fa-spin text-4xl text-white"></i>
-                <p class="text-white mt-4">Loading...</p>
-            </div>
+        <!-- Role-based tabs -->
+        <div class="mb-6">
+          <ul class="flex border-b" role="tablist">
+            <!-- Reviewer Tab (only for SUPER_ADMIN_REVIEWER) -->
+            <li
+              x-show="userRole === 'SUPER_ADMIN_REVIEWER' || userRole === 'SUPER_ADMIN'"
+              class="mr-2"
+            >
+              <button
+                @click="activeTab = 'for-review'"
+                :class="activeTab === 'for-review' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
+                class="px-4 py-2 font-medium"
+              >
+                Projects for Review
+                <span
+                  class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
+                  x-text="projectsForReview.length"
+                ></span>
+              </button>
+            </li>
+
+            <!-- Approver Tab (only for SUPER_ADMIN_APPROVER) -->
+            <li
+              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
+              class="mr-2"
+            >
+              <button
+                @click="activeTab = 'for-approval'"
+                :class="activeTab === 'for-approval' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
+                class="px-4 py-2 font-medium"
+              >
+                Approved Projects
+                <span
+                  class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                  x-text="projectsForApproval.length"
+                ></span>
+              </button>
+            </li>
+
+            <!-- Reviewer Management (only for SUPER_ADMIN_APPROVER and SUPER_ADMIN) -->
+            <li
+              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
+              class="mr-2"
+            >
+              <button
+                @click="activeTab = 'reviewers'"
+                :class="activeTab === 'reviewers' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
+                class="px-4 py-2 font-medium"
+              >
+                Dismissed Projects
+              </button>
+            </li>
+          </ul>
         </div>
 
-        <!-- Toast Notification -->
-        <div x-show="toast.show" x-transition :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
-            class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            <span x-text="toast.message"></span>
-        </div>
+        <!-- Projects for Review (Reviewer View) -->
+        <div x-show="activeTab === 'for-review'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">
+              Projects in Your Thematic Area
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">
+              Your thematic area:
+              <span class="font-semibold" x-text="userThematicArea"></span>
+            </p>
 
-        <!-- Main Content -->
-        <div class="container mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold mb-6">
-                Two-Tier Project Approval Management
-            </h1>
+            <template x-if="projectsForReview.length === 0">
+              <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-inbox text-4xl mb-2"></i>
+                <p>No projects awaiting review</p>
+              </div>
+            </template>
 
-            <!-- Debug Info Panel (Remove after debugging) -->
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                <h3 class="font-bold text-blue-900 mb-2">
-                    🔧 Debug Information (For Debugging Only)
-                </h3>
-                <div class="text-sm text-blue-800 space-y-1">
-                    <p>
-                        <strong>User Role:</strong>
-                        <span x-text="userRole || 'Not loaded'"></span>
-                    </p>
-                    <p>
-                        <strong>Thematic Area:</strong>
-                        <span x-text="userThematicArea || 'Not assigned'"></span>
-                    </p>
-                    <p><strong>Active Tab:</strong> <span x-text="activeTab"></span></p>
-                    <p>
-                        <strong>Projects for Review:</strong>
-                        <span x-text="projectsForReview.length"></span>
-                    </p>
-                    <p>
-                        <strong>Projects for Approval:</strong>
-                        <span x-text="projectsForApproval.length"></span>
-                    </p>
-                    <p>
-                        <strong>Reviewers:</strong>
-                        <span x-text="allReviewers.length"></span>
-                    </p>
-                    <p>
-                        <strong>BASE_URL:</strong>
-                        <span x-text="window.BASE_URL || 'Not set'"></span>
-                    </p>
-                    <p>
-                        <strong>Access Token:</strong>
-                        <span x-text="localStorage.getItem('accessToken') ? 'Present' : 'Missing'"></span>
-                    </p>
-                </div>
-                <p class="text-xs text-blue-600 mt-2">
-                    Open browser console (F12) for detailed logs
-                </p>
-            </div>
-
-            <!-- Role-based tabs -->
-            <div class="mb-6">
-                <ul class="flex border-b" role="tablist">
-                    <!-- Reviewer Tab (only for SUPER_ADMIN_REVIEWER) -->
-                    <li x-show="userRole === 'SUPER_ADMIN_REVIEWER' || userRole === 'SUPER_ADMIN'" class="mr-2">
-                        <button @click="activeTab = 'for-review'"
-                            :class="activeTab === 'for-review' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                            class="px-4 py-2 font-medium">
-                            Projects for Review
-                            <span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
-                                x-text="projectsForReview.length"></span>
-                        </button>
-                    </li>
-
-                    <!-- Approver Tab (only for SUPER_ADMIN_APPROVER) -->
-                    <li x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'" class="mr-2">
-                        <button @click="activeTab = 'for-approval'"
-                            :class="activeTab === 'for-approval' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                            class="px-4 py-2 font-medium">
-                            Approved Projects
-                            <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                                x-text="projectsForApproval.length"></span>
-                        </button>
-                    </li>
-
-                    <!-- Reviewer Management (only for SUPER_ADMIN_APPROVER and SUPER_ADMIN) -->
-                    <li x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'" class="mr-2">
-                        <button @click="activeTab = 'reviewers'"
-                            :class="activeTab === 'reviewers' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                            class="px-4 py-2 font-medium">
-                            Dismissed Projects
-                        </button>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Projects for Review (Reviewer View) -->
-            <div x-show="activeTab === 'for-review'" class="space-y-4">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-bold mb-4">
-                        Projects in Your Thematic Area
-                    </h2>
-                    <p class="text-sm text-gray-600 mb-4">
-                        Your thematic area:
-                        <span class="font-semibold" x-text="userThematicArea"></span>
-                    </p>
-
-                    <template x-if="projectsForReview.length === 0">
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-inbox text-4xl mb-2"></i>
-                            <p>No projects awaiting review</p>
-                        </div>
-                    </template>
-
-                    <div class="space-y-4">
-                        <template x-for="project in projectsForReview" :key="project.id">
-                            <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h3 class="text-lg font-semibold mb-2" x-text="project.title"></h3>
-                                        <p class="text-sm text-gray-600 mb-2">
-                                            <strong>Partner:</strong>
-                                            <span x-text="project.partner"></span>
-                                        </p>
-                                        <div class="flex flex-wrap gap-2 mb-2">
-                                            <template x-for="theme in project.themes" :key="theme.code">
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                                                    x-text="theme.displayName"></span>
-                                            </template>
-                                        </div>
-                                        <p class="text-sm text-gray-600 mb-2" x-show="project.objectives">
-                                            <strong>Objectives:</strong>
-                                            <span x-text="project.objectives?.substring(0, 150) + '...'"></span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Submitted:
-                                            <span x-text="formatDate(project.createdAt)"></span>
-                                        </p>
-                                    </div>
-                                    <div class="ml-4">
-                                        <span
-                                            class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
-                                            x-text="project.approvalWorkflowStatus"></span>
-                                    </div>
-                                </div>
-
-                                <div class="mt-4 flex gap-2">
-                                    <button @click="viewProjectDetails(project.id)"
-                                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                                        <i class="fas fa-eye mr-2"></i> View Details
-                                    </button>
-                                    <button @click="openReviewModal(project)"
-                                        class="px-4 py-2 bg-button text-white rounded hover:bg-green-600">
-                                        <i class="fas fa-check-circle mr-2"></i> Review Project
-                                    </button>
-                                </div>
-                            </div>
+            <div class="space-y-4">
+              <template x-for="project in projectsForReview" :key="project.id">
+                <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <h3
+                        class="text-lg font-semibold mb-2"
+                        x-text="project.title"
+                      ></h3>
+                      <p class="text-sm text-gray-600 mb-2">
+                        <strong>Partner:</strong>
+                        <span x-text="project.partner"></span>
+                      </p>
+                      <div class="flex flex-wrap gap-2 mb-2">
+                        <template
+                          x-for="theme in project.themes"
+                          :key="theme.code"
+                        >
+                          <span
+                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+                            x-text="theme.displayName"
+                          ></span>
                         </template>
+                      </div>
+                      <p
+                        class="text-sm text-gray-600 mb-2"
+                        x-show="project.objectives"
+                      >
+                        <strong>Objectives:</strong>
+                        <span
+                          x-text="project.objectives?.substring(0, 150) + '...'"
+                        ></span>
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Submitted:
+                        <span x-text="formatDate(project.createdAt)"></span>
+                      </p>
                     </div>
+                    <div class="ml-4">
+                      <span
+                        class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
+                        x-text="project.approvalWorkflowStatus"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex gap-2">
+                    <button
+                      @click="viewProjectDetails(project.id)"
+                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    >
+                      <i class="fas fa-eye mr-2"></i> View Details
+                    </button>
+                    <button
+                      @click="openReviewModal(project)"
+                      class="px-4 py-2 bg-button text-white rounded hover:bg-green-600"
+                    >
+                      <i class="fas fa-check-circle mr-2"></i> Review Project
+                    </button>
+                  </div>
                 </div>
+              </template>
             </div>
+          </div>
+        </div>
 
-            <!-- Projects Awaiting Final Approval (Approver View) -->
-            <div x-show="activeTab === 'for-approval'" class="space-y-4">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-bold mb-4">
-                        Projects Awaiting Final Approval
-                    </h2>
+        <!-- Projects Awaiting Final Approval (Approver View) -->
+        <div x-show="activeTab === 'for-approval'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">
+              Projects Awaiting Final Approval
+            </h2>
 
-                    <template x-if="projectsForApproval.length === 0">
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-inbox text-4xl mb-2"></i>
-                            <p>No projects awaiting final approval</p>
-                        </div>
-                    </template>
+            <template x-if="projectsForApproval.length === 0">
+              <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-inbox text-4xl mb-2"></i>
+                <p>No projects awaiting final approval</p>
+              </div>
+            </template>
 
-                    <div class="space-y-4">
-                        <template x-for="project in projectsForApproval" :key="project.id">
-                            <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h3 class="text-lg font-semibold mb-2" x-text="project.title"></h3>
-                                        <p class="text-sm text-gray-600 mb-2">
-                                            <strong>Partner:</strong>
-                                            <span x-text="project.partner"></span>
-                                        </p>
-                                        <div class="flex flex-wrap gap-2 mb-2">
-                                            <template x-for="theme in project.themes" :key="theme.code">
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                                                    x-text="theme.displayName"></span>
-                                            </template>
-                                        </div>
-
-                                        <!-- Reviewer Information -->
-                                        <div class="bg-green-50 border-l-4 border-green-500 p-3 mb-2">
-                                            <p class="text-sm text-green-800 mb-1">
-                                                <strong>Reviewed by:</strong> Reviewer #<span
-                                                    x-text="project.reviewedBy"></span>
-                                            </p>
-                                            <p class="text-sm text-green-800 mb-1">
-                                                <strong>Reviewed on:</strong>
-                                                <span x-text="formatDate(project.reviewedAt)"></span>
-                                            </p>
-                                            <p class="text-sm text-green-800">
-                                                <strong>Reviewer Comments:</strong>
-                                            </p>
-                                            <p class="text-sm text-green-700 italic"
-                                                x-text="project.reviewerComments || 'No comments provided'"></p>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <span
-                                            class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
-                                            x-text="project.approvalWorkflowStatus"></span>
-                                    </div>
-                                </div>
-
-                                <div class="mt-4 flex gap-2">
-                                    <button @click="viewProjectDetails(project.id)"
-                                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                                        <i class="fas fa-eye mr-2"></i> View Full Details
-                                    </button>
-                                    <button @click="openFinalApprovalModal(project)"
-                                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                        <i class="fas fa-check-double mr-2"></i> Final Approve
-                                    </button>
-                                    <button @click="openFinalRejectModal(project)"
-                                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                                        <i class="fas fa-times-circle mr-2"></i> Reject
-                                    </button>
-                                </div>
-                            </div>
+            <div class="space-y-4">
+              <template
+                x-for="project in projectsForApproval"
+                :key="project.id"
+              >
+                <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <h3
+                        class="text-lg font-semibold mb-2"
+                        x-text="project.title"
+                      ></h3>
+                      <p class="text-sm text-gray-600 mb-2">
+                        <strong>Partner:</strong>
+                        <span x-text="project.partner"></span>
+                      </p>
+                      <div class="flex flex-wrap gap-2 mb-2">
+                        <template
+                          x-for="theme in project.themes"
+                          :key="theme.code"
+                        >
+                          <span
+                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+                            x-text="theme.displayName"
+                          ></span>
                         </template>
+                      </div>
+
+                      <!-- Reviewer Information -->
+                      <div
+                        class="bg-green-50 border-l-4 border-green-500 p-3 mb-2"
+                      >
+                        <p class="text-sm text-green-800 mb-1">
+                          <strong>Reviewed by:</strong> Reviewer #<span
+                            x-text="project.reviewedBy"
+                          ></span>
+                        </p>
+                        <p class="text-sm text-green-800 mb-1">
+                          <strong>Reviewed on:</strong>
+                          <span x-text="formatDate(project.reviewedAt)"></span>
+                        </p>
+                        <p class="text-sm text-green-800">
+                          <strong>Reviewer Comments:</strong>
+                        </p>
+                        <p
+                          class="text-sm text-green-700 italic"
+                          x-text="project.reviewerComments || 'No comments provided'"
+                        ></p>
+                      </div>
                     </div>
+                    <div class="ml-4">
+                      <span
+                        class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
+                        x-text="project.approvalWorkflowStatus"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex gap-2">
+                    <button
+                      @click="viewProjectDetails(project.id)"
+                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    >
+                      <i class="fas fa-eye mr-2"></i> View Full Details
+                    </button>
+                    <button
+                      @click="openFinalApprovalModal(project)"
+                      class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      <i class="fas fa-check-double mr-2"></i> Final Approve
+                    </button>
+                    <button
+                      @click="openFinalRejectModal(project)"
+                      class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      <i class="fas fa-times-circle mr-2"></i> Reject
+                    </button>
+                  </div>
                 </div>
+              </template>
             </div>
-
-            <!-- Reviewer Management (Approver/SUPER_ADMIN Only) -->
-            <div x-show="activeTab === 'reviewers'" class="space-y-4">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-bold mb-4">Manage Reviewers</h2>
-
-                    <!-- Thematic Area Filter -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Filter by Thematic Area:</label>
-                        <select x-model="selectedThemeFilter" @change="filterReviewers()"
-                            class="px-4 py-2 border rounded">
-                            <option value="">All Reviewers</option>
-                            <option value="GBV">GBV - Gender-Based Violence</option>
-                            <option value="AYPSRH">
-                                AYPSRH - Adolescent and Young People SRH
-                            </option>
-                            <option value="MNH">MNH - Maternal and Newborn Health</option>
-                            <option value="FP">FP - Family Planning</option>
-                            <option value="CH">CH - Child Health</option>
-                            <option value="AH">AH - Adolescent Health</option>
-                        </select>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Name
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Email
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Thematic Area
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <template x-for="reviewer in filteredReviewers" :key="reviewer.id">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.name"></td>
-                                        <td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.email"></td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                                                x-text="reviewer.thematicArea || 'Not Assigned'"></span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <button @click="openAssignThemeModal(reviewer)"
-                                                class="text-button hover:text-green-700">
-                                                <i class="fas fa-edit mr-1"></i> Assign Theme
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <!-- Review Modal -->
-        <div x-show="showReviewModal" class="fixed inset-0 z-50 backdrop-blur-md overflow-y-auto" x-cloak>
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50" @click="showReviewModal = false"></div>
-                <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-                    <h3 class="text-2xl font-bold mb-4">Review Project</h3>
-                    <p class="mb-2">
-                        <strong>Project:</strong>
-                        <span x-text="selectedProject?.title"></span>
-                    </p>
+        <!-- Reviewer Management (Approver/SUPER_ADMIN Only) -->
+        <div x-show="activeTab === 'reviewers'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Manage Reviewers</h2>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Your Decision:</label>
-                        <div class="flex gap-4">
-                            <label class="flex items-center">
-                                <input type="radio" x-model="reviewDecision" value="approve" class="mr-2" />
-                                <span>Approve for Final Review</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" x-model="reviewDecision" value="reject" class="mr-2" />
-                                <span>Reject (Needs Revision)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Comments:</label>
-                        <textarea x-model="reviewComments" rows="4" class="w-full px-3 py-2 border rounded"
-                            placeholder="Provide detailed feedback..."></textarea>
-                    </div>
-
-                    <div class="flex gap-2 justify-end">
-                        <button @click="showReviewModal = false"
-                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                            Cancel
-                        </button>
-                        <button @click="submitReview()"
-                            class="px-4 py-2 bg-button text-white rounded hover:bg-green-600">
-                            Submit Review
-                        </button>
-                    </div>
-                </div>
+            <!-- Thematic Area Filter -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2"
+                >Filter by Thematic Area:</label
+              >
+              <select
+                x-model="selectedThemeFilter"
+                @change="filterReviewers()"
+                class="px-4 py-2 border rounded"
+              >
+                <option value="">All Reviewers</option>
+                <option value="GBV">GBV - Gender-Based Violence</option>
+                <option value="AYPSRH">
+                  AYPSRH - Adolescent and Young People SRH
+                </option>
+                <option value="MNH">MNH - Maternal and Newborn Health</option>
+                <option value="FP">FP - Family Planning</option>
+                <option value="CH">CH - Child Health</option>
+                <option value="AH">AH - Adolescent Health</option>
+              </select>
             </div>
-        </div>
 
-        <!-- Final Approval Modal -->
-        <div x-show="showFinalApprovalModal" class="fixed backdrop-blur-md inset-0 z-50 overflow-y-auto" x-cloak>
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50" @click="showFinalApprovalModal = false"></div>
-                <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-                    <h3 class="text-2xl font-bold mb-4">Final Approval</h3>
-                    <p class="mb-4">
-                        <strong>Project:</strong>
-                        <span x-text="selectedProject?.title"></span>
-                    </p>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Final Comments (Optional):</label>
-                        <textarea x-model="finalComments" rows="3" class="w-full px-3 py-2 border rounded"
-                            placeholder="Add any final comments..."></textarea>
-                    </div>
-
-                    <div class="flex gap-2 justify-end">
-                        <button @click="showFinalApprovalModal = false"
-                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                            Cancel
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                    >
+                      Email
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                    >
+                      Thematic Area
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <template
+                    x-for="reviewer in filteredReviewers"
+                    :key="reviewer.id"
+                  >
+                    <tr>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap"
+                        x-text="reviewer.name"
+                      ></td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap"
+                        x-text="reviewer.email"
+                      ></td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+                          x-text="reviewer.thematicArea || 'Not Assigned'"
+                        ></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <button
+                          @click="openAssignThemeModal(reviewer)"
+                          class="text-button hover:text-green-700"
+                        >
+                          <i class="fas fa-edit mr-1"></i> Assign Theme
                         </button>
-                        <button @click="submitFinalApproval()"
-                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                            <i class="fas fa-check-double mr-2"></i> Grant Final Approval
-                        </button>
-                    </div>
-                </div>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Final Reject Modal -->
-        <div x-show="showFinalRejectModal" class="fixed  backdrop-blur-md z-50 overflow-y-auto" x-cloak>
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50" @click="showFinalRejectModal = false"></div>
-                <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-                    <h3 class="text-2xl font-bold mb-4 text-red-600">Reject Project</h3>
-                    <p class="mb-4">
-                        <strong>Project:</strong>
-                        <span x-text="selectedProject?.title"></span>
-                    </p>
+      <!-- Review Modal -->
+      <div
+        x-show="showReviewModal"
+        class="fixed inset-0 z-50 backdrop-blur-md overflow-y-auto"
+        x-cloak
+      >
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div
+            class="fixed inset-0 bg-black opacity-50"
+            @click="showReviewModal = false"
+          ></div>
+          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+            <h3 class="text-2xl font-bold mb-4">Review Project</h3>
+            <p class="mb-2">
+              <strong>Project:</strong>
+              <span x-text="selectedProject?.title"></span>
+            </p>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Rejection Reason (Required):</label>
-                        <textarea x-model="rejectionReason" rows="4" class="w-full px-3 py-2 border rounded"
-                            placeholder="Provide detailed reason for rejection..." required></textarea>
-                    </div>
-
-                    <div class="flex gap-2 justify-end">
-                        <button @click="showFinalRejectModal = false"
-                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                            Cancel
-                        </button>
-                        <button @click="submitFinalRejection()"
-                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                            <i class="fas fa-times-circle mr-2"></i> Reject Project
-                        </button>
-                    </div>
-                </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2"
+                >Your Decision:</label
+              >
+              <div class="flex gap-4">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    x-model="reviewDecision"
+                    value="approve"
+                    class="mr-2"
+                  />
+                  <span>Approve for Final Review</span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    x-model="reviewDecision"
+                    value="reject"
+                    class="mr-2"
+                  />
+                  <span>Reject (Needs Revision)</span>
+                </label>
+              </div>
             </div>
-        </div>
 
-        <!-- Assign Theme Modal -->
-        <div x-show="showAssignThemeModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50" @click="showAssignThemeModal = false"></div>
-                <div class="relative bg-white rounded-lg p-8 max-w-md w-full">
-                    <h3 class="text-2xl font-bold mb-4">Assign Thematic Area</h3>
-                    <p class="mb-4">
-                        <strong>Reviewer:</strong>
-                        <span x-text="selectedReviewer?.name"></span>
-                    </p>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">Thematic Area:</label>
-                        <select x-model="assignedTheme" class="w-full px-3 py-2 border rounded">
-                            <option value="">Select Theme</option>
-                            <option value="GBV">GBV - Gender-Based Violence</option>
-                            <option value="AYPSRH">
-                                AYPSRH - Adolescent and Young People SRH
-                            </option>
-                            <option value="MNH">MNH - Maternal and Newborn Health</option>
-                            <option value="FP">FP - Family Planning</option>
-                            <option value="CH">CH - Child Health</option>
-                            <option value="AH">AH - Adolescent Health</option>
-                        </select>
-                    </div>
-
-                    <div class="flex gap-2 justify-end">
-                        <button @click="showAssignThemeModal = false"
-                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                            Cancel
-                        </button>
-                        <button @click="submitAssignTheme()"
-                            class="px-4 py-2 bg-button text-white rounded hover:bg-green-600">
-                            Assign
-                        </button>
-                    </div>
-                </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Comments:</label>
+              <textarea
+                x-model="reviewComments"
+                rows="4"
+                class="w-full px-3 py-2 border rounded"
+                placeholder="Provide detailed feedback..."
+              ></textarea>
             </div>
+
+            <div class="flex gap-2 justify-end">
+              <button
+                @click="showReviewModal = false"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                @click="submitReview()"
+                class="px-4 py-2 bg-button text-white rounded hover:bg-green-600"
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Final Approval Modal -->
+      <div
+        x-show="showFinalApprovalModal"
+        class="fixed backdrop-blur-md inset-0 z-50 overflow-y-auto"
+        x-cloak
+      >
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div
+            class="fixed inset-0 bg-black opacity-50"
+            @click="showFinalApprovalModal = false"
+          ></div>
+          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+            <h3 class="text-2xl font-bold mb-4">Final Approval</h3>
+            <p class="mb-4">
+              <strong>Project:</strong>
+              <span x-text="selectedProject?.title"></span>
+            </p>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2"
+                >Final Comments (Optional):</label
+              >
+              <textarea
+                x-model="finalComments"
+                rows="3"
+                class="w-full px-3 py-2 border rounded"
+                placeholder="Add any final comments..."
+              ></textarea>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+              <button
+                @click="showFinalApprovalModal = false"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                @click="submitFinalApproval()"
+                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                <i class="fas fa-check-double mr-2"></i> Grant Final Approval
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Reject Modal -->
+      <div
+        x-show="showFinalRejectModal"
+        class="fixed backdrop-blur-md z-50 overflow-y-auto"
+        x-cloak
+      >
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div
+            class="fixed inset-0 bg-black opacity-50"
+            @click="showFinalRejectModal = false"
+          ></div>
+          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+            <h3 class="text-2xl font-bold mb-4 text-red-600">Reject Project</h3>
+            <p class="mb-4">
+              <strong>Project:</strong>
+              <span x-text="selectedProject?.title"></span>
+            </p>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2"
+                >Rejection Reason (Required):</label
+              >
+              <textarea
+                x-model="rejectionReason"
+                rows="4"
+                class="w-full px-3 py-2 border rounded"
+                placeholder="Provide detailed reason for rejection..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+              <button
+                @click="showFinalRejectModal = false"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                @click="submitFinalRejection()"
+                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                <i class="fas fa-times-circle mr-2"></i> Reject Project
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assign Theme Modal -->
+      <div
+        x-show="showAssignThemeModal"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        x-cloak
+      >
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div
+            class="fixed inset-0 bg-black opacity-50"
+            @click="showAssignThemeModal = false"
+          ></div>
+          <div class="relative bg-white rounded-lg p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">Assign Thematic Area</h3>
+            <p class="mb-4">
+              <strong>Reviewer:</strong>
+              <span x-text="selectedReviewer?.name"></span>
+            </p>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2"
+                >Thematic Area:</label
+              >
+              <select
+                x-model="assignedTheme"
+                class="w-full px-3 py-2 border rounded"
+              >
+                <option value="">Select Theme</option>
+                <option value="GBV">GBV - Gender-Based Violence</option>
+                <option value="AYPSRH">
+                  AYPSRH - Adolescent and Young People SRH
+                </option>
+                <option value="MNH">MNH - Maternal and Newborn Health</option>
+                <option value="FP">FP - Family Planning</option>
+                <option value="CH">CH - Child Health</option>
+                <option value="AH">AH - Adolescent Health</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+              <button
+                @click="showAssignThemeModal = false"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                @click="submitAssignTheme()"
+                class="px-4 py-2 bg-button text-white rounded hover:bg-green-600"
+              >
+                Assign
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- NAVIGATION LOADER DISABLED FOR DEBUGGING -->
@@ -505,461 +697,460 @@
     <script src="styles/authnav.js"></script>
     <script src="styles/loadNav.js"></script>
     <script>
-        function approvalApp() {
-            return {
-                loading: false,
-                activeTab: "for-review",
-                userRole: "",
-                userThematicArea: "",
+      function approvalApp() {
+        return {
+          loading: false,
+          activeTab: "for-review",
+          userRole: "",
+          userThematicArea: "",
 
-                // Projects data
-                projectsForReview: [],
-                projectsForApproval: [],
+          // Projects data
+          projectsForReview: [],
+          projectsForApproval: [],
 
-                // Reviewers data
-                allReviewers: [],
-                filteredReviewers: [],
-                selectedThemeFilter: "",
+          // Reviewers data
+          allReviewers: [],
+          filteredReviewers: [],
+          selectedThemeFilter: "",
 
-                // Modal states
-                showReviewModal: false,
-                showFinalApprovalModal: false,
-                showFinalRejectModal: false,
-                showAssignThemeModal: false,
+          // Modal states
+          showReviewModal: false,
+          showFinalApprovalModal: false,
+          showFinalRejectModal: false,
+          showAssignThemeModal: false,
 
-                // Form data
-                selectedProject: null,
-                reviewDecision: "approve",
-                reviewComments: "",
-                finalComments: "",
-                rejectionReason: "",
+          // Form data
+          selectedProject: null,
+          reviewDecision: "approve",
+          reviewComments: "",
+          finalComments: "",
+          rejectionReason: "",
 
-                selectedReviewer: null,
-                assignedTheme: "",
+          selectedReviewer: null,
+          assignedTheme: "",
 
-                // Toast notification
-                toast: {
-                    show: false,
-                    message: "",
-                    type: "success",
+          // Toast notification
+          toast: {
+            show: false,
+            message: "",
+            type: "success",
+          },
+
+          async init() {
+            await this.checkAuth();
+            await this.loadData();
+          },
+
+          async checkAuth() {
+            // Wait for BASE_URL to be set
+            let retries = 0;
+            while (!window.BASE_URL && retries < 10) {
+              console.log("Waiting for BASE_URL to be set...");
+              await new Promise((resolve) => setTimeout(resolve, 100));
+              retries++;
+            }
+
+            if (!window.BASE_URL) {
+              console.error("BASE_URL not set after waiting!");
+              window.BASE_URL =
+                "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"; // Fallback
+            }
+
+            console.log("Using BASE_URL:", window.BASE_URL);
+
+            try {
+              const token = localStorage.getItem("accessToken");
+              if (!token) {
+                console.warn("No access token found");
+                // REDIRECT DISABLED FOR DEBUGGING
+                // window.location.href = 'index.html';
+                this.userRole = "SUPER_ADMIN"; // Mock role for testing
+                this.userThematicArea = "GBV"; // Mock thematic area for testing
+                return;
+              }
+
+              const response = await fetch(`${window.BASE_URL}/api/auth/me`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
                 },
+              });
 
-                async init() {
-                    await this.checkAuth();
-                    await this.loadData();
-                },
+              if (response.ok) {
+                const data = await response.json();
+                console.log("User data:", data);
+                this.userRole = data.data.role;
+                this.userThematicArea =
+                  data.data.thematicArea || "Not Assigned";
 
-                async checkAuth() {
-                    // Wait for BASE_URL to be set
-                    let retries = 0;
-                    while (!window.BASE_URL && retries < 10) {
-                        console.log("Waiting for BASE_URL to be set...");
-                        await new Promise((resolve) => setTimeout(resolve, 100));
-                        retries++;
-                    }
+                // Set initial tab based on role
+                if (this.userRole === "SUPER_ADMIN_REVIEWER") {
+                  this.activeTab = "for-review";
+                } else if (this.userRole === "SUPER_ADMIN_APPROVER") {
+                  this.activeTab = "for-approval";
+                }
 
-                    if (!window.BASE_URL) {
-                        console.error("BASE_URL not set after waiting!");
-                        window.BASE_URL =
-                            "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"; // Fallback
-                    }
+                // Restrict access if not authorized
+                if (
+                  ![
+                    "SUPER_ADMIN",
+                    "SUPER_ADMIN_REVIEWER",
+                    "SUPER_ADMIN_APPROVER",
+                  ].includes(this.userRole)
+                ) {
+                  console.warn("Access denied. User role:", this.userRole);
+                  // REDIRECT DISABLED FOR DEBUGGING
+                  // alert('Access denied. You do not have permission to access this page.');
+                  // window.location.href = 'dashboard.html';
+                }
+              } else {
+                console.error(
+                  "Auth response not OK:",
+                  response.status,
+                  response.statusText
+                );
+                // REDIRECT DISABLED FOR DEBUGGING
+                // window.location.href = 'index.html';
+                this.userRole = "SUPER_ADMIN"; // Mock role for testing
+                this.userThematicArea = "GBV"; // Mock thematic area for testing
+              }
+            } catch (error) {
+              console.error("Auth check failed:", error);
+              // REDIRECT DISABLED FOR DEBUGGING
+              // window.location.href = 'index.html';
+              this.userRole = "SUPER_ADMIN"; // Mock role for testing
+              this.userThematicArea = "GBV"; // Mock thematic area for testing
+            }
+          },
 
-                    console.log("Using BASE_URL:", window.BASE_URL);
+          async loadData() {
+            this.loading = true;
+            console.log("Loading data... User role:", this.userRole);
+            try {
+              await Promise.all([
+                this.loadProjectsForReview(),
+                this.loadProjectsForApproval(),
+                this.loadReviewers(),
+              ]);
+              console.log("All data loaded successfully");
+            } catch (error) {
+              console.error("Error loading data:", error);
+            } finally {
+              this.loading = false;
+            }
+          },
 
-                    try {
-                        const token = localStorage.getItem("accessToken");
-                        if (!token) {
-                            console.warn("No access token found");
-                            // REDIRECT DISABLED FOR DEBUGGING
-                            // window.location.href = 'index.html';
-                            this.userRole = "SUPER_ADMIN"; // Mock role for testing
-                            this.userThematicArea = "GBV"; // Mock thematic area for testing
-                            return;
-                        }
+          async loadProjectsForReview() {
+            if (
+              !["SUPER_ADMIN_REVIEWER", "SUPER_ADMIN"].includes(this.userRole)
+            ) {
+              console.log(
+                "Skipping loadProjectsForReview - role not authorized"
+              );
+              return;
+            }
 
-                        const response = await fetch(`${window.BASE_URL}/api/auth/me`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        });
+            console.log("Loading projects for review...");
+            try {
+              const response = await this.apiCall(
+                "/api/projects/admin/projects-for-review"
+              );
+              this.projectsForReview = response.data || [];
+              console.log(
+                "Projects for review loaded:",
+                this.projectsForReview.length
+              );
+            } catch (error) {
+              console.error("Error loading projects for review:", error);
+              this.showToast(
+                "Failed to load projects for review: " + error.message,
+                "error"
+              );
+            }
+          },
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log("User data:", data);
-                            this.userRole = data.data.role;
-                            this.userThematicArea =
-                                data.data.thematicArea || "Not Assigned";
+          async loadProjectsForApproval() {
+            if (
+              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+            ) {
+              console.log(
+                "Skipping loadProjectsForApproval - role not authorized"
+              );
+              return;
+            }
 
-                            // Set initial tab based on role
-                            if (this.userRole === "SUPER_ADMIN_REVIEWER") {
-                                this.activeTab = "for-review";
-                            } else if (this.userRole === "SUPER_ADMIN_APPROVER") {
-                                this.activeTab = "for-approval";
-                            }
+            console.log("Loading projects for approval...");
+            try {
+              const response = await this.apiCall(
+                "/api/projects/admin/projects-awaiting-final-approval"
+              );
+              this.projectsForApproval = response.data || [];
+              console.log(
+                "Projects for approval loaded:",
+                this.projectsForApproval.length
+              );
+            } catch (error) {
+              console.error("Error loading projects for approval:", error);
+              this.showToast(
+                "Failed to load projects for approval: " + error.message,
+                "error"
+              );
+            }
+          },
 
-                            // Restrict access if not authorized
-                            if (
-                                ![
-                                    "SUPER_ADMIN",
-                                    "SUPER_ADMIN_REVIEWER",
-                                    "SUPER_ADMIN_APPROVER",
-                                ].includes(this.userRole)
-                            ) {
-                                console.warn("Access denied. User role:", this.userRole);
-                                // REDIRECT DISABLED FOR DEBUGGING
-                                // alert('Access denied. You do not have permission to access this page.');
-                                // window.location.href = 'dashboard.html';
-                            }
-                        } else {
-                            console.error(
-                                "Auth response not OK:",
-                                response.status,
-                                response.statusText
-                            );
-                            // REDIRECT DISABLED FOR DEBUGGING
-                            // window.location.href = 'index.html';
-                            this.userRole = "SUPER_ADMIN"; // Mock role for testing
-                            this.userThematicArea = "GBV"; // Mock thematic area for testing
-                        }
-                    } catch (error) {
-                        console.error("Auth check failed:", error);
-                        // REDIRECT DISABLED FOR DEBUGGING
-                        // window.location.href = 'index.html';
-                        this.userRole = "SUPER_ADMIN"; // Mock role for testing
-                        this.userThematicArea = "GBV"; // Mock thematic area for testing
-                    }
-                },
+          async loadReviewers() {
+            if (
+              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+            ) {
+              console.log("Skipping loadReviewers - role not authorized");
+              return;
+            }
 
-                async loadData() {
-                    this.loading = true;
-                    console.log("Loading data... User role:", this.userRole);
-                    try {
-                        await Promise.all([
-                            this.loadProjectsForReview(),
-                            this.loadProjectsForApproval(),
-                            this.loadReviewers(),
-                        ]);
-                        console.log("All data loaded successfully");
-                    } catch (error) {
-                        console.error("Error loading data:", error);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
+            console.log("Loading reviewers...");
+            try {
+              const response = await this.apiCall("/api/auth/admin/reviewers");
+              this.allReviewers = response.data || [];
+              this.filteredReviewers = this.allReviewers;
+              console.log("Reviewers loaded:", this.allReviewers.length);
+            } catch (error) {
+              console.error("Error loading reviewers:", error);
+              this.showToast(
+                "Failed to load reviewers: " + error.message,
+                "error"
+              );
+            }
+          },
 
-                async loadProjectsForReview() {
-                    if (
-                        !["SUPER_ADMIN_REVIEWER", "SUPER_ADMIN"].includes(this.userRole)
-                    ) {
-                        console.log(
-                            "Skipping loadProjectsForReview - role not authorized"
-                        );
-                        return;
-                    }
+          filterReviewers() {
+            if (!this.selectedThemeFilter) {
+              this.filteredReviewers = this.allReviewers;
+            } else {
+              this.filteredReviewers = this.allReviewers.filter(
+                (r) => r.thematicArea === this.selectedThemeFilter
+              );
+            }
+          },
 
-                    console.log("Loading projects for review...");
-                    try {
-                        const response = await this.apiCall(
-                            "/api/projects/admin/projects-for-review"
-                        );
-                        this.projectsForReview = response.data || [];
-                        console.log(
-                            "Projects for review loaded:",
-                            this.projectsForReview.length
-                        );
-                    } catch (error) {
-                        console.error("Error loading projects for review:", error);
-                        this.showToast(
-                            "Failed to load projects for review: " + error.message,
-                            "error"
-                        );
-                    }
-                },
+          openReviewModal(project) {
+            this.selectedProject = project;
+            this.reviewDecision = "approve";
+            this.reviewComments = "";
+            this.showReviewModal = true;
+          },
 
-                async loadProjectsForApproval() {
-                    if (
-                        !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
-                    ) {
-                        console.log(
-                            "Skipping loadProjectsForApproval - role not authorized"
-                        );
-                        return;
-                    }
+          openFinalApprovalModal(project) {
+            this.selectedProject = project;
+            this.finalComments = "";
+            this.showFinalApprovalModal = true;
+          },
 
-                    console.log("Loading projects for approval...");
-                    try {
-                        const response = await this.apiCall(
-                            "/api/projects/admin/projects-awaiting-final-approval"
-                        );
-                        this.projectsForApproval = response.data || [];
-                        console.log(
-                            "Projects for approval loaded:",
-                            this.projectsForApproval.length
-                        );
-                    } catch (error) {
-                        console.error("Error loading projects for approval:", error);
-                        this.showToast(
-                            "Failed to load projects for approval: " + error.message,
-                            "error"
-                        );
-                    }
-                },
+          openFinalRejectModal(project) {
+            this.selectedProject = project;
+            this.rejectionReason = "";
+            this.showFinalRejectModal = true;
+          },
 
-                async loadReviewers() {
-                    if (
-                        !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
-                    ) {
-                        console.log("Skipping loadReviewers - role not authorized");
-                        return;
-                    }
+          openAssignThemeModal(reviewer) {
+            this.selectedReviewer = reviewer;
+            this.assignedTheme = reviewer.thematicArea || "";
+            this.showAssignThemeModal = true;
+          },
 
-                    console.log("Loading reviewers...");
-                    try {
-                        const response = await this.apiCall("/api/auth/admin/reviewers");
-                        this.allReviewers = response.data || [];
-                        this.filteredReviewers = this.allReviewers;
-                        console.log("Reviewers loaded:", this.allReviewers.length);
-                    } catch (error) {
-                        console.error("Error loading reviewers:", error);
-                        this.showToast(
-                            "Failed to load reviewers: " + error.message,
-                            "error"
-                        );
-                    }
-                },
+          async submitReview() {
+            if (!this.reviewComments.trim()) {
+              this.showToast("Please provide review comments", "error");
+              return;
+            }
 
-                filterReviewers() {
-                    if (!this.selectedThemeFilter) {
-                        this.filteredReviewers = this.allReviewers;
-                    } else {
-                        this.filteredReviewers = this.allReviewers.filter(
-                            (r) => r.thematicArea === this.selectedThemeFilter
-                        );
-                    }
-                },
+            this.loading = true;
+            try {
+              await this.apiCall(
+                `/api/projects/admin/review/${this.selectedProject.id}`,
+                "POST",
+                {
+                  approved: this.reviewDecision === "approve",
+                  comments: this.reviewComments,
+                }
+              );
 
-                openReviewModal(project) {
-                    this.selectedProject = project;
-                    this.reviewDecision = "approve";
-                    this.reviewComments = "";
-                    this.showReviewModal = true;
-                },
+              this.showToast(
+                this.reviewDecision === "approve"
+                  ? "Project approved for final review!"
+                  : "Review completed - revisions requested",
+                "success"
+              );
 
-                openFinalApprovalModal(project) {
-                    this.selectedProject = project;
-                    this.finalComments = "";
-                    this.showFinalApprovalModal = true;
-                },
+              this.showReviewModal = false;
+              await this.loadProjectsForReview();
+            } catch (error) {
+              console.error("Error submitting review:", error);
+              this.showToast(
+                error.message || "Failed to submit review",
+                "error"
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
 
-                openFinalRejectModal(project) {
-                    this.selectedProject = project;
-                    this.rejectionReason = "";
-                    this.showFinalRejectModal = true;
-                },
+          async submitFinalApproval() {
+            this.loading = true;
+            try {
+              await this.apiCall(
+                `/api/projects/admin/final-approve/${this.selectedProject.id}`,
+                "POST",
+                {
+                  comments: this.finalComments,
+                }
+              );
 
-                openAssignThemeModal(reviewer) {
-                    this.selectedReviewer = reviewer;
-                    this.assignedTheme = reviewer.thematicArea || "";
-                    this.showAssignThemeModal = true;
-                },
+              this.showToast(
+                "Project finally approved successfully!",
+                "success"
+              );
+              this.showFinalApprovalModal = false;
+              await this.loadProjectsForApproval();
+            } catch (error) {
+              console.error("Error submitting final approval:", error);
+              this.showToast(
+                error.message || "Failed to approve project",
+                "error"
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
 
-                async submitReview() {
-                    if (!this.reviewComments.trim()) {
-                        this.showToast("Please provide review comments", "error");
-                        return;
-                    }
+          async submitFinalRejection() {
+            if (!this.rejectionReason.trim()) {
+              this.showToast("Please provide a rejection reason", "error");
+              return;
+            }
 
-                    this.loading = true;
-                    try {
-                        await this.apiCall(
-                            `/api/projects/admin/review/${this.selectedProject.id}`,
-                            "POST",
-                            {
-                                approved: this.reviewDecision === "approve",
-                                comments: this.reviewComments,
-                            }
-                        );
+            this.loading = true;
+            try {
+              await this.apiCall(
+                `/api/projects/admin/final-reject/${this.selectedProject.id}`,
+                "POST",
+                {
+                  reason: this.rejectionReason,
+                }
+              );
 
-                        this.showToast(
-                            this.reviewDecision === "approve"
-                                ? "Project approved for final review!"
-                                : "Review completed - revisions requested",
-                            "success"
-                        );
+              this.showToast("Project rejected", "success");
+              this.showFinalRejectModal = false;
+              await this.loadProjectsForApproval();
+            } catch (error) {
+              console.error("Error rejecting project:", error);
+              this.showToast(
+                error.message || "Failed to reject project",
+                "error"
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
 
-                        this.showReviewModal = false;
-                        await this.loadProjectsForReview();
-                    } catch (error) {
-                        console.error("Error submitting review:", error);
-                        this.showToast(
-                            error.message || "Failed to submit review",
-                            "error"
-                        );
-                    } finally {
-                        this.loading = false;
-                    }
-                },
+          async submitAssignTheme() {
+            if (!this.assignedTheme) {
+              this.showToast("Please select a thematic area", "error");
+              return;
+            }
 
-                async submitFinalApproval() {
-                    this.loading = true;
-                    try {
-                        await this.apiCall(
-                            `/api/projects/admin/final-approve/${this.selectedProject.id}`,
-                            "POST",
-                            {
-                                comments: this.finalComments,
-                            }
-                        );
+            this.loading = true;
+            try {
+              await this.apiCall(
+                `/api/auth/admin/assign-thematic-area/${this.selectedReviewer.id}`,
+                "POST",
+                {
+                  thematicArea: this.assignedTheme,
+                }
+              );
 
-                        this.showToast(
-                            "Project finally approved successfully!",
-                            "success"
-                        );
-                        this.showFinalApprovalModal = false;
-                        await this.loadProjectsForApproval();
-                    } catch (error) {
-                        console.error("Error submitting final approval:", error);
-                        this.showToast(
-                            error.message || "Failed to approve project",
-                            "error"
-                        );
-                    } finally {
-                        this.loading = false;
-                    }
-                },
+              this.showToast("Thematic area assigned successfully!", "success");
+              this.showAssignThemeModal = false;
+              await this.loadReviewers();
+            } catch (error) {
+              console.error("Error assigning theme:", error);
+              this.showToast(
+                error.message || "Failed to assign thematic area",
+                "error"
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
 
-                async submitFinalRejection() {
-                    if (!this.rejectionReason.trim()) {
-                        this.showToast("Please provide a rejection reason", "error");
-                        return;
-                    }
+          viewProjectDetails(projectId) {
+            window.location.href = `projects.html?id=${projectId}`;
+          },
 
-                    this.loading = true;
-                    try {
-                        await this.apiCall(
-                            `/api/projects/admin/final-reject/${this.selectedProject.id}`,
-                            "POST",
-                            {
-                                reason: this.rejectionReason,
-                            }
-                        );
-
-                        this.showToast("Project rejected", "success");
-                        this.showFinalRejectModal = false;
-                        await this.loadProjectsForApproval();
-                    } catch (error) {
-                        console.error("Error rejecting project:", error);
-                        this.showToast(
-                            error.message || "Failed to reject project",
-                            "error"
-                        );
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                async submitAssignTheme() {
-                    if (!this.assignedTheme) {
-                        this.showToast("Please select a thematic area", "error");
-                        return;
-                    }
-
-                    this.loading = true;
-                    try {
-                        await this.apiCall(
-                            `/api/auth/admin/assign-thematic-area/${this.selectedReviewer.id}`,
-                            "POST",
-                            {
-                                thematicArea: this.assignedTheme,
-                            }
-                        );
-
-                        this.showToast("Thematic area assigned successfully!", "success");
-                        this.showAssignThemeModal = false;
-                        await this.loadReviewers();
-                    } catch (error) {
-                        console.error("Error assigning theme:", error);
-                        this.showToast(
-                            error.message || "Failed to assign thematic area",
-                            "error"
-                        );
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                viewProjectDetails(projectId) {
-                    window.location.href = `projects.html?id=${projectId}`;
-                },
-
-                async apiCall(endpoint, method = "GET", body = null) {
-                    const token = localStorage.getItem("accessToken");
-                    const options = {
-                        method,
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    };
-
-                    if (body) {
-                        options.body = JSON.stringify(body);
-                    }
-
-                    console.log(`API Call: ${method} ${endpoint}`, body);
-
-                    try {
-                        const response = await fetch(
-                            `${window.BASE_URL}${endpoint}`,
-                            options
-                        );
-                        console.log(
-                            `API Response: ${response.status} ${response.statusText}`
-                        );
-
-                        const data = await response.json();
-                        console.log("API Data:", data);
-
-                        if (!response.ok) {
-                            console.error("API Error:", data);
-                            throw new Error(data.message || "API call failed");
-                        }
-
-                        return data;
-                    } catch (error) {
-                        console.error("API Call Exception:", error);
-                        throw error;
-                    }
-                },
-
-                formatDate(dateString) {
-                    if (!dateString) return "N/A";
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    });
-                },
-
-                showToast(message, type = "success") {
-                    this.toast.message = message;
-                    this.toast.type = type;
-                    this.toast.show = true;
-                    setTimeout(() => {
-                        this.toast.show = false;
-                    }, 3000);
-                },
+          async apiCall(endpoint, method = "GET", body = null) {
+            const token = localStorage.getItem("accessToken");
+            const options = {
+              method,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             };
-        }
+
+            if (body) {
+              options.body = JSON.stringify(body);
+            }
+
+            console.log(`API Call: ${method} ${endpoint}`, body);
+
+            try {
+              const response = await fetch(
+                `${window.BASE_URL}${endpoint}`,
+                options
+              );
+              console.log(
+                `API Response: ${response.status} ${response.statusText}`
+              );
+
+              const data = await response.json();
+              console.log("API Data:", data);
+
+              if (!response.ok) {
+                console.error("API Error:", data);
+                throw new Error(data.message || "API call failed");
+              }
+
+              return data;
+            } catch (error) {
+              console.error("API Call Exception:", error);
+              throw error;
+            }
+          },
+
+          formatDate(dateString) {
+            if (!dateString) return "N/A";
+            const date = new Date(dateString);
+            return date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          },
+
+          showToast(message, type = "success") {
+            this.toast.message = message;
+            this.toast.type = type;
+            this.toast.show = true;
+            setTimeout(() => {
+              this.toast.show = false;
+            }, 3000);
+          },
+        };
+      }
     </script>
     <style>
-        [x-cloak] {
-            display: none !important;
-        }
+      [x-cloak] {
+        display: none !important;
+      }
     </style>
-</body>
-
+  </body>
 </html>
