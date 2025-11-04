@@ -1,4 +1,3 @@
-
 let currentStep = 1;
 const totalSteps = 5;
 
@@ -24,19 +23,39 @@ function showStep(step) {
     "Budget & Objectives",
   ];
 
-  progressText.textContent = `Step ${step} of ${totalSteps}: ${titles[step - 1]}`;
+  progressText.textContent = `Step ${step} of ${totalSteps}: ${
+    titles[step - 1]
+  }`;
 
   prevBtn.style.display = step === 1 ? "none" : "inline-flex";
   nextBtn.textContent = step === totalSteps ? "Submit" : "Next";
 }
 
 nextBtn.addEventListener("click", () => {
+  console.log(
+    "📍 Next button clicked. Current step:",
+    currentStep,
+    "Total steps:",
+    totalSteps
+  );
+
   if (currentStep < totalSteps) {
     currentStep++;
+    console.log("➡️ Moving to step:", currentStep);
     showStep(currentStep);
   } else {
-    alert("✅ Form submitted successfully!");
-    // Add actual submission logic here
+    console.log("✅ Final step reached. Triggering form submission...");
+    // Trigger form submission
+    const form = document.getElementById("projectForm");
+    if (form) {
+      console.log("📋 Form element found:", form);
+      form.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
+      console.log("📤 Form submit event dispatched");
+    } else {
+      console.error("❌ Form element not found with ID 'projectForm'");
+    }
   }
 });
 

@@ -87,10 +87,10 @@ public class ProjectController {
     private ProjectCollaboratorService projectCollaboratorService;
     
     /**
-     * Create a new project (Partners/Donors only)
+     * Create a new project (Partners/Donors/Admins)
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasAnyRole('PARTNER', 'DONOR', 'ADMIN', 'SUPER_ADMIN', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
         @RequestPart("project") String projectJson,
         @RequestPart(value = "supporting_documents", required = false) List<MultipartFile> files

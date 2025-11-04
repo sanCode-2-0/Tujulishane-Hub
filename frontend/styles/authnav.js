@@ -70,8 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         }
 
-        // Load pending requests count
-        loadPendingRequestsCount();
+        // Load pending requests count (if function is available)
+        if (typeof loadPendingRequestsCount === "function") {
+          loadPendingRequestsCount();
+        }
       } else if (user.role === "DONOR") {
         const donorNavItems = document.querySelectorAll("#donorNav");
         donorNavItems.forEach((nav) => nav.classList.remove("hidden"));

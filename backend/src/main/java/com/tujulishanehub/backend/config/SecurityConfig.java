@@ -47,13 +47,12 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register", "/api/users/verify-otp", "/api/users/resend-otp").permitAll()  // Public user registration and OTP endpoints
-            .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/projects").hasRole("PARTNER")
-            .requestMatchers(HttpMethod.PUT, "/api/projects/**").hasRole("PARTNER")
-            .requestMatchers(HttpMethod.DELETE, "/api/projects/**").hasRole("PARTNER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
+                        // Removed hardcoded role restrictions - controllers handle authorization via @PreAuthorize
                         .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
                         .requestMatchers("/api/organizations", "/api/organizations/**").permitAll()  // Allow public access to organizations
                         .requestMatchers("/h2-console/**").permitAll()
+                        // Remove the hardcoded POST restriction - let @PreAuthorize in controllers handle it
                         .anyRequest().authenticated()
                 )
         .exceptionHandling(ex -> ex
