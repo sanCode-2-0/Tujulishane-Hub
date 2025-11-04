@@ -672,8 +672,7 @@
 
                         if (status === 'pending') {
                             html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
-                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="approveProject(${project.id})">Approve</button> `;
-                            html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="openRejectModal(${project.id})">Reject</button>`;
+
                         } else if (status === 'active') {
                             html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
                             html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
