@@ -148,15 +148,15 @@
 										project coordinates.
 									</div>
 									<div id="newProjectMap" style="
-                      height: 400px;
-                      width: 100%;
-                      border-radius: 8px;
-                      margin-bottom: 8px;
-                      border: 1px solid #e5e7eb;
-                      background-color: #f3f4f6;
-                      position: relative;
-                      overflow: hidden;
-                    "></div>
+                        height: 400px;
+                        width: 100%;
+                        border-radius: 8px;
+                        margin-bottom: 8px;
+                        border: 1px solid #e5e7eb;
+                        background-color: #f3f4f6;
+                        position: relative;
+                        overflow: hidden;
+                      "></div>
 									<input type="hidden" id="project_latitude" name="latitude" />
 									<input type="hidden" id="project_longitude" name="longitude" />
 									<input type="hidden" id="project_county" name="county" />
@@ -185,7 +185,8 @@
 										<option value="">Select Theme</option>
 										<option value="GBV">Gender based violence</option>
 										<option value="AYPSRH">
-											Adolescent and Young People Sexual and Reproductive Health
+											Adolescent and Young People Sexual and Reproductive
+											Health
 										</option>
 										<option value="MNH">Maternal and Newborn Health</option>
 										<option value="FP">Family planning</option>
@@ -211,8 +212,7 @@
 								<!-- Activity Type -->
 								<div class="col-span-2 md:col-span-4">
 									<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
-										Type
-										(Description) *
+										Type (Description) *
 									</label>
 									<textarea required id="activity_type" name="activity_type" rows="3"
 										class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
@@ -347,13 +347,14 @@
 								</li>
 								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
 									<a href="my-collaborations.html">
-										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-										Collaborations
+										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i>
+										My Collaborations
 									</a>
 								</li>
 								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
 									<a href="announcements.html">
-										<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+										<i class="far fa-search mr-2 text-cyan-500"></i> Find
+										Projects
 									</a>
 								</li>
 							</ul>
@@ -422,7 +423,8 @@
 								<li id="donorNav" class="hidden">
 									<a href="donor-management.html"
 										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+										Management
 									</a>
 								</li>
 							</ul>
@@ -506,13 +508,14 @@
 								</li>
 								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
 									<a href="my-collaborations.html">
-										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-										Collaborations
+										<i class="far fa-users-crown mr-2 text-fuchsia-600"></i>
+										My Collaborations
 									</a>
 								</li>
 								<li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
 									<a href="announcements.html">
-										<i class="far fa-search mr-2 text-cyan-500"></i> Find Projects
+										<i class="far fa-search mr-2 text-cyan-500"></i> Find
+										Projects
 									</a>
 								</li>
 							</ul>
@@ -578,7 +581,8 @@
 								<li id="donorNav" class="hidden">
 									<a href="donor-management.html"
 										class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
-										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
+										<i class="mr-2 fas fa-hand-holding-heart"></i> Donor
+										Management
 									</a>
 								</li>
 							</ul>
@@ -692,6 +696,31 @@
 		</div>
 	</div>
 
+	<!-- View Partners Modal -->
+	<div id="viewPartnersModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+		<div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+			<div class="mt-3">
+				<div class="flex justify-between items-center mb-4">
+					<h3 class="text-lg font-medium text-gray-900">
+						Partners for <span id="donorNameDisplay"></span>
+					</h3>
+					<button onclick="hideViewPartnersModal()" class="text-gray-400 hover:text-gray-600">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div id="viewPartnersList" class="space-y-3 max-h-96 overflow-y-auto">
+					<!-- Partners will be loaded here -->
+				</div>
+				<div class="mt-4 flex justify-end">
+					<button onclick="hideViewPartnersModal()"
+						class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="styles/loadNav.js"></script>
 	<script>
 		let currentUser = null;
@@ -774,17 +803,17 @@
 					currentUser.role === "DONOR"
 				);
 				console.log(
-					"DEBUG: currentUser.role === 'SUPER_ADMIN':",
-					currentUser.role === "SUPER_ADMIN"
+					"DEBUG: currentUser.role === 'SUPER_ADMIN_APPROVER':",
+					currentUser.role === "SUPER_ADMIN_APPROVER"
 				);
 
 				if (
 					currentUser.role !== "DONOR" &&
-					currentUser.role !== "SUPER_ADMIN"
+					currentUser.role !== "SUPER_ADMIN_APPROVER"
 				) {
 					console.log("DEBUG: Access denied - role check failed");
 					alert(
-						"Access denied. Only donors and administrators can access this page."
+						"Access denied. Only donors and approving admins can access this page."
 					);
 					window.location.href = "dashboard.html";
 					return;
@@ -796,7 +825,7 @@
 				setupTabsForRole();
 
 				// Load initial data
-				if (currentUser.role === "SUPER_ADMIN") {
+				if (currentUser.role === "SUPER_ADMIN_APPROVER") {
 					document.getElementById("donorsSection").classList.remove("hidden");
 					loadDonors();
 				} else if (currentUser.role === "DONOR") {
@@ -825,7 +854,7 @@
 				return;
 			}
 
-			if (currentUser.role === "SUPER_ADMIN") {
+			if (currentUser.role === "SUPER_ADMIN_APPROVER") {
 				tabNavigation.innerHTML = `
             <button id="donorsTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
               All Donors
@@ -1003,8 +1032,111 @@
 		}
 
 		function viewDonorPartners(donorId) {
-			// This could open a modal or navigate to a detailed view
-			alert("View partners functionality would be implemented here");
+			// Find the donor to get their name
+			const auth = new AuthManager();
+			const token = auth.getToken();
+
+			// Show the modal
+			document.getElementById("viewPartnersModal").classList.remove("hidden");
+			document.getElementById("viewPartnersList").innerHTML =
+				'<p class="text-gray-500">Loading partners...</p>';
+
+			// Load the partners for this donor
+			fetch(`${auth.baseUrl}/api/auth/donor/${donorId}/partners`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error("Failed to load partners");
+					}
+					return response.json();
+				})
+				.then((data) => {
+					const partners = data.data || data;
+
+					// Update donor name in modal title
+					if (partners.length > 0 && partners[0].parentDonor) {
+						document.getElementById("donorNameDisplay").textContent =
+							partners[0].parentDonor.name || "This Donor";
+					} else {
+						// Fallback: find donor name from the donors list
+						const donorsList = document.getElementById("donorsList");
+						const donorElements =
+							donorsList.querySelectorAll("[data-donor-id]");
+						donorElements.forEach((el) => {
+							if (el.dataset.donorId == donorId) {
+								const donorName = el.querySelector("h4")?.textContent;
+								if (donorName) {
+									document.getElementById("donorNameDisplay").textContent =
+										donorName;
+								}
+							}
+						});
+					}
+
+					displayPartnersInModal(partners);
+				})
+				.catch((error) => {
+					console.error("Error loading partners:", error);
+					document.getElementById("viewPartnersList").innerHTML =
+						'<p class="text-red-600">Error loading partners</p>';
+				});
+		}
+
+		function displayPartnersInModal(partners) {
+			const viewPartnersList = document.getElementById("viewPartnersList");
+
+			if (!partners || partners.length === 0) {
+				viewPartnersList.innerHTML =
+					'<p class="text-gray-500">No partners linked to this donor yet</p>';
+				return;
+			}
+
+			viewPartnersList.innerHTML = partners
+				.map(
+					(partner) => `
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium text-gray-900">${partner.name || "N/A"
+						}</h4>
+                <p class="text-sm text-gray-600">${partner.email || "N/A"}</p>
+                ${partner.organization
+							? `
+                  <p class="text-sm text-gray-500 mt-1">
+                    <i class="fas fa-building mr-1"></i>
+                    ${partner.organization.name}
+                  </p>
+                `
+							: ""
+						}
+                ${partner.thematicArea
+							? `
+                  <p class="text-xs text-blue-600 mt-1">
+                    <i class="fas fa-tag mr-1"></i>
+                    ${partner.thematicArea}
+                  </p>
+                `
+							: ""
+						}
+              </div>
+              <span class="px-3 py-1 text-xs font-medium rounded-full ${partner.approvalStatus === "APPROVED"
+							? "bg-green-100 text-green-800"
+							: "bg-yellow-100 text-yellow-800"
+						}">
+                ${partner.approvalStatus || "PENDING"}
+              </span>
+            </div>
+          </div>
+        `
+				)
+				.join("");
+		}
+
+		function hideViewPartnersModal() {
+			document.getElementById("viewPartnersModal").classList.add("hidden");
+			document.getElementById("viewPartnersList").innerHTML = "";
+			document.getElementById("donorNameDisplay").textContent = "";
 		}
 
 		function showDonorPlaceholder() {

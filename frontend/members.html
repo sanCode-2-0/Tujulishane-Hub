@@ -185,11 +185,16 @@
           const result = await response.json();
           const user = result.data;
 
-          // Check if user is SUPER_ADMIN
-          if (user.role !== "SUPER_ADMIN") {
+          // Check if user is SUPER_ADMIN, SUPER_ADMIN_APPROVER, or SUPER_ADMIN_REVIEWER
+          if (
+            user.role !== "SUPER_ADMIN" &&
+            user.role !== "SUPER_ADMIN_APPROVER" &&
+            user.role !== "SUPER_ADMIN_REVIEWER"
+          ) {
+            console.log("Access denied - Role:", user.role);
             showToast("Access denied. Super Admin role required.", "error");
             setTimeout(() => {
-              window.location.href = "frontend/dashboard.html";
+              window.location.href = "dashboard.html";
             }, 2000);
             return;
           }
@@ -377,6 +382,127 @@
                     class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                   >
                     Create User
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Role Modal -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="changeRoleModal"
+        tabindex="-1"
+        aria-labelledby="changeRoleModalTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="changeRoleModalTitle"
+              >
+                Change User Role
+              </h5>
+              <button
+                type="button"
+                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <div class="relative p-6">
+              <form id="changeRoleForm" class="space-y-4">
+                <input type="hidden" id="changeRoleUserId" />
+
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Select New Role <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="changeRoleSelect"
+                    required
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    onchange="toggleThematicAreaField()"
+                  >
+                    <option value="">-- Select Role --</option>
+                    <option value="SUPER_ADMIN">Super Admin</option>
+                    <option value="SUPER_ADMIN_APPROVER">
+                      Super Admin Approver
+                    </option>
+                    <option value="SUPER_ADMIN_REVIEWER">
+                      Super Admin Reviewer
+                    </option>
+                    <option value="PARTNER">Partner</option>
+                    <option value="DONOR">Donor</option>
+                  </select>
+                </div>
+
+                <div id="thematicAreaSection" class="hidden">
+                  <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Thematic Area <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="thematicAreaSelect"
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  >
+                    <option value="">-- Select Thematic Area --</option>
+                    <option value="GBV">Gender-Based Violence (GBV)</option>
+                    <option value="AYPSRH">
+                      Adolescent & Youth PSRH (AYPSRH)
+                    </option>
+                    <option value="MNH">Maternal & Newborn Health (MNH)</option>
+                    <option value="FP">Family Planning (FP)</option>
+                    <option value="CH">Child Health (CH)</option>
+                    <option value="AH">Adolescent Health (AH)</option>
+                  </select>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Required for Super Admin Reviewer role
+                  </p>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    data-twe-modal-dismiss
+                    class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Update Role
                   </button>
                 </div>
               </form>
@@ -973,6 +1099,11 @@
                       })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
                           <i class="mr-1 fas fa-check"></i> Approve
                       </button>
+                      <button onclick="updateUserRoleWithTheme(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
+                      </button>
                       <button onclick="showRejectModal(${user.id}, '${
               user.name
             }', '${
@@ -1036,6 +1167,11 @@
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="updateUserRoleWithTheme(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-purple-500 rounded hover:bg-purple-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
                       </button>
                       <button onclick="showRejectModal(${user.id}, '${
               user.name
@@ -1162,6 +1298,11 @@
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="updateUserRoleWithTheme(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-purple-500 rounded hover:bg-purple-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
                       </button>
                   </td>
               </tr>
@@ -1291,44 +1432,157 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             `.trim()
         );
       }
-
-      // Update user role with thematic area (for two-tier approval)
-      async function updateUserRoleWithTheme(userId) {
-        const role = prompt(
-          "Enter new role (SUPER_ADMIN_REVIEWER, SUPER_ADMIN_APPROVER, SUPER_ADMIN, PARTNER, DONOR):"
+      // Toggle thematic area field visibility
+      function toggleThematicAreaField() {
+        const roleSelect = document.getElementById("changeRoleSelect");
+        const thematicAreaSection = document.getElementById(
+          "thematicAreaSection"
         );
-        if (!role) return;
+        const thematicAreaSelect =
+          document.getElementById("thematicAreaSelect");
 
-        let thematicArea = null;
-        if (role === "SUPER_ADMIN_REVIEWER") {
-          thematicArea = prompt(
-            "Enter thematic area (GBV, AYPSRH, MNH, FP, CH, AH):"
-          );
-          if (!thematicArea) {
-            showToast("Thematic area required for reviewers", "error");
-            return;
-          }
+        if (roleSelect.value === "SUPER_ADMIN_REVIEWER") {
+          thematicAreaSection.classList.remove("hidden");
+          thematicAreaSelect.required = true;
+        } else {
+          thematicAreaSection.classList.add("hidden");
+          thematicAreaSelect.required = false;
+          thematicAreaSelect.value = "";
+        }
+      }
+
+      // Open change role modal
+      function updateUserRoleWithTheme(userId) {
+        // Store userId in hidden field
+        document.getElementById("changeRoleUserId").value = userId;
+
+        // Reset form
+        document.getElementById("changeRoleForm").reset();
+        document.getElementById("thematicAreaSection").classList.add("hidden");
+
+        // Open modal using data attributes (more reliable)
+        const modalElement = document.getElementById("changeRoleModal");
+
+        // Initialize modal if not already initialized
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = new window.te.Modal(modalElement);
+          modal.show();
+        } else {
+          // Fallback: show modal manually
+          modalElement.classList.remove("hidden");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.remove("opacity-0", "translate-y-[-50px]");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.add("opacity-100", "translate-y-0");
+        }
+      }
+
+      // Handle form submission
+      document.addEventListener("DOMContentLoaded", function () {
+        const changeRoleForm = document.getElementById("changeRoleForm");
+        if (changeRoleForm) {
+          changeRoleForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const userId = document.getElementById("changeRoleUserId").value;
+            const role = document.getElementById("changeRoleSelect").value;
+            const thematicArea =
+              document.getElementById("thematicAreaSelect").value;
+
+            if (!role) {
+              showToast("Please select a role", "error");
+              return;
+            }
+
+            if (role === "SUPER_ADMIN_REVIEWER" && !thematicArea) {
+              showToast("Please select a thematic area for reviewers", "error");
+              return;
+            }
+
+            // Close modal
+            const modalElement = document.getElementById("changeRoleModal");
+            if (typeof window.te !== "undefined" && window.te.Modal) {
+              const modal = window.te.Modal.getInstance(modalElement);
+              if (modal) {
+                modal.hide();
+              } else {
+                // Fallback: hide modal manually
+                modalElement.classList.add("hidden");
+              }
+            } else {
+              // Fallback: hide modal manually
+              modalElement.classList.add("hidden");
+              modalElement
+                .querySelector("[data-twe-modal-dialog-ref]")
+                .classList.add("opacity-0", "translate-y-[-50px]");
+              modalElement
+                .querySelector("[data-twe-modal-dialog-ref]")
+                .classList.remove("opacity-100", "translate-y-0");
+            }
+
+            showLoading();
+            try {
+              const payload = { role };
+              if (thematicArea) {
+                payload.thematicArea = thematicArea;
+              }
+
+              await apiCall(
+                `/api/auth/admin/update-role-with-theme/${userId}`,
+                "POST",
+                payload
+              );
+              showToast("User role updated successfully!");
+
+              // Reload all data to reflect the changes
+              await Promise.all([
+                loadUserStats(),
+                loadPendingUsers(),
+                loadApprovedUsers(),
+                loadRejectedUsers(),
+                loadAllUsers(),
+              ]);
+            } catch (error) {
+              console.error("Error updating user role:", error);
+              showToast(error.message || "Failed to update user role", "error");
+            } finally {
+              showLoading(false);
+            }
+          });
         }
 
-        showLoading();
-        try {
-          const payload = { role };
-          if (thematicArea) {
-            payload.thematicArea = thematicArea;
-          }
+        // Add click handlers for modal close buttons
+        const closeButtons = document.querySelectorAll(
+          "#changeRoleModal [data-twe-modal-dismiss]"
+        );
+        closeButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            closeChangeRoleModal();
+          });
+        });
+      });
 
-          await apiCall(
-            `/api/auth/admin/update-role-with-theme/${userId}`,
-            "POST",
-            payload
+      // Function to close the change role modal
+      function closeChangeRoleModal() {
+        const modalElement = document.getElementById("changeRoleModal");
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = window.te.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          } else {
+            modalElement.classList.add("hidden");
+          }
+        } else {
+          modalElement.classList.add("hidden");
+          const dialogRef = modalElement.querySelector(
+            "[data-twe-modal-dialog-ref]"
           );
-          showToast("User role updated successfully!");
-          await loadAllUsers();
-        } catch (error) {
-          console.error("Error updating user role:", error);
-          showToast(error.message || "Failed to update user role", "error");
-        } finally {
-          showLoading(false);
+          if (dialogRef) {
+            dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+            dialogRef.classList.remove("opacity-100", "translate-y-0");
+          }
         }
       }
 
