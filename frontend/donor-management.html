@@ -1196,21 +1196,27 @@
                 <div class="border rounded-lg p-4" data-donor-id="${donor.id}">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h4 class="font-medium text-gray-900">${donor.name}</h4>
+                            <h4 class="font-medium text-gray-900">${
+                              donor.name
+                            }</h4>
                             <p class="text-sm text-gray-600">${donor.email}</p>
-                            ${donor.organization ? `
+                            ${
+                              donor.organization
+                                ? `
                                 <p class="text-sm text-gray-500">
                                     <i class="fas fa-building mr-1"></i>
                                     ${donor.organization.name}
                                 </p>
-                            ` : ''}
+                            `
+                                : ""
+                            }
                             <p class="text-xs text-gray-500 mt-1">
                                 <span class="px-2 py-1 rounded-full ${
-                                    donor.approvalStatus === 'APPROVED' 
-                                        ? 'bg-green-100 text-green-800' 
-                                        : 'bg-yellow-100 text-yellow-800'
+                                  donor.approvalStatus === "APPROVED"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-yellow-100 text-yellow-800"
                                 }">
-                                    ${donor.approvalStatus || 'PENDING'}
+                                    ${donor.approvalStatus || "PENDING"}
                                 </span>
                             </p>
                         </div>
@@ -1264,96 +1270,112 @@
         // Find the donor to get their name
         const auth = new AuthManager();
         const token = auth.getToken();
-        
+
         // Show the modal
         document.getElementById("viewPartnersModal").classList.remove("hidden");
-        document.getElementById("viewPartnersList").innerHTML = 
+        document.getElementById("viewPartnersList").innerHTML =
           '<p class="text-gray-500">Loading partners...</p>';
-        
+
         // Load the partners for this donor
         fetch(`${auth.baseUrl}/api/auth/donor/${donorId}/partners`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-          .then(response => {
+          .then((response) => {
             if (!response.ok) {
               throw new Error("Failed to load partners");
             }
             return response.json();
           })
-          .then(data => {
+          .then((data) => {
             const partners = data.data || data;
-            
+
             // Update donor name in modal title
             if (partners.length > 0 && partners[0].parentDonor) {
-              document.getElementById("donorNameDisplay").textContent = 
+              document.getElementById("donorNameDisplay").textContent =
                 partners[0].parentDonor.name || "This Donor";
             } else {
               // Fallback: find donor name from the donors list
               const donorsList = document.getElementById("donorsList");
-              const donorElements = donorsList.querySelectorAll('[data-donor-id]');
-              donorElements.forEach(el => {
+              const donorElements =
+                donorsList.querySelectorAll("[data-donor-id]");
+              donorElements.forEach((el) => {
                 if (el.dataset.donorId == donorId) {
-                  const donorName = el.querySelector('h4')?.textContent;
+                  const donorName = el.querySelector("h4")?.textContent;
                   if (donorName) {
-                    document.getElementById("donorNameDisplay").textContent = donorName;
+                    document.getElementById("donorNameDisplay").textContent =
+                      donorName;
                   }
                 }
               });
             }
-            
+
             displayPartnersInModal(partners);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Error loading partners:", error);
-            document.getElementById("viewPartnersList").innerHTML = 
+            document.getElementById("viewPartnersList").innerHTML =
               '<p class="text-red-600">Error loading partners</p>';
           });
       }
 
       function displayPartnersInModal(partners) {
         const viewPartnersList = document.getElementById("viewPartnersList");
-        
+
         if (!partners || partners.length === 0) {
-          viewPartnersList.innerHTML = 
+          viewPartnersList.innerHTML =
             '<p class="text-gray-500">No partners linked to this donor yet</p>';
           return;
         }
-        
-        viewPartnersList.innerHTML = partners.map(partner => `
+
+        viewPartnersList.innerHTML = partners
+          .map(
+            (partner) => `
           <div class="border rounded-lg p-4 bg-gray-50">
             <div class="flex justify-between items-start">
               <div>
-                <h4 class="font-medium text-gray-900">${partner.name || 'N/A'}</h4>
-                <p class="text-sm text-gray-600">${partner.email || 'N/A'}</p>
-                ${partner.organization ? `
+                <h4 class="font-medium text-gray-900">${
+                  partner.name || "N/A"
+                }</h4>
+                <p class="text-sm text-gray-600">${partner.email || "N/A"}</p>
+                ${
+                  partner.organization
+                    ? `
                   <p class="text-sm text-gray-500 mt-1">
                     <i class="fas fa-building mr-1"></i>
                     ${partner.organization.name}
                   </p>
-                ` : ''}
-                ${partner.thematicArea ? `
+                `
+                    : ""
+                }
+                ${
+                  partner.thematicArea
+                    ? `
                   <p class="text-xs text-blue-600 mt-1">
                     <i class="fas fa-tag mr-1"></i>
                     ${partner.thematicArea}
                   </p>
-                ` : ''}
+                `
+                    : ""
+                }
               </div>
               <span class="px-3 py-1 text-xs font-medium rounded-full ${
-                partner.approvalStatus === 'APPROVED' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-yellow-100 text-yellow-800'
+                partner.approvalStatus === "APPROVED"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
               }">
-                ${partner.approvalStatus || 'PENDING'}
+                ${partner.approvalStatus || "PENDING"}
               </span>
             </div>
           </div>
-        `).join('');
+        `
+          )
+          .join("");
       }
 
       function hideViewPartnersModal() {
         document.getElementById("viewPartnersModal").classList.add("hidden");
-        document.getElementById("viewPartnersList").innerHTML = '';
-        document.getElementById("donorNameDisplay").textContent = '';
+        document.getElementById("viewPartnersList").innerHTML = "";
+        document.getElementById("donorNameDisplay").textContent = "";
       }
 
       function showDonorPlaceholder() {
