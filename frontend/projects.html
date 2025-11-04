@@ -1174,7 +1174,104 @@
             }[tag] || 'bg-gray-200 text-gray-800';
         };
 
+        // Utility function to get file icon based on file type
+        const getFileIcon = (fileType) => {
+            const lowerType = (fileType || '').toLowerCase();
+            if (lowerType.includes('pdf')) return 'fa-file-pdf text-red-600';
+            if (lowerType.includes('word') || lowerType.includes('doc')) return 'fa-file-word text-blue-600';
+            if (lowerType.includes('excel') || lowerType.includes('xls') || lowerType.includes('sheet')) return 'fa-file-excel text-green-600';
+            if (lowerType.includes('powerpoint') || lowerType.includes('ppt')) return 'fa-file-powerpoint text-orange-600';
+            return 'fa-file text-gray-600';
+        };
 
+        // Fetch project documents from API
+        async function fetchProjectDocuments(projectId) {
+            try {
+                console.log(`[Documents] Fetching documents for project ID: ${projectId}`);
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${window.BASE_URL}/api/projects/${projectId}/documents`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log(`[Documents] Response status:`, response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`[Documents] Response data:`, data);
+                    
+                    if (data.status === 200 && data.data) {
+                        console.log(`[Documents] Found ${data.data.length} documents for project ${projectId}`);
+                        return data.data;
+                    } else {
+                        console.log(`[Documents] API returned non-200 status or no data:`, data);
+                    }
+                } else {
+                    // Server error (500, etc)
+                    console.warn(`[Documents] API call failed with status ${response.status}`);
+                    try {
+                        const errorData = await response.json();
+                        console.error(`[Documents] Error details:`, errorData);
+                    } catch (e) {
+                        // Can't parse error response
+                    }
+                    return null; // Return null to indicate server error
+                }
+                return [];
+            } catch (error) {
+                console.error('[Documents] Error fetching documents:', error);
+                return null; // Return null to indicate error
+            }
+        }
+
+        // Render documents as downloadable links
+        function renderDocuments(documents, projectId) {
+            // Handle server error (null)
+            if (documents === null) {
+                return `<div class="p-3 bg-amber-50 border border-amber-200 rounded">
+                    <p class="text-sm text-amber-800 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Unable to load documents at this time. The server encountered an error.
+                    </p>
+                    <p class="text-xs text-amber-600 mt-1">
+                        This project may have documents, but they cannot be retrieved right now.
+                    </p>
+                </div>`;
+            }
+            
+            // Handle no documents (empty array)
+            if (!documents || documents.length === 0) {
+                return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';
+            }
+
+            return documents.map(doc => `
+                <div class="flex items-center justify-between py-2 border-b border-gray-100 hover:bg-gray-50 px-2 rounded">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas ${getFileIcon(doc.fileType)} text-xl"></i>
+                        <div>
+                            <p class="text-sm font-medium text-gray-800">${doc.fileName}</p>
+                            <p class="text-xs text-gray-500">${formatFileSize(doc.size)}</p>
+                        </div>
+                    </div>
+                    <a href="${window.BASE_URL}/api/projects/${projectId}/documents/${doc.id}" 
+                       target="_blank"
+                       class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
+                        <i class="fas fa-download mr-1"></i>Download
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // Format file size for display
+        function formatFileSize(bytes) {
+            if (!bytes) return 'Unknown size';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             map = L.map('kenyaMap', {
@@ -1278,9 +1375,11 @@
             });
         });
         // Comes From DB
-        function showProjectInfo(project) {
+        async function showProjectInfo(project) {
             const infoBox = document.getElementById("projectInfo");
             infoBox.classList.remove("hidden");
+            
+            // Show loading state
             infoBox.innerHTML = `
             <div class="flex flex-wrap">
                 <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
@@ -1292,8 +1391,38 @@
                 <p><strong>Sponsor:</strong> ${project.sponsor}</p>
                 <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
                 <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+                <div class="w-full mt-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Supporting Documents</h4>
+                    <div class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading documents...</div>
+                </div>
             </div>
-        `;
+            `;
+            
+            // Fetch and display documents if project has an ID
+            if (project.id) {
+                const documents = await fetchProjectDocuments(project.id);
+                infoBox.innerHTML = `
+                <div class="flex flex-wrap">
+                    <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
+                    <p><strong>Description:</strong> ${project.description}</p>
+                    <p><strong>Region:</strong> ${project.region}</p>
+                    <p><strong>Budget:</strong> ${project.budget}</p>
+                    <p><strong>Team:</strong> ${project.team}</p>
+                    <p><strong>Participants:</strong> ${project.participants}</p>
+                    <p><strong>Sponsor:</strong> ${project.sponsor}</p>
+                    <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
+                    <div class="w-full mt-4 border-t pt-4">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-paperclip mr-2"></i>Supporting Documents
+                        </h4>
+                        <div class="space-y-2">
+                            ${renderDocuments(documents, project.id)}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
         }
 
         function focusMarker(index) {
@@ -1385,6 +1514,14 @@
                                     ${project.status}
                                 </span>
                             </p>
+                            <div class="mt-4 pt-4 border-t">
+                                <h5 class="text-md font-semibold text-gray-800 mb-2 flex items-center">
+                                    <i class="fas fa-paperclip mr-2"></i>Supporting Documents
+                                </h5>
+                                <div id="documents-${i}" class="space-y-2">
+                                    <p class="text-sm text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading documents...</p>
+                                </div>
+                            </div>
                             <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
                                 Show on Map
                             </button>
@@ -1395,13 +1532,20 @@
 
                     // Toggle description between truncated and full
                     const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
-                    btn.addEventListener("click", () => {
+                    btn.addEventListener("click", async () => {
                         const collapse = document.getElementById(`collapse-${i}`);
                         const desc = document.getElementById(`desc-${i}`);
                         if (collapse) collapse.classList.toggle("hidden");
 
                         if (collapse && !collapse.classList.contains("hidden")) {
                             desc.textContent = project.fullDescription; // expand
+                            
+                            // Load documents when accordion is opened
+                            if (project.id) {
+                                const documentsContainer = document.getElementById(`documents-${i}`);
+                                const documents = await fetchProjectDocuments(project.id);
+                                documentsContainer.innerHTML = renderDocuments(documents, project.id);
+                            }
                         } else {
                             desc.textContent = project.description; // truncate
                         }
