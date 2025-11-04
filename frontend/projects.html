@@ -218,11 +218,11 @@
 
         <!-- Reject Project Modal -->
         <div id="rejectProjectModal"
-            class="fixed inset-0 z-[1056] hidden items-center justify-center bg-black/50 px-4 py-6" role="dialog"
-            aria-modal="true" aria-labelledby="rejectProjectTitle">
+            class="fixed inset-0 z-[1056] hidden items-center justify-center backdrop-blur-md bg-black/50 px-4 py-6"
+            role="dialog" aria-modal="true" aria-labelledby="rejectProjectTitle">
             <div class="w-full max-w-md rounded-xl bg-white shadow-2xl">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900" id="rejectProjectTitle">Reject Project</h3>
+                    <h3 class="text-lg font-semibold text-blue-900" id="rejectProjectTitle">Reject Project</h3>
                     <button type="button" class="text-gray-400 hover:text-gray-600" aria-label="Close"
                         onclick="closeRejectModal()">
                         <span class="sr-only">Close</span>
@@ -265,13 +265,17 @@
         </div>
 
         <!-- Project Details Modal -->
-        <div id="projectDetailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-hidden="true" aria-modal="true" aria-labelledby="projectDetailsTitle">
+        <div id="projectDetailsModal"
+            class="hidden fixed inset-0 z-50 flex backdrop-blur-md items-center justify-center bg-black bg-opacity-50"
+            aria-hidden="true" aria-modal="true" aria-labelledby="projectDetailsTitle">
             <div class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">
                 <div class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-200">
-                    <h2 id="projectDetailsTitle" class="text-xl font-semibold text-gray-900">Project Details</h2>
-                    <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeProjectDetailsModal()">
+                    <h2 id="projectDetailsTitle" class="text-xl font-semibold text-blue-900">Project Details</h2>
+                    <button type="button" class="text-gray-400 hover:text-gray-600"
+                        onclick="closeProjectDetailsModal()">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
@@ -659,28 +663,28 @@
                             }
 
                             // Helper to render action buttons
-                        function renderActions(project, status) {
-                            const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-                            const isPartner = userRole === 'PARTNER';
+                            function renderActions(project, status) {
+                                const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                                const isPartner = userRole === 'PARTNER';
 
-                            let html = `<button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button> `;
+                                let html = `<button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button> `;
 
-                        if (isPartner) {
-                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
-                            return html;
-                        }
+                                if (isPartner) {
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
+                                    return html;
+                                }
 
-                        if (status === 'pending') {
-                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
+                                if (status === 'pending') {
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
 
-                        } else if (status === 'active') {
-                            html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
-                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
-                        } else if (status === 'stalled') {
-                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="reactivateProject(${project.id})">Re-activate</button> `;
-                        } else if (status === 'completed') {
-                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="submitReport(${project.id})">Submit Report</button>`;
-                        }                                // Mark project as stalled (exposed globally)
+                                } else if (status === 'active') {
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
+                                } else if (status === 'stalled') {
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="reactivateProject(${project.id})">Re-activate</button> `;
+                                } else if (status === 'completed') {
+                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="submitReport(${project.id})">Submit Report</button>`;
+                                }                                // Mark project as stalled (exposed globally)
                                 window.stalledProject = async function (id) {
                                     if (!confirm('Mark this project as stalled?')) return;
                                     try {
@@ -1214,11 +1218,11 @@
                 });
 
                 console.log(`[Documents] Response status:`, response.status);
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     console.log(`[Documents] Response data:`, data);
-                    
+
                     if (data.status === 200 && data.data) {
                         console.log(`[Documents] Found ${data.data.length} documents for project ${projectId}`);
                         return data.data;
@@ -1257,7 +1261,7 @@
                     </p>
                 </div>`;
             }
-            
+
             // Handle no documents (empty array)
             if (!documents || documents.length === 0) {
                 return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';
@@ -1394,7 +1398,7 @@
         async function showProjectInfo(project) {
             const infoBox = document.getElementById("projectInfo");
             infoBox.classList.remove("hidden");
-            
+
             // Show loading state
             infoBox.innerHTML = `
             <div class="flex flex-wrap">
@@ -1413,7 +1417,7 @@
                 </div>
             </div>
             `;
-            
+
             // Fetch and display documents if project has an ID
             if (project.id) {
                 const documents = await fetchProjectDocuments(project.id);
@@ -1555,7 +1559,7 @@
 
                         if (collapse && !collapse.classList.contains("hidden")) {
                             desc.textContent = project.fullDescription; // expand
-                            
+
                             // Load documents when accordion is opened
                             if (project.id) {
                                 const documentsContainer = document.getElementById(`documents-${i}`);
@@ -1966,34 +1970,34 @@
             }
 
             // Project Details Modal Functions
-            window.viewProjectDetails = async function(projectId) {
+            window.viewProjectDetails = async function (projectId) {
                 const modal = document.getElementById('projectDetailsModal');
                 const content = document.getElementById('projectDetailsContent');
-                
+
                 modal.classList.remove('hidden');
                 content.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
-                
+
                 try {
                     const headers = {
                         'Content-Type': 'application/json',
                         Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
                     };
-                    
+
                     const res = await fetch(`${API_BASE}/projects/${projectId}`, {
                         method: 'GET',
                         credentials: 'include',
                         headers
                     });
-                    
+
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     const data = await res.json();
-                    
+
                     if (data.status === 200 && data.data) {
                         const project = data.data;
-                        
+
                         // Fetch documents
                         const documents = await fetchProjectDocuments(projectId);
-                        
+
                         // Render project details
                         content.innerHTML = `
                             <div class="space-y-4">
@@ -2057,98 +2061,145 @@
                 }
             };
 
-            window.closeProjectDetailsModal = function() {
+            window.closeProjectDetailsModal = function () {
                 const modal = document.getElementById('projectDetailsModal');
                 modal.classList.add('hidden');
             };
         });
     </script>
-    
+
     <!-- Global Functions for onclick handlers -->
     <script>
         // Project Details Modal Functions - Must be in global scope for onclick
-        window.viewProjectDetails = async function(projectId) {
+        window.viewProjectDetails = async function (projectId) {
             const modal = document.getElementById('projectDetailsModal');
             const content = document.getElementById('projectDetailsContent');
-            
+
             modal.classList.remove('hidden');
             content.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
-            
+
             try {
                 const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
                 const headers = {
                     'Content-Type': 'application/json',
                     Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
                 };
-                
+
                 const res = await fetch(`${API_BASE}/api/projects/${projectId}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers
                 });
-                
+
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const data = await res.json();
-                
+
                 if (data.status === 200 && data.data) {
                     const project = data.data;
-                    
+
                     // Fetch documents
                     const documents = await fetchProjectDocuments(projectId);
-                    
+
                     // Render project details
                     content.innerHTML = `
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><strong class="text-gray-700">Project No:</strong> <span class="text-gray-900">${project.projectNo || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">Partner:</strong> <span class="text-gray-900">${project.partner || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">Budget:</strong> <span class="text-gray-900">KES ${(project.budget || 0).toLocaleString()}</span></div>
-                                <div><strong class="text-gray-700">Start Date:</strong> <span class="text-gray-900">${project.startDate || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">End Date:</strong> <span class="text-gray-900">${project.endDate || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">Activity Type:</strong> <span class="text-gray-900">${project.activityType || 'N/A'}</span></div>
-                                <div><strong class="text-gray-700">Category:</strong> <span class="text-gray-900">${project.projectCategory || 'N/A'}</span></div>
-                            </div>
-                            
-                            <div><strong class="text-gray-700">Title:</strong> <p class="text-gray-900 mt-1">${project.title || 'N/A'}</p></div>
-                            <div><strong class="text-gray-700">Objectives:</strong> <p class="text-gray-900 mt-1">${project.objectives || 'N/A'}</p></div>
-                            
-                            ${project.themes && project.themes.length > 0 ? `
-                                <div>
-                                    <strong class="text-gray-700">Themes:</strong>
-                                    <div class="flex flex-wrap gap-2 mt-2">
-                                        ${project.themes.map(theme => `<span class="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">${theme.name || theme.code}</span>`).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${project.locations && project.locations.length > 0 ? `
-                                <div>
-                                    <strong class="text-gray-700">Locations:</strong>
-                                    <div class="mt-2 space-y-1">
-                                        ${project.locations.map(loc => `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            <div class="pt-4 border-t">
-                                <strong class="text-gray-700">Contact Person:</strong>
-                                <div class="mt-2 space-y-1">
-                                    <div class="text-gray-900"><i class="fas fa-user mr-2"></i>${project.contactPersonName || 'N/A'}</div>
-                                    <div class="text-gray-900"><i class="fas fa-briefcase mr-2"></i>${project.contactPersonRole || 'N/A'}</div>
-                                    <div class="text-gray-900"><i class="fas fa-envelope mr-2"></i>${project.contactPersonEmail || 'N/A'}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="pt-4 border-t">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                    <i class="fas fa-paperclip mr-2"></i>Supporting Documents
-                                </h4>
-                                <div class="space-y-2">
-                                    ${renderDocuments(documents, projectId)}
-                                </div>
-                            </div>
-                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg space-y-8">
+    
+    <div>
+        <h3 class="text-xl font-bold text-gray-800 mb-4 border-b-2 border-indigo-100 pb-2">Project Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Project No:</span>
+                <span class="text-gray-900 font-semibold">${project.projectNo || 'N/A'}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Status:</span>
+                <span class="inline-block px-3 py-1 text-xs rounded-full font-bold ${statusBadge(project.status)}">${project.status || 'N/A'}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Partner:</span>
+                <span class="text-gray-900">${project.partner || 'N/A'}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Budget:</span>
+                <span class="text-lg font-bold text-green-700">KES ${(project.budget || 0).toLocaleString()}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Start Date:</span>
+                <span class="text-gray-900">${project.startDate || 'N/A'}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">End Date:</span>
+                <span class="text-gray-900">${project.endDate || 'N/A'}</span>
+            </div>
+            
+             <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Activity Type:</span>
+                <span class="text-gray-900">${project.activityType || 'N/A'}</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <span class="text-gray-600 font-medium">Category:</span>
+                <span class="text-gray-900">${project.projectCategory || 'N/A'}</span>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="space-y-6 pt-4 border-t border-gray-200">
+        <div>
+            <h4 class="text-lg font-bold text-gray-700 mb-2">Title</h4>
+            <p class="text-gray-800 leading-relaxed">${project.title || 'N/A'}</p>
+        </div>
+        
+        <div>
+            <h4 class="text-lg font-bold text-gray-700 mb-2">Objectives</h4>
+            <p class="text-gray-800 leading-relaxed">${project.objectives || 'N/A'}</p>
+        </div>
+    </div>
+    
+    ${project.themes && project.themes.length > 0 ? `
+    <div class="pt-4 border-t border-gray-200">
+        <h4 class="text-lg font-bold text-gray-700 mb-3">Themes</h4>
+        <div class="flex flex-wrap gap-2">
+            ${project.themes.map(theme => `<span class="inline-flex items-center px-4 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium"><i class="fas fa-tag mr-2"></i>${theme.name || theme.code}</span>`).join('')}
+        </div>
+    </div>
+    ` : ''}
+    
+    ${project.locations && project.locations.length > 0 ? `
+    <div class="pt-4 border-t border-gray-200">
+        <h4 class="text-lg font-bold text-gray-700 mb-3">Locations</h4>
+        <div class="mt-2 space-y-2">
+            ${project.locations.map(loc => `<div class="text-gray-800 flex items-center"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
+        </div>
+    </div>
+    ` : ''}
+    
+    <div class="pt-4 border-t border-gray-200">
+        <h4 class="text-lg font-bold text-gray-700 mb-3 flex items-center"><i class="fas fa-user-tie mr-2"></i>Contact Person</h4>
+        <div class="space-y-2">
+            <div class="text-gray-900 flex items-center"><i class="fas fa-user mr-2 w-4 text-center text-gray-400"></i>${project.contactPersonName || 'N/A'}</div>
+            <div class="text-gray-900 flex items-center"><i class="fas fa-briefcase mr-2 w-4 text-center text-gray-400"></i>${project.contactPersonRole || 'N/A'}</div>
+            <div class="text-gray-900 flex items-center"><i class="fas fa-envelope mr-2 w-4 text-center text-gray-400"></i><a href="mailto:${project.contactPersonEmail}" class="text-blue-600 hover:text-blue-800">${project.contactPersonEmail || 'N/A'}</a></div>
+        </div>
+    </div>
+    
+    <div class="pt-4 border-t border-gray-200">
+        <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+            <i class="fas fa-paperclip mr-2 text-gray-500"></i>Supporting Documents
+        </h4>
+        <div class="space-y-2">
+            ${renderDocuments(documents, projectId)}
+        </div>
+    </div>
+</div>
                     `;
                 } else {
                     content.innerHTML = '<p class="text-red-600">Failed to load project details.</p>';
@@ -2159,12 +2210,12 @@
             }
         };
 
-        window.closeProjectDetailsModal = function() {
+        window.closeProjectDetailsModal = function () {
             const modal = document.getElementById('projectDetailsModal');
             modal.classList.add('hidden');
         };
     </script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 

@@ -80,12 +80,12 @@
                     </ul>
                 </div>
             </li>
-            <li>
+            <!-- <li>
                 <a href="announcements.html"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     Announcements
                 </a>
-            </li>
+            </li> -->
         </ul>
 
         <!-- Right-aligned Items (Admin + User) -->
@@ -115,6 +115,50 @@
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <i class="far fa-users mr-2 text-lime-500"></i> <a href="members.html">Stakeholder
                                 Management</a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-users mr-2 text-lime-500"></i> <a href="donor-management.html">Donor
+                                Management</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li x-data="{ showDropdown: false }" class="relative hidden" id="superAdminApproverNav">
+                <button @click="showDropdown = !showDropdown"
+                    class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
+                    Approver <i class="ml-2 far fa-chevron-down"></i>
+                </button>
+                <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+                    class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                    <ul class="py-2 text-sm text-left text-teal-700">
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-check-circle mr-2 text-lime-500"></i>
+                            <a href="approval-requests.html">Approval Queue</a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-list mr-2 text-lime-500"></i>
+                            <a href="approval-history.html">Approval History</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li x-data="{ showDropdown: false }" class="relative hidden" id="superAdminReviewerNav">
+                <button @click="showDropdown = !showDropdown"
+                    class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
+                    Reviewer <i class="ml-2 far fa-chevron-down"></i>
+                </button>
+                <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
+                    class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                    <ul class="py-2 text-sm text-left text-teal-700">
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-folder mr-2 text-lime-500"></i>
+                            <a href="review-requests.html">Review Requests</a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-eye mr-2 text-lime-500"></i>
+                            <a href="review-dashboard.html">Review Dashboard</a>
                         </li>
                     </ul>
                 </div>
@@ -257,11 +301,11 @@
                     </ul>
                 </div>
             </li>
-            <li>
+            <!-- <li>
                 <a href="announcements.html" class="uppercase transition hover:text-indigo-600">
                     Announcements
                 </a>
-            </li>
+            </li> -->
 
             <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                 <!-- Announcements link moved to standalone nav item -->
@@ -292,6 +336,11 @@
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
                             <i class="far fa-users mr-2 text-blue-500"></i> <a href="members.html">Stakeholder
+                                Management</a>
+                        </li>
+                        <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
+                            <i class="far fa-money-check-edit-alt mr-2 text-lime-500"></i> <a
+                                href="donor-management.html">Donor
                                 Management</a>
                         </li>
                     </ul>
