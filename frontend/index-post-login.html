@@ -64,32 +64,12 @@
     <!-- Mapbox JS -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Authentication utilities -->
-    <script type="module">
-      // Try to load a local config override (frontend/config.local.js) if present.
-      (function () {
-        try {
-          var s = document.createElement("script");
-          s.src = "./config.local.js";
-          s.async = false;
-          document.head.appendChild(s);
-        } catch (e) {}
-      })();
-
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
-      console.log("[index-post-login] BASE_URL set to:", window.BASE_URL);
-    </script>
+    <!-- Hardcoded BASE_URL Configuration -->
     <script>
-      // Fallback BASE_URL in case module doesn't load
-      if (typeof window.BASE_URL === "undefined") {
-        window.BASE_URL =
-          "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-        console.log(
-          "[index-post-login] Using fallback BASE_URL:",
-          window.BASE_URL
-        );
-      }
+      // Hardcode BASE_URL for reliable access across all scripts
+      window.BASE_URL =
+        "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+      console.log("[index-post-login] BASE_URL hardcoded to:", window.BASE_URL);
     </script>
     <script src="auth.js"></script>
     <script src="kenya-locations.js"></script>
