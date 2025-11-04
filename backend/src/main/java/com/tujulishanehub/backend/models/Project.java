@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,8 +76,9 @@ public class Project {
     @Column(precision = 15, scale = 2)
     private java.math.BigDecimal budget;
     
-        // Supporting documents (files as blobs)
-        @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+        // Supporting documents (files as blobs) - LAZY loading to avoid performance issues
+        @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @JsonIgnore // Never serialize documents in project responses
         private java.util.List<ProjectDocument> supportingDocuments = new java.util.ArrayList<>();
     
     // Additional metadata fields
@@ -101,6 +103,11 @@ public class Project {
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
     
+    // Two-tier approval workflow status (new system)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_workflow_status")
+    private ApprovalWorkflowStatus approvalWorkflowStatus = ApprovalWorkflowStatus.PENDING_REVIEW;
+    
     @Column(name = "approved_by")
     private Long approvedBy;
     
@@ -109,6 +116,16 @@ public class Project {
     
     @Column(name = "rejection_reason")
     private String rejectionReason;
+    
+    // Two-tier approval workflow fields
+    @Column(name = "reviewed_by")
+    private Long reviewedBy; // Thematic reviewer who did initial review
+    
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+    
+    @Column(name = "reviewer_comments")
+    private String reviewerComments; // Comments from the thematic reviewer
     
     // Collaboration tracking fields
     @Column(name = "last_modified_by")
@@ -206,6 +223,14 @@ public class Project {
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
     }
+    
+    public ApprovalWorkflowStatus getApprovalWorkflowStatus() {
+        return approvalWorkflowStatus;
+    }
+    
+    public void setApprovalWorkflowStatus(ApprovalWorkflowStatus approvalWorkflowStatus) {
+        this.approvalWorkflowStatus = approvalWorkflowStatus;
+    }
 
     public Long getApprovedBy() {
         return approvedBy;
@@ -229,6 +254,30 @@ public class Project {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+    
+    public Long getReviewedBy() {
+        return reviewedBy;
+    }
+    
+    public void setReviewedBy(Long reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+    
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+    
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+    
+    public String getReviewerComments() {
+        return reviewerComments;
+    }
+    
+    public void setReviewerComments(String reviewerComments) {
+        this.reviewerComments = reviewerComments;
     }
 
     public String getStatus() {
@@ -375,5 +424,14 @@ public class Project {
             });
         }
         return locationStrings;
+    }
+
+    // Getter and setter for supporting documents
+    public java.util.List<ProjectDocument> getSupportingDocuments() {
+        return supportingDocuments;
+    }
+
+    public void setSupportingDocuments(java.util.List<ProjectDocument> supportingDocuments) {
+        this.supportingDocuments = supportingDocuments;
     }
 }

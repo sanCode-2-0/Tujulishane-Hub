@@ -43,6 +43,9 @@ public class ProjectService {
     @Autowired
     private PastProjectService pastProjectService;
     
+    @Autowired
+    private EmailService emailService;
+    
     /**
      * Create a new project with automatic coordinate extraction for locations
      */
@@ -581,6 +584,36 @@ public class ProjectService {
             project.setStatus("active"); // Make project active when approved
             projectRepository.save(project);
             logger.info("Project {} approved by admin {}", projectId, approvedBy);
+            
+            // Send notification email to project owner
+            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
+                try {
+                    String subject = "Project Approved - " + project.getTitle();
+                    String body = String.format(
+                        "Dear %s,\n\n" +
+                        "Congratulations! Your project '%s' has been approved by the MOH administrator.\n\n" +
+                        "Project Details:\n" +
+                        "- Project Number: %s\n" +
+                        "- Title: %s\n" +
+                        "- Partner: %s\n" +
+                        "- Status: Active\n\n" +
+                        "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                        project.getTitle(),
+                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                        project.getTitle(),
+                        project.getPartner()
+                    );
+                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
+                    logger.info("Approval notification email sent to {}", project.getContactPersonEmail());
+                } catch (Exception e) {
+                    logger.error("Failed to send approval notification email for project {}: {}", projectId, e.getMessage(), e);
+                    // Don't fail the approval if email fails
+                }
+            }
+            
             return true;
         }
         return false;
@@ -599,6 +632,39 @@ public class ProjectService {
             project.setStatus("rejected"); // Set project status to rejected
             projectRepository.save(project);
             logger.info("Project {} rejected by admin {} with reason: {}", projectId, rejectedBy, reason);
+            
+            // Send notification email to project owner
+            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
+                try {
+                    String subject = "Project Rejected - " + project.getTitle();
+                    String body = String.format(
+                        "Dear %s,\n\n" +
+                        "We regret to inform you that your project '%s' has been rejected by the MOH administrator.\n\n" +
+                        "Project Details:\n" +
+                        "- Project Number: %s\n" +
+                        "- Title: %s\n" +
+                        "- Partner: %s\n\n" +
+                        "Rejection Reason:\n" +
+                        "%s\n\n" +
+                        "If you have any questions or would like to resubmit your project with corrections, " +
+                        "please contact the MOH administrator or update your project accordingly.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                        project.getTitle(),
+                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                        project.getTitle(),
+                        project.getPartner(),
+                        reason != null ? reason : "No reason provided"
+                    );
+                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
+                    logger.info("Rejection notification email sent to {}", project.getContactPersonEmail());
+                } catch (Exception e) {
+                    logger.error("Failed to send rejection notification email for project {}: {}", projectId, e.getMessage(), e);
+                    // Don't fail the rejection if email fails
+                }
+            }
+            
             return true;
         }
         return false;
@@ -609,6 +675,232 @@ public class ProjectService {
      */
     public List<Project> getProjectsByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus approvalStatus) {
         return projectRepository.findByApprovalStatus(approvalStatus);
+    }
+    
+    // ==================== TWO-TIER APPROVAL WORKFLOW METHODS ====================
+    
+    /**
+     * Review a project (Thematic Reviewer only)
+     * This is the first step in the two-tier approval process
+     */
+    public boolean reviewProject(Long projectId, Long reviewerId, String comments, boolean approved) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            
+            // Validate project is in correct state for review
+            if (project.getApprovalWorkflowStatus() != com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW &&
+                project.getApprovalWorkflowStatus() != com.tujulishanehub.backend.models.ApprovalWorkflowStatus.UNDER_REVIEW) {
+                throw new IllegalStateException("Project is not in a state that can be reviewed");
+            }
+            
+            project.setReviewedBy(reviewerId);
+            project.setReviewedAt(java.time.LocalDateTime.now());
+            project.setReviewerComments(comments);
+            
+            if (approved) {
+                // Reviewer approved - move to next stage (awaiting final approver)
+                project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_FINAL_APPROVAL);
+                project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.SUBMITTED); // Use SUBMITTED to indicate it's been reviewed
+            } else {
+                // Reviewer rejected
+                project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REJECTED_BY_REVIEWER);
+                project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.REJECTED);
+                project.setRejectionReason(comments);
+                project.setStatus("rejected");
+            }
+            
+            projectRepository.save(project);
+            logger.info("Project {} reviewed by reviewer {} - approved: {}", projectId, reviewerId, approved);
+            
+            // Send notification email to project owner
+            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
+                try {
+                    String subject = approved ? 
+                        "Project Reviewed - Awaiting Final Approval: " + project.getTitle() :
+                        "Project Review - Revisions Required: " + project.getTitle();
+                    String body = String.format(
+                        "Dear %s,\n\n" +
+                        "Your project '%s' has been reviewed by the thematic area reviewer.\n\n" +
+                        "Project Details:\n" +
+                        "- Project Number: %s\n" +
+                        "- Title: %s\n" +
+                        "- Partner: %s\n" +
+                        "- Review Status: %s\n" +
+                        "- Reviewer Comments: %s\n\n" +
+                        "%s\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                        project.getTitle(),
+                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                        project.getTitle(),
+                        project.getPartner(),
+                        approved ? "Approved for Final Review" : "Revisions Required",
+                        comments != null ? comments : "No comments provided",
+                        approved ? 
+                            "Your project has passed the thematic review and is now awaiting final approval from the MOH administrator." :
+                            "Please address the reviewer's comments and resubmit your project."
+                    );
+                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
+                    logger.info("Review notification email sent to {}", project.getContactPersonEmail());
+                } catch (Exception e) {
+                    logger.error("Failed to send review notification email for project {}: {}", projectId, e.getMessage(), e);
+                }
+            }
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Final approval of a project (SUPER_ADMIN_APPROVER only)
+     * This is the second step in the two-tier approval process
+     */
+    public boolean finalApproveProject(Long projectId, Long approverId, String approverComments) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            
+            // Validate project has been reviewed
+            if (project.getApprovalWorkflowStatus() != com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_FINAL_APPROVAL &&
+                project.getApprovalWorkflowStatus() != com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REVIEWED) {
+                throw new IllegalStateException("Project must be reviewed before final approval");
+            }
+            
+            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.APPROVED);
+            project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED);
+            project.setApprovedBy(approverId);
+            project.setApprovedAt(java.time.LocalDateTime.now());
+            project.setRejectionReason(null);
+            project.setStatus("active");
+            
+            // Store approver comments if provided
+            if (approverComments != null && !approverComments.isEmpty()) {
+                String existingComments = project.getReviewerComments();
+                project.setReviewerComments(existingComments != null ? 
+                    existingComments + "\n\nFinal Approver: " + approverComments : 
+                    "Final Approver: " + approverComments);
+            }
+            
+            projectRepository.save(project);
+            logger.info("Project {} finally approved by approver {}", projectId, approverId);
+            
+            // Send notification email to project owner
+            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
+                try {
+                    String subject = "Project Approved - " + project.getTitle();
+                    String body = String.format(
+                        "Dear %s,\n\n" +
+                        "Congratulations! Your project '%s' has received final approval from the MOH administrator.\n\n" +
+                        "Project Details:\n" +
+                        "- Project Number: %s\n" +
+                        "- Title: %s\n" +
+                        "- Partner: %s\n" +
+                        "- Status: Active\n\n" +
+                        "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                        project.getTitle(),
+                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                        project.getTitle(),
+                        project.getPartner()
+                    );
+                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
+                    logger.info("Final approval notification email sent to {}", project.getContactPersonEmail());
+                } catch (Exception e) {
+                    logger.error("Failed to send final approval notification email for project {}: {}", projectId, e.getMessage(), e);
+                }
+            }
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Reject a project at final approval stage (SUPER_ADMIN_APPROVER only)
+     */
+    public boolean finalRejectProject(Long projectId, Long approverId, String reason) {
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            
+            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.REJECTED);
+            project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REJECTED_BY_APPROVER);
+            project.setApprovedBy(approverId);
+            project.setRejectionReason(reason);
+            project.setStatus("rejected");
+            
+            projectRepository.save(project);
+            logger.info("Project {} rejected at final approval by approver {} with reason: {}", projectId, approverId, reason);
+            
+            // Send notification email to project owner
+            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
+                try {
+                    String subject = "Project Rejected - " + project.getTitle();
+                    String body = String.format(
+                        "Dear %s,\n\n" +
+                        "Your project '%s' has been rejected at the final approval stage.\n\n" +
+                        "Project Details:\n" +
+                        "- Project Number: %s\n" +
+                        "- Title: %s\n" +
+                        "- Partner: %s\n" +
+                        "- Rejection Reason: %s\n\n" +
+                        "Please address the issues mentioned and resubmit your project for review.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                        project.getTitle(),
+                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                        project.getTitle(),
+                        project.getPartner(),
+                        reason
+                    );
+                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
+                    logger.info("Final rejection notification email sent to {}", project.getContactPersonEmail());
+                } catch (Exception e) {
+                    logger.error("Failed to send final rejection notification email for project {}: {}", projectId, e.getMessage(), e);
+                }
+            }
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Get projects that need review by a specific thematic area reviewer
+     */
+    public List<Project> getProjectsForReviewer(com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        // Get all projects pending review
+        List<Project> allPendingProjects = projectRepository.findAll().stream()
+            .filter(p -> p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW ||
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.UNDER_REVIEW)
+            .collect(Collectors.toList());
+        
+        // Filter by thematic area - check if any of the project's themes match the reviewer's thematic area
+        return allPendingProjects.stream()
+            .filter(project -> {
+                if (project.getThemes() == null || project.getThemes().isEmpty()) {
+                    return false;
+                }
+                return project.getThemes().stream()
+                    .anyMatch(assignment -> assignment.getProjectTheme() == thematicArea);
+            })
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get projects awaiting final approval
+     */
+    public List<Project> getProjectsAwaitingFinalApproval() {
+        return projectRepository.findAll().stream()
+            .filter(p -> p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_FINAL_APPROVAL ||
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REVIEWED)
+            .collect(Collectors.toList());
     }
     
     /**

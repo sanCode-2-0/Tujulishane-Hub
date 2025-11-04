@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,14 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+    
+    // Optimized findAll with themes and locations eagerly fetched to avoid N+1 queries
+    @EntityGraph(attributePaths = {"themes", "locations", "themes.projectTheme"})
+    Page<Project> findAll(Pageable pageable);
+    
+    // Optimized findById with themes and locations
+    @EntityGraph(attributePaths = {"themes", "locations", "themes.projectTheme"})
+    Optional<Project> findById(Long id);
     
     // Find projects by partner
     List<Project> findByPartnerContainingIgnoreCase(String partner);

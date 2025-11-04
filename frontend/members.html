@@ -2024,6 +2024,70 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
         );
       }
 
+      // Update user role with thematic area (for two-tier approval)
+      async function updateUserRoleWithTheme(userId) {
+        const role = prompt(
+          "Enter new role (SUPER_ADMIN_REVIEWER, SUPER_ADMIN_APPROVER, SUPER_ADMIN, PARTNER, DONOR):"
+        );
+        if (!role) return;
+
+        let thematicArea = null;
+        if (role === "SUPER_ADMIN_REVIEWER") {
+          thematicArea = prompt(
+            "Enter thematic area (GBV, AYPSRH, MNH, FP, CH, AH):"
+          );
+          if (!thematicArea) {
+            showToast("Thematic area required for reviewers", "error");
+            return;
+          }
+        }
+
+        showLoading();
+        try {
+          const payload = { role };
+          if (thematicArea) {
+            payload.thematicArea = thematicArea;
+          }
+
+          await apiCall(
+            `/api/auth/admin/update-role-with-theme/${userId}`,
+            "POST",
+            payload
+          );
+          showToast("User role updated successfully!");
+          await loadAllUsers();
+        } catch (error) {
+          console.error("Error updating user role:", error);
+          showToast(error.message || "Failed to update user role", "error");
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      // Assign thematic area to existing reviewer
+      async function assignThematicArea(userId) {
+        const thematicArea = prompt(
+          "Enter thematic area (GBV, AYPSRH, MNH, FP, CH, AH):"
+        );
+        if (!thematicArea) return;
+
+        showLoading();
+        try {
+          await apiCall(
+            `/api/auth/admin/assign-thematic-area/${userId}`,
+            "POST",
+            { thematicArea }
+          );
+          showToast("Thematic area assigned successfully!");
+          await loadAllUsers();
+        } catch (error) {
+          console.error("Error assigning thematic area:", error);
+          showToast(error.message || "Failed to assign thematic area", "error");
+        } finally {
+          showLoading(false);
+        }
+      }
+
       // Refresh all data
       async function refreshData() {
         showLoading();

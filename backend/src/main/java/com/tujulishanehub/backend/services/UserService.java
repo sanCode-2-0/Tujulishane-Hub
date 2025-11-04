@@ -367,6 +367,97 @@ public class UserService {
         return java.util.Collections.emptyList();
     }
     
+    // ==================== TWO-TIER ADMIN MANAGEMENT ====================
+    
+    /**
+     * Assign thematic area to a reviewer
+     */
+    public boolean assignThematicArea(Long userId, com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            
+            // Validate user is a reviewer
+            if (user.getRole() != User.Role.SUPER_ADMIN_REVIEWER) {
+                throw new IllegalArgumentException("User must be a SUPER_ADMIN_REVIEWER to have a thematic area assigned");
+            }
+            
+            user.setThematicArea(thematicArea);
+            userRepository.save(user);
+            
+            // Send notification to user
+            emailService.sendEmail(user.getEmail(), 
+                "Thematic Area Assigned", 
+                "You have been assigned to the thematic area: " + thematicArea.getDisplayName() + 
+                "\n\nYou can now review projects in this thematic area.");
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Update user role with thematic area (for creating reviewers)
+     */
+    public boolean updateUserRoleWithThematicArea(Long userId, User.Role newRole, com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            User.Role oldRole = user.getRole();
+            user.setRole(newRole);
+            
+            // If assigning as reviewer, set thematic area
+            if (newRole == User.Role.SUPER_ADMIN_REVIEWER && thematicArea != null) {
+                user.setThematicArea(thematicArea);
+            }
+            
+            // If changing from reviewer to another role, clear thematic area
+            if (oldRole == User.Role.SUPER_ADMIN_REVIEWER && newRole != User.Role.SUPER_ADMIN_REVIEWER) {
+                user.setThematicArea(null);
+            }
+            
+            userRepository.save(user);
+            
+            // Send notification to user
+            String message = "Your role has been updated from " + oldRole + " to " + newRole;
+            if (newRole == User.Role.SUPER_ADMIN_REVIEWER && thematicArea != null) {
+                message += "\nThematic Area: " + thematicArea.getDisplayName();
+            }
+            message += "\n\nUpdated by MOH administrator.";
+            
+            emailService.sendEmail(user.getEmail(), "Role Updated", message);
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Get all reviewers by thematic area
+     */
+    public java.util.List<User> getReviewersByThematicArea(com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        return userRepository.findByRole(User.Role.SUPER_ADMIN_REVIEWER).stream()
+            .filter(user -> user.getThematicArea() == thematicArea)
+            .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Get all reviewers
+     */
+    public java.util.List<User> getAllReviewers() {
+        return userRepository.findByRole(User.Role.SUPER_ADMIN_REVIEWER);
+    }
+    
+    /**
+     * Get all approvers
+     */
+    public java.util.List<User> getAllApprovers() {
+        java.util.List<User> approvers = new java.util.ArrayList<>();
+        approvers.addAll(userRepository.findByRole(User.Role.SUPER_ADMIN_APPROVER));
+        approvers.addAll(userRepository.findByRole(User.Role.SUPER_ADMIN)); // Include legacy SUPER_ADMIN
+        return approvers;
+    }
+    
     /**
      * Link a partner to a donor
      */

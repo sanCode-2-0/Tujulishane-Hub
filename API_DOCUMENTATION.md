@@ -1,5 +1,18 @@
 # Tujulishane Hub API Documentation
 
+---
+
+## 🆕 Two-Tier SUPER_ADMIN Approval System
+
+The system now implements a **two-tier approval workflow** with specialized thematic area reviewers and a final approver. This ensures thorough, expert evaluation of all projects.
+
+**📖 For complete documentation on the two-tier approval system, see [TWO_TIER_APPROVAL_DOCUMENTATION.md](./TWO_TIER_APPROVAL_DOCUMENTATION.md)**
+
+### Quick Overview:
+
+- **SUPER_ADMIN_REVIEWER**: 5-6 thematic area specialists who review projects in their domain (GBV, AYPSRH, MNH, FP, CH, AH)
+- **SUPER_ADMIN_APPROVER**: Single final approver who grants ultimate approval
+- **Two-step process**: Thematic review → Final approval
 
 ---
 
@@ -22,33 +35,37 @@ curl -X POST https://api-tujulishane-hub.onrender.com/api/auth/bootstrap/super-a
 ```
 
 **Example Response (200 OK):**
+
 ```json
 {
-    "status": 200,
-    "message": "SUPER_ADMIN user created successfully. You can now login with OTP.",
-    "data": null
+  "status": 200,
+  "message": "SUPER_ADMIN user created successfully. You can now login with OTP.",
+  "data": null
 }
 ```
 
-**Notes:**  
-- This endpoint can only be used once.  
-- The `secretKey` must match the `BOOTSTRAP_SECRET` environment variable.  
+**Notes:**
+
+- This endpoint can only be used once.
+- The `secretKey` must match the `BOOTSTRAP_SECRET` environment variable.
 - After successful creation, log in using the OTP sent to the provided email.
 
 ---
+
 **API Version**: 1.0  
 **Authentication**: JWT Bearer Token  
-**Response Format**: JSON  
+**Response Format**: JSON
 
 ## Table of Contents
 
-1. [Authentication](#authentication)
-2. [User Management](#user-management)
-3. [Organization Management](#organization-management)
-4. [Project Management](#project-management)
-5. [Project Reports](#project-reports)
-6. [Data Models](#data-models)
-7. [Error Handling](#error-handling)
+1. [Two-Tier SUPER_ADMIN Approval System](#-two-tier-super_admin-approval-system) ⭐
+2. [Authentication](#authentication)
+3. [User Management](#user-management)
+4. [Organization Management](#organization-management)
+5. [Project Management](#project-management)
+6. [Project Reports](#project-reports)
+7. [Data Models](#data-models)
+8. [Error Handling](#error-handling)
 
 ---
 
@@ -65,6 +82,7 @@ All authentication endpoints use OTP (One-Time Password) verification instead of
 Register a new user in the system.
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -74,6 +92,7 @@ Register a new user in the system.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -89,6 +108,7 @@ Register a new user in the system.
 Verify email address using OTP sent during registration.
 
 **Request Body:**
+
 ```json
 {
   "email": "john.doe@example.com",
@@ -97,6 +117,7 @@ Verify email address using OTP sent during registration.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -112,6 +133,7 @@ Verify email address using OTP sent during registration.
 Request login OTP for an existing verified user.
 
 **Request Body:**
+
 ```json
 {
   "email": "john.doe@example.com"
@@ -119,6 +141,7 @@ Request login OTP for an existing verified user.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -134,6 +157,7 @@ Request login OTP for an existing verified user.
 Verify login OTP and receive access token.
 
 **Request Body:**
+
 ```json
 {
   "email": "john.doe@example.com",
@@ -142,6 +166,7 @@ Verify login OTP and receive access token.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -160,6 +185,7 @@ Verify login OTP and receive access token.
 Resend login OTP to user's email.
 
 **Request Body:**
+
 ```json
 {
   "email": "john.doe@example.com"
@@ -167,6 +193,7 @@ Resend login OTP to user's email.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -184,11 +211,13 @@ Resend login OTP to user's email.
 Get the current authenticated user's profile information.
 
 **Headers:**
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -220,6 +249,7 @@ Authorization: Bearer <your-jwt-token>
 Create the first SUPER_ADMIN user in the system. This endpoint can only be used once and requires a secret key.
 
 **Request Body:**
+
 ```json
 {
   "email": "admin@moh.gov.ke",
@@ -232,6 +262,7 @@ Create the first SUPER_ADMIN user in the system. This endpoint can only be used 
 Set `BOOTSTRAP_SECRET` environment variable to a secure secret key before using this endpoint.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -243,6 +274,7 @@ Set `BOOTSTRAP_SECRET` environment variable to a secure secret key before using 
 **Error Responses:**
 
 If SUPER_ADMIN already exists:
+
 ```json
 {
   "status": 409,
@@ -252,6 +284,7 @@ If SUPER_ADMIN already exists:
 ```
 
 If invalid secret key:
+
 ```json
 {
   "status": 403,
@@ -261,11 +294,13 @@ If invalid secret key:
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -303,6 +338,7 @@ Authorization: Bearer <your-jwt-token>
 Get all users awaiting approval.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -333,6 +369,7 @@ Get all users awaiting approval.
 Approve a pending user.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -350,6 +387,7 @@ Approve a pending user.
 Reject a pending user.
 
 **Request Body:**
+
 ```json
 {
   "reason": "Incomplete documentation"
@@ -357,6 +395,7 @@ Reject a pending user.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -374,9 +413,11 @@ Reject a pending user.
 Get users filtered by approval status.
 
 **Path Parameters:**
+
 - `status`: PENDING, APPROVED, REJECTED
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -402,6 +443,7 @@ Get users filtered by approval status.
 Get all users in the system.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -434,6 +476,7 @@ Get all users in the system.
 Create a new organization.
 
 **Request Body:**
+
 ```json
 {
   "name": "Health Partners Kenya",
@@ -448,6 +491,7 @@ Create a new organization.
 ```
 
 **Organization Types:**
+
 - `NGO` - Non-Governmental Organization
 - `GOVERNMENT_AGENCY` - Government Agency
 - `PRIVATE_COMPANY` - Private Company/Corporation
@@ -460,6 +504,7 @@ Create a new organization.
 - `OTHER` - Other type
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -483,12 +528,14 @@ Create a new organization.
 Get paginated list of organizations.
 
 **Query Parameters:**
+
 - `page` (default: 0) - Page number
 - `size` (default: 10) - Page size
 - `sortBy` (default: "id") - Sort field
 - `sortDir` (default: "desc") - Sort direction (asc/desc)
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -519,6 +566,7 @@ Get paginated list of organizations.
 Get specific organization details.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -546,9 +594,11 @@ Get specific organization details.
 Search organizations by name.
 
 **Query Parameters:**
+
 - `keyword` (required) - Search term
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -571,6 +621,7 @@ Search organizations by name.
 Get all approved organizations.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -597,6 +648,7 @@ Update organization details.
 **Request Body:** Same as create organization
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -604,7 +656,7 @@ Update organization details.
   "data": {
     "id": 1,
     "name": "Updated Organization Name",
-    "organizationType": "NGO",
+    "organizationType": "NGO"
     // ... other fields
   }
 }
@@ -637,6 +689,7 @@ Approve a pending organization.
 Reject a pending organization.
 
 **Request Body:**
+
 ```json
 {
   "reason": "Incomplete documentation"
@@ -674,6 +727,7 @@ Delete an organization.
 Create a new project.
 
 **Request Body:**
+
 ```json
 {
   "partner": "Health Partners Kenya",
@@ -689,11 +743,12 @@ Create a new project.
   "contactPersonRole": "Project Coordinator",
   "contactPersonEmail": "sarah.johnson@healthpartners.ke",
   "objectives": "Improve maternal health outcomes by establishing 5 new health centers and training 50 healthcare workers.",
-  "budget": 500000.00
+  "budget": 500000.0
 }
 ```
 
 **Project Themes:**
+
 - `GBV` - Gender Based Violence
 - `AYPSRH` - Adolescent and Young People Sexual and Reproductive Health
 - `MNH` - Maternity and Newborn Health
@@ -702,6 +757,7 @@ Create a new project.
 - `AH` - Adolescent Health
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -715,7 +771,7 @@ Create a new project.
     "endDate": "2024-12-31",
     "status": "pending",
     "approvalStatus": "PENDING",
-    "budget": 500000.00,
+    "budget": 500000.0,
     "latitude": -0.2763,
     "longitude": 34.7516,
     "createdAt": "2024-01-20T15:30:00"
@@ -730,12 +786,14 @@ Create a new project.
 Get paginated list of projects (public access).
 
 **Query Parameters:**
+
 - `page` (default: 0) - Page number
 - `size` (default: 10) - Page size
 - `sortBy` (default: "id") - Sort field
 - `sortDir` (default: "desc") - Sort direction
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -749,7 +807,7 @@ Get paginated list of projects (public access).
         "projectTheme": "MNH",
         "county": "Kakamega",
         "status": "active",
-        "budget": 500000.00,
+        "budget": 500000.0,
         "completionPercentage": 35
       }
     ],
@@ -769,6 +827,7 @@ Get paginated list of projects (public access).
 Get detailed project information.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -788,7 +847,7 @@ Get detailed project information.
     "contactPersonRole": "Project Coordinator",
     "contactPersonEmail": "sarah.johnson@healthpartners.ke",
     "objectives": "Improve maternal health outcomes...",
-    "budget": 500000.00,
+    "budget": 500000.0,
     "latitude": -0.2763,
     "longitude": 34.7516,
     "status": "active",
@@ -812,6 +871,7 @@ Update project details.
 **Request Body:** Same as create project
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -831,6 +891,7 @@ Update project details.
 Delete a project.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -846,6 +907,7 @@ Delete a project.
 Search projects with multiple filters.
 
 **Query Parameters:**
+
 - `partner` (optional) - Partner organization name
 - `title` (optional) - Project title keyword
 - `status` (optional) - Project status
@@ -853,6 +915,7 @@ Search projects with multiple filters.
 - `activityType` (optional) - Activity type
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -876,9 +939,11 @@ Search projects with multiple filters.
 Get projects filtered by status.
 
 **Path Parameters:**
+
 - `status`: active, pending, stalled, completed, abandoned
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -901,6 +966,7 @@ Get projects filtered by status.
 Get projects that have geographic coordinates (for map display).
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -925,12 +991,14 @@ Get projects that have geographic coordinates (for map display).
 Get projects within a geographic bounding box.
 
 **Query Parameters:**
+
 - `minLat` (required) - Minimum latitude
 - `maxLat` (required) - Maximum latitude
 - `minLng` (required) - Minimum longitude
 - `maxLng` (required) - Maximum longitude
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -953,6 +1021,7 @@ Get projects within a geographic bounding box.
 Get projects within a date range.
 
 **Query Parameters:**
+
 - `startDate` (required) - Start date (YYYY-MM-DD)
 - `endDate` (required) - End date (YYYY-MM-DD)
 
@@ -969,6 +1038,7 @@ Get currently active projects.
 Get comprehensive project statistics.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1019,6 +1089,7 @@ Approve a pending project.
 Reject a pending project.
 
 **Request Body:**
+
 ```json
 {
   "reason": "Insufficient documentation"
@@ -1034,6 +1105,7 @@ Reject a pending project.
 Get projects filtered by approval status.
 
 **Path Parameters:**
+
 - `status`: PENDING, APPROVED, REJECTED
 
 #### Get Admin Dashboard Statistics
@@ -1059,6 +1131,7 @@ Get administrative dashboard statistics.
 Create a new report for a specific project.
 
 **Request Body:**
+
 ```json
 {
   "title": "Q1 2024 Progress Report - Maternal Health Initiative",
@@ -1069,8 +1142,8 @@ Create a new report for a specific project.
   "lessonsLearned": "Early stakeholder engagement is crucial. Weather contingency planning needed.",
   "recommendations": "Accelerate procurement process. Establish backup supplier relationships.",
   "beneficiariesReached": 1250,
-  "budgetUtilized": 175000.00,
-  "budgetVariance": -25000.00,
+  "budgetUtilized": 175000.0,
+  "budgetVariance": -25000.0,
   "completionPercentage": 35,
   "reportType": "INTERIM",
   "attachments": "[\"report-q1-2024.pdf\", \"budget-analysis.xlsx\"]",
@@ -1079,6 +1152,7 @@ Create a new report for a specific project.
 ```
 
 **Report Types:**
+
 - `COMPLETION` - Final project completion report
 - `INTERIM` - Interim/progress report
 - `FINANCIAL` - Financial report
@@ -1086,6 +1160,7 @@ Create a new report for a specific project.
 - `EVALUATION` - Project evaluation report
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -1097,7 +1172,7 @@ Create a new report for a specific project.
     "reportType": "INTERIM",
     "reportStatus": "DRAFT",
     "beneficiariesReached": 1250,
-    "budgetUtilized": 175000.00,
+    "budgetUtilized": 175000.0,
     "completionPercentage": 35,
     "submittedBy": 1,
     "createdAt": "2024-01-25T14:30:00",
@@ -1114,10 +1189,12 @@ Create a new report for a specific project.
 **GET** `/api/reports/{id}`
 
 Get specific report details. Access control applies:
+
 - Published reports: Public access
 - Unpublished reports: Author or Admin only
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1132,8 +1209,8 @@ Get specific report details. Access control applies:
     "lessonsLearned": "Early stakeholder engagement...",
     "recommendations": "Accelerate procurement process...",
     "beneficiariesReached": 1250,
-    "budgetUtilized": 175000.00,
-    "budgetVariance": -25000.00,
+    "budgetUtilized": 175000.0,
+    "budgetVariance": -25000.0,
     "completionPercentage": 35,
     "reportType": "INTERIM",
     "reportStatus": "PUBLISHED",
@@ -1158,12 +1235,14 @@ Get specific report details. Access control applies:
 Get paginated list of published reports (public access).
 
 **Query Parameters:**
+
 - `page` (default: 0) - Page number
 - `size` (default: 10) - Page size
 - `sortBy` (default: "publishedAt") - Sort field
 - `sortDir` (default: "desc") - Sort direction
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1200,6 +1279,7 @@ Get paginated list of published reports (public access).
 Get all reports for a specific project. Access control applies.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1224,6 +1304,7 @@ Get all reports for a specific project. Access control applies.
 Get paginated list of completion reports.
 
 **Query Parameters:**
+
 - `page` (default: 0) - Page number
 - `size` (default: 10) - Page size
 
@@ -1234,12 +1315,14 @@ Get paginated list of completion reports.
 Search reports with multiple filters.
 
 **Query Parameters:**
+
 - `projectId` (optional) - Specific project ID
 - `reportType` (optional) - Report type filter
 - `reportStatus` (optional) - Report status filter
 - `keyword` (optional) - Search in title and content
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1276,6 +1359,7 @@ Update report details.
 Submit a draft report for admin review.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -1374,10 +1458,17 @@ interface User {
 interface Organization {
   id: number;
   name: string;
-  organizationType: "NGO" | "GOVERNMENT_AGENCY" | "PRIVATE_COMPANY" | 
-                   "INTERNATIONAL_ORG" | "FOUNDATION" | "COMMUNITY_GROUP" | 
-                   "ACADEMIC_INSTITUTION" | "HEALTHCARE_PROVIDER" | 
-                   "DONOR_AGENCY" | "OTHER";
+  organizationType:
+    | "NGO"
+    | "GOVERNMENT_AGENCY"
+    | "PRIVATE_COMPANY"
+    | "INTERNATIONAL_ORG"
+    | "FOUNDATION"
+    | "COMMUNITY_GROUP"
+    | "ACADEMIC_INSTITUTION"
+    | "HEALTHCARE_PROVIDER"
+    | "DONOR_AGENCY"
+    | "OTHER";
   description?: string;
   contactEmail?: string;
   contactPhone?: string;
@@ -1446,7 +1537,14 @@ interface ProjectReport {
   completionPercentage?: number;
   attachments?: string; // JSON array of file paths
   images?: string; // JSON array of image paths
-  reportStatus: "DRAFT" | "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "PUBLISHED" | "REJECTED" | "ARCHIVED";
+  reportStatus:
+    | "DRAFT"
+    | "SUBMITTED"
+    | "UNDER_REVIEW"
+    | "APPROVED"
+    | "PUBLISHED"
+    | "REJECTED"
+    | "ARCHIVED";
   reportType: "COMPLETION" | "INTERIM" | "FINANCIAL" | "IMPACT" | "EVALUATION";
   submittedBy: number;
   submittedAt?: string; // ISO 8601
@@ -1599,6 +1697,7 @@ Paginated responses include metadata:
 Simple endpoint to test authentication.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,

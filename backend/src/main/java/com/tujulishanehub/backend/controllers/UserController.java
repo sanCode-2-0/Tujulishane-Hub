@@ -549,6 +549,216 @@ public class UserController {
         }
     }
     
+    // ==================== TWO-TIER ADMIN MANAGEMENT ENDPOINTS ====================
+    
+    /**
+     * Assign thematic area to a reviewer
+     */
+    @PostMapping("/admin/assign-thematic-area/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> assignThematicArea(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String thematicAreaCode = payload.get("thematicArea");
+            if (thematicAreaCode == null || thematicAreaCode.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Thematic area is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            com.tujulishanehub.backend.models.ProjectTheme thematicArea = 
+                com.tujulishanehub.backend.models.ProjectTheme.fromCode(thematicAreaCode);
+            
+            boolean success = userService.assignThematicArea(userId, thematicArea);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Thematic area assigned successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "User not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid input for assigning thematic area: {}", e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error assigning thematic area to user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to assign thematic area",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Update user role with optional thematic area
+     */
+    @PostMapping("/admin/update-role-with-theme/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> updateUserRoleWithThematicArea(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String roleStr = payload.get("role");
+            String thematicAreaCode = payload.get("thematicArea");
+            
+            if (roleStr == null || roleStr.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Role is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            User.Role newRole = User.Role.valueOf(roleStr);
+            com.tujulishanehub.backend.models.ProjectTheme thematicArea = null;
+            
+            if (thematicAreaCode != null && !thematicAreaCode.isEmpty()) {
+                thematicArea = com.tujulishanehub.backend.models.ProjectTheme.fromCode(thematicAreaCode);
+            }
+            
+            boolean success = userService.updateUserRoleWithThematicArea(userId, newRole, thematicArea);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "User role updated successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "User not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid input for updating user role: {}", e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error updating user role {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to update user role",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all reviewers
+     */
+    @GetMapping("/admin/reviewers")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<List<User>>> getAllReviewers() {
+        try {
+            List<User> reviewers = userService.getAllReviewers();
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Reviewers retrieved successfully",
+                reviewers
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving reviewers: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve reviewers",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get reviewers by thematic area
+     */
+    @GetMapping("/admin/reviewers/by-theme/{themeCode}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<List<User>>> getReviewersByThematicArea(@PathVariable String themeCode) {
+        try {
+            com.tujulishanehub.backend.models.ProjectTheme thematicArea = 
+                com.tujulishanehub.backend.models.ProjectTheme.fromCode(themeCode);
+            
+            List<User> reviewers = userService.getReviewersByThematicArea(thematicArea);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Reviewers for thematic area retrieved successfully",
+                reviewers
+            );
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid thematic area code: {}", themeCode);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid thematic area code: " + themeCode,
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving reviewers by thematic area: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve reviewers",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all approvers
+     */
+    @GetMapping("/admin/approvers")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<List<User>>> getAllApprovers() {
+        try {
+            List<User> approvers = userService.getAllApprovers();
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Approvers retrieved successfully",
+                approvers
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving approvers: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve approvers",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
     // Donor-Partner Management Endpoints
     
     @GetMapping("/donors")

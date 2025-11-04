@@ -80,11 +80,18 @@ public class User {
     @JoinColumn(name = "parent_donor_id")
     private User parentDonor;
     
-    // Role enum - Three roles system
+    // Thematic area assignment for SUPER_ADMIN_REVIEWER
+    @Enumerated(EnumType.STRING)
+    @Column(name = "thematic_area")
+    private ProjectTheme thematicArea;
+    
+    // Role enum - Five roles system with two-tier SUPER_ADMIN structure
     public enum Role {
-        SUPER_ADMIN,    // MOH administrators with full system access
-        DONOR,          // Donor organizations/funding agencies
-        PARTNER         // Partner organizations implementing projects
+        SUPER_ADMIN,            // Legacy - MOH administrators with full system access (backward compatibility)
+        SUPER_ADMIN_APPROVER,   // Final approval authority - single user who makes final approval decisions
+        SUPER_ADMIN_REVIEWER,   // Thematic area reviewers - review projects in their assigned thematic area
+        DONOR,                  // Donor organizations/funding agencies
+        PARTNER                 // Partner organizations implementing projects
     }
     
     @PrePersist
@@ -117,7 +124,15 @@ public class User {
     
     // Helper methods for role checks
     public boolean isSuperAdmin() {
-        return role == Role.SUPER_ADMIN;
+        return role == Role.SUPER_ADMIN || role == Role.SUPER_ADMIN_APPROVER || role == Role.SUPER_ADMIN_REVIEWER;
+    }
+    
+    public boolean isSuperAdminApprover() {
+        return role == Role.SUPER_ADMIN_APPROVER || role == Role.SUPER_ADMIN; // SUPER_ADMIN has approver rights for backward compatibility
+    }
+    
+    public boolean isSuperAdminReviewer() {
+        return role == Role.SUPER_ADMIN_REVIEWER;
     }
     
     public boolean isPartner() {
@@ -225,6 +240,14 @@ public class User {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+    
+    public ProjectTheme getThematicArea() {
+        return thematicArea;
+    }
+    
+    public void setThematicArea(ProjectTheme thematicArea) {
+        this.thematicArea = thematicArea;
     }
     
     public Organization getOrganization() {

@@ -2,7 +2,10 @@ package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.payload.ProjectCreateRequest;
 import com.tujulishanehub.backend.models.ProjectDocument;
+import com.tujulishanehub.backend.models.ProjectReportDocument;
 import com.tujulishanehub.backend.repositories.ProjectDocumentRepository;
+import com.tujulishanehub.backend.repositories.ProjectReportDocumentRepository;
+import com.tujulishanehub.backend.repositories.ProjectRepository;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 import com.tujulishanehub.backend.payload.ProjectUpdateRequest;
@@ -36,6 +39,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -44,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -51,7 +56,26 @@ public class ProjectController {
     @Autowired
     private ProjectDocumentRepository projectDocumentRepository;
     
+    @Autowired
+    private ProjectReportDocumentRepository projectReportDocumentRepository;
+    
+    @Autowired
+    private ProjectRepository projectRepository;
+    
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
+    
+    private static final long MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+    private static final List<String> ALLOWED_REPORT_TYPES = Arrays.asList(
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+        "application/msword", // DOC
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
+        "application/vnd.ms-excel", // XLS
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation", // PPTX
+        "application/vnd.ms-powerpoint", // PPT
+        "text/csv",
+        "text/plain"
+    );
     
     @Autowired
     private ProjectService projectService;
@@ -691,6 +715,261 @@ public class ProjectController {
         }
     }
     
+    // ==================== TWO-TIER APPROVAL WORKFLOW ENDPOINTS ====================
+    
+    /**
+     * Review a project (Thematic Reviewer only)
+     * First step in two-tier approval process
+     */
+    @PostMapping("/admin/review/{projectId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> reviewProject(
+            @PathVariable Long projectId,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String reviewerEmail = auth.getName();
+            User reviewer = userService.getUserByEmail(reviewerEmail);
+            
+            // Validate reviewer has thematic area assigned (unless legacy SUPER_ADMIN)
+            if (reviewer.getRole() == User.Role.SUPER_ADMIN_REVIEWER && reviewer.getThematicArea() == null) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "Reviewer must have a thematic area assigned",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Validate project belongs to reviewer's thematic area
+            if (reviewer.getRole() == User.Role.SUPER_ADMIN_REVIEWER) {
+                Optional<Project> projectOpt = projectService.getProjectById(projectId);
+                if (!projectOpt.isPresent()) {
+                    ApiResponse<Object> response = new ApiResponse<>(
+                        HttpStatus.NOT_FOUND.value(),
+                        "Project not found",
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }
+                
+                Project project = projectOpt.get();
+                boolean hasMatchingTheme = project.getThemes().stream()
+                    .anyMatch(assignment -> assignment.getProjectTheme() == reviewer.getThematicArea());
+                
+                if (!hasMatchingTheme) {
+                    ApiResponse<Object> response = new ApiResponse<>(
+                        HttpStatus.FORBIDDEN.value(),
+                        "This project is not in your assigned thematic area",
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            }
+            
+            String comments = (String) payload.getOrDefault("comments", "");
+            Boolean approved = (Boolean) payload.getOrDefault("approved", false);
+            
+            boolean success = projectService.reviewProject(projectId, reviewer.getId(), comments, approved);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    approved ? "Project reviewed and approved for final approval" : "Project review completed - revisions required",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalStateException e) {
+            logger.error("Invalid state for reviewing project {}: {}", projectId, e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error reviewing project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to review project",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Final approval of a project (SUPER_ADMIN_APPROVER only)
+     * Second step in two-tier approval process
+     */
+    @PostMapping("/admin/final-approve/{projectId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> finalApproveProject(
+            @PathVariable Long projectId,
+            @RequestBody(required = false) Map<String, String> payload) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String approverEmail = auth.getName();
+            User approver = userService.getUserByEmail(approverEmail);
+            
+            String comments = payload != null ? payload.getOrDefault("comments", "") : "";
+            
+            boolean success = projectService.finalApproveProject(projectId, approver.getId(), comments);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Project finally approved successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalStateException e) {
+            logger.error("Invalid state for final approval of project {}: {}", projectId, e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error finally approving project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to finally approve project",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Final rejection of a project (SUPER_ADMIN_APPROVER only)
+     */
+    @PostMapping("/admin/final-reject/{projectId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> finalRejectProject(
+            @PathVariable Long projectId,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String reason = payload.getOrDefault("reason", "No reason provided");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String approverEmail = auth.getName();
+            User approver = userService.getUserByEmail(approverEmail);
+            
+            boolean success = projectService.finalRejectProject(projectId, approver.getId(), reason);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Project rejected at final approval stage",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error rejecting project at final approval {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to reject project",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get projects for review (filtered by reviewer's thematic area)
+     */
+    @GetMapping("/admin/projects-for-review")
+    @PreAuthorize("hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsForReview() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String reviewerEmail = auth.getName();
+            User reviewer = userService.getUserByEmail(reviewerEmail);
+            
+            List<Project> projects;
+            
+            // Legacy SUPER_ADMIN can see all projects
+            if (reviewer.getRole() == User.Role.SUPER_ADMIN) {
+                projects = projectService.getProjectsByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
+            } else if (reviewer.getThematicArea() != null) {
+                projects = projectService.getProjectsForReviewer(reviewer.getThematicArea());
+            } else {
+                ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "Reviewer must have a thematic area assigned",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Projects for review retrieved successfully",
+                mapProjects(projects)
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving projects for review: {}", e.getMessage(), e);
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve projects for review",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get projects awaiting final approval (SUPER_ADMIN_APPROVER only)
+     */
+    @GetMapping("/admin/projects-awaiting-final-approval")
+    @PreAuthorize("hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsAwaitingFinalApproval() {
+        try {
+            List<Project> projects = projectService.getProjectsAwaitingFinalApproval();
+            
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Projects awaiting final approval retrieved successfully",
+                mapProjects(projects)
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving projects awaiting final approval: {}", e.getMessage(), e);
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve projects awaiting final approval",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
     /**
      * Get user's own projects (Authenticated users)
      */
@@ -902,5 +1181,395 @@ public class ProjectController {
         return projects.stream()
                 .map(projectService::toProjectResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Get list of documents for a project (metadata only, no binary data)
+     */
+    @GetMapping("/{projectId}/documents")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getProjectDocuments(@PathVariable Long projectId) {
+        try {
+            Optional<Project> project = projectService.getProjectById(projectId);
+            
+            if (project.isEmpty()) {
+                ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found with ID: " + projectId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            List<ProjectDocument> documents = project.get().getSupportingDocuments();
+            List<Map<String, Object>> documentMetadata = documents.stream()
+                .map(doc -> {
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put("id", doc.getId());
+                    metadata.put("fileName", doc.getFileName());
+                    metadata.put("fileType", doc.getFileType());
+                    metadata.put("size", doc.getData() != null ? doc.getData().length : 0);
+                    return metadata;
+                })
+                .collect(Collectors.toList());
+
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Documents retrieved successfully",
+                documentMetadata
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Error retrieving documents for project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve documents: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Download a specific document
+     */
+    @GetMapping("/{projectId}/documents/{documentId}")
+    public ResponseEntity<?> downloadDocument(@PathVariable Long projectId, @PathVariable Long documentId) {
+        try {
+            Optional<ProjectDocument> documentOpt = projectDocumentRepository.findById(documentId);
+            
+            if (documentOpt.isEmpty()) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            ProjectDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified project
+            if (!document.getProject().getId().equals(projectId)) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Document does not belong to the specified project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Return the file with appropriate headers
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getFileType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename=\"" + document.getFileName() + "\"")
+                .body(document.getData());
+
+        } catch (Exception e) {
+            logger.error("Error downloading document {} for project {}: {}", documentId, projectId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to download document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // ==================== REPORT DOCUMENT ENDPOINTS ====================
+
+    /**
+     * Upload report document to a completed project (Owner only)
+     */
+    @PostMapping("/{projectId}/reports/upload")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> uploadReportDocument(
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file) {
+        
+        try {
+            // Get authenticated user
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            
+            // Get project
+            Optional<Project> projectOpt = projectService.getProjectById(projectId);
+            if (projectOpt.isEmpty()) {
+                ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found with ID: " + projectId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            Project project = projectOpt.get();
+            
+            // Validation 1: Only project owner can upload
+            if (!project.getPartner().equals(userEmail)) {
+                ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "Only the project owner can upload report documents",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Validation 2: Project must be completed
+            if (!"completed".equalsIgnoreCase(project.getStatus())) {
+                ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Report documents can only be uploaded to completed projects. Current status: " + project.getStatus(),
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            // Validation 3: Check file size
+            if (file.getSize() > MAX_FILE_SIZE) {
+                ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "File size exceeds maximum limit of 20MB. File size: " + (file.getSize() / (1024 * 1024)) + "MB",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            // Validation 4: Check file type
+            String contentType = file.getContentType();
+            if (contentType == null || !ALLOWED_REPORT_TYPES.contains(contentType)) {
+                ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Invalid file type. Allowed types: PDF, DOCX, XLSX, PPTX, CSV, TXT. Received: " + contentType,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            // Save report document
+            ProjectReportDocument reportDoc = new ProjectReportDocument();
+            reportDoc.setFileName(file.getOriginalFilename());
+            reportDoc.setFileType(contentType);
+            reportDoc.setFileSize(file.getSize());
+            reportDoc.setData(file.getBytes());
+            reportDoc.setProject(project);
+            reportDoc.setUploadedBy(userEmail);
+            
+            ProjectReportDocument saved = projectReportDocumentRepository.save(reportDoc);
+            
+            // Update project's hasReports flag if this is the first report
+            if (!project.getHasReports()) {
+                project.setHasReports(true);
+                projectRepository.save(project);
+            }
+            
+            // Prepare response
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", saved.getId());
+            data.put("fileName", saved.getFileName());
+            data.put("fileType", saved.getFileType());
+            data.put("fileSize", saved.getFileSize());
+            data.put("uploadedBy", saved.getUploadedBy());
+            data.put("uploadedAt", saved.getUploadedAt());
+            
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Report document uploaded successfully",
+                data
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+        } catch (Exception e) {
+            logger.error("Error uploading report document for project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to upload report document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get list of report documents for a project (metadata only)
+     */
+    @Transactional(readOnly = true)
+    @GetMapping("/{projectId}/reports/documents")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getProjectReportDocuments(@PathVariable Long projectId) {
+        try {
+            Optional<Project> project = projectService.getProjectById(projectId);
+            
+            if (project.isEmpty()) {
+                ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found with ID: " + projectId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            List<ProjectReportDocument> documents = projectReportDocumentRepository.findByProjectId(projectId);
+            List<Map<String, Object>> documentMetadata = documents.stream()
+                .map(doc -> {
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put("id", doc.getId());
+                    metadata.put("fileName", doc.getFileName());
+                    metadata.put("fileType", doc.getFileType());
+                    metadata.put("fileSize", doc.getFileSize());
+                    metadata.put("uploadedBy", doc.getUploadedBy());
+                    metadata.put("uploadedAt", doc.getUploadedAt());
+                    return metadata;
+                })
+                .collect(Collectors.toList());
+
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Report documents retrieved successfully",
+                documentMetadata
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Error retrieving report documents for project {}: {}", projectId, e.getMessage(), e);
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve report documents: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Download a specific report document
+     */
+    @GetMapping("/{projectId}/reports/documents/{documentId}")
+    public ResponseEntity<?> downloadReportDocument(@PathVariable Long projectId, @PathVariable Long documentId) {
+        try {
+            Optional<ProjectReportDocument> documentOpt = projectReportDocumentRepository.findById(documentId);
+            
+            if (documentOpt.isEmpty()) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Report document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            ProjectReportDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified project
+            if (!document.getProject().getId().equals(projectId)) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Report document does not belong to the specified project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Return the file with appropriate headers
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getFileType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename=\"" + document.getFileName() + "\"")
+                .body(document.getData());
+
+        } catch (Exception e) {
+            logger.error("Error downloading report document {} for project {}: {}", documentId, projectId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to download report document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Delete a report document (Owner only)
+     */
+    @DeleteMapping("/{projectId}/reports/documents/{documentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> deleteReportDocument(@PathVariable Long projectId, @PathVariable Long documentId) {
+        try {
+            // Get authenticated user
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            
+            // Get project
+            Optional<Project> projectOpt = projectService.getProjectById(projectId);
+            if (projectOpt.isEmpty()) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found with ID: " + projectId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            Project project = projectOpt.get();
+            
+            // Only project owner can delete
+            if (!project.getPartner().equals(userEmail)) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.FORBIDDEN.value(),
+                    "Only the project owner can delete report documents",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Get document
+            Optional<ProjectReportDocument> documentOpt = projectReportDocumentRepository.findById(documentId);
+            if (documentOpt.isEmpty()) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Report document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            ProjectReportDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified project
+            if (!document.getProject().getId().equals(projectId)) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Report document does not belong to the specified project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            // Delete the document
+            projectReportDocumentRepository.delete(document);
+            
+            // Check if there are any remaining reports for this project
+            long remainingReports = projectReportDocumentRepository.countByProjectId(projectId);
+            if (remainingReports == 0 && project.getHasReports()) {
+                project.setHasReports(false);
+                projectRepository.save(project);
+            }
+            
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Report document deleted successfully",
+                null
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error deleting report document {} for project {}: {}", documentId, projectId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to delete report document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
