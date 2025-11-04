@@ -264,6 +264,23 @@
             </div>
         </div>
 
+        <!-- Project Details Modal -->
+        <div id="projectDetailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-hidden="true" aria-modal="true" aria-labelledby="projectDetailsTitle">
+            <div class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">
+                <div class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-200">
+                    <h2 id="projectDetailsTitle" class="text-xl font-semibold text-gray-900">Project Details</h2>
+                    <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeProjectDetailsModal()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="projectDetailsContent" class="p-6">
+                    <p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                </div>
+            </div>
+        </div>
+
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
@@ -642,29 +659,29 @@
                             }
 
                             // Helper to render action buttons
-                            function renderActions(project, status) {
-                                const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-                                const isPartner = userRole === 'PARTNER';
+                        function renderActions(project, status) {
+                            const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                            const isPartner = userRole === 'PARTNER';
 
-                                if (isPartner) {
-                                    return `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
-                                }
+                            let html = `<button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button> `;
 
-                                let html = '';
-                                if (status === 'pending') {
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="approveProject(${project.id})">Approve</button> `;
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="openRejectModal(${project.id})">Reject</button>`;
-                                } else if (status === 'active') {
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
-                                } else if (status === 'stalled') {
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="reactivateProject(${project.id})">Re-activate</button> `;
-                                } else if (status === 'completed') {
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="submitReport(${project.id})">Submit Report</button>`;
-                                }
+                        if (isPartner) {
+                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
+                            return html;
+                        }
 
-                                // Mark project as stalled (exposed globally)
+                        if (status === 'pending') {
+                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
+                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="approveProject(${project.id})">Approve</button> `;
+                            html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="openRejectModal(${project.id})">Reject</button>`;
+                        } else if (status === 'active') {
+                            html += `<button class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orange-600" onclick="stalledProject(${project.id})">Has Stalled</button>`;
+                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="completedProject(${project.id})">Is Completed</button>`;
+                        } else if (status === 'stalled') {
+                            html += `<button class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600" onclick="reactivateProject(${project.id})">Re-activate</button> `;
+                        } else if (status === 'completed') {
+                            html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="submitReport(${project.id})">Submit Report</button>`;
+                        }                                // Mark project as stalled (exposed globally)
                                 window.stalledProject = async function (id) {
                                     if (!confirm('Mark this project as stalled?')) return;
                                     try {
@@ -1253,7 +1270,7 @@
                         <i class="fas ${getFileIcon(doc.fileType)} text-xl"></i>
                         <div>
                             <p class="text-sm font-medium text-gray-800">${doc.fileName}</p>
-                            <p class="text-xs text-gray-500">${formatFileSize(doc.size)}</p>
+                            <p class="text-xs text-gray-500">${formatFileSize(doc.fileSize || doc.size)}</p>
                         </div>
                     </div>
                     <a href="${window.BASE_URL}/api/projects/${projectId}/documents/${doc.id}" 
@@ -1948,8 +1965,207 @@
                 }
                 return null;
             }
+
+            // Project Details Modal Functions
+            window.viewProjectDetails = async function(projectId) {
+                const modal = document.getElementById('projectDetailsModal');
+                const content = document.getElementById('projectDetailsContent');
+                
+                modal.classList.remove('hidden');
+                content.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
+                
+                try {
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+                    };
+                    
+                    const res = await fetch(`${API_BASE}/projects/${projectId}`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers
+                    });
+                    
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    
+                    if (data.status === 200 && data.data) {
+                        const project = data.data;
+                        
+                        // Fetch documents
+                        const documents = await fetchProjectDocuments(projectId);
+                        
+                        // Render project details
+                        content.innerHTML = `
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><strong class="text-gray-700">Project No:</strong> <span class="text-gray-900">${project.projectNo || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">Partner:</strong> <span class="text-gray-900">${project.partner || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">Budget:</strong> <span class="text-gray-900">KES ${(project.budget || 0).toLocaleString()}</span></div>
+                                    <div><strong class="text-gray-700">Start Date:</strong> <span class="text-gray-900">${project.startDate || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">End Date:</strong> <span class="text-gray-900">${project.endDate || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">Activity Type:</strong> <span class="text-gray-900">${project.activityType || 'N/A'}</span></div>
+                                    <div><strong class="text-gray-700">Category:</strong> <span class="text-gray-900">${project.projectCategory || 'N/A'}</span></div>
+                                </div>
+                                
+                                <div><strong class="text-gray-700">Title:</strong> <p class="text-gray-900 mt-1">${project.title || 'N/A'}</p></div>
+                                <div><strong class="text-gray-700">Objectives:</strong> <p class="text-gray-900 mt-1">${project.objectives || 'N/A'}</p></div>
+                                
+                                ${project.themes && project.themes.length > 0 ? `
+                                    <div>
+                                        <strong class="text-gray-700">Themes:</strong>
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            ${project.themes.map(theme => `<span class="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">${theme.name || theme.code}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${project.locations && project.locations.length > 0 ? `
+                                    <div>
+                                        <strong class="text-gray-700">Locations:</strong>
+                                        <div class="mt-2 space-y-1">
+                                            ${project.locations.map(loc => `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="pt-4 border-t">
+                                    <strong class="text-gray-700">Contact Person:</strong>
+                                    <div class="mt-2 space-y-1">
+                                        <div class="text-gray-900"><i class="fas fa-user mr-2"></i>${project.contactPersonName || 'N/A'}</div>
+                                        <div class="text-gray-900"><i class="fas fa-briefcase mr-2"></i>${project.contactPersonRole || 'N/A'}</div>
+                                        <div class="text-gray-900"><i class="fas fa-envelope mr-2"></i>${project.contactPersonEmail || 'N/A'}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="pt-4 border-t">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                        <i class="fas fa-paperclip mr-2"></i>Supporting Documents
+                                    </h4>
+                                    <div class="space-y-2">
+                                        ${renderDocuments(documents, projectId)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p class="text-red-600">Failed to load project details.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading project details:', error);
+                    content.innerHTML = '<p class="text-red-600">Error loading project details: ' + error.message + '</p>';
+                }
+            };
+
+            window.closeProjectDetailsModal = function() {
+                const modal = document.getElementById('projectDetailsModal');
+                modal.classList.add('hidden');
+            };
         });
     </script>
+    
+    <!-- Global Functions for onclick handlers -->
+    <script>
+        // Project Details Modal Functions - Must be in global scope for onclick
+        window.viewProjectDetails = async function(projectId) {
+            const modal = document.getElementById('projectDetailsModal');
+            const content = document.getElementById('projectDetailsContent');
+            
+            modal.classList.remove('hidden');
+            content.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
+            
+            try {
+                const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+                const headers = {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
+                };
+                
+                const res = await fetch(`${API_BASE}/api/projects/${projectId}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers
+                });
+                
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                
+                if (data.status === 200 && data.data) {
+                    const project = data.data;
+                    
+                    // Fetch documents
+                    const documents = await fetchProjectDocuments(projectId);
+                    
+                    // Render project details
+                    content.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><strong class="text-gray-700">Project No:</strong> <span class="text-gray-900">${project.projectNo || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">Partner:</strong> <span class="text-gray-900">${project.partner || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">Budget:</strong> <span class="text-gray-900">KES ${(project.budget || 0).toLocaleString()}</span></div>
+                                <div><strong class="text-gray-700">Start Date:</strong> <span class="text-gray-900">${project.startDate || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">End Date:</strong> <span class="text-gray-900">${project.endDate || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">Activity Type:</strong> <span class="text-gray-900">${project.activityType || 'N/A'}</span></div>
+                                <div><strong class="text-gray-700">Category:</strong> <span class="text-gray-900">${project.projectCategory || 'N/A'}</span></div>
+                            </div>
+                            
+                            <div><strong class="text-gray-700">Title:</strong> <p class="text-gray-900 mt-1">${project.title || 'N/A'}</p></div>
+                            <div><strong class="text-gray-700">Objectives:</strong> <p class="text-gray-900 mt-1">${project.objectives || 'N/A'}</p></div>
+                            
+                            ${project.themes && project.themes.length > 0 ? `
+                                <div>
+                                    <strong class="text-gray-700">Themes:</strong>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        ${project.themes.map(theme => `<span class="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">${theme.name || theme.code}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${project.locations && project.locations.length > 0 ? `
+                                <div>
+                                    <strong class="text-gray-700">Locations:</strong>
+                                    <div class="mt-2 space-y-1">
+                                        ${project.locations.map(loc => `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="pt-4 border-t">
+                                <strong class="text-gray-700">Contact Person:</strong>
+                                <div class="mt-2 space-y-1">
+                                    <div class="text-gray-900"><i class="fas fa-user mr-2"></i>${project.contactPersonName || 'N/A'}</div>
+                                    <div class="text-gray-900"><i class="fas fa-briefcase mr-2"></i>${project.contactPersonRole || 'N/A'}</div>
+                                    <div class="text-gray-900"><i class="fas fa-envelope mr-2"></i>${project.contactPersonEmail || 'N/A'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-paperclip mr-2"></i>Supporting Documents
+                                </h4>
+                                <div class="space-y-2">
+                                    ${renderDocuments(documents, projectId)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = '<p class="text-red-600">Failed to load project details.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading project details:', error);
+                content.innerHTML = '<p class="text-red-600">Error loading project details: ' + error.message + '</p>';
+            }
+        };
+
+        window.closeProjectDetailsModal = function() {
+            const modal = document.getElementById('projectDetailsModal');
+            modal.classList.add('hidden');
+        };
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
