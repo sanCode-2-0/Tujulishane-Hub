@@ -120,6 +120,7 @@ public class ProjectController {
                     ProjectDocument doc = new ProjectDocument();
                     doc.setFileName(file.getOriginalFilename());
                     doc.setFileType(file.getContentType());
+                    doc.setFileSize(file.getSize()); // Store file size
                     doc.setData(file.getBytes());
                     doc.setProject(createdProject);
                     projectDocumentRepository.save(doc);
@@ -1187,6 +1188,7 @@ public class ProjectController {
      * Get list of documents for a project (metadata only, no binary data)
      */
     @GetMapping("/{projectId}/documents")
+    @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getProjectDocuments(@PathVariable Long projectId) {
         try {
             Optional<Project> project = projectService.getProjectById(projectId);
@@ -1207,7 +1209,8 @@ public class ProjectController {
                     metadata.put("id", doc.getId());
                     metadata.put("fileName", doc.getFileName());
                     metadata.put("fileType", doc.getFileType());
-                    metadata.put("size", doc.getData() != null ? doc.getData().length : 0);
+                    // Use fileSize field instead of accessing LOB data
+                    metadata.put("size", doc.getFileSize() != null ? doc.getFileSize() : 0);
                     return metadata;
                 })
                 .collect(Collectors.toList());

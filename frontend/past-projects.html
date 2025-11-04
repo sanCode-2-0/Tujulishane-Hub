@@ -128,7 +128,7 @@
 
 						// Show admin nav if user is admin
 						console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
-						if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+						if (user.role === "ADMIN" || user.role === "SUPER_ADMIN" || user.role === "SUPER_ADMIN_REVIEWER" || user.role === "SUPER_ADMIN_APPROVER") {
 							console.log(
 								"[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
 							);

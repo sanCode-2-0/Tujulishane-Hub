@@ -826,7 +826,12 @@
 
               // Show admin nav if user is admin
               console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
-              if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+              if (
+                user.role === "ADMIN" ||
+                user.role === "SUPER_ADMIN" ||
+                user.role === "SUPER_ADMIN_REVIEWER" ||
+                user.role === "SUPER_ADMIN_APPROVER"
+              ) {
                 console.log(
                   "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
                 );
@@ -3659,7 +3664,11 @@
         if (myProjectsNav) myProjectsNav.classList.add("hidden");
 
         // Show navs based on role
-        if (user.role === "SUPER_ADMIN") {
+        if (
+          user.role === "SUPER_ADMIN" ||
+          user.role === "SUPER_ADMIN_REVIEWER" ||
+          user.role === "SUPER_ADMIN_APPROVER"
+        ) {
           if (adminNav) adminNav.classList.remove("hidden");
         }
         if (user.role === "PARTNER") {
@@ -3682,7 +3691,12 @@
 
         // Show admin collaboration menu for ADMIN or SUPER_ADMIN
         console.log("[DEBUG] User role:", user.role);
-        if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+        if (
+          user.role === "ADMIN" ||
+          user.role === "SUPER_ADMIN" ||
+          user.role === "SUPER_ADMIN_REVIEWER" ||
+          user.role === "SUPER_ADMIN_APPROVER"
+        ) {
           console.log("[DEBUG] User is admin, showing admin collab menu");
           const adminCollabItem = document.getElementById("admin-collab-item");
           const adminCollabMobile = document.getElementById(

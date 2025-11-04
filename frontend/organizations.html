@@ -258,7 +258,13 @@
           window.authManager && window.authManager.getCachedUser
             ? window.authManager.getCachedUser()
             : null;
-        return user && (user.role === "SUPER_ADMIN" || user.role === "ADMIN");
+        return (
+          user &&
+          (user.role === "SUPER_ADMIN" ||
+            user.role === "SUPER_ADMIN_REVIEWER" ||
+            user.role === "SUPER_ADMIN_APPROVER" ||
+            user.role === "ADMIN")
+        );
       }
 
       // Create Organization

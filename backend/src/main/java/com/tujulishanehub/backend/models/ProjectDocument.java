@@ -10,6 +10,7 @@ public class ProjectDocument {
 
     private String fileName;
     private String fileType;
+    private Long fileSize; // Size in bytes
 
     @Lob
     @Column(length = 10485760) // 10MB max, adjust as needed
@@ -28,6 +29,9 @@ public class ProjectDocument {
 
     public String getFileType() { return fileType; }
     public void setFileType(String fileType) { this.fileType = fileType; }
+
+    public Long getFileSize() { return fileSize; }
+    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
 
     public byte[] getData() { return data; }
     public void setData(byte[] data) { this.data = data; }
