@@ -44,6 +44,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="auth.js"></script>
     <!-- Optional: Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
@@ -922,29 +923,29 @@
                                             'active'
                                         ).toLowerCase();
                                         const row = `
-                    <tr>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.activityType || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${(project.themes || []).map(t => t.name || t).join(', ')}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.county).join(', ')}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonRole || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonEmail || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.objectives || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.budget || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.status || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.approvalStatus || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.createdAt || ''}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">${project.updatedAt || ''}</td>
-                        <!-- Add more fields as needed -->
-                        <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
-                    </tr>
-                `;
+                                                <tr>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.activityType || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.themes || []).map(t => t.name || t).join(', ')}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.county).join(', ')}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonRole || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonEmail || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.objectives || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.budget || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.status || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.approvalStatus || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.createdAt || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.updatedAt || ''}</td>
+                                                    <!-- Add more fields as needed -->
+                                                    <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">${renderActions(project, status)}</td>
+                                                </tr>
+                                            `;
 
                                         if (status === 'pending') {
                                             tbPending.innerHTML += row;
