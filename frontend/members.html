@@ -443,15 +443,23 @@
             <div class="relative p-6">
               <form id="rejectUserForm" class="space-y-4">
                 <input type="hidden" id="rejectUserId" />
-                
-                <div class="p-4 mb-4 bg-yellow-50 border border-yellow-200 rounded-md">
+
+                <div
+                  class="p-4 mb-4 bg-yellow-50 border border-yellow-200 rounded-md"
+                >
                   <div class="flex items-start">
-                    <i class="text-yellow-600 fas fa-exclamation-triangle mt-0.5 mr-3"></i>
+                    <i
+                      class="text-yellow-600 fas fa-exclamation-triangle mt-0.5 mr-3"
+                    ></i>
                     <div>
-                      <p class="text-sm font-medium text-yellow-800">User Details</p>
+                      <p class="text-sm font-medium text-yellow-800">
+                        User Details
+                      </p>
                       <p class="mt-1 text-sm text-yellow-700">
-                        <strong>Name:</strong> <span id="rejectUserName"></span><br>
-                        <strong>Email:</strong> <span id="rejectUserEmail"></span>
+                        <strong>Name:</strong> <span id="rejectUserName"></span
+                        ><br />
+                        <strong>Email:</strong>
+                        <span id="rejectUserEmail"></span>
                       </p>
                     </div>
                   </div>
@@ -468,14 +476,34 @@
                     onchange="toggleCustomReasonField()"
                   >
                     <option value="">-- Select Rejection Reason --</option>
-                    <option value="Incomplete registration information">Incomplete registration information</option>
-                    <option value="Invalid or unverified email address">Invalid or unverified email address</option>
-                    <option value="Organization not eligible for platform access">Organization not eligible for platform access</option>
-                    <option value="Duplicate account detected">Duplicate account detected</option>
-                    <option value="Suspicious or fraudulent activity">Suspicious or fraudulent activity</option>
-                    <option value="Does not meet platform requirements">Does not meet platform requirements</option>
-                    <option value="Requested role not appropriate for organization">Requested role not appropriate for organization</option>
-                    <option value="Failed verification process">Failed verification process</option>
+                    <option value="Incomplete registration information">
+                      Incomplete registration information
+                    </option>
+                    <option value="Invalid or unverified email address">
+                      Invalid or unverified email address
+                    </option>
+                    <option
+                      value="Organization not eligible for platform access"
+                    >
+                      Organization not eligible for platform access
+                    </option>
+                    <option value="Duplicate account detected">
+                      Duplicate account detected
+                    </option>
+                    <option value="Suspicious or fraudulent activity">
+                      Suspicious or fraudulent activity
+                    </option>
+                    <option value="Does not meet platform requirements">
+                      Does not meet platform requirements
+                    </option>
+                    <option
+                      value="Requested role not appropriate for organization"
+                    >
+                      Requested role not appropriate for organization
+                    </option>
+                    <option value="Failed verification process">
+                      Failed verification process
+                    </option>
                     <option value="custom">Other (Specify reason)</option>
                   </select>
                   <p class="mt-1 text-xs text-gray-500">
@@ -1467,7 +1495,9 @@
       // Toggle custom reason field visibility
       function toggleCustomReasonField() {
         const reasonSelect = document.getElementById("rejectReasonSelect");
-        const customReasonSection = document.getElementById("customReasonSection");
+        const customReasonSection = document.getElementById(
+          "customReasonSection"
+        );
         const customReasonText = document.getElementById("customReasonText");
 
         if (reasonSelect.value === "custom") {
@@ -1485,7 +1515,7 @@
         document.getElementById("rejectUserId").value = userId;
         document.getElementById("rejectUserName").textContent = name || "N/A";
         document.getElementById("rejectUserEmail").textContent = email;
-        
+
         // Reset form
         document.getElementById("rejectUserForm").reset();
         document.getElementById("rejectUserId").value = userId; // Reset clears hidden fields too
@@ -1642,8 +1672,11 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             e.preventDefault();
 
             const userId = document.getElementById("rejectUserId").value;
-            const reasonSelect = document.getElementById("rejectReasonSelect").value;
-            const customReason = document.getElementById("customReasonText").value.trim();
+            const reasonSelect =
+              document.getElementById("rejectReasonSelect").value;
+            const customReason = document
+              .getElementById("customReasonText")
+              .value.trim();
 
             let reason = "";
             if (reasonSelect === "custom") {
