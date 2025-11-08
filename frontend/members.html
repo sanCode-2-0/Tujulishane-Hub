@@ -151,8 +151,9 @@
     </script>
     <script type="module">
       // import { BASE_URL } from "./config.js";
-      const BASE_URL =
-        "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+      const BASE_URL = "http://localhost:8080";
+
+      console.log("BASE_URL:", BASE_URL);
 
       // Initialize auth check
       window.BASE_URL = BASE_URL;
@@ -574,7 +575,7 @@
               <button
                 type="button"
                 class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                data-twe-modal-dismiss
+                onclick="closeUserDetailsModal()"
                 aria-label="Close"
               >
                 <span class="[&>svg]:h-6 [&>svg]:w-6">
@@ -701,7 +702,7 @@
             <div class="flex gap-3 p-4 border-t border-gray-200">
               <button
                 type="button"
-                data-twe-modal-dismiss
+                onclick="closeUserDetailsModal()"
                 class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Close
@@ -827,6 +828,158 @@
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Viewer Modal -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1060] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="documentViewerModal"
+        tabindex="-1"
+        aria-labelledby="documentViewerModalTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[90vw] min-[992px]:max-w-[80vw] min-[1200px]:max-w-[70vw]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <!-- Modal Header -->
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="documentViewerModalTitle"
+              >
+                <i class="fas fa-file-alt mr-2 text-blue-600"></i>
+                <span id="documentViewerFileName">Document Viewer</span>
+              </h5>
+              <button
+                type="button"
+                class="box-content text-gray-500 border-none rounded-none hover:text-gray-700 hover:no-underline focus:text-gray-700 focus:opacity-100 focus:shadow-none focus:outline-none"
+                onclick="closeDocumentViewer()"
+                aria-label="Close"
+              >
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="relative p-4" style="height: 80vh">
+              <!-- Loading State -->
+              <div
+                id="documentViewerLoading"
+                class="flex items-center justify-center h-full"
+              >
+                <div class="text-center">
+                  <div
+                    class="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"
+                  ></div>
+                  <p class="text-gray-600">Loading document...</p>
+                </div>
+              </div>
+
+              <!-- Document Container (for PDFs and images) -->
+              <div id="documentViewerContent" class="hidden h-full">
+                <object
+                  id="documentViewerFrame"
+                  class="w-full h-full border rounded"
+                  type="application/pdf"
+                >
+                  <embed
+                    id="documentViewerEmbed"
+                    class="w-full h-full"
+                    type="application/pdf"
+                  />
+                  <p class="text-center p-4">
+                    Your browser doesn't support PDF viewing.
+                    <button
+                      onclick="document.getElementById('documentViewerDownloadBtn').click()"
+                      class="text-blue-600 underline"
+                    >
+                      Click here to download
+                    </button>
+                  </p>
+                </object>
+              </div>
+
+              <!-- Word/Excel Document Container (using Office viewer) -->
+              <div id="officeDocumentViewerContent" class="hidden h-full">
+                <iframe
+                  id="officeViewerFrame"
+                  class="w-full h-full border rounded"
+                  frameborder="0"
+                ></iframe>
+              </div>
+
+              <!-- Unsupported Document Type -->
+              <div
+                id="unsupportedDocumentContent"
+                class="hidden flex items-center justify-center h-full"
+              >
+                <div class="text-center max-w-md p-8">
+                  <div class="mb-4">
+                    <i class="fas fa-file-alt text-6xl text-gray-400"></i>
+                  </div>
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                    Preview Not Available
+                  </h3>
+                  <p class="text-gray-600 mb-6">
+                    This document type cannot be previewed in the browser.
+                    Please download the file to view it.
+                  </p>
+                  <button
+                    onclick="document.getElementById('documentViewerDownloadBtn').click()"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+                  >
+                    <i class="fas fa-download mr-2"></i>
+                    Download Document
+                  </button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div
+                id="documentViewerError"
+                class="hidden flex items-center justify-center h-full"
+              >
+                <div class="text-center text-red-600">
+                  <i class="fas fa-exclamation-circle text-5xl mb-4"></i>
+                  <p class="text-lg font-medium">Failed to load document</p>
+                  <p
+                    class="text-sm text-gray-600 mt-2"
+                    id="documentViewerErrorMessage"
+                  ></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex items-center justify-end gap-2 flex-shrink-0 p-4 border-t-2 border-neutral-100 rounded-b-md"
+            >
+              <button
+                type="button"
+                id="documentViewerDownloadBtn"
+                class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+              >
+                <i class="fas fa-download mr-2"></i>
+                Download
+              </button>
+              <button
+                type="button"
+                class="inline-block px-6 py-2.5 bg-gray-200 text-gray-700 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-400 active:shadow-lg transition duration-150 ease-in-out"
+                onclick="closeDocumentViewer()"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -1268,8 +1421,21 @@
         const response = await fetch(`${window.BASE_URL}${endpoint}`, config);
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || "API request failed");
+          let errorMessage = "API request failed";
+          try {
+            const error = await response.json();
+            errorMessage = error.message || errorMessage;
+          } catch (e) {
+            // If response is not JSON, try to get text
+            try {
+              const text = await response.text();
+              errorMessage =
+                text || `HTTP ${response.status}: ${response.statusText}`;
+            } catch (textError) {
+              errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         return response.json();
@@ -1808,6 +1974,17 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             .classList.add("opacity-100", "translate-y-0");
         }
 
+        // Add backdrop click handler to close modal
+        modalElement.onclick = function (event) {
+          // Only close if clicking the backdrop (not the modal content)
+          if (event.target === modalElement) {
+            closeUserDetailsModal();
+          }
+        };
+
+        // Add keyboard handler (ESC to close)
+        document.addEventListener("keydown", handleModalKeydown);
+
         // Show loading state
         loadingElement.classList.remove("hidden");
         contentElement.classList.add("hidden");
@@ -1878,9 +2055,36 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
 
           // Fetch and display supporting documents
           try {
-            const docsResult = await apiCall(
-              `/api/auth/users/${userId}/supporting-documents`
+            console.log(
+              `Fetching documents for user ${userId} from: ${window.BASE_URL}/api/auth/users/${userId}/supporting-documents`
             );
+
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(
+              `${window.BASE_URL}/api/auth/users/${userId}/supporting-documents`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            console.log(
+              "Documents response status:",
+              response.status,
+              response.statusText
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`
+              );
+            }
+
+            const docsResult = await response.json();
+            console.log("Documents response:", docsResult);
             const documents = docsResult.data || [];
 
             const documentsList = document.getElementById(
@@ -1905,7 +2109,7 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-sm font-medium text-gray-900 truncate">
-                        ${doc.documentType || "Document"}
+                        ${doc.fileName || doc.documentType || "Document"}
                       </p>
                       <p class="text-xs text-gray-500">
                         Uploaded: ${formatDate(doc.uploadedAt)}
@@ -1918,30 +2122,22 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
                     </div>
                   </div>
                   <div class="flex gap-2">
-                    <a
-                      href="${
-                        window.BASE_URL
-                      }/api/auth/users/${userId}/supporting-documents/${
-                    doc.id
-                  }/download"
-                      target="_blank"
+                    <button
+                      onclick="downloadDocument(${userId}, ${doc.id}, '${
+                    doc.fileName || "document"
+                  }')"
                       class="px-3 py-1 text-xs text-white bg-blue-600 rounded hover:bg-blue-700 transition"
-                      onclick="event.stopPropagation();"
                     >
                       <i class="fas fa-download mr-1"></i> Download
-                    </a>
-                    <a
-                      href="${
-                        window.BASE_URL
-                      }/api/auth/users/${userId}/supporting-documents/${
-                    doc.id
-                  }/view"
-                      target="_blank"
+                    </button>
+                    <button
+                      onclick="viewDocument(${userId}, ${doc.id}, '${
+                    doc.fileName || "Document"
+                  }')"
                       class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition"
-                      onclick="event.stopPropagation();"
                     >
                       <i class="fas fa-eye mr-1"></i> View
-                    </a>
+                    </button>
                   </div>
                 </div>
               `
@@ -1950,10 +2146,13 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             }
           } catch (docError) {
             console.error("Error loading documents:", docError);
+            console.error("Error details:", docError.message);
             document.getElementById("supportingDocumentsList").innerHTML = `
-              <div class="text-center py-4 text-red-500">
-                <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                <p class="text-sm">Failed to load supporting documents</p>
+              <div class="text-center py-4 text-orange-500">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                <p class="text-sm font-medium">Unable to load supporting documents</p>
+                <p class="text-xs mt-1 text-gray-600">${docError.message}</p>
+                <p class="text-xs mt-2 text-gray-500">The user may not have uploaded any documents yet, or there may be a temporary issue accessing them.</p>
               </div>
             `;
           }
@@ -1975,12 +2174,383 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
         }
       }
 
+      // Close User Details Modal
+      function closeUserDetailsModal() {
+        const modalElement = document.getElementById("viewUserDetailsModal");
+
+        // Remove event listeners
+        modalElement.onclick = null;
+        document.removeEventListener("keydown", handleModalKeydown);
+
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = window.te.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          } else {
+            // Fallback: hide modal manually
+            modalElement.classList.add("hidden");
+            const dialogRef = modalElement.querySelector(
+              "[data-twe-modal-dialog-ref]"
+            );
+            if (dialogRef) {
+              dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+              dialogRef.classList.remove("opacity-100", "translate-y-0");
+            }
+          }
+        } else {
+          // Fallback: hide modal manually
+          modalElement.classList.add("hidden");
+          const dialogRef = modalElement.querySelector(
+            "[data-twe-modal-dialog-ref]"
+          );
+          if (dialogRef) {
+            dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+            dialogRef.classList.remove("opacity-100", "translate-y-0");
+          }
+        }
+      }
+
+      // Handle keyboard events for modal
+      function handleModalKeydown(event) {
+        if (event.key === "Escape") {
+          closeUserDetailsModal();
+        }
+      }
+
       // Helper function to format file size
       function formatFileSize(bytes) {
         if (!bytes) return "Unknown size";
         if (bytes < 1024) return bytes + " B";
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
         return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
+      // Download document
+      async function downloadDocument(userId, documentId, fileName) {
+        try {
+          const token = localStorage.getItem("accessToken");
+          const response = await fetch(
+            `${window.BASE_URL}/api/auth/users/${userId}/supporting-documents/${documentId}/download`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to download document: ${response.statusText}`
+            );
+          }
+
+          // Get the blob from the response
+          const blob = await response.blob();
+
+          // Create a temporary URL for the blob
+          const url = window.URL.createObjectURL(blob);
+
+          // Create a temporary anchor element and trigger download
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName || "document";
+          document.body.appendChild(a);
+          a.click();
+
+          // Cleanup
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          showToast("Document downloaded successfully");
+        } catch (error) {
+          console.error("Error downloading document:", error);
+          showToast(error.message || "Failed to download document", "error");
+        }
+      }
+
+      // View document in modal
+      async function viewDocument(userId, documentId, fileName = "Document") {
+        const modalElement = document.getElementById("documentViewerModal");
+        const loadingElement = document.getElementById("documentViewerLoading");
+        const contentElement = document.getElementById("documentViewerContent");
+        const officeContentElement = document.getElementById(
+          "officeDocumentViewerContent"
+        );
+        const unsupportedElement = document.getElementById(
+          "unsupportedDocumentContent"
+        );
+        const errorElement = document.getElementById("documentViewerError");
+        const fileNameElement = document.getElementById(
+          "documentViewerFileName"
+        );
+        const downloadBtn = document.getElementById(
+          "documentViewerDownloadBtn"
+        );
+
+        // Show modal
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = new window.te.Modal(modalElement);
+          modal.show();
+        } else {
+          modalElement.classList.remove("hidden");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.remove("opacity-0", "translate-y-[-50px]");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.add("opacity-100", "translate-y-0");
+        }
+
+        // Set filename in modal title
+        fileNameElement.textContent = fileName || "Document";
+
+        // Reset states - hide all containers
+        loadingElement.classList.remove("hidden");
+        contentElement.classList.add("hidden");
+        officeContentElement.classList.add("hidden");
+        unsupportedElement.classList.add("hidden");
+        errorElement.classList.add("hidden");
+
+        // Setup download button
+        downloadBtn.onclick = () =>
+          downloadDocument(userId, documentId, fileName);
+
+        try {
+          const token = localStorage.getItem("accessToken");
+          const response = await fetch(
+            `${window.BASE_URL}/api/auth/users/${userId}/supporting-documents/${documentId}/view`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to view document: ${response.statusText}`);
+          }
+
+          // Get the content type from response
+          const contentType =
+            response.headers.get("Content-Type") || "application/pdf";
+          console.log("Document Content-Type:", contentType);
+          console.log("File name:", fileName);
+
+          // Get the blob from the response
+          const blob = await response.blob();
+
+          // Create a new blob with explicit type to ensure proper rendering
+          const typedBlob = new Blob([blob], { type: contentType });
+
+          // Create a temporary URL for the blob
+          const url = window.URL.createObjectURL(typedBlob);
+          console.log("Blob URL created:", url);
+
+          // Determine how to display based on content type
+          const fileExtension = fileName.toLowerCase().split(".").pop();
+
+          // Check if it's a Word or Excel document
+          const isWordDoc =
+            contentType.includes("word") ||
+            contentType.includes("msword") ||
+            contentType.includes("officedocument.wordprocessingml") ||
+            fileExtension === "doc" ||
+            fileExtension === "docx";
+
+          const isExcelDoc =
+            contentType.includes("excel") ||
+            contentType.includes("spreadsheet") ||
+            contentType.includes("officedocument.spreadsheetml") ||
+            fileExtension === "xls" ||
+            fileExtension === "xlsx";
+
+          const isPDF = contentType.includes("pdf") || fileExtension === "pdf";
+          const isImage = contentType.startsWith("image/");
+
+          if (isWordDoc || isExcelDoc) {
+            // Use Microsoft Office Online Viewer for Word/Excel
+            // Note: Office viewer requires publicly accessible URL
+            // For authenticated documents, we'll show a message instead
+            officeContentElement.innerHTML = `
+              <div class="flex flex-col items-center justify-center h-full p-8 bg-gray-50">
+                <div class="text-center max-w-2xl">
+                  <div class="mb-6">
+                    <i class="fas fa-file-word text-7xl ${
+                      isWordDoc ? "text-blue-600" : "text-green-600"
+                    }"></i>
+                  </div>
+                  <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                    ${isWordDoc ? "Word Document" : "Excel Spreadsheet"}
+                  </h3>
+                  <p class="text-gray-600 mb-6">
+                    <strong>${fileName}</strong>
+                  </p>
+                  <p class="text-gray-600 mb-8">
+                    This document cannot be previewed directly in the browser. 
+                    Please download it to view the full content.
+                  </p>
+                  <div class="flex gap-4 justify-center">
+                    <button
+                      id="officeDocDownloadBtn"
+                      data-user-id="${userId}"
+                      data-doc-id="${documentId}"
+                      data-file-name="${fileName.replace(/"/g, "&quot;")}"
+                      class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+                    >
+                      <i class="fas fa-download mr-2"></i>
+                      Download to View
+                    </button>
+                    <button
+                      id="officeDocCloseBtn"
+                      class="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
+                    >
+                      <i class="fas fa-times mr-2"></i>
+                      Close
+                    </button>
+                  </div>
+                  <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                      <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                      <strong>Tip:</strong> After downloading, you can open the file in Microsoft Word${
+                        isExcelDoc ? " or Excel" : ""
+                      } or compatible software.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            // Add event listeners to the dynamically created buttons
+            setTimeout(() => {
+              const downloadBtn = document.getElementById(
+                "officeDocDownloadBtn"
+              );
+              const closeBtn = document.getElementById("officeDocCloseBtn");
+
+              if (downloadBtn) {
+                downloadBtn.addEventListener("click", function () {
+                  const uid = this.getAttribute("data-user-id");
+                  const did = this.getAttribute("data-doc-id");
+                  const fname = this.getAttribute("data-file-name");
+                  downloadDocument(uid, did, fname);
+                });
+              }
+
+              if (closeBtn) {
+                closeBtn.addEventListener("click", closeDocumentViewer);
+              }
+            }, 0);
+
+            loadingElement.classList.add("hidden");
+            officeContentElement.classList.remove("hidden");
+
+            // Store URL for cleanup on the container element
+            officeContentElement.dataset.blobUrl = url;
+          } else if (isPDF || isImage) {
+            // Display PDF or image in object/embed
+            const objectElement = document.getElementById(
+              "documentViewerFrame"
+            );
+            const embedElement = document.getElementById("documentViewerEmbed");
+
+            // Set the data attribute for both object and embed
+            objectElement.setAttribute("data", url);
+            objectElement.setAttribute("type", contentType);
+            embedElement.setAttribute("src", url);
+            embedElement.setAttribute("type", contentType);
+
+            // Show content, hide loading
+            loadingElement.classList.add("hidden");
+            contentElement.classList.remove("hidden");
+
+            // Store URL and type for cleanup
+            objectElement.dataset.blobUrl = url;
+            objectElement.dataset.contentType = contentType;
+          } else {
+            // Unsupported file type
+            loadingElement.classList.add("hidden");
+            unsupportedElement.classList.remove("hidden");
+
+            // Still store URL for potential download
+            unsupportedElement.dataset.blobUrl = url;
+          }
+
+          console.log("Document loaded successfully");
+        } catch (error) {
+          console.error("Error viewing document:", error);
+
+          // Show error state
+          loadingElement.classList.add("hidden");
+          errorElement.classList.remove("hidden");
+          document.getElementById("documentViewerErrorMessage").textContent =
+            error.message || "An unexpected error occurred";
+        }
+      }
+
+      // Close document viewer modal
+      function closeDocumentViewer() {
+        const modalElement = document.getElementById("documentViewerModal");
+        const objectElement = document.getElementById("documentViewerFrame");
+        const embedElement = document.getElementById("documentViewerEmbed");
+        const officeFrame = document.getElementById("officeViewerFrame");
+        const officeContent = document.getElementById(
+          "officeDocumentViewerContent"
+        );
+        const unsupportedContent = document.getElementById(
+          "unsupportedDocumentContent"
+        );
+
+        // Clean up blob URLs from all possible containers
+        if (objectElement && objectElement.dataset.blobUrl) {
+          window.URL.revokeObjectURL(objectElement.dataset.blobUrl);
+          delete objectElement.dataset.blobUrl;
+        }
+
+        if (officeContent && officeContent.dataset.blobUrl) {
+          window.URL.revokeObjectURL(officeContent.dataset.blobUrl);
+          delete officeContent.dataset.blobUrl;
+        }
+
+        if (unsupportedContent && unsupportedContent.dataset.blobUrl) {
+          window.URL.revokeObjectURL(unsupportedContent.dataset.blobUrl);
+          delete unsupportedContent.dataset.blobUrl;
+        }
+
+        // Clear all elements
+        if (objectElement) objectElement.removeAttribute("data");
+        if (embedElement) embedElement.removeAttribute("src");
+        if (officeFrame) officeFrame.src = "";
+        if (officeContent) officeContent.innerHTML = "";
+
+        // Close modal
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = window.te.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          } else {
+            // If modal instance not found, hide manually
+            if (modalElement) modalElement.classList.add("hidden");
+            const dialogRef = modalElement
+              ? modalElement.querySelector("[data-twe-modal-dialog-ref]")
+              : null;
+            if (dialogRef) {
+              dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+              dialogRef.classList.remove("opacity-100", "translate-y-0");
+            }
+          }
+        } else {
+          // Fallback: hide modal manually
+          if (modalElement) modalElement.classList.add("hidden");
+          const dialogRef = modalElement
+            ? modalElement.querySelector("[data-twe-modal-dialog-ref]")
+            : null;
+          if (dialogRef) {
+            dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+            dialogRef.classList.remove("opacity-100", "translate-y-0");
+          }
+        }
       }
 
       // Toggle thematic area field visibility
