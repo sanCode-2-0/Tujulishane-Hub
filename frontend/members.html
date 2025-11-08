@@ -545,6 +545,172 @@
         </div>
       </div>
 
+      <!-- View User Details Modal -->
+      <div
+        data-twe-modal-init
+        class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="viewUserDetailsModal"
+        tabindex="-1"
+        aria-labelledby="viewUserDetailsModalTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[800px]"
+        >
+          <div
+            class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4"
+          >
+            <div
+              class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100"
+            >
+              <h5
+                class="text-xl font-medium leading-normal text-surface"
+                id="viewUserDetailsModalTitle"
+              >
+                User Details & Documents
+              </h5>
+              <button
+                type="button"
+                class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span class="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <div class="relative p-6 max-h-[70vh] overflow-y-auto">
+              <!-- Loading State -->
+              <div id="userDetailsLoading" class="hidden text-center py-8">
+                <div
+                  class="inline-block w-12 h-12 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"
+                ></div>
+                <p class="mt-4 text-gray-600">Loading user details...</p>
+              </div>
+
+              <!-- User Details Content -->
+              <div id="userDetailsContent" class="space-y-6">
+                <!-- Basic Information -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <h3
+                    class="text-lg font-semibold text-gray-900 mb-4 flex items-center"
+                  >
+                    <i class="fas fa-user mr-2 text-blue-600"></i>
+                    Basic Information
+                  </h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Name</label
+                      >
+                      <p class="text-gray-900" id="viewUserName">-</p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Email</label
+                      >
+                      <p class="text-gray-900" id="viewUserEmail">-</p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Role</label
+                      >
+                      <p class="text-gray-900" id="viewUserRole">-</p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Status</label
+                      >
+                      <p class="text-gray-900" id="viewUserStatus">-</p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Organization</label
+                      >
+                      <p class="text-gray-900" id="viewUserOrganization">-</p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium text-gray-600"
+                        >Registration Date</label
+                      >
+                      <p class="text-gray-900" id="viewUserCreatedAt">-</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Supporting Documents -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                  <h3
+                    class="text-lg font-semibold text-gray-900 mb-4 flex items-center"
+                  >
+                    <i class="fas fa-file-alt mr-2 text-blue-600"></i>
+                    Supporting Documents
+                  </h3>
+                  <div id="supportingDocumentsList" class="space-y-3">
+                    <!-- Documents will be loaded here -->
+                  </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div
+                  class="bg-gray-50 p-4 rounded-lg"
+                  id="additionalInfoSection"
+                >
+                  <h3
+                    class="text-lg font-semibold text-gray-900 mb-4 flex items-center"
+                  >
+                    <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                    Additional Information
+                  </h3>
+                  <div class="grid grid-cols-1 gap-4">
+                    <div id="thematicAreaDiv" class="hidden">
+                      <label class="text-sm font-medium text-gray-600"
+                        >Thematic Area</label
+                      >
+                      <p class="text-gray-900" id="viewUserThematicArea">-</p>
+                    </div>
+                    <div id="rejectionReasonDiv" class="hidden">
+                      <label class="text-sm font-medium text-gray-600"
+                        >Rejection Reason</label
+                      >
+                      <p class="text-gray-900" id="viewUserRejectionReason">
+                        -
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-3 p-4 border-t border-gray-200">
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Change Role Modal -->
       <div
         data-twe-modal-init
@@ -1249,6 +1415,11 @@
                     user.createdAt
                   )}</td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
                       <button onclick="approveUser(${
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
@@ -1616,6 +1787,202 @@ ${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
             `.trim()
         );
       }
+
+      // View Pending User Details with Supporting Documents
+      async function viewPendingUserDetails(userId) {
+        const modalElement = document.getElementById("viewUserDetailsModal");
+        const loadingElement = document.getElementById("userDetailsLoading");
+        const contentElement = document.getElementById("userDetailsContent");
+
+        // Show modal
+        if (typeof window.te !== "undefined" && window.te.Modal) {
+          const modal = new window.te.Modal(modalElement);
+          modal.show();
+        } else {
+          modalElement.classList.remove("hidden");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.remove("opacity-0", "translate-y-[-50px]");
+          modalElement
+            .querySelector("[data-twe-modal-dialog-ref]")
+            .classList.add("opacity-100", "translate-y-0");
+        }
+
+        // Show loading state
+        loadingElement.classList.remove("hidden");
+        contentElement.classList.add("hidden");
+
+        try {
+          // Find user from existing data (check all arrays)
+          let user = pendingUsers.find((u) => u.id === userId);
+          if (!user) user = approvedUsers.find((u) => u.id === userId);
+          if (!user) user = rejectedUsers.find((u) => u.id === userId);
+          if (!user) user = allUsers.find((u) => u.id === userId);
+
+          if (!user) {
+            throw new Error("User not found");
+          }
+
+          // Populate basic information
+          document.getElementById("viewUserName").textContent =
+            user.name || "N/A";
+          document.getElementById("viewUserEmail").textContent =
+            user.email || "N/A";
+          document.getElementById("viewUserRole").innerHTML = `
+            <span class="px-2 py-1 text-xs font-medium rounded-full ${
+              user.role === "SUPER_ADMIN" ||
+              user.role === "SUPER_ADMIN_REVIEWER" ||
+              user.role === "SUPER_ADMIN_APPROVER"
+                ? "bg-purple-100 text-purple-800"
+                : "bg-blue-100 text-blue-800"
+            }">
+              ${user.role}
+            </span>
+          `;
+          document.getElementById("viewUserStatus").innerHTML = `
+            <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
+              user.approvalStatus
+            )}">
+              ${user.approvalStatus}
+            </span>
+          `;
+          document.getElementById("viewUserOrganization").textContent =
+            user.organization?.name || "N/A";
+          document.getElementById("viewUserCreatedAt").textContent = formatDate(
+            user.createdAt
+          );
+
+          // Show thematic area if exists
+          if (user.thematicArea) {
+            document
+              .getElementById("thematicAreaDiv")
+              .classList.remove("hidden");
+            document.getElementById("viewUserThematicArea").textContent =
+              user.thematicArea;
+          } else {
+            document.getElementById("thematicAreaDiv").classList.add("hidden");
+          }
+
+          // Show rejection reason if exists
+          if (user.rejectionReason) {
+            document
+              .getElementById("rejectionReasonDiv")
+              .classList.remove("hidden");
+            document.getElementById("viewUserRejectionReason").textContent =
+              user.rejectionReason;
+          } else {
+            document
+              .getElementById("rejectionReasonDiv")
+              .classList.add("hidden");
+          }
+
+          // Fetch and display supporting documents
+          try {
+            const docsResult = await apiCall(
+              `/api/auth/users/${userId}/supporting-documents`
+            );
+            const documents = docsResult.data || [];
+
+            const documentsList = document.getElementById(
+              "supportingDocumentsList"
+            );
+
+            if (documents.length === 0) {
+              documentsList.innerHTML = `
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-folder-open text-3xl mb-2"></i>
+                  <p>No supporting documents uploaded</p>
+                </div>
+              `;
+            } else {
+              documentsList.innerHTML = documents
+                .map(
+                  (doc) => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <i class="fas fa-file-pdf text-blue-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        ${doc.documentType || "Document"}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Uploaded: ${formatDate(doc.uploadedAt)}
+                        ${
+                          doc.fileSize
+                            ? ` • ${formatFileSize(doc.fileSize)}`
+                            : ""
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex gap-2">
+                    <a
+                      href="${
+                        window.BASE_URL
+                      }/api/auth/users/${userId}/supporting-documents/${
+                    doc.id
+                  }/download"
+                      target="_blank"
+                      class="px-3 py-1 text-xs text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                      onclick="event.stopPropagation();"
+                    >
+                      <i class="fas fa-download mr-1"></i> Download
+                    </a>
+                    <a
+                      href="${
+                        window.BASE_URL
+                      }/api/auth/users/${userId}/supporting-documents/${
+                    doc.id
+                  }/view"
+                      target="_blank"
+                      class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition"
+                      onclick="event.stopPropagation();"
+                    >
+                      <i class="fas fa-eye mr-1"></i> View
+                    </a>
+                  </div>
+                </div>
+              `
+                )
+                .join("");
+            }
+          } catch (docError) {
+            console.error("Error loading documents:", docError);
+            document.getElementById("supportingDocumentsList").innerHTML = `
+              <div class="text-center py-4 text-red-500">
+                <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                <p class="text-sm">Failed to load supporting documents</p>
+              </div>
+            `;
+          }
+
+          // Hide loading, show content
+          loadingElement.classList.add("hidden");
+          contentElement.classList.remove("hidden");
+        } catch (error) {
+          console.error("Error loading user details:", error);
+          showToast("Failed to load user details", "error");
+
+          // Close modal on error
+          if (typeof window.te !== "undefined" && window.te.Modal) {
+            const modal = window.te.Modal.getInstance(modalElement);
+            if (modal) modal.hide();
+          } else {
+            modalElement.classList.add("hidden");
+          }
+        }
+      }
+
+      // Helper function to format file size
+      function formatFileSize(bytes) {
+        if (!bytes) return "Unknown size";
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
       // Toggle thematic area field visibility
       function toggleThematicAreaField() {
         const roleSelect = document.getElementById("changeRoleSelect");
