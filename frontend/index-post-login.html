@@ -64,13 +64,9 @@
     <!-- Mapbox JS -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Hardcoded BASE_URL Configuration -->
-    <script>
-      // Hardcode BASE_URL for reliable access across all scripts
-      window.BASE_URL =
-        "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-      console.log("[index-post-login] BASE_URL hardcoded to:", window.BASE_URL);
-    </script>
+    <!-- Backend URL Configuration - Centralized in config.js -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
     <script src="auth.js"></script>
     <script src="kenya-locations.js"></script>
 
@@ -1203,10 +1199,8 @@
       // Load projects for map display
       async function loadProjectsForMap() {
         try {
-          // Ensure BASE_URL is defined
-          const baseUrl =
-            window.BASE_URL ||
-            "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+          // Use centralized BASE_URL from config.js
+          const baseUrl = window.BASE_URL;
           console.log("[loadProjectsForMap] Using BASE_URL:", baseUrl);
 
           const response = await fetch(

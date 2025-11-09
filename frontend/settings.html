@@ -78,6 +78,11 @@
     <!-- Mapbox JS -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+
     <!-- Authentication utilities -->
     <script type="module">
       // Try to load a local config override (frontend/config.local.js) if present.
@@ -90,8 +95,14 @@
         } catch (e) {}
       })();
 
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
+      // Use window.BASE_URL which is already set by config.js loaded via script tag
+      const BASE_URL = window.BASE_URL;
+      console.log(
+        "[settings.html] Using BASE_URL:",
+        BASE_URL,
+        "- Environment:",
+        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+      );
     </script>
     <!-- Optional: Google Font -->
     <link

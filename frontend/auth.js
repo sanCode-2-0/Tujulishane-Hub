@@ -1,40 +1,26 @@
 /**
  * Authentication utilities for Tujulishane Hub frontend
  * Handles JWT token management, API calls with authentication, and user session
+ *
+ * BASE_URL is configured centrally in config.js - change it there to switch between PROD/DEV
  */
 
-// PROD URL: https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com
-
-// Allow switching between dev and prod base URLs
-function getBaseUrl() {
-  // 1. Check for ?env=dev or ?env=prod in URL
-  const params = new URLSearchParams(window.location.search);
-  const env = params.get("env") || localStorage.getItem("apiEnv");
-  if (env === "dev") {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-  }
-  // 2. Production: Use Heroku backend
-  if (
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1"
-  ) {
-    return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-  }
-  // 3. Development: Use local backend
-  return "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-}
-
 const AUTH_CONFIG = {
-  BASE_URL: "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com",
   TOKEN_KEY: "accessToken",
   USER_KEY: "currentUser",
 };
 
 class AuthManager {
   constructor() {
-    this.baseUrl = AUTH_CONFIG.BASE_URL;
+    // Use the centralized BASE_URL from config.js (loaded via window.BASE_URL)
+    this.baseUrl =
+      window.BASE_URL ||
+      "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
     this.tokenKey = AUTH_CONFIG.TOKEN_KEY;
     this.userKey = AUTH_CONFIG.USER_KEY;
+
+    // Log which backend we're using for debugging
+    console.log("AuthManager initialized with backend:", this.baseUrl);
   }
 
   /**

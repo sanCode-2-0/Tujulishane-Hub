@@ -30,7 +30,11 @@
       };
     </script>
     <link rel="stylesheet" href="../styles/main.css" />
+
+    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+    <script src="../config.js"></script>
     <script src="../set-base-url.js"></script>
+
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
@@ -1388,7 +1392,15 @@
     <script src="../styles/effects.js"></script>
     <script src="../styles/loadNavStake.js"></script>
     <script type="module">
-      import { BASE_URL } from "../config.js";
+      // Use window.BASE_URL which is already set by config.js loaded via script tag
+      const BASE_URL = window.BASE_URL;
+      console.log(
+        "[Stakeholders/dashboard.html] Using BASE_URL:",
+        BASE_URL,
+        "- Environment:",
+        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+      );
+
       // Use AuthManager from auth.js
       const authManager = window.authManager || new window.AuthManager();
 

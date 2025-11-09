@@ -11,7 +11,15 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- Tailwind CSS (with custom config using inline script) -->
+
+    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS custom config -->
     <script>
       tailwind.config = {
         theme: {
@@ -29,8 +37,6 @@
         },
       };
     </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
@@ -150,14 +156,15 @@
       })();
     </script>
     <script type="module">
-      // import { BASE_URL } from "./config.js";
-      const BASE_URL =
-        "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+      // Use centralized BASE_URL from config.js (already loaded via script tag)
+      // Don't import - just use window.BASE_URL which is already set
+      const BASE_URL = window.BASE_URL;
 
       console.log("BASE_URL:", BASE_URL);
-
-      // Initialize auth check
-      window.BASE_URL = BASE_URL;
+      console.log(
+        "Environment:",
+        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+      );
 
       // Check authentication on page load
       document.addEventListener("DOMContentLoaded", async function () {

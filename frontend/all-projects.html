@@ -64,6 +64,11 @@
     <!-- Mapbox JS -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+
     <!-- Authentication utilities -->
     <script>
       // Try to load a local config override (frontend/config.local.js) if present.
@@ -77,8 +82,14 @@
       })();
     </script>
     <script type="module">
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
+      // Use window.BASE_URL which is already set by config.js loaded via script tag
+      const BASE_URL = window.BASE_URL;
+      console.log(
+        "[all-projects.html] Using BASE_URL:",
+        BASE_URL,
+        "- Environment:",
+        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+      );
     </script>
     <script src="auth.js"></script>
     <script src="styles/workflow-status-helper.js"></script>
@@ -890,7 +901,8 @@
       })();
     </script>
     <script type="module">
-      import { BASE_URL } from "./config.js";
+      // Use window.BASE_URL which is already set by config.js loaded via script tag
+      const BASE_URL = window.BASE_URL;
       // Always use global authManager from auth.js, fallback if not present
       const authManager = window.authManager || {
         apiCall: () => {

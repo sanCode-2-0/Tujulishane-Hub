@@ -43,6 +43,11 @@
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
       crossorigin="anonymous"
     />
+
+    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+
     <script>
       // Try to load a local config override (frontend/config.local.js) if present.
       // This is optional and safe to 404 — it won't break page load.
@@ -58,8 +63,14 @@
       })();
     </script>
     <script type="module">
-      import { BASE_URL } from "./config.js";
-      window.BASE_URL = BASE_URL;
+      // Use window.BASE_URL which is already set by config.js loaded via script tag
+      const BASE_URL = window.BASE_URL;
+      console.log(
+        "[announcements.html] Using BASE_URL:",
+        BASE_URL,
+        "- Environment:",
+        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+      );
     </script>
     <script src="auth.js"></script>
     <!-- Load Alpine.js after function definitions -->
