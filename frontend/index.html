@@ -144,8 +144,7 @@
                         id="tabs-profile02" role="tabpanel" aria-labelledby="tabs-profile-tab02">
                         <!-- Register Card -->
                         <div id="registerCard" class=" top-0 left-0 z-10 w-full py-8 rounded-xl">
-                            <form id="registerForm" onsubmit="return validateBeforeSubmit()"
-                                class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <form id="registerForm" class="grid grid-cols-1 gap-6 md:grid-cols-2">
                                 <div id="formTabs" class="md:col-span-2 mb-4 flex border-b">
                                     <button type="button" id="tab1"
                                         class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none">
@@ -313,6 +312,15 @@
             tab1.addEventListener('click', showStep1);
             tab2.addEventListener('click', showStep2);
 
+            // Form submission handler
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await validateBeforeSubmit();
+                });
+            }
+
             // Initial state: Show Step 1
             showStep1();
         });
@@ -333,6 +341,9 @@
 
 
     <script>
+        // Global state for selected files (accessible by validateBeforeSubmit)
+        window.selectedFiles = [];
+        
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Element References
             const fileUploadArea = document.getElementById('fileUploadArea');
@@ -343,8 +354,7 @@
             const fileUploadErrorDiv = document.getElementById('fileUploadError');
             const fileErrorMessageSpan = document.getElementById('fileErrorMessage');
 
-            // State to hold the selected files (File objects)
-            let selectedFiles = [];
+            // Use the global selectedFiles array
             const MAX_FILE_SIZE_MB = 10;
             const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
             const SUPPORTED_MIMES = [
@@ -372,8 +382,8 @@
              * Updates the file count display and the visibility of the file list.
              */
             const updateFileCount = () => {
-                docsCountSpan.textContent = selectedFiles.length;
-                if (selectedFiles.length > 0) {
+                docsCountSpan.textContent = window.selectedFiles.length;
+                if (window.selectedFiles.length > 0) {
                     selectedFilesDiv.classList.remove('hidden');
                 } else {
                     selectedFilesDiv.classList.add('hidden');
@@ -385,7 +395,7 @@
              */
             const renderFilesList = () => {
                 filesListDiv.innerHTML = ''; // Clear existing list
-                selectedFiles.forEach((file, index) => {
+                window.selectedFiles.forEach((file, index) => {
                     const fileItem = document.createElement('div');
                     fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200';
 
@@ -422,7 +432,7 @@
                 if (removeButton) {
                     const indexToRemove = parseInt(removeButton.dataset.fileIndex);
                     if (!isNaN(indexToRemove) && indexToRemove >= 0) {
-                        selectedFiles.splice(indexToRemove, 1);
+                        window.selectedFiles.splice(indexToRemove, 1);
                         // Re-render the list and update the input to reflect the change
                         // Note: The hidden input cannot be easily updated with a FileList, 
                         // but the `selectedFiles` array now holds the source of truth for submission.
@@ -452,13 +462,13 @@
                     }
 
                     // Check for duplicates by name (simple check)
-                    if (selectedFiles.some(existingFile => existingFile.name === file.name)) {
+                    if (window.selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         showFileError(`File "${file.name}" is already selected.`);
                         return;
                     }
 
                     // Add valid file to the state
-                    selectedFiles.push(file);
+                    window.selectedFiles.push(file);
                 });
 
                 // Update the UI
@@ -570,8 +580,15 @@
         async function validateBeforeSubmit() {
             const name = document.getElementById("regName").value;
             const email = document.getElementById("regEmail").value;
+            const organization = document.getElementById("regOrganization").value;
             const accountType = document.getElementById("regAccountType").value;
             const parentDonorId = document.getElementById("regParentDonorId").value;
+
+            // Basic validation
+            if (!name || !email) {
+                alert("Please fill in all required fields (Name and Email)");
+                return false;
+            }
 
             // Show loading state
             const btn = document.getElementById("registerBtn");
@@ -588,15 +605,35 @@
                     ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
                     : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
 
-                const payload = { name, email, accountType };
+                console.log("API BASE", apiBase);
+
+                // Create FormData to support file uploads
+                const formData = new FormData();
+                formData.append("name", name);
+                formData.append("email", email);
+                if (organization) {
+                    formData.append("organization", organization);
+                }
+                formData.append("accountType", accountType);
+                
                 if (accountType === "PARTNER" && parentDonorId) {
-                    payload.parentDonorId = parseInt(parentDonorId);
+                    formData.append("parentDonorId", parentDonorId);
+                }
+
+                // Add supporting documents if any (OPTIONAL)
+                if (window.selectedFiles && window.selectedFiles.length > 0) {
+                    console.log(`Adding ${window.selectedFiles.length} supporting documents to registration`);
+                    window.selectedFiles.forEach((file, index) => {
+                        formData.append("documents", file);
+                    });
+                } else {
+                    console.log("No supporting documents selected (this is optional)");
                 }
 
                 const res = await fetch(`${apiBase}/api/auth/register`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    body: formData
+                    // Note: Don't set Content-Type header - browser will set it automatically with boundary
                 });
 
                 const data = await res.json();
@@ -606,6 +643,7 @@
                 localStorage.setItem("pendingEmail", email);
                 window.location.href = "otp.html";
             } catch (err) {
+                console.error("Registration error:", err);
                 alert(err.message);
 
                 // Reset button state on error
@@ -614,8 +652,6 @@
                 btnText.classList.remove("hidden");
                 btnSpinner.classList.add("hidden");
             }
-
-            return false;
         }
 
     </script>

@@ -536,8 +536,13 @@ public class ProjectService {
             project.setObjectives(request.getObjectives());
             project.setBudget(request.getBudget());
 
-            // Set default status
-            project.setStatus("pending");
+            // Set status from request or default to "pending"
+            project.setStatus(request.getStatus() != null ? request.getStatus() : "pending");
+            
+            // If status is "completed", set completedAt timestamp
+            if ("completed".equalsIgnoreCase(request.getStatus())) {
+                project.setCompletedAt(java.time.LocalDateTime.now());
+            }
 
             logger.debug("About to call replaceThemes with themes: {}", request.getThemes());
             replaceThemes(project, request.getThemes());

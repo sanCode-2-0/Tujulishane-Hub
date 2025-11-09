@@ -151,7 +151,8 @@
     </script>
     <script type="module">
       // import { BASE_URL } from "./config.js";
-      const BASE_URL = "http://localhost:8080";
+      const BASE_URL =
+        "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
 
       console.log("BASE_URL:", BASE_URL);
 
@@ -1655,7 +1656,7 @@
                       </span>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="viewUserDetails(${
+                      <button onclick="viewPendingUserDetails(${
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View
@@ -1724,6 +1725,11 @@
                       </div>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${
+                        user.id
+                      })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
                       <button onclick="approveUser(${
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
@@ -1786,7 +1792,7 @@
                       </span>
                   </td>
                   <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                      <button onclick="viewUserDetails(${
+                      <button onclick="viewPendingUserDetails(${
                         user.id
                       })" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
                           <i class="mr-1 fas fa-eye"></i> View

@@ -51,6 +51,8 @@ public class ProjectCreateRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Budget must be greater than 0")
     private BigDecimal budget;
 
+    private String status; // Optional: "completed", "active", "pending", etc.
+
     @Data
     public static class LocationRequest {
         @NotBlank(message = "County is required")
@@ -120,4 +122,7 @@ public class ProjectCreateRequest {
 
     public BigDecimal getBudget() { return budget; }
     public void setBudget(BigDecimal budget) { this.budget = budget; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

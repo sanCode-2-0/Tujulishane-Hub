@@ -3,16 +3,20 @@ package com.tujulishanehub.backend.services;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Organization;
 import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.models.UserDocument;
 import com.tujulishanehub.backend.models.Announcement;
 import com.tujulishanehub.backend.models.CollaborationRequest;
 import com.tujulishanehub.backend.models.ProjectCollaborator;
 import com.tujulishanehub.backend.repositories.UserRepository;
+import com.tujulishanehub.backend.repositories.UserDocumentRepository;
 import com.tujulishanehub.backend.repositories.AnnouncementRepository;
 import com.tujulishanehub.backend.repositories.CollaborationRequestRepository;
 import com.tujulishanehub.backend.repositories.ProjectCollaboratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Random;
@@ -20,8 +24,13 @@ import java.util.Random;
 @Service
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
 
     @Autowired
     private EmailService emailService;
@@ -39,22 +48,22 @@ public class UserService {
     private ProjectCollaboratorRepository projectCollaboratorRepository;
 
     // Register user (name + email + optional organization). Create INACTIVE account and send OTP
-    public void registerUser(String name, String email, Long organizationId) {
-        registerUser(name, email, organizationId, User.Role.PARTNER, null);
+    public User registerUser(String name, String email, Long organizationId) {
+        return registerUser(name, email, organizationId, User.Role.PARTNER, null);
     }
     
     // Register donor account
-    public void registerDonor(String name, String email, Long organizationId) {
-        registerUser(name, email, organizationId, User.Role.DONOR, null);
+    public User registerDonor(String name, String email, Long organizationId) {
+        return registerUser(name, email, organizationId, User.Role.DONOR, null);
     }
     
     // Register partner account with optional parent donor
-    public void registerPartner(String name, String email, Long organizationId, Long parentDonorId) {
-        registerUser(name, email, organizationId, User.Role.PARTNER, parentDonorId);
+    public User registerPartner(String name, String email, Long organizationId, Long parentDonorId) {
+        return registerUser(name, email, organizationId, User.Role.PARTNER, parentDonorId);
     }
     
     // Main registration method with role and parent donor support
-    private void registerUser(String name, String email, Long organizationId, User.Role role, Long parentDonorId) {
+    private User registerUser(String name, String email, Long organizationId, User.Role role, Long parentDonorId) {
         // Check if user already exists
         Optional<User> existing = userRepository.findByEmail(email);
         if (existing.isPresent()) {
@@ -89,7 +98,7 @@ public class UserService {
             organizationService.getOrganizationById(organizationId)
                 .ifPresent(user::setOrganization);
         }
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         
         // Send OTP via email
         String accountType = role == User.Role.DONOR ? "Donor" : "Partner";
@@ -106,11 +115,13 @@ public class UserService {
             name, accountType.toLowerCase(), otp
         );
         emailService.sendEmail(email, subject, body);
+        
+        return savedUser;
     }
     
     // Backward compatibility method
-    public void registerUser(String name, String email) {
-        registerUser(name, email, null);
+    public User registerUser(String name, String email) {
+        return registerUser(name, email, null);
     }
 
     // Verify OTP and mark email as verified (but user still needs admin approval)
@@ -550,6 +561,11 @@ public class UserService {
             User user = userOptional.get();
             
             // Delete dependent records first
+            
+            // Delete supporting documents for this user
+            java.util.List<UserDocument> userDocuments = userDocumentRepository.findByUserId(userId);
+            userDocumentRepository.deleteAll(userDocuments);
+            
             // Delete announcements created by this user
             java.util.List<Announcement> announcements = announcementRepository.findByCreatedBy(user);
             for (Announcement announcement : announcements) {

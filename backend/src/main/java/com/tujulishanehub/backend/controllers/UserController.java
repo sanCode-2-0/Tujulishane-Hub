@@ -2,23 +2,29 @@ package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.models.UserDocument;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.payload.UserProfileDTO;
+import com.tujulishanehub.backend.repositories.UserDocumentRepository;
+import com.tujulishanehub.backend.services.OrganizationService;
 import com.tujulishanehub.backend.services.UserService;
 import com.tujulishanehub.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +38,13 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private OrganizationService organizationService;
+
+    @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
 
     @Value("${jwt.expiration:3600}")
     private Long jwtExpiration;
@@ -45,15 +57,16 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Object>> register(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<ApiResponse<Object>> register(
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam(value = "organization", required = false) String organization,
+            @RequestParam(value = "accountType", defaultValue = "PARTNER") String accountType,
+            @RequestParam(value = "parentDonorId", required = false) Long parentDonorId,
+            @RequestParam(value = "organizationId", required = false) Long organizationId,
+            @RequestParam(value = "documents", required = false) List<MultipartFile> documents) {
         try {
-            String name = (String) payload.get("name");
-            String email = (String) payload.get("email");
-            Long organizationId = payload.get("organizationId") != null ? 
-                Long.valueOf(payload.get("organizationId").toString()) : null;
-            String accountType = (String) payload.get("accountType"); // "DONOR" or "PARTNER"
-            Long parentDonorId = payload.get("parentDonorId") != null ? 
-                Long.valueOf(payload.get("parentDonorId").toString()) : null;
+            logger.info("Registration request received for email: {}, accountType: {}, organization: {}", email, accountType, organization);
             
             if (name == null || name.isEmpty() || email == null || email.isEmpty()) {
                 ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Name and email are required.", null);
@@ -65,21 +78,54 @@ public class UserController {
                 accountType = "PARTNER";
             }
             
+            // Handle organization name - find or create organization
+            Long finalOrganizationId = organizationId;
+            if (organization != null && !organization.trim().isEmpty()) {
+                finalOrganizationId = organizationService.findOrCreateOrganization(organization);
+                logger.info("Organization '{}' resolved to ID: {}", organization, finalOrganizationId);
+            }
+            
             // Register based on account type
+            User registeredUser = null;
             if ("DONOR".equalsIgnoreCase(accountType)) {
-                userService.registerDonor(name, email, organizationId);
+                registeredUser = userService.registerDonor(name, email, finalOrganizationId);
             } else if ("PARTNER".equalsIgnoreCase(accountType)) {
-                userService.registerPartner(name, email, organizationId, parentDonorId);
+                registeredUser = userService.registerPartner(name, email, finalOrganizationId, parentDonorId);
             } else {
                 ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Invalid account type. Must be DONOR or PARTNER.", null);
                 return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Handle supporting documents if provided (OPTIONAL)
+            if (documents != null && !documents.isEmpty() && registeredUser != null) {
+                logger.info("Processing {} supporting documents for user: {}", documents.size(), email);
+                try {
+                    for (MultipartFile file : documents) {
+                        if (!file.isEmpty()) {
+                            UserDocument document = new UserDocument();
+                            document.setUserId(registeredUser.getId());
+                            document.setFileName(file.getOriginalFilename());
+                            document.setFileType(file.getContentType());
+                            document.setFileSize(file.getSize());
+                            document.setFileData(file.getBytes());
+                            
+                            userDocumentRepository.save(document);
+                            logger.info("Saved supporting document: {} for user: {}", file.getOriginalFilename(), email);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Error saving supporting documents for user {}: {}", email, e.getMessage(), e);
+                    // Don't fail registration if documents fail - they're optional
+                }
+            } else {
+                logger.info("No supporting documents provided for user: {} (this is optional)", email);
             }
             
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Registration received. Check your email for the verification OTP.", null);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             // Log full stacktrace for diagnostics (EmailService will also log)
-            logger.error("Error during registration for {}: {}", payload.get("email"), e.getMessage(), e);
+            logger.error("Error during registration for {}: {}", email, e.getMessage(), e);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -89,10 +135,19 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> verify(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
         String otp = payload.get("otp");
+        
+        // Trim whitespace from inputs
+        if (email != null) email = email.trim();
+        if (otp != null) otp = otp.trim();
+        
+        logger.info("OTP verification attempt for email: {}, OTP: {}", email, otp);
+        
         if (userService.verifyOtp(email, otp)) {
+            logger.info("OTP verification successful for email: {}", email);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "User verified successfully.", null);
             return ResponseEntity.ok(response);
         } else {
+            logger.warn("OTP verification failed for email: {}", email);
             ApiResponse<Object> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Invalid OTP.", null);
             return ResponseEntity.badRequest().body(response);
         }
@@ -125,7 +180,22 @@ public class UserController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to send email", null);
+            
+            // Check for specific error conditions
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("not approved")) {
+                ApiResponse<Object> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), 
+                    "Your account is pending administrator approval. Please wait for approval before logging in.", null);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            } else if (errorMessage != null && errorMessage.contains("not active")) {
+                ApiResponse<Object> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), 
+                    "Account not active. Complete verification first.", null);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Generic error for other cases
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to send login OTP: " + errorMessage, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -291,7 +361,7 @@ public class UserController {
      * Get all pending users (Admin only)
      */
     @GetMapping("/admin/pending-users")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN_REVIEWER')")
     public ResponseEntity<ApiResponse<List<User>>> getPendingUsers() {
         try {
             List<User> pendingUsers = userService.getPendingUsers();
@@ -316,7 +386,7 @@ public class UserController {
      * Approve a user (Admin only)
      */
     @PostMapping("/admin/approve-user/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Object>> approveUser(@PathVariable Long userId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -354,7 +424,7 @@ public class UserController {
      * Reject a user (Admin only)
      */
     @PostMapping("/admin/reject-user/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Object>> rejectUser(
             @PathVariable Long userId, 
             @RequestBody Map<String, String> payload) {
@@ -395,7 +465,7 @@ public class UserController {
      * Delete a user (Super-Admin only)
      */
     @DeleteMapping("/admin/delete-user/{userId}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable Long userId) {
         try {
             boolean success = userService.deleteUser(userId);
@@ -429,7 +499,7 @@ public class UserController {
      * Get users by approval status (Admin only)
      */
     @GetMapping("/admin/users/status/{status}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN_REVIEWER')")
     public ResponseEntity<ApiResponse<List<User>>> getUsersByStatus(@PathVariable String status) {
         try {
             ApprovalStatus approvalStatus = ApprovalStatus.valueOf(status.toUpperCase());
@@ -462,7 +532,7 @@ public class UserController {
      * Get all users (Admin only)
      */
     @GetMapping("/admin/users")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('SUPER_ADMIN_REVIEWER')")
     public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
         try {
             List<User> users = userService.getAllUsers();
@@ -762,7 +832,7 @@ public class UserController {
     // Donor-Partner Management Endpoints
     
     @GetMapping("/donors")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<List<User>>> getAllDonors() {
         try {
             List<User> donors = userService.getAllDonors();
@@ -787,7 +857,7 @@ public class UserController {
      * Get available partners for linking (approved partners not linked to any donor)
      */
     @GetMapping("/partners/available")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('DONOR')")
     public ResponseEntity<ApiResponse<List<User>>> getAvailablePartners() {
         try {
             List<User> availablePartners = userService.getAvailablePartners();
@@ -809,7 +879,7 @@ public class UserController {
     }
     
     @GetMapping("/donor/{donorId}/partners")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('DONOR')")
     public ResponseEntity<ApiResponse<List<User>>> getPartnersByDonor(@PathVariable Long donorId) {
         try {
             // Check if donor can access this endpoint
@@ -817,8 +887,10 @@ public class UserController {
             String currentUserEmail = authentication.getName();
             User currentUser = userService.getUserByEmail(currentUserEmail);
             
-            // Super admins can see all, donors can only see their own partners
-            if (currentUser.getRole() != User.Role.SUPER_ADMIN && !currentUser.getId().equals(donorId)) {
+            // Super admins and approvers can see all, donors can only see their own partners
+            if (currentUser.getRole() != User.Role.SUPER_ADMIN 
+                && currentUser.getRole() != User.Role.SUPER_ADMIN_APPROVER 
+                && !currentUser.getId().equals(donorId)) {
                 ApiResponse<List<User>> response = new ApiResponse<>(
                     HttpStatus.FORBIDDEN.value(), 
                     "You can only view your own partners", 
@@ -846,7 +918,7 @@ public class UserController {
     }
     
     @PostMapping("/partner/{partnerId}/link-donor/{donorId}")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('DONOR')")
     public ResponseEntity<ApiResponse<String>> linkPartnerToDonor(
             @PathVariable Long partnerId, 
             @PathVariable Long donorId) {
@@ -895,7 +967,7 @@ public class UserController {
     }
     
     @PostMapping("/partner/{partnerId}/unlink-donor")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('DONOR')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('DONOR')")
     public ResponseEntity<ApiResponse<String>> unlinkPartnerFromDonor(@PathVariable Long partnerId) {
         try {
             // Check if donor can unlink this partner
@@ -981,6 +1053,161 @@ public class UserController {
             ApiResponse<User> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve donor", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get all supporting documents for a user
+     * GET /api/auth/users/{userId}/supporting-documents
+     */
+    @GetMapping("/users/{userId}/supporting-documents")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER')")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getUserSupportingDocuments(@PathVariable Long userId) {
+        try {
+            logger.info("Fetching supporting documents for user ID: {}", userId);
+            
+            List<UserDocument> documents = userDocumentRepository.findByUserId(userId);
+            
+            List<Map<String, Object>> documentMetadata = documents.stream()
+                .map(doc -> {
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put("id", doc.getId());
+                    metadata.put("fileName", doc.getFileName());
+                    metadata.put("fileType", doc.getFileType());
+                    metadata.put("fileSize", doc.getFileSize() != null ? doc.getFileSize() : 0);
+                    metadata.put("uploadedAt", doc.getUploadedAt() != null ? doc.getUploadedAt().toString() : null);
+                    metadata.put("documentType", doc.getFileName()); // Using fileName as documentType for now
+                    return metadata;
+                })
+                .collect(Collectors.toList());
+
+            logger.info("Found {} supporting documents for user ID: {}", documentMetadata.size(), userId);
+
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Supporting documents retrieved successfully",
+                documentMetadata
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Error retrieving supporting documents for user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve supporting documents: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Download a specific supporting document
+     * GET /api/auth/users/{userId}/supporting-documents/{documentId}/download
+     */
+    @GetMapping("/users/{userId}/supporting-documents/{documentId}/download")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER')")
+    public ResponseEntity<?> downloadUserDocument(@PathVariable Long userId, @PathVariable Long documentId) {
+        try {
+            logger.info("Downloading document ID: {} for user ID: {}", documentId, userId);
+            
+            Optional<UserDocument> documentOpt = userDocumentRepository.findById(documentId);
+            
+            if (documentOpt.isEmpty()) {
+                logger.warn("Document not found with ID: {}", documentId);
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            UserDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified user
+            if (!document.getUserId().equals(userId)) {
+                logger.warn("Document {} does not belong to user {}", documentId, userId);
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Document does not belong to the specified user",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            logger.info("Returning document: {} ({})", document.getFileName(), document.getFileType());
+
+            // Return the file with appropriate headers for download
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getFileType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename=\"" + document.getFileName() + "\"")
+                .body(document.getFileData());
+
+        } catch (Exception e) {
+            logger.error("Error downloading document {} for user {}: {}", documentId, userId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to download document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * View a specific supporting document (inline viewing)
+     * GET /api/auth/users/{userId}/supporting-documents/{documentId}/view
+     */
+    @GetMapping("/users/{userId}/supporting-documents/{documentId}/view")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER')")
+    public ResponseEntity<?> viewUserDocument(@PathVariable Long userId, @PathVariable Long documentId) {
+        try {
+            logger.info("Viewing document ID: {} for user ID: {}", documentId, userId);
+            
+            Optional<UserDocument> documentOpt = userDocumentRepository.findById(documentId);
+            
+            if (documentOpt.isEmpty()) {
+                logger.warn("Document not found with ID: {}", documentId);
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            UserDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified user
+            if (!document.getUserId().equals(userId)) {
+                logger.warn("Document {} does not belong to user {}", documentId, userId);
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Document does not belong to the specified user",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            logger.info("Returning document for inline view: {} ({})", document.getFileName(), document.getFileType());
+
+            // Return the file with appropriate headers for inline viewing
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getFileType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "inline; filename=\"" + document.getFileName() + "\"")
+                .body(document.getFileData());
+
+        } catch (Exception e) {
+            logger.error("Error viewing document {} for user {}: {}", documentId, userId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to view document: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
