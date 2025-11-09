@@ -289,6 +289,58 @@
             </div>
         </div>
 
+        <!-- Document Viewer Modal -->
+        <div id="documentViewerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-modal="true">
+            <div class="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200">
+                    <h3 id="documentViewerFileName" class="text-lg font-semibold text-gray-800">Document Viewer</h3>
+                    <div class="flex gap-2">
+                        <button id="documentViewerDownloadBtn" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+                            <i class="fas fa-download mr-1"></i>Download
+                        </button>
+                        <button onclick="closeDocumentViewer()" class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">
+                            <i class="fas fa-times mr-1"></i>Close
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="relative w-full h-full p-4 overflow-auto">
+                    <!-- Loading State -->
+                    <div id="documentViewerLoading" class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                            <p class="text-gray-600">Loading document...</p>
+                        </div>
+                    </div>
+
+                    <!-- PDF/Image Content -->
+                    <div id="documentViewerContent" class="hidden w-full h-full"></div>
+
+                    <!-- Office Document Content -->
+                    <div id="officeDocumentViewerContent" class="hidden w-full h-full"></div>
+
+                    <!-- Unsupported Document -->
+                    <div id="unsupportedDocumentContent" class="hidden flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-600 mb-4">This document type cannot be previewed.</p>
+                            <p class="text-sm text-gray-500">Please download the file to view it.</p>
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="documentViewerError" class="hidden flex items-center justify-center h-full">
+                        <div class="text-center text-red-600">
+                            <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                            <p>Error loading document</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
@@ -959,7 +1011,7 @@
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.activityType || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${(project.themes || []).map(t => t.name || t).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.county).join(', ')}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.mapsAddress || l.county || 'Unknown').join(', ')}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonRole || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonEmail || ''}</td>
@@ -1216,7 +1268,13 @@
         async function fetchProjectDocuments(projectId) {
             try {
                 console.log(`[Documents] Fetching documents for project ID: ${projectId}`);
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                
+                if (!token) {
+                    console.error('[Documents] No authentication token found');
+                    return null;
+                }
+                
                 const response = await fetch(`${window.BASE_URL}/api/projects/${projectId}/documents`, {
                     method: 'GET',
                     headers: {
@@ -1284,11 +1342,18 @@
                             <p class="text-xs text-gray-500">${formatFileSize(doc.fileSize || doc.size)}</p>
                         </div>
                     </div>
-                    <a href="${window.BASE_URL}/api/projects/${projectId}/documents/${doc.id}" 
-                       target="_blank"
-                       class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
-                        <i class="fas fa-download mr-1"></i>Download
-                    </a>
+                    <div class="flex gap-2">
+                        <button 
+                           onclick="viewProjectDocument(${projectId}, ${doc.id}, '${doc.fileName}')"
+                           class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition">
+                            <i class="fas fa-eye mr-1"></i>View
+                        </button>
+                        <a href="${window.BASE_URL}/api/projects/${projectId}/documents/${doc.id}" 
+                           target="_blank"
+                           class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
+                            <i class="fas fa-download mr-1"></i>Download
+                        </a>
+                    </div>
                 </div>
             `).join('');
         }
@@ -2036,7 +2101,11 @@
                                     <div>
                                         <strong class="text-gray-700">Locations:</strong>
                                         <div class="mt-2 space-y-1">
-                                            ${project.locations.map(loc => `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
+                                            ${project.locations.map(loc => {
+                                                // Show mapsAddress if available (contains full hospital name), otherwise fallback to county
+                                                const displayName = loc.mapsAddress || (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                                                return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}</div>`;
+                                            }).join('')}
                                         </div>
                                     </div>
                                 ` : ''}
@@ -2223,6 +2292,90 @@
 
         window.closeProjectDetailsModal = function () {
             const modal = document.getElementById('projectDetailsModal');
+            modal.classList.add('hidden');
+        };
+
+        // View Project Document Function
+        window.viewProjectDocument = async function(projectId, documentId, fileName = 'Document') {
+            const modal = document.getElementById('documentViewerModal');
+            const loadingElement = document.getElementById('documentViewerLoading');
+            const contentElement = document.getElementById('documentViewerContent');
+            const officeContentElement = document.getElementById('officeDocumentViewerContent');
+            const unsupportedElement = document.getElementById('unsupportedDocumentContent');
+            const errorElement = document.getElementById('documentViewerError');
+            const fileNameElement = document.getElementById('documentViewerFileName');
+            const downloadBtn = document.getElementById('documentViewerDownloadBtn');
+
+            // Show modal
+            modal.classList.remove('hidden');
+
+            // Set filename in modal title
+            fileNameElement.textContent = fileName || 'Document';
+
+            // Reset states - hide all containers
+            loadingElement.classList.remove('hidden');
+            contentElement.classList.add('hidden');
+            officeContentElement.classList.add('hidden');
+            unsupportedElement.classList.add('hidden');
+            errorElement.classList.add('hidden');
+
+            // Setup download button
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.href = `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`;
+                link.download = fileName;
+                link.click();
+            };
+
+            try {
+                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                const response = await fetch(
+                    `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}/view`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Failed to view document: ${response.statusText}`);
+                }
+
+                const contentType = response.headers.get('Content-Type') || 'application/pdf';
+                console.log('Document Content-Type:', contentType);
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+
+                loadingElement.classList.add('hidden');
+
+                // Handle different file types
+                if (contentType.includes('pdf')) {
+                    contentElement.innerHTML = `<iframe src="${url}" class="w-full h-full" frameborder="0"></iframe>`;
+                    contentElement.classList.remove('hidden');
+                } else if (contentType.includes('image')) {
+                    contentElement.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain mx-auto" alt="${fileName}" />`;
+                    contentElement.classList.remove('hidden');
+                } else if (contentType.includes('word') || contentType.includes('excel') || contentType.includes('powerpoint') || 
+                           fileName.match(/\.(docx?|xlsx?|pptx?)$/i)) {
+                    const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(window.BASE_URL + '/api/projects/' + projectId + '/documents/' + documentId)}`;
+                    officeContentElement.innerHTML = `<iframe src="${officeUrl}" class="w-full h-full" frameborder="0"></iframe>`;
+                    officeContentElement.classList.remove('hidden');
+                } else {
+                    unsupportedElement.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error viewing document:', error);
+                loadingElement.classList.add('hidden');
+                errorElement.textContent = `Error: ${error.message}`;
+                errorElement.classList.remove('hidden');
+            }
+        };
+
+        window.closeDocumentViewer = function() {
+            const modal = document.getElementById('documentViewerModal');
             modal.classList.add('hidden');
         };
     </script>

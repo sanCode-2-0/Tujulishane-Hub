@@ -1186,11 +1186,13 @@ public class ProjectController {
 
     /**
      * Get list of documents for a project (metadata only, no binary data)
+     * OPTIMIZED: Uses direct query to avoid loading LOB data
      */
     @GetMapping("/{projectId}/documents")
     @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getProjectDocuments(@PathVariable Long projectId) {
         try {
+            // Verify project exists first
             Optional<Project> project = projectService.getProjectById(projectId);
             
             if (project.isEmpty()) {
@@ -1202,18 +1204,12 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            List<ProjectDocument> documents = project.get().getSupportingDocuments();
-            List<Map<String, Object>> documentMetadata = documents.stream()
-                .map(doc -> {
-                    Map<String, Object> metadata = new HashMap<>();
-                    metadata.put("id", doc.getId());
-                    metadata.put("fileName", doc.getFileName());
-                    metadata.put("fileType", doc.getFileType());
-                    // Use fileSize field instead of accessing LOB data
-                    metadata.put("size", doc.getFileSize() != null ? doc.getFileSize() : 0);
-                    return metadata;
-                })
-                .collect(Collectors.toList());
+            // Use optimized query that ONLY fetches metadata (id, fileName, fileType, size)
+            // This avoids loading the LOB data field which can be very slow
+            List<Map<String, Object>> documentMetadata = projectDocumentRepository.findMetadataByProjectId(projectId);
+
+            logger.info("Retrieved {} document(s) metadata for project {} (optimized query)", 
+                        documentMetadata.size(), projectId);
 
             ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
