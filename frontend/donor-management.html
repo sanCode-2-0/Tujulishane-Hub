@@ -154,15 +154,167 @@
           </nav>
         </div>
 
-        <!-- Donors List -->
+        <!-- Donors List (ADMIN ONLY) -->
         <div id="donorsSection" class="tab-content">
           <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                All Donors
-              </h3>
+              <!-- Admin Welcome Banner (Only visible to admins) -->
+              <div
+                id="adminBanner"
+                class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mb-6 hidden"
+              >
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-shield text-purple-600 text-3xl"></i>
+                  </div>
+                  <div class="ml-4 flex-1">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                      Donor Organizations Management
+                    </h3>
+                    <p class="text-sm text-gray-700 mb-3">
+                      As a system administrator, you can view all donor
+                      organizations and manage their partnerships with
+                      implementing partners.
+                    </p>
+                    <div
+                      class="bg-white rounded-md p-3 border border-purple-100"
+                    >
+                      <p class="text-sm text-gray-600 mb-2 font-medium">
+                        <i class="fas fa-info-circle text-purple-500 mr-2"></i
+                        >Admin Capabilities:
+                      </p>
+                      <ul class="text-xs text-gray-600 space-y-1 ml-6">
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i>View
+                          all donor organizations in the system
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i
+                          >Monitor donor-partner relationships
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i>Manage
+                          partnerships on behalf of donors
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i>Search
+                          and filter donor organizations
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Admin-only section header and controls -->
+              <div id="adminDonorControls" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                      All Donors
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1">
+                      Click on a donor to view and manage their partner
+                      organizations
+                    </p>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span id="donorCount" class="text-sm text-gray-500"></span>
+                  </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div
+                  class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+                  id="donorSearchFilters"
+                >
+                  <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      <i class="fas fa-search mr-1"></i>Search Donors
+                    </label>
+                    <div class="relative">
+                      <input
+                        type="text"
+                        id="donorSearch"
+                        placeholder="Search donors by name or email..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <i
+                        class="fas fa-search absolute left-3 top-3 text-gray-400"
+                      ></i>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      <i class="fas fa-filter mr-1"></i>Filter by Status
+                    </label>
+                    <select
+                      id="donorApprovalFilter"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">All Status</option>
+                      <option value="APPROVED">Approved</option>
+                      <option value="PENDING">Pending</option>
+                      <option value="REJECTED">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="donorsLoading" class="hidden">
+                  <div class="animate-pulse space-y-4">
+                    <div class="flex items-center py-4 border-b">
+                      <div
+                        class="h-10 w-10 bg-gray-300 rounded-full mr-4"
+                      ></div>
+                      <div class="flex-1">
+                        <div class="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                    <div class="flex items-center py-4 border-b">
+                      <div
+                        class="h-10 w-10 bg-gray-300 rounded-full mr-4"
+                      ></div>
+                      <div class="flex-1">
+                        <div class="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End of admin-only controls -->
+              </div>
+
+              <!-- Donors List -->
               <div id="donorsList" class="space-y-4">
                 <!-- Donors will be loaded here -->
+              </div>
+
+              <!-- Pagination -->
+              <div
+                id="donorsPagination"
+                class="mt-6 flex justify-between items-center hidden"
+              >
+                <div class="text-sm text-gray-700">
+                  Showing <span id="donorsPageInfo"></span>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    id="donorsPrevBtn"
+                    onclick="previousDonorsPage()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    id="donorsNextBtn"
+                    onclick="nextDonorsPage()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -172,18 +324,165 @@
         <div id="partnersSection" class="tab-content hidden">
           <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                My Partner Organizations
-              </h3>
+              <!-- Welcome Banner for Donors -->
+              <div
+                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6"
+              >
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-handshake text-blue-600 text-3xl"></i>
+                  </div>
+                  <div class="ml-4 flex-1">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                      Partner Management Dashboard
+                    </h3>
+                    <p class="text-sm text-gray-700 mb-3">
+                      Welcome to your partner management portal. Here you can
+                      link partner organizations to your donor account, enabling
+                      collaborative project management and funding oversight.
+                    </p>
+                    <div class="bg-white rounded-md p-3 border border-blue-100">
+                      <p class="text-sm text-gray-600 mb-2 font-medium">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i
+                        >What you can do:
+                      </p>
+                      <ul class="text-xs text-gray-600 space-y-1 ml-6">
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i>Link
+                          partner organizations to your account
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i>View
+                          and manage all your partnerships
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i
+                          >Monitor partner project activities
+                        </li>
+                        <li>
+                          <i class="fas fa-check text-green-500 mr-2"></i
+                          >Receive notifications about partnership changes
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    My Partner Organizations
+                  </h3>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Organizations you've linked for collaboration and project
+                    oversight
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span id="partnerCount" class="text-sm text-gray-500"></span>
+                </div>
+              </div>
+
+              <!-- Search and Filters -->
+              <div
+                class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+                id="partnerSearchFilters"
+              >
+                <div class="col-span-2">
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    <i class="fas fa-search mr-1"></i>Search Partners
+                  </label>
+                  <div class="relative">
+                    <input
+                      type="text"
+                      id="partnerSearch"
+                      placeholder="Search partners by name or email..."
+                      class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <i
+                      class="fas fa-search absolute left-3 top-3 text-gray-400"
+                    ></i>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    <i class="fas fa-filter mr-1"></i>Filter by Status
+                  </label>
+                  <select
+                    id="partnerApprovalFilter"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">All Status</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Loading State -->
+              <div id="partnersLoading" class="hidden">
+                <div class="animate-pulse space-y-4">
+                  <div class="border rounded-lg p-4">
+                    <div class="h-4 bg-gray-300 rounded w-1/3 mb-2"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div class="border rounded-lg p-4">
+                    <div class="h-4 bg-gray-300 rounded w-1/3 mb-2"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Partners List -->
               <div id="partnersList" class="space-y-4">
                 <!-- Partners will be loaded here -->
               </div>
-              <div class="mt-6">
+
+              <!-- Pagination -->
+              <div
+                id="partnersPagination"
+                class="mt-6 flex justify-between items-center hidden"
+              >
+                <div class="text-sm text-gray-700">
+                  Showing <span id="partnersPageInfo"></span>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    id="partnersPrevBtn"
+                    onclick="previousPartnersPage()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    id="partnersNextBtn"
+                    onclick="nextPartnersPage()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="mt-6 flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200"
+              >
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900 mb-1">
+                    Ready to add a partner?
+                  </p>
+                  <p class="text-xs text-gray-600">
+                    Link approved partner organizations to enable them to create
+                    and manage projects under your funding.
+                  </p>
+                </div>
                 <button
                   onclick="showLinkPartnerModal()"
-                  class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  class="ml-4 inline-flex items-center px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-all hover:shadow-md"
                 >
-                  <i class="fas fa-plus mr-2"></i>Link New Partner
+                  <i class="fas fa-plus-circle mr-2"></i>Link New Partner
                 </button>
               </div>
             </div>
@@ -291,10 +590,78 @@
       </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div
+      id="confirmationModal"
+      class="fixed inset-0 backdrop-blur-md bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3">
+          <div
+            class="flex items-center justify-center h-12 w-12 mx-auto bg-blue-100 rounded-full"
+          >
+            <i class="fas fa-question-circle text-blue-600 text-2xl"></i>
+          </div>
+          <h3
+            class="text-lg font-medium text-gray-900 text-center mt-4"
+            id="confirmationTitle"
+          >
+            Confirm Action
+          </h3>
+          <p
+            class="text-sm text-gray-500 text-center mt-2"
+            id="confirmationMessage"
+          >
+            Are you sure you want to proceed?
+          </p>
+          <div class="flex justify-center space-x-3 mt-6">
+            <button
+              type="button"
+              onclick="hideConfirmationModal()"
+              class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="confirmationConfirmBtn"
+              class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="styles/loadNav.js"></script>
     <script src="styles/authnav.js"></script>
     <script>
       let currentUser = null;
+      let allDonors = [];
+      let allPartners = [];
+      let filteredDonors = [];
+      let filteredPartners = [];
+
+      // Pagination state
+      let donorsPagination = {
+        currentPage: 0,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 0,
+      };
+
+      let partnersPagination = {
+        currentPage: 0,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 0,
+      };
+
+      // Confirmation modal state
+      let confirmationCallback = null;
 
       function updateUserDisplayWhenNavReady(user) {
         // Check if nav is already loaded
@@ -398,7 +765,20 @@
           setupTabsForRole();
 
           // Load initial data
-          if (currentUser.role === "SUPER_ADMIN_APPROVER") {
+          if (
+            currentUser.role === "SUPER_ADMIN_APPROVER" ||
+            currentUser.role === "SUPER_ADMIN"
+          ) {
+            // Show admin banner and controls
+            const adminBanner = document.getElementById("adminBanner");
+            if (adminBanner) {
+              adminBanner.classList.remove("hidden");
+            }
+            const adminDonorControls =
+              document.getElementById("adminDonorControls");
+            if (adminDonorControls) {
+              adminDonorControls.classList.remove("hidden");
+            }
             document.getElementById("donorsSection").classList.remove("hidden");
             loadDonors();
           } else if (currentUser.role === "DONOR") {
@@ -431,7 +811,10 @@
           return;
         }
 
-        if (currentUser.role === "SUPER_ADMIN_APPROVER") {
+        if (
+          currentUser.role === "SUPER_ADMIN_APPROVER" ||
+          currentUser.role === "SUPER_ADMIN"
+        ) {
           tabNavigation.innerHTML = `
             <button id="donorsTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
               All Donors
@@ -499,6 +882,9 @@
         const auth = new AuthManager();
         const token = auth.getToken();
 
+        // Show loading state
+        showDonorsLoading();
+
         try {
           const response = await fetch(`${auth.baseUrl}/api/auth/donors`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -509,17 +895,29 @@
           }
 
           const donors = await response.json();
-          displayDonors(donors.data || donors);
+          allDonors = donors.data || donors;
+          filteredDonors = [...allDonors];
+
+          // Setup search and filter listeners
+          setupDonorSearchAndFilters();
+
+          // Display first page
+          updateDonorsPagination();
+          displayDonorsPage();
+          hideDonorsLoading();
         } catch (error) {
           console.error("Error loading donors:", error);
-          document.getElementById("donorsList").innerHTML =
-            '<p class="text-red-600">Error loading donors</p>';
+          hideDonorsLoading();
+          showDonorsError(error.message);
         }
       }
 
       async function loadMyPartners() {
         const auth = new AuthManager();
         const token = auth.getToken();
+
+        // Show loading state
+        showPartnersLoading();
 
         try {
           const response = await fetch(
@@ -534,42 +932,370 @@
           }
 
           const partners = await response.json();
-          displayPartners(partners.data || partners);
+          allPartners = partners.data || partners;
+          filteredPartners = [...allPartners];
+
+          // Setup search and filter listeners
+          setupPartnerSearchAndFilters();
+
+          // Display first page
+          updatePartnersPagination();
+          displayPartnersPage();
+          hidePartnersLoading();
         } catch (error) {
           console.error("Error loading partners:", error);
-          document.getElementById("partnersList").innerHTML =
-            '<p class="text-red-600">Error loading partners</p>';
+          hidePartnersLoading();
+          showPartnersError(error.message);
+        }
+      }
+
+      // Loading states
+      function showDonorsLoading() {
+        document.getElementById("donorsLoading").classList.remove("hidden");
+        document.getElementById("donorsList").classList.add("hidden");
+        document.getElementById("donorsPagination").classList.add("hidden");
+      }
+
+      function hideDonorsLoading() {
+        document.getElementById("donorsLoading").classList.add("hidden");
+        document.getElementById("donorsList").classList.remove("hidden");
+      }
+
+      function showPartnersLoading() {
+        document.getElementById("partnersLoading").classList.remove("hidden");
+        document.getElementById("partnersList").classList.add("hidden");
+        document.getElementById("partnersPagination").classList.add("hidden");
+      }
+
+      function hidePartnersLoading() {
+        document.getElementById("partnersLoading").classList.add("hidden");
+        document.getElementById("partnersList").classList.remove("hidden");
+      }
+
+      // Error displays
+      function showDonorsError(message) {
+        document.getElementById("donorsList").innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+              <div>
+                <p class="text-red-800 font-medium">Error loading donors</p>
+                <p class="text-red-600 text-sm">${message}</p>
+              </div>
+            </div>
+            <button 
+              onclick="loadDonors()" 
+              class="mt-3 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              <i class="fas fa-redo mr-1"></i>Try again
+            </button>
+          </div>
+        `;
+      }
+
+      function showPartnersError(message) {
+        document.getElementById("partnersList").innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+              <div>
+                <p class="text-red-800 font-medium">Error loading partners</p>
+                <p class="text-red-600 text-sm">${message}</p>
+              </div>
+            </div>
+            <button 
+              onclick="loadMyPartners()" 
+              class="mt-3 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              <i class="fas fa-redo mr-1"></i>Try again
+            </button>
+          </div>
+        `;
+      }
+
+      // Search and Filter Setup
+      function setupDonorSearchAndFilters() {
+        const searchInput = document.getElementById("donorSearch");
+        const filterSelect = document.getElementById("donorApprovalFilter");
+
+        // Remove existing listeners
+        const newSearchInput = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+        const newFilterSelect = filterSelect.cloneNode(true);
+        filterSelect.parentNode.replaceChild(newFilterSelect, filterSelect);
+
+        // Add new listeners
+        newSearchInput.addEventListener("input", filterDonors);
+        newFilterSelect.addEventListener("change", filterDonors);
+      }
+
+      function setupPartnerSearchAndFilters() {
+        const searchInput = document.getElementById("partnerSearch");
+        const filterSelect = document.getElementById("partnerApprovalFilter");
+
+        // Remove existing listeners
+        const newSearchInput = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+        const newFilterSelect = filterSelect.cloneNode(true);
+        filterSelect.parentNode.replaceChild(newFilterSelect, filterSelect);
+
+        // Add new listeners
+        newSearchInput.addEventListener("input", filterPartners);
+        newFilterSelect.addEventListener("change", filterPartners);
+      }
+
+      // Filter functions
+      function filterDonors() {
+        const searchTerm = document
+          .getElementById("donorSearch")
+          .value.toLowerCase();
+        const statusFilter = document.getElementById(
+          "donorApprovalFilter"
+        ).value;
+
+        filteredDonors = allDonors.filter((donor) => {
+          const matchesSearch =
+            donor.name.toLowerCase().includes(searchTerm) ||
+            donor.email.toLowerCase().includes(searchTerm);
+          const matchesStatus =
+            !statusFilter || donor.approvalStatus === statusFilter;
+          return matchesSearch && matchesStatus;
+        });
+
+        donorsPagination.currentPage = 0;
+        updateDonorsPagination();
+        displayDonorsPage();
+      }
+
+      function filterPartners() {
+        const searchTerm = document
+          .getElementById("partnerSearch")
+          .value.toLowerCase();
+        const statusFilter = document.getElementById(
+          "partnerApprovalFilter"
+        ).value;
+
+        filteredPartners = allPartners.filter((partner) => {
+          const matchesSearch =
+            partner.name.toLowerCase().includes(searchTerm) ||
+            partner.email.toLowerCase().includes(searchTerm);
+          const matchesStatus =
+            !statusFilter || partner.approvalStatus === statusFilter;
+          return matchesSearch && matchesStatus;
+        });
+
+        partnersPagination.currentPage = 0;
+        updatePartnersPagination();
+        displayPartnersPage();
+      }
+
+      // Pagination functions
+      function updateDonorsPagination() {
+        donorsPagination.totalItems = filteredDonors.length;
+        donorsPagination.totalPages = Math.ceil(
+          filteredDonors.length / donorsPagination.pageSize
+        );
+      }
+
+      function updatePartnersPagination() {
+        partnersPagination.totalItems = filteredPartners.length;
+        partnersPagination.totalPages = Math.ceil(
+          filteredPartners.length / partnersPagination.pageSize
+        );
+      }
+
+      function displayDonorsPage() {
+        const start = donorsPagination.currentPage * donorsPagination.pageSize;
+        const end = start + donorsPagination.pageSize;
+        const donorsToDisplay = filteredDonors.slice(start, end);
+
+        displayDonors(donorsToDisplay);
+        updateDonorsPaginationUI();
+      }
+
+      function displayPartnersPage() {
+        const start =
+          partnersPagination.currentPage * partnersPagination.pageSize;
+        const end = start + partnersPagination.pageSize;
+        const partnersToDisplay = filteredPartners.slice(start, end);
+
+        displayPartners(partnersToDisplay);
+        updatePartnersPaginationUI();
+      }
+
+      function updateDonorsPaginationUI() {
+        const pagination = document.getElementById("donorsPagination");
+        const pageInfo = document.getElementById("donorsPageInfo");
+        const prevBtn = document.getElementById("donorsPrevBtn");
+        const nextBtn = document.getElementById("donorsNextBtn");
+        const countSpan = document.getElementById("donorCount");
+
+        if (donorsPagination.totalPages > 1) {
+          pagination.classList.remove("hidden");
+          const start =
+            donorsPagination.currentPage * donorsPagination.pageSize + 1;
+          const end = Math.min(
+            (donorsPagination.currentPage + 1) * donorsPagination.pageSize,
+            donorsPagination.totalItems
+          );
+          pageInfo.textContent = `${start}-${end} of ${donorsPagination.totalItems}`;
+
+          prevBtn.disabled = donorsPagination.currentPage === 0;
+          nextBtn.disabled =
+            donorsPagination.currentPage >= donorsPagination.totalPages - 1;
+        } else {
+          pagination.classList.add("hidden");
+        }
+
+        countSpan.textContent = `(${donorsPagination.totalItems} ${
+          donorsPagination.totalItems === 1 ? "donor" : "donors"
+        })`;
+      }
+
+      function updatePartnersPaginationUI() {
+        const pagination = document.getElementById("partnersPagination");
+        const pageInfo = document.getElementById("partnersPageInfo");
+        const prevBtn = document.getElementById("partnersPrevBtn");
+        const nextBtn = document.getElementById("partnersNextBtn");
+        const countSpan = document.getElementById("partnerCount");
+
+        if (partnersPagination.totalPages > 1) {
+          pagination.classList.remove("hidden");
+          const start =
+            partnersPagination.currentPage * partnersPagination.pageSize + 1;
+          const end = Math.min(
+            (partnersPagination.currentPage + 1) * partnersPagination.pageSize,
+            partnersPagination.totalItems
+          );
+          pageInfo.textContent = `${start}-${end} of ${partnersPagination.totalItems}`;
+
+          prevBtn.disabled = partnersPagination.currentPage === 0;
+          nextBtn.disabled =
+            partnersPagination.currentPage >= partnersPagination.totalPages - 1;
+        } else {
+          pagination.classList.add("hidden");
+        }
+
+        countSpan.textContent = `(${partnersPagination.totalItems} ${
+          partnersPagination.totalItems === 1 ? "partner" : "partners"
+        })`;
+      }
+
+      function previousDonorsPage() {
+        if (donorsPagination.currentPage > 0) {
+          donorsPagination.currentPage--;
+          displayDonorsPage();
+        }
+      }
+
+      function nextDonorsPage() {
+        if (donorsPagination.currentPage < donorsPagination.totalPages - 1) {
+          donorsPagination.currentPage++;
+          displayDonorsPage();
+        }
+      }
+
+      function previousPartnersPage() {
+        if (partnersPagination.currentPage > 0) {
+          partnersPagination.currentPage--;
+          displayPartnersPage();
+        }
+      }
+
+      function nextPartnersPage() {
+        if (
+          partnersPagination.currentPage <
+          partnersPagination.totalPages - 1
+        ) {
+          partnersPagination.currentPage++;
+          displayPartnersPage();
         }
       }
 
       function displayDonors(donors) {
         const donorsList = document.getElementById("donorsList");
+        const searchFilters = document.getElementById("donorSearchFilters");
 
         if (!donors || donors.length === 0) {
-          donorsList.innerHTML = '<p class="text-gray-500">No donors found</p>';
+          // Hide search/filters when no donors
+          if (allDonors.length === 0) {
+            searchFilters.classList.add("hidden");
+            donorsList.innerHTML = `
+              <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
+                  <i class="fas fa-hand-holding-usd text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Donor Organizations Found</h3>
+                <p class="text-gray-600 mb-4 max-w-md mx-auto">
+                  There are currently no donor organizations registered in the system.
+                </p>
+              </div>
+            `;
+          } else {
+            // Show filters but no results message
+            searchFilters.classList.remove("hidden");
+            donorsList.innerHTML = `
+              <div class="text-center py-8">
+                <i class="fas fa-search text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No donors match your search criteria</p>
+                <button 
+                  onclick="clearDonorFilters()" 
+                  class="mt-3 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <i class="fas fa-times-circle mr-1"></i>Clear filters
+                </button>
+              </div>
+            `;
+          }
           return;
         }
+
+        // Show search/filters when donors exist
+        searchFilters.classList.remove("hidden");
 
         donorsList.innerHTML = donors
           .map(
             (donor) => `
-						<div class="flex items-center py-4 border-b last:border-b-0 hover:bg-gray-50 transition duration-150">
-							<div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-lg font-medium text-blue-800 mr-4">
-								<button onclick="viewDonorPartners(${donor.id})">
-									${donor.name.charAt(0)}
-								</button>
+						<div class="flex items-center py-4 px-4 border border-gray-200 rounded-lg mb-3 hover:shadow-md transition-all duration-150 cursor-pointer" onclick="viewDonorPartners(${
+              donor.id
+            })">
+							<div class="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-xl font-bold text-white mr-4 shadow-sm">
+								${donor.name.charAt(0).toUpperCase()}
 							</div>
 							
 							<div class="flex-1 min-w-0">
 								<p class="text-base font-semibold text-gray-900 truncate">${donor.name}</p>
-								<p class="text-sm text-gray-500 truncate">${donor.email}</p>
+								<p class="text-sm text-gray-500 truncate">
+                  <i class="fas fa-envelope text-xs mr-1"></i>${donor.email}
+                </p>
+                ${
+                  donor.organization
+                    ? `
+                  <p class="text-xs text-gray-600 mt-1">
+                    <i class="fas fa-building text-xs mr-1"></i>${
+                      donor.organization.name || donor.organization
+                    }
+                  </p>
+                `
+                    : ""
+                }
 							</div>
 							
-							<div class="ml-4 flex-shrink-0 flex items-center space-x-4">
-								<button onclick="viewDonorPartners(${
-                  donor.id
-                })" class="text-sm font-medium text-blue-600 hover:text-blue-800">
-									<i class="far fa-cog mr-1 text-xs"></i> Manage Donor
+							<div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  donor.approvalStatus === "APPROVED"
+                    ? "bg-green-100 text-green-800"
+                    : donor.approvalStatus === "PENDING"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-red-100 text-red-800"
+                }">
+                  ${donor.approvalStatus || "PENDING"}
+                </span>
+								<button 
+                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                  title="View and manage partnerships"
+                >
+									<i class="fas fa-users mr-1"></i> Manage Partners
 								</button>
 							</div>
 						</div>
@@ -578,29 +1304,130 @@
           .join("");
       }
 
+      function clearDonorFilters() {
+        document.getElementById("donorSearch").value = "";
+        document.getElementById("donorApprovalFilter").value = "";
+        filterDonors();
+      }
+
       function displayPartners(partners) {
         const partnersList = document.getElementById("partnersList");
+        const searchFilters = document.getElementById("partnerSearchFilters");
 
         if (!partners || partners.length === 0) {
-          partnersList.innerHTML =
-            '<p class="text-gray-500">No partners linked yet</p>';
+          // Hide search/filters when no partners
+          if (allPartners.length === 0) {
+            searchFilters.classList.add("hidden");
+            partnersList.innerHTML = `
+              <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                  <i class="fas fa-users text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Partner Organizations Yet</h3>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                  You haven't linked any partner organizations yet. Click the button below to get started and 
+                  establish partnerships with organizations implementing projects.
+                </p>
+                <button
+                  onclick="showLinkPartnerModal()"
+                  class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-colors"
+                >
+                  <i class="fas fa-plus-circle mr-2"></i>Link Your First Partner
+                </button>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg max-w-lg mx-auto">
+                  <p class="text-xs text-gray-600 text-left">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    <strong>How it works:</strong> Linking partners allows them to create projects under your funding organization. 
+                    You'll be able to monitor their activities and provide oversight for funded initiatives.
+                  </p>
+                </div>
+              </div>
+            `;
+          } else {
+            // Show filters but no results message
+            searchFilters.classList.remove("hidden");
+            partnersList.innerHTML = `
+              <div class="text-center py-8">
+                <i class="fas fa-search text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No partners match your search criteria</p>
+                <button 
+                  onclick="clearPartnerFilters()" 
+                  class="mt-3 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <i class="fas fa-times-circle mr-1"></i>Clear filters
+                </button>
+              </div>
+            `;
+          }
           return;
         }
+
+        // Show search/filters when partners exist
+        searchFilters.classList.remove("hidden");
 
         partnersList.innerHTML = partners
           .map(
             (partner) => `
-                <div class="border rounded-lg p-4">
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-medium text-gray-900">${partner.name}</h4>
-                            <p class="text-sm text-gray-600">${partner.email}</p>
-                            <p class="text-sm text-gray-500">Status: ${partner.approvalStatus}</p>
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold mr-3">
+                                ${partner.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <h4 class="font-semibold text-gray-900">${
+                                  partner.name
+                                }</h4>
+                                <p class="text-xs text-gray-500">
+                                  <i class="fas fa-envelope mr-1"></i>${
+                                    partner.email
+                                  }
+                                </p>
+                              </div>
+                            </div>
+                            ${
+                              partner.organization
+                                ? `
+                              <p class="text-sm text-gray-600 mt-2">
+                                <i class="fas fa-building mr-1 text-gray-400"></i>
+                                ${
+                                  partner.organization.name ||
+                                  partner.organization
+                                }
+                              </p>
+                            `
+                                : ""
+                            }
+                            ${
+                              partner.thematicArea
+                                ? `
+                              <p class="text-xs text-blue-600 mt-1">
+                                <i class="fas fa-tag mr-1"></i>${partner.thematicArea}
+                              </p>
+                            `
+                                : ""
+                            }
+                            <div class="mt-3">
+                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                partner.approvalStatus === "APPROVED"
+                                  ? "bg-green-100 text-green-800"
+                                  : partner.approvalStatus === "PENDING"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                              }">
+                                <i class="fas fa-circle text-xs mr-1"></i>
+                                ${partner.approvalStatus || "PENDING"}
+                              </span>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <button onclick="unlinkPartner(${partner.id})"
-                                    class="text-red-600 hover:text-red-800 text-sm">
-                                <i class="fas fa-unlink mr-1"></i>Unlink
+                        <div class="text-right ml-4">
+                            <button 
+                              onclick="unlinkPartner(${partner.id})"
+                              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                              title="Remove this partnership"
+                            >
+                              <i class="fas fa-unlink mr-1"></i>Unlink
                             </button>
                         </div>
                     </div>
@@ -608,6 +1435,12 @@
             `
           )
           .join("");
+      }
+
+      function clearPartnerFilters() {
+        document.getElementById("partnerSearch").value = "";
+        document.getElementById("partnerApprovalFilter").value = "";
+        filterPartners();
       }
 
       function viewDonorPartners(donorId) {
@@ -732,6 +1565,32 @@
           '<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"><h3 class="text-lg font-semibold text-blue-900 mb-2">Donor Management Portal</h3><p class="text-blue-700">Welcome to your donor management dashboard.</p></div>';
       }
 
+      // Confirmation Modal Functions
+      function showConfirmationModal(title, message, callback) {
+        document.getElementById("confirmationTitle").textContent = title;
+        document.getElementById("confirmationMessage").textContent = message;
+        confirmationCallback = callback;
+        document.getElementById("confirmationModal").classList.remove("hidden");
+      }
+
+      function hideConfirmationModal() {
+        document.getElementById("confirmationModal").classList.add("hidden");
+        confirmationCallback = null;
+      }
+
+      // Setup confirmation button click
+      document.addEventListener("DOMContentLoaded", function () {
+        const confirmBtn = document.getElementById("confirmationConfirmBtn");
+        if (confirmBtn) {
+          confirmBtn.addEventListener("click", function () {
+            if (confirmationCallback) {
+              confirmationCallback();
+            }
+            hideConfirmationModal();
+          });
+        }
+      });
+
       async function unlinkPartner(partnerId) {
         const confirmed = await showConfirm(
           "Are you sure you want to unlink this partner?",
@@ -838,6 +1697,9 @@
           e.preventDefault();
 
           const partnerId = document.getElementById("partnerSelect").value;
+          const partnerSelect = document.getElementById("partnerSelect");
+          const partnerName =
+            partnerSelect.options[partnerSelect.selectedIndex].text;
 
           if (!partnerId) {
             await showAlert(
@@ -848,38 +1710,47 @@
             return;
           }
 
-          const auth = new AuthManager();
-          const token = auth.getToken();
+          // Show confirmation modal
+          showConfirmationModal(
+            "Confirm Partner Link",
+            `Are you sure you want to link ${partnerName} to your organization?`,
+            async function () {
+              const auth = new AuthManager();
+              const token = auth.getToken();
 
-          try {
-            const response = await fetch(
-              `${auth.baseUrl}/api/auth/partner/${partnerId}/link-donor/${currentUser.id}`,
-              {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
+              try {
+                const response = await fetch(
+                  `${auth.baseUrl}/api/auth/partner/${partnerId}/link-donor/${currentUser.id}`,
+                  {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                  }
+                );
+
+                if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(
+                    errorData.message || "Failed to link partner"
+                  );
+                }
+
+                await showAlert(
+                  "Partner linked successfully. Notification email has been sent.",
+                  "Success",
+                  "success"
+                );
+                hideLinkPartnerModal();
+                loadMyPartners(); // Refresh the list
+              } catch (error) {
+                console.error("Error linking partner:", error);
+                await showAlert(
+                  "Error linking partner: " + error.message,
+                  "Error",
+                  "error"
+                );
               }
-            );
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || "Failed to link partner");
             }
-
-            await showAlert(
-              "Partner linked successfully",
-              "Success",
-              "success"
-            );
-            hideLinkPartnerModal();
-            loadMyPartners(); // Refresh the list
-          } catch (error) {
-            console.error("Error linking partner:", error);
-            await showAlert(
-              "Error linking partner: " + error.message,
-              "Error",
-              "error"
-            );
-          }
+          );
         });
 
       function loadMyDonor() {

@@ -483,6 +483,62 @@ public class UserService {
             if (partner.getRole() == User.Role.PARTNER && donor.getRole() == User.Role.DONOR) {
                 partner.setParentDonor(donor);
                 userRepository.save(partner);
+                
+                // Send email notifications
+                try {
+                    // Notify the partner
+                    String partnerMessage = String.format(
+                        "Dear %s,\n\n" +
+                        "Your organization has been successfully linked to the donor organization: %s.\n\n" +
+                        "This partnership will enable better collaboration and project management.\n\n" +
+                        "Donor Organization Details:\n" +
+                        "Name: %s\n" +
+                        "Email: %s\n" +
+                        (donor.getOrganization() != null ? "Organization: " + donor.getOrganization().getName() + "\n" : "") +
+                        "\n" +
+                        "You can now view your donor details in the Donor Management section.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        partner.getName(),
+                        donor.getName(),
+                        donor.getName(),
+                        donor.getEmail()
+                    );
+                    
+                    emailService.sendEmail(
+                        partner.getEmail(),
+                        "Partnership Established - Linked to Donor Organization",
+                        partnerMessage
+                    );
+                    
+                    // Notify the donor
+                    String donorMessage = String.format(
+                        "Dear %s,\n\n" +
+                        "A new partner organization has been linked to your account.\n\n" +
+                        "Partner Organization Details:\n" +
+                        "Name: %s\n" +
+                        "Email: %s\n" +
+                        (partner.getOrganization() != null ? "Organization: " + partner.getOrganization().getName() + "\n" : "") +
+                        (partner.getThematicArea() != null ? "Thematic Area: " + partner.getThematicArea().getDisplayName() + "\n" : "") +
+                        "\n" +
+                        "You can now manage this partnership through the Donor Management portal.\n\n" +
+                        "Best regards,\n" +
+                        "Tujulishane Hub Team",
+                        donor.getName(),
+                        partner.getName(),
+                        partner.getEmail()
+                    );
+                    
+                    emailService.sendEmail(
+                        donor.getEmail(),
+                        "New Partner Organization Linked",
+                        donorMessage
+                    );
+                } catch (Exception e) {
+                    // Log error but don't fail the operation
+                    System.err.println("Failed to send partnership notification emails: " + e.getMessage());
+                }
+                
                 return true;
             }
         }
@@ -498,8 +554,56 @@ public class UserService {
         if (partnerOptional.isPresent()) {
             User partner = partnerOptional.get();
             if (partner.getRole() == User.Role.PARTNER) {
+                User donor = partner.getParentDonor();
                 partner.setParentDonor(null);
                 userRepository.save(partner);
+                
+                // Send email notifications if donor existed
+                if (donor != null) {
+                    try {
+                        // Notify the partner
+                        String partnerMessage = String.format(
+                            "Dear %s,\n\n" +
+                            "Your partnership with the donor organization %s has been ended.\n\n" +
+                            "If you have any questions about this change, please contact the administrator.\n\n" +
+                            "Best regards,\n" +
+                            "Tujulishane Hub Team",
+                            partner.getName(),
+                            donor.getName()
+                        );
+                        
+                        emailService.sendEmail(
+                            partner.getEmail(),
+                            "Partnership Ended - Unlinked from Donor Organization",
+                            partnerMessage
+                        );
+                        
+                        // Notify the donor
+                        String donorMessage = String.format(
+                            "Dear %s,\n\n" +
+                            "The partner organization %s has been unlinked from your account.\n\n" +
+                            "Partner Details:\n" +
+                            "Name: %s\n" +
+                            "Email: %s\n\n" +
+                            "Best regards,\n" +
+                            "Tujulishane Hub Team",
+                            donor.getName(),
+                            partner.getName(),
+                            partner.getName(),
+                            partner.getEmail()
+                        );
+                        
+                        emailService.sendEmail(
+                            donor.getEmail(),
+                            "Partner Organization Unlinked",
+                            donorMessage
+                        );
+                    } catch (Exception e) {
+                        // Log error but don't fail the operation
+                        System.err.println("Failed to send unlink notification emails: " + e.getMessage());
+                    }
+                }
+                
                 return true;
             }
         }

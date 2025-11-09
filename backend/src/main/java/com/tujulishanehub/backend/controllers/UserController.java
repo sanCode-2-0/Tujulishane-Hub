@@ -557,10 +557,20 @@ public class UserController {
      * Get current user profile
      */
     @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<UserProfileDTO>> getCurrentUser() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            
+            // Check if user is authenticated
+            if (auth == null || !auth.isAuthenticated() || auth.getName() == null || auth.getName().equals("anonymousUser")) {
+                ApiResponse<UserProfileDTO> response = new ApiResponse<>(
+                    HttpStatus.UNAUTHORIZED.value(), 
+                    "Authentication required", 
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            
             String email = auth.getName();
             User user = userService.getUserByEmail(email);
             
