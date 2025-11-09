@@ -88,6 +88,8 @@
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
     <script src="auth.js"></script>
     <!-- Optional: Google Font -->
     <link
@@ -381,8 +383,10 @@
             currentUser.role !== "SUPER_ADMIN_APPROVER"
           ) {
             console.log("DEBUG: Access denied - role check failed");
-            alert(
-              "Access denied. Only donors and approving admins can access this page."
+            await showAlert(
+              "Access denied. Only donors and approving admins can access this page.",
+              "Access Denied",
+              "error"
             );
             window.location.href = "dashboard.html";
             return;
@@ -411,7 +415,11 @@
           }
         } catch (error) {
           console.error("Error initializing page:", error);
-          alert("Error initializing page: " + error.message);
+          await showAlert(
+            "Error initializing page: " + error.message,
+            "Error",
+            "error"
+          );
           // window.location.href = "index.html";
         }
       });
@@ -725,7 +733,13 @@
       }
 
       async function unlinkPartner(partnerId) {
-        if (!confirm("Are you sure you want to unlink this partner?")) {
+        const confirmed = await showConfirm(
+          "Are you sure you want to unlink this partner?",
+          "Confirm Unlink",
+          "Yes, Unlink",
+          "Cancel"
+        );
+        if (!confirmed) {
           return;
         }
 
@@ -745,11 +759,19 @@
             throw new Error("Failed to unlink partner");
           }
 
-          alert("Partner unlinked successfully");
+          await showAlert(
+            "Partner unlinked successfully",
+            "Success",
+            "success"
+          );
           loadMyPartners(); // Refresh the list
         } catch (error) {
           console.error("Error unlinking partner:", error);
-          alert("Error unlinking partner: " + error.message);
+          await showAlert(
+            "Error unlinking partner: " + error.message,
+            "Error",
+            "error"
+          );
         }
       }
 
@@ -818,7 +840,11 @@
           const partnerId = document.getElementById("partnerSelect").value;
 
           if (!partnerId) {
-            alert("Please select a partner organization");
+            await showAlert(
+              "Please select a partner organization",
+              "Validation Error",
+              "warning"
+            );
             return;
           }
 
@@ -839,12 +865,20 @@
               throw new Error(errorData.message || "Failed to link partner");
             }
 
-            alert("Partner linked successfully");
+            await showAlert(
+              "Partner linked successfully",
+              "Success",
+              "success"
+            );
             hideLinkPartnerModal();
             loadMyPartners(); // Refresh the list
           } catch (error) {
             console.error("Error linking partner:", error);
-            alert("Error linking partner: " + error.message);
+            await showAlert(
+              "Error linking partner: " + error.message,
+              "Error",
+              "error"
+            );
           }
         });
 

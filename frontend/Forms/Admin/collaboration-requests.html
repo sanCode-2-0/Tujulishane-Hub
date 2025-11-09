@@ -33,6 +33,8 @@
       href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
+    <!-- Modal Utilities -->
+    <script src="../../modal-utils.js"></script>
     <script src="../../auth.js"></script>
     <script>
       // Set the BASE_URL - you may need to adjust this to match your config
@@ -193,7 +195,11 @@
               }
             } catch (error) {
               console.error("Error loading requests:", error);
-              alert("Failed to load collaboration requests");
+              await showAlert(
+                "Failed to load collaboration requests",
+                "Error",
+                "error"
+              );
             } finally {
               this.loading = false;
             }
@@ -233,22 +239,28 @@
                 console.log(
                   "Request approved successfully, reloading requests..."
                 );
-                alert(
-                  "Collaboration request approved successfully! Partner has been granted access to the project."
+                await showAlert(
+                  "Collaboration request approved successfully! Partner has been granted access to the project.",
+                  "Success",
+                  "success"
                 );
                 this.showApproveModal = false;
                 await this.loadRequests();
               } else {
                 console.error("Approval failed:", data);
-                alert(
+                await showAlert(
                   "Error: " +
-                    (data.message || "Failed to approve collaboration request")
+                    (data.message || "Failed to approve collaboration request"),
+                  "Error",
+                  "error"
                 );
               }
             } catch (error) {
               console.error("Error approving request:", error);
-              alert(
-                "Failed to approve collaboration request. Please try again."
+              await showAlert(
+                "Failed to approve collaboration request. Please try again.",
+                "Error",
+                "error"
               );
             } finally {
               this.processing = false;
@@ -277,17 +289,23 @@
                 console.log(
                   "Request declined successfully, reloading requests..."
                 );
-                alert("Collaboration request declined.");
+                await showAlert(
+                  "Collaboration request declined.",
+                  "Success",
+                  "success"
+                );
                 this.showDeclineModal = false;
                 await this.loadRequests();
               } else {
                 console.error("Decline failed:", data);
-                alert("Error: " + data.message);
+                await showAlert("Error: " + data.message, "Error", "error");
               }
             } catch (error) {
               console.error("Error declining request:", error);
-              alert(
-                "Failed to decline collaboration request. Please try again."
+              await showAlert(
+                "Failed to decline collaboration request. Please try again.",
+                "Error",
+                "error"
               );
             } finally {
               this.processing = false;

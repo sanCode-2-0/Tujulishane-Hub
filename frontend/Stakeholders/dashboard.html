@@ -34,6 +34,8 @@
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
     <script src="../config.js"></script>
     <script src="../set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="../modal-utils.js"></script>
 
     <link
       rel="stylesheet"
@@ -2553,8 +2555,10 @@
 
         // Check authentication
         if (!authManager || !authManager.isAuthenticated()) {
-          alert(
-            "You must be logged in to create a project. Please log in first."
+          await showAlert(
+            "You must be logged in to create a project. Please log in first.",
+            "Authentication Required",
+            "warning"
           );
           window.location.href = "../index.html";
           return;
@@ -2690,10 +2694,12 @@
 
         if (missingFields.length > 0) {
           const missingLabels = missingFields.map((f) => f.label);
-          alert(
+          await showAlert(
             `Please fill in all required fields:\n• ${missingLabels.join(
               "\n• "
-            )}`
+            )}`,
+            "Validation Error",
+            "warning"
           );
 
           // Focus on the first missing field
@@ -2748,8 +2754,10 @@
 
           if (response.ok) {
             const result = await response.json();
-            alert(
-              "Project created successfully! Your project has been submitted for review."
+            await showAlert(
+              "Project created successfully! Your project has been submitted for review.",
+              "Success",
+              "success"
             );
             form.reset();
             locations.forEach((location) => {
@@ -2795,8 +2803,10 @@
             console.error(
               `❌ Submission failed. Status: ${response.status} ${response.statusText}`
             );
-            alert(
-              `Failed to create project: ${errorMessage}\nStatus: ${response.status} ${response.statusText}\nDetails: ${errorDetails}`
+            await showAlert(
+              `Failed to create project: ${errorMessage}\nStatus: ${response.status} ${response.statusText}\nDetails: ${errorDetails}`,
+              "Error",
+              "error"
             );
           }
         } catch (error) {
@@ -2941,8 +2951,10 @@
             // Ensure logging itself does not break the submission flow
             console.error("Error while collecting diagnostics:", logErr);
           }
-          alert(
-            "Failed to create project. Please check your connection and try again."
+          await showAlert(
+            "Failed to create project. Please check your connection and try again.",
+            "Error",
+            "error"
           );
         } finally {
           // Restore button state
@@ -2957,7 +2969,11 @@
 
         if (!authManager || !authManager.isAuthenticated()) {
           console.warn("⚠️ User not authenticated, redirecting to login...");
-          alert("You must be logged in to access this page.");
+          await showAlert(
+            "You must be logged in to access this page.",
+            "Authentication Required",
+            "warning"
+          );
           window.location.href = "../index.html";
           return;
         }

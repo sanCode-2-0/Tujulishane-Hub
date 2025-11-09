@@ -83,6 +83,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <!-- Authentication utilities -->
     <script type="module">
       // Try to load a local config override (frontend/config.local.js) if present.
@@ -745,7 +748,11 @@
           }
         } catch (error) {
           console.error("Failed to load user settings:", error);
-          alert("Failed to load settings. Please try logging in again.");
+          await showAlert(
+            "Failed to load settings. Please try logging in again.",
+            "Error",
+            "error"
+          );
           authManager.logout();
         }
 
@@ -765,10 +772,18 @@
             // Save notification preferences
             saveNotificationPreferences();
 
-            alert("Settings updated successfully!");
+            await showAlert(
+              "Settings updated successfully!",
+              "Success",
+              "success"
+            );
           } catch (error) {
             console.error("Failed to update settings:", error);
-            alert("Failed to update settings. Please try again.");
+            await showAlert(
+              "Failed to update settings. Please try again.",
+              "Error",
+              "error"
+            );
           }
         });
       });

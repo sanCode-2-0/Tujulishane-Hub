@@ -56,6 +56,8 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
+    <!-- Modal Utilities -->
+    <script src="modal-utils.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
       rel="stylesheet"
@@ -1384,7 +1386,11 @@
             }
 
             if (!data.locations || data.locations.length === 0) {
-              alert("Please select at least one location on the map.");
+              await showAlert(
+                "Please select at least one location on the map.",
+                "Validation Error",
+                "warning"
+              );
               return;
             }
 
@@ -1482,8 +1488,10 @@
 
             if (response.ok) {
               console.log("Past project submitted successfully!");
-              alert(
-                "Past project submitted successfully! The project has been marked as completed."
+              await showAlert(
+                "Past project submitted successfully! The project has been marked as completed.",
+                "Success",
+                "success"
               );
               window.location.href = "past-projects.html";
             } else {
@@ -1510,18 +1518,23 @@
               console.error("Final error message:", errorMessage);
               console.error("Full error details:", errorDetails);
 
-              alert("Failed to create project: " + errorMessage);
+              await showAlert(
+                "Failed to create project: " + errorMessage,
+                "Error",
+                "error"
+              );
             }
           } catch (error) {
             console.error("Error processing form data:", error);
             console.error("Error stack:", error.stack);
-            alert(
-              "Error processing form data. Please try again. Check console for details."
+            await showAlert(
+              "Error processing form data. Please try again. Check console for details.",
+              "Error",
+              "error"
             );
           }
         });
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
   </body>
 </html>

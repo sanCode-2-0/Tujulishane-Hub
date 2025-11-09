@@ -48,6 +48,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <script>
       // Try to load a local config override (frontend/config.local.js) if present.
       // This is optional and safe to 404 — it won't break page load.
@@ -261,7 +264,7 @@
               }
             } catch (error) {
               console.error("Error loading announcements:", error);
-              alert("Failed to load announcements");
+              await showAlert("Failed to load announcements", "Error", "error");
             } finally {
               this.loading = false;
             }
@@ -404,13 +407,23 @@
               // Check if response is OK before parsing JSON
               if (!response.ok) {
                 if (response.status === 403) {
-                  alert(
-                    "Permission denied. You may not have access to create announcements."
+                  await showAlert(
+                    "Permission denied. You may not have access to create announcements.",
+                    "Permission Denied",
+                    "error"
                   );
                 } else if (response.status === 401) {
-                  alert("You must be logged in to create announcements.");
+                  await showAlert(
+                    "You must be logged in to create announcements.",
+                    "Authentication Required",
+                    "warning"
+                  );
                 } else {
-                  alert(`Error: Server returned status ${response.status}`);
+                  await showAlert(
+                    `Error: Server returned status ${response.status}`,
+                    "Error",
+                    "error"
+                  );
                 }
                 return;
               }
@@ -418,7 +431,11 @@
               const data = await response.json();
 
               if (data.status === 201) {
-                alert("Announcement created successfully!");
+                await showAlert(
+                  "Announcement created successfully!",
+                  "Success",
+                  "success"
+                );
                 this.showCreateModal = false;
                 this.newAnnouncement = {
                   projectId: "",
@@ -428,11 +445,19 @@
                 };
                 await this.loadAnnouncements();
               } else {
-                alert("Error: " + (data.message || "Unknown error occurred"));
+                await showAlert(
+                  "Error: " + (data.message || "Unknown error occurred"),
+                  "Error",
+                  "error"
+                );
               }
             } catch (error) {
               console.error("Error creating announcement:", error);
-              alert("Failed to create announcement. Please try again.");
+              await showAlert(
+                "Failed to create announcement. Please try again.",
+                "Error",
+                "error"
+              );
             } finally {
               this.creating = false;
             }
@@ -485,36 +510,47 @@
               // Check if response is OK
               if (!response.ok) {
                 if (response.status === 403) {
-                  alert(
+                  await showAlert(
                     "Permission denied: " +
                       (data.message ||
-                        "You may not have access to submit collaboration requests.")
+                        "You may not have access to submit collaboration requests."),
+                    "Permission Denied",
+                    "error"
                   );
                 } else if (response.status === 401) {
-                  alert(
+                  await showAlert(
                     "Authentication required: " +
                       (data.message ||
-                        "You must be logged in to submit a collaboration request.")
+                        "You must be logged in to submit a collaboration request."),
+                    "Authentication Required",
+                    "warning"
                   );
                 } else if (response.status === 400) {
-                  alert(
+                  await showAlert(
                     "Invalid request: " +
-                      (data.message || "Please check your input and try again.")
+                      (data.message ||
+                        "Please check your input and try again."),
+                    "Invalid Request",
+                    "error"
                   );
                 } else {
-                  alert(
+                  await showAlert(
                     `Error: ${
                       data.message ||
                       "Server returned status " + response.status
-                    }`
+                    }`,
+                    "Error",
+                    "error"
                   );
                 }
                 return;
               }
 
               if (data.status === 201) {
-                alert(
-                  "Collaboration request submitted successfully! The Ministry of Health will review your request."
+                await showAlert(
+                  "Collaboration request submitted successfully! The Ministry of Health will review your request.",
+                  "Success",
+                  "success"
                 );
                 this.showRequestModal = false;
                 this.collaborationRequest = {
@@ -524,12 +560,18 @@
                 // Reload collaboration requests to update the UI
                 await this.loadMyCollaborationRequests();
               } else {
-                alert("Error: " + (data.message || "Unknown error occurred"));
+                await showAlert(
+                  "Error: " + (data.message || "Unknown error occurred"),
+                  "Error",
+                  "error"
+                );
               }
             } catch (error) {
               console.error("Error submitting request:", error);
-              alert(
-                "Failed to submit collaboration request. Please try again."
+              await showAlert(
+                "Failed to submit collaboration request. Please try again.",
+                "Error",
+                "error"
               );
             } finally {
               this.submitting = false;

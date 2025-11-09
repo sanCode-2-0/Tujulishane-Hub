@@ -16,6 +16,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -1818,7 +1821,14 @@
 
       // User Actions
       async function approveUser(userId) {
-        if (!confirm("Are you sure you want to approve this user?")) {
+        const confirmed = await showConfirm(
+          "Are you sure you want to approve this user?",
+          "Approve User",
+          "Approve",
+          "Cancel"
+        );
+
+        if (!confirmed) {
           return;
         }
 
@@ -1912,11 +1922,14 @@
       }
 
       async function deleteUser(userId) {
-        if (
-          !confirm(
-            "Are you sure you want to permanently delete this user? This action cannot be undone."
-          )
-        ) {
+        const confirmed = await showConfirm(
+          "Are you sure you want to permanently delete this user? This action cannot be undone.",
+          "Delete User",
+          "Delete",
+          "Cancel"
+        );
+
+        if (!confirmed) {
           return;
         }
 
@@ -1944,27 +1957,9 @@
       }
 
       function viewUserDetails(userId) {
-        const user = allUsers.find((u) => u.id === userId);
-        if (!user) {
-          showToast("User not found", "error");
-          return;
-        }
-
-        alert(
-          `
-User Details:
-━━━━━━━━━━━━━━━━━━━━━
-Name: ${user.name || "N/A"}
-Email: ${user.email}
-Role: ${user.role}
-Status: ${user.status}
-Approval Status: ${user.approvalStatus}
-Organization: ${user.organization?.name || "N/A"}
-Created: ${formatDate(user.createdAt)}
-Last Login: ${formatDate(user.lastLogin)}
-${user.rejectionReason ? "\nRejection Reason: " + user.rejectionReason : ""}
-            `.trim()
-        );
+        // This function now redirects to the detailed modal view
+        // which provides better UX with document viewing capabilities
+        viewPendingUserDetails(userId);
       }
 
       // View Pending User Details with Supporting Documents

@@ -67,6 +67,8 @@
     <!-- Backend URL Configuration - Centralized in config.js -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
     <script src="auth.js"></script>
     <script src="kenya-locations.js"></script>
 
@@ -986,7 +988,7 @@
       }
 
       // Perform map search and zoom
-      function performMapSearch() {
+      async function performMapSearch() {
         console.log("performMapSearch called");
         console.log("Total projects available:", projects.length);
         if (projects.length > 0) {
@@ -1118,7 +1120,11 @@
         console.log("Matching locations found:", matchingLocations.length);
 
         if (matchingLocations.length === 0) {
-          alert("No projects found matching your search criteria.");
+          await showAlert(
+            "No projects found matching your search criteria.",
+            "No Results",
+            "info"
+          );
           return;
         }
 
@@ -2243,8 +2249,10 @@
         // Check if user is authenticated
         if (!authManager.isAuthenticated()) {
           console.log("[DEBUG] initializeUserSession: User not authenticated");
-          alert(
-            "You must be logged in to access this page. (See console for details)"
+          await showAlert(
+            "You must be logged in to access this page. (See console for details)",
+            "Authentication Required",
+            "warning"
           );
           // Prevent redirect for debugging
           throw new Error("Not authenticated");
@@ -2307,7 +2315,11 @@
             "[DEBUG] initializeUserSession: Failed to load user session:",
             error
           );
-          alert("Failed to load user session. Please log in again.");
+          await showAlert(
+            "Failed to load user session. Please log in again.",
+            "Session Error",
+            "error"
+          );
           authManager.logout();
         }
       }

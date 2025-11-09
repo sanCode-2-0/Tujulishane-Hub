@@ -30,6 +30,8 @@
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <script src="styles/main.js"></script>
@@ -537,7 +539,10 @@
     <script>
         async function requestOtp() {
             const email = document.getElementById("loginEmail").value;
-            if (!email) return alert("Please enter your email");
+            if (!email) {
+                await showAlert("Please enter your email", "Validation Error", "warning");
+                return;
+            }
 
             // Show loading state
             const btn = document.getElementById("loginBtn");
@@ -563,12 +568,12 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || "Login failed");
 
-                alert("OTP sent to your email. Please check your inbox.");
+                await showAlert("OTP sent to your email. Please check your inbox.", "Success", "success");
                 localStorage.setItem("pendingEmail", email);
                 localStorage.setItem("isLogin", "true");
                 window.location.href = "otp.html";
             } catch (err) {
-                alert(err.message || "Failed to send OTP");
+                await showAlert(err.message || "Failed to send OTP", "Error", "error");
 
                 // Reset button state on error
                 btn.disabled = false;
@@ -588,7 +593,7 @@
 
             // Basic validation
             if (!name || !email) {
-                alert("Please fill in all required fields (Name and Email)");
+                await showAlert("Please fill in all required fields (Name and Email)", "Validation Error", "warning");
                 return false;
             }
 
@@ -641,12 +646,12 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || "Registration failed");
 
-                alert("Registration successful! Check your email for the OTP.");
+                await showAlert("Registration successful! Check your email for the OTP.", "Success", "success");
                 localStorage.setItem("pendingEmail", email);
                 window.location.href = "otp.html";
             } catch (err) {
                 console.error("Registration error:", err);
-                alert(err.message);
+                await showAlert(err.message, "Error", "error");
 
                 // Reset button state on error
                 btn.disabled = false;

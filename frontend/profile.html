@@ -69,6 +69,9 @@
 	<script src="./config.js"></script>
 	<script src="./set-base-url.js"></script>
 	
+	<!-- Modal Utilities -->
+	<script src="./modal-utils.js"></script>
+	
 	<link rel="stylesheet" href="styles/main.css" />
 	<!-- Authentication utilities -->
 	<script type="module">
@@ -340,7 +343,7 @@
 														} catch (error) {
 															console.error("Failed to load user profile:", error);
 															// Optionally show an error message or redirect
-															alert("Failed to load profile. Please try logging in again.");
+															await showAlert("Failed to load profile. Please try logging in again.", "Error", "error");
 															authManager.logout();
 														}
 													});

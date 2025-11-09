@@ -33,6 +33,8 @@
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -374,7 +376,11 @@
             }
           }
           if (res.ok && data && data.status === 200 && data.data) {
-            alert(JSON.stringify(data.data, null, 2));
+            await showAlert(
+              JSON.stringify(data.data, null, 2),
+              "Organization Details",
+              "info"
+            );
           } else {
             showMessage(
               (data && data.message) || "Failed to load organization",
@@ -524,8 +530,15 @@
 
       // Admin: Delete Organization
       async function deleteOrganization(id) {
-        if (!confirm("Are you sure you want to delete this organization?"))
-          return;
+        const confirmed = await showConfirm(
+          "Are you sure you want to delete this organization?",
+          "Delete Organization",
+          "Delete",
+          "Cancel"
+        );
+
+        if (!confirmed) return;
+
         try {
           const res = await fetch(`${API_BASE}/admin/${id}`, {
             method: "DELETE",

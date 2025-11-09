@@ -79,6 +79,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <!-- Optional: Google Font -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
@@ -148,7 +151,11 @@
 
       document.addEventListener("DOMContentLoaded", async function () {
         if (!authManager.isAuthenticated()) {
-          alert("You must be logged in to access the dashboard.");
+          await showAlert(
+            "You must be logged in to access the dashboard.",
+            "Authentication Required",
+            "warning"
+          );
           window.location.href = "frontend/index.html";
           return;
         }
@@ -288,7 +295,11 @@
       }
 
       function showDashboardError() {
-        alert("Failed to load dashboard data. Please try again later.");
+        showAlert(
+          "Failed to load dashboard data. Please try again later.",
+          "Error",
+          "error"
+        );
       }
     </script>
     <div
@@ -1235,8 +1246,10 @@
         // Check if user is authenticated
         if (!authManager.isAuthenticated()) {
           console.log("[DEBUG] initializeUserSession: User not authenticated");
-          alert(
-            "You must be logged in to access this page. (See console for details)"
+          await showAlert(
+            "You must be logged in to access this page. (See console for details)",
+            "Authentication Required",
+            "warning"
           );
           // Prevent redirect for debugging
           throw new Error("Not authenticated");
@@ -1299,7 +1312,11 @@
             "[DEBUG] initializeUserSession: Failed to load user session:",
             error
           );
-          alert("Failed to load user session. Please log in again.");
+          await showAlert(
+            "Failed to load user session. Please log in again.",
+            "Session Error",
+            "error"
+          );
           authManager.logout();
         }
       }

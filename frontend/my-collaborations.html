@@ -38,6 +38,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <script
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
@@ -1080,7 +1083,11 @@
               }
             } catch (error) {
               console.error("Error loading collaborations:", error);
-              alert("Failed to load your collaborations");
+              await showAlert(
+                "Failed to load your collaborations",
+                "Error",
+                "error"
+              );
             } finally {
               this.loading = false;
             }

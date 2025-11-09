@@ -56,6 +56,8 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
+    <!-- Modal Utilities -->
+    <script src="modal-utils.js"></script>
   </head>
 
   <body class="bg-gray-50">
@@ -1289,7 +1291,11 @@
             }
 
             if (!data.locations || data.locations.length === 0) {
-              alert("Please select at least one location on the map.");
+              await showAlert(
+                "Please select at least one location on the map.",
+                "Validation Error",
+                "warning"
+              );
               return;
             }
 
@@ -1366,8 +1372,10 @@
 
             if (!token) {
               console.error("❌ No authentication token found!");
-              alert(
-                "You must be logged in to create a project. Please log in first."
+              await showAlert(
+                "You must be logged in to create a project. Please log in first.",
+                "Authentication Required",
+                "warning"
               );
               window.location.href = "index.html";
               return;
@@ -1393,7 +1401,11 @@
 
             if (response.ok) {
               console.log("Project created successfully!");
-              alert("Project created successfully!");
+              await showAlert(
+                "Project created successfully!",
+                "Success",
+                "success"
+              );
               window.location.href = "projects.html";
             } else {
               let errorMessage = "Unknown error";
@@ -1419,13 +1431,19 @@
               console.error("Final error message:", errorMessage);
               console.error("Full error details:", errorDetails);
 
-              alert("Failed to create project: " + errorMessage);
+              await showAlert(
+                "Failed to create project: " + errorMessage,
+                "Error",
+                "error"
+              );
             }
           } catch (error) {
             console.error("Error processing form data:", error);
             console.error("Error stack:", error.stack);
-            alert(
-              "Error processing form data. Please try again. Check console for details."
+            await showAlert(
+              "Error processing form data. Please try again. Check console for details.",
+              "Error",
+              "error"
             );
           }
         });

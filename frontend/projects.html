@@ -32,6 +32,8 @@
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -688,7 +690,8 @@
                                     html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="submitReport(${project.id})">Submit Report</button>`;
                                 }                                // Mark project as stalled (exposed globally)
                                 window.stalledProject = async function (id) {
-                                    if (!confirm('Mark this project as stalled?')) return;
+                                    const confirmed = await showConfirm('Mark this project as stalled?', 'Mark as Stalled', 'Mark as Stalled', 'Cancel');
+                                    if (!confirmed) return;
                                     try {
                                         const headers = {
                                             'Content-Type': 'application/json',
@@ -706,20 +709,21 @@
                                             console.error('[stalledProject] Failed to parse JSON:', jsonErr);
                                         }
                                         if (res.ok && data && data.message) {
-                                            alert(data.message || 'Project marked as stalled');
+                                            await showAlert(data.message || 'Project marked as stalled', 'Success', 'success');
                                         } else {
-                                            alert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status));
+                                            await showAlert('Failed to mark project as stalled: ' + (data && data.message ? data.message : res.status), 'Error', 'error');
                                         }
                                         reloadAfterAction(['active', 'stalled']);
                                     } catch (e) {
                                         console.error('[stalledProject] Exception:', e);
-                                        alert('Failed to mark project as stalled: ' + e);
+                                        await showAlert('Failed to mark project as stalled: ' + e, 'Error', 'error');
                                     }
                                 }
 
                                 // Mark project as completed (new function)
                                 window.completedProject = async function (id) {
-                                    if (!confirm('Mark this project as completed?')) return;
+                                    const confirmed = await showConfirm('Mark this project as completed?', 'Mark as Completed', 'Mark as Completed', 'Cancel');
+                                    if (!confirmed) return;
                                     try {
                                         const headers = {
                                             'Content-Type': 'application/json',
@@ -737,14 +741,14 @@
                                             console.error('[completedProject] Failed to parse JSON:', jsonErr);
                                         }
                                         if (res.ok && data && data.message) {
-                                            alert(data.message || 'Project marked as completed');
+                                            await showAlert(data.message || 'Project marked as completed', 'Success', 'success');
                                         } else {
-                                            alert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status));
+                                            await showAlert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status), 'Error', 'error');
                                         }
                                         reloadAfterAction(['active', 'completed']);
                                     } catch (e) {
                                         console.error('[completedProject] Exception:', e);
-                                        alert('Failed to mark project as completed: ' + e);
+                                        await showAlert('Failed to mark project as completed: ' + e, 'Error', 'error');
                                     }
                                 }
 
@@ -753,7 +757,8 @@
 
                             // Mark project as completed (exposed globally)
                             window.completeProject = async function (id) {
-                                if (!confirm('Mark this project as completed?')) return;
+                                const confirmed = await showConfirm('Mark this project as completed?', 'Mark as Completed', 'Mark as Completed', 'Cancel');
+                                if (!confirmed) return;
                                 try {
                                     const headers = {
                                         'Content-Type': 'application/json',
@@ -771,14 +776,14 @@
                                         console.error('[completeProject] Failed to parse JSON:', jsonErr);
                                     }
                                     if (res.ok && data && data.message) {
-                                        alert(data.message || 'Project marked as completed');
+                                        await showAlert(data.message || 'Project marked as completed', 'Success', 'success');
                                     } else {
-                                        alert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status));
+                                        await showAlert('Failed to mark project as completed: ' + (data && data.message ? data.message : res.status), 'Error', 'error');
                                     }
                                     reloadAfterAction(['active', 'completed']);
                                 } catch (e) {
                                     console.error('[completeProject] Exception:', e);
-                                    alert('Failed to mark project as completed: ' + e);
+                                    await showAlert('Failed to mark project as completed: ' + e, 'Error', 'error');
                                 }
                             }
 
@@ -1029,7 +1034,8 @@
 
                             // Action handlers
                             async function approveProject(id) {
-                                if (!confirm('Approve this project?')) return;
+                                const confirmed = await showConfirm('Approve this project?', 'Approve Project', 'Approve', 'Cancel');
+                                if (!confirmed) return;
                                 try {
                                     console.log('[approveProject] Sending POST to', `${API_BASE}/projects/admin/approve/${id}`);
                                     const headers = {
@@ -1050,14 +1056,14 @@
                                     }
                                     console.log('[approveProject] Response data:', data);
                                     if (res.ok && data && data.message) {
-                                        alert(data.message || 'Project approved');
+                                        await showAlert(data.message || 'Project approved', 'Success', 'success');
                                     } else {
-                                        alert('Failed to approve project: ' + (data && data.message ? data.message : res.status));
+                                        await showAlert('Failed to approve project: ' + (data && data.message ? data.message : res.status), 'Error', 'error');
                                     }
                                     reloadAfterAction(['pending', 'active']);
                                 } catch (e) {
                                     console.error('[approveProject] Exception:', e);
-                                    alert('Failed to approve project: ' + e);
+                                    await showAlert('Failed to approve project: ' + e, 'Error', 'error');
                                 }
                             }
 
@@ -1102,31 +1108,31 @@
                                     }
 
                                     if (res.ok) {
-                                        alert((data && data.message) || 'Project rejected');
+                                        await showAlert((data && data.message) || 'Project rejected', 'Success', 'success');
                                         closeRejectModal();
                                         reloadAfterAction(['pending']);
                                     } else {
-                                        alert((data && data.message) || 'Failed to reject project.');
+                                        await showAlert((data && data.message) || 'Failed to reject project.', 'Error', 'error');
                                     }
                                 } catch (e) {
                                     console.error('Failed to reject project', e);
-                                    alert('Failed to reject project');
+                                    await showAlert('Failed to reject project', 'Error', 'error');
                                 }
                             }
 
                             function editProject(id) {
                                 // Redirect to edit page or open modal (implement as needed)
-                                alert('Edit project ' + id);
+                                showAlert('Edit project ' + id, 'Edit Project', 'info');
                             }
 
                             function reactivateProject(id) {
                                 // Implement re-activation logic as needed
-                                alert('Re-activate project ' + id);
+                                showAlert('Re-activate project ' + id, 'Reactivate Project', 'info');
                             }
 
                             function submitReport(id) {
                                 // Implement report submission logic as needed
-                                alert('Submit report for project ' + id);
+                                showAlert('Submit report for project ' + id, 'Submit Report', 'info');
                             }
 
                             // On page load: choose between global view and "My Projects" view
@@ -1811,7 +1817,7 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        alert('Project created successfully!');
+                        await showAlert('Project created successfully!', 'Success', 'success');
                         // Close modal and refresh page
                         const modal = document.getElementById('createNewProject');
                         if (modal) {
@@ -1819,11 +1825,11 @@
                         }
                         location.reload();
                     } else {
-                        alert('Error creating project: ' + (result.message || 'Unknown error'));
+                        await showAlert('Error creating project: ' + (result.message || 'Unknown error'), 'Error', 'error');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error creating project. Please try again.');
+                    await showAlert('Error creating project. Please try again.', 'Error', 'error');
                 }
             });
 

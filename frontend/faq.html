@@ -59,6 +59,9 @@
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
 
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+
     <!-- Authentication utilities -->
     <script type="module">
       // Use window.BASE_URL which is already set by config.js loaded via script tag
@@ -2637,8 +2640,10 @@
       async function initializeUserSession() {
         // Check if user is authenticated
         if (!authManager.isAuthenticated()) {
-          alert(
-            "You must be logged in to access this page. (See console for details)"
+          await showAlert(
+            "You must be logged in to access this page. (See console for details)",
+            "Authentication Required",
+            "warning"
           );
           // Prevent redirect for debugging
           throw new Error("Not authenticated");
@@ -2678,7 +2683,11 @@
           await loadDashboardData();
         } catch (error) {
           console.error("Failed to load user session:", error);
-          alert("Failed to load user session. Please log in again.");
+          await showAlert(
+            "Failed to load user session. Please log in again.",
+            "Error",
+            "error"
+          );
           authManager.logout();
         }
       }
