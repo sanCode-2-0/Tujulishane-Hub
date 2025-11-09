@@ -1230,6 +1230,53 @@ public class ProjectController {
     }
 
     /**
+     * View a specific document (inline display)
+     */
+    @GetMapping("/{projectId}/documents/{documentId}/view")
+    public ResponseEntity<?> viewDocument(@PathVariable Long projectId, @PathVariable Long documentId) {
+        try {
+            Optional<ProjectDocument> documentOpt = projectDocumentRepository.findById(documentId);
+            
+            if (documentOpt.isEmpty()) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Document not found with ID: " + documentId,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            ProjectDocument document = documentOpt.get();
+            
+            // Verify the document belongs to the specified project
+            if (!document.getProject().getId().equals(projectId)) {
+                ApiResponse<Void> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Document does not belong to the specified project",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Return the file for inline viewing (not as attachment)
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getFileType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "inline; filename=\"" + document.getFileName() + "\"")
+                .body(document.getData());
+
+        } catch (Exception e) {
+            logger.error("Error viewing document {} for project {}: {}", documentId, projectId, e.getMessage(), e);
+            ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to view document: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
      * Download a specific document
      */
     @GetMapping("/{projectId}/documents/{documentId}")

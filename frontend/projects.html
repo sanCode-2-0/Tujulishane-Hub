@@ -2102,9 +2102,14 @@
                                         <strong class="text-gray-700">Locations:</strong>
                                         <div class="mt-2 space-y-1">
                                             ${project.locations.map(loc => {
-                                                // Show mapsAddress if available (contains full hospital name), otherwise fallback to county
-                                                const displayName = loc.mapsAddress || (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
-                                                return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}</div>`;
+                                                // Check if mapsAddress is a meaningful address (not just coordinates)
+                                                const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
+                                                // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county
+                                                const displayName = (loc.mapsAddress && !isCoordinatesOnly) 
+                                                    ? loc.mapsAddress 
+                                                    : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                                                const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-2">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
+                                                return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}${coordinates}</div>`;
                                             }).join('')}
                                         </div>
                                     </div>
@@ -2202,7 +2207,16 @@
                                 <div>
                                     <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Locations</h4>
                                     <div class="mt-2 space-y-2">
-                                        ${project.locations.map(loc => `<div class="text-gray-800 flex items-center"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center"></i>${loc.county || 'Unknown'}${loc.subCounty ? ', ' + loc.subCounty : ''}</div>`).join('')}
+                                        ${project.locations.map(loc => {
+                                            // Check if mapsAddress is a meaningful address (not just coordinates)
+                                            const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
+                                            // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county/subcounty
+                                            const displayName = (loc.mapsAddress && !isCoordinatesOnly) 
+                                                ? loc.mapsAddress 
+                                                : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                                            const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
+                                            return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
+                                        }).join('')}
                                     </div>
                                 </div>
                                 ` : ''}
@@ -2329,6 +2343,10 @@
 
             try {
                 const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                
+                console.log(`[Document Viewer] Fetching document ${documentId} for project ${projectId}`);
+                console.log(`[Document Viewer] URL: ${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}/view`);
+                
                 const response = await fetch(
                     `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}/view`,
                     {
@@ -2339,27 +2357,78 @@
                     }
                 );
 
+                console.log(`[Document Viewer] Response status: ${response.status}`);
+                console.log(`[Document Viewer] Response statusText: ${response.statusText}`);
+
                 if (!response.ok) {
-                    throw new Error(`Failed to view document: ${response.statusText}`);
+                    // Try to get error details from response
+                    let errorMessage = `HTTP ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.error('[Document Viewer] Error details:', errorData);
+                    } catch (e) {
+                        // Response is not JSON
+                        try {
+                            const errorText = await response.text();
+                            if (errorText) errorMessage = errorText;
+                            console.error('[Document Viewer] Error text:', errorText);
+                        } catch (e2) {
+                            console.error('[Document Viewer] Could not parse error response');
+                        }
+                    }
+                    throw new Error(`Failed to view document: ${errorMessage}`);
                 }
 
                 const contentType = response.headers.get('Content-Type') || 'application/pdf';
+                const contentLength = response.headers.get('Content-Length');
                 console.log('Document Content-Type:', contentType);
+                console.log('Document Size:', contentLength ? `${(contentLength / 1024 / 1024).toFixed(2)} MB` : 'Unknown');
 
+                // Update loading message with size info
+                if (contentLength) {
+                    const sizeMB = (contentLength / 1024 / 1024).toFixed(2);
+                    loadingElement.innerHTML = `
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                            <p class="text-gray-600 font-semibold">Loading document...</p>
+                            <p class="text-sm text-gray-500 mt-2">Size: ${sizeMB} MB</p>
+                            <p class="text-xs text-gray-400 mt-1">Please wait, this may take a moment for large files</p>
+                        </div>
+                    `;
+                }
+
+                // Convert response to blob (required for authenticated requests)
                 const blob = await response.blob();
+                console.log('Blob created, size:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
+                
                 const url = URL.createObjectURL(blob);
 
                 loadingElement.classList.add('hidden');
 
                 // Handle different file types
                 if (contentType.includes('pdf')) {
-                    contentElement.innerHTML = `<iframe src="${url}" class="w-full h-full" frameborder="0"></iframe>`;
+                    contentElement.innerHTML = `
+                        <iframe 
+                            src="${url}" 
+                            class="w-full h-full" 
+                            frameborder="0"
+                            style="border: none;">
+                        </iframe>
+                    `;
                     contentElement.classList.remove('hidden');
                 } else if (contentType.includes('image')) {
-                    contentElement.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain mx-auto" alt="${fileName}" />`;
+                    contentElement.innerHTML = `
+                        <img 
+                            src="${url}" 
+                            class="max-w-full max-h-full object-contain mx-auto" 
+                            alt="${fileName}" />
+                    `;
                     contentElement.classList.remove('hidden');
                 } else if (contentType.includes('word') || contentType.includes('excel') || contentType.includes('powerpoint') || 
                            fileName.match(/\.(docx?|xlsx?|pptx?)$/i)) {
+                    // For Office documents, we need to use the direct URL with Office viewer
+                    // Note: This requires the document to be publicly accessible or use a different auth method
                     const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(window.BASE_URL + '/api/projects/' + projectId + '/documents/' + documentId)}`;
                     officeContentElement.innerHTML = `<iframe src="${officeUrl}" class="w-full h-full" frameborder="0"></iframe>`;
                     officeContentElement.classList.remove('hidden');
@@ -2367,9 +2436,29 @@
                     unsupportedElement.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error viewing document:', error);
+                console.error('[Document Viewer] Error viewing document:', error);
                 loadingElement.classList.add('hidden');
-                errorElement.textContent = `Error: ${error.message}`;
+                
+                // Show detailed error message
+                errorElement.innerHTML = `
+                    <div class="text-center">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4 text-red-600"></i>
+                        <p class="text-lg font-semibold mb-2">Error Loading Document</p>
+                        <p class="text-sm text-gray-700 mb-4">${error.message}</p>
+                        <div class="bg-gray-100 p-3 rounded text-xs text-left">
+                            <p class="font-semibold mb-1">Troubleshooting:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-600">
+                                <li>The document file may be corrupted or missing</li>
+                                <li>The server may be experiencing issues</li>
+                                <li>Try downloading the document instead</li>
+                            </ul>
+                        </div>
+                        <button onclick="window.closeDocumentViewer()" 
+                                class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Close
+                        </button>
+                    </div>
+                `;
                 errorElement.classList.remove('hidden');
             }
         };

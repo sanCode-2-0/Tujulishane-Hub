@@ -2673,10 +2673,26 @@
           loadingOverlay.classList.remove("hidden");
 
           // Disable submit button to prevent double submission
-          const submitButton = this.querySelector('button[type="submit"]');
-          const originalButtonText = submitButton.innerHTML;
-          submitButton.disabled = true;
-          submitButton.classList.add("opacity-50", "cursor-not-allowed");
+          // Try to find the actual submit button (Next button on last step)
+          const submitButton =
+            this.querySelector('button[type="submit"]') ||
+            document.getElementById("nextBtn");
+          const originalButtonText = submitButton
+            ? submitButton.innerHTML
+            : "Submit";
+
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add("opacity-50", "cursor-not-allowed");
+          }
+
+          // Helper function to re-enable submit button
+          const enableSubmitButton = () => {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+            }
+          };
 
           // Don't use FormData(this) to avoid including empty file inputs
           // Instead, collect form data manually
@@ -2761,8 +2777,7 @@
 
               // Hide loading overlay and re-enable submit button
               loadingOverlay.classList.add("hidden");
-              submitButton.disabled = false;
-              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+              enableSubmitButton();
               return;
             }
 
@@ -2775,8 +2790,7 @@
 
               // Hide loading overlay and re-enable submit button
               loadingOverlay.classList.add("hidden");
-              submitButton.disabled = false;
-              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+              enableSubmitButton();
               return;
             }
 
@@ -2914,8 +2928,7 @@
 
               // Hide loading overlay and re-enable submit button
               loadingOverlay.classList.add("hidden");
-              submitButton.disabled = false;
-              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+              enableSubmitButton();
 
               window.location.href = "index.html";
               return;
@@ -2948,8 +2961,7 @@
 
               // Hide loading overlay before showing success message
               loadingOverlay.classList.add("hidden");
-              submitButton.disabled = false;
-              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+              enableSubmitButton();
 
               await showAlert(
                 "Project created successfully!",
@@ -2994,11 +3006,7 @@
 
                 // Hide loading overlay and re-enable submit button
                 loadingOverlay.classList.add("hidden");
-                submitButton.disabled = false;
-                submitButton.classList.remove(
-                  "opacity-50",
-                  "cursor-not-allowed"
-                );
+                enableSubmitButton();
 
                 // Redirect to login
                 setTimeout(() => {
@@ -3009,8 +3017,7 @@
 
               // Hide loading overlay for other errors
               loadingOverlay.classList.add("hidden");
-              submitButton.disabled = false;
-              submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+              enableSubmitButton();
 
               await showAlert(
                 "Failed to create project: " + errorMessage,
@@ -3024,8 +3031,7 @@
 
             // Hide loading overlay and re-enable submit button
             loadingOverlay.classList.add("hidden");
-            submitButton.disabled = false;
-            submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+            enableSubmitButton();
 
             await showAlert(
               "Error processing form data. Please try again. Check console for details.",
