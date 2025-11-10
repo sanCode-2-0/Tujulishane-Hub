@@ -30,6 +30,7 @@
       };
     </script>
     <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/mobile.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -133,6 +134,34 @@
   </head>
 
   <body class="text-gray-800">
+    <!-- Authentication Check -->
+    <script>
+      // Check authentication on page load
+      (function () {
+        const token =
+          localStorage.getItem("accessToken") || localStorage.getItem("token");
+        if (!token) {
+          console.warn(
+            "[Security] No authentication token found, redirecting to login"
+          );
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Verify token format (JWT should have 3 parts)
+        const parts = token.split(".");
+        if (parts.length !== 3) {
+          console.warn("[Security] Invalid token format, redirecting to login");
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "index.html";
+          return;
+        }
+
+        console.log("[Security] Authentication check passed");
+      })();
+    </script>
     <div class="" id="nav-placeholder"></div>
 
     <section class="relative z-0 overflow-hidden" id="top">

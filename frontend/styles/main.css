@@ -2,6 +2,127 @@
   font-family: "Montserrat", sans-serif;
 }
 
+/* ========== MOBILE OPTIMIZATION ========== */
+/* Responsive font sizes */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Mobile-friendly tables */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem;
+  }
+
+  table thead {
+    display: none;
+  }
+
+  table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  table td {
+    display: block;
+    text-align: right;
+    padding: 0.5rem !important;
+    border: none !important;
+  }
+
+  table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    color: #374151;
+  }
+}
+
+/* Mobile-friendly buttons */
+@media (max-width: 640px) {
+  button,
+  .btn {
+    min-height: 44px; /* iOS touch target size */
+    padding: 0.75rem 1rem;
+  }
+
+  /* Stack buttons vertically on mobile */
+  .button-group {
+    flex-direction: column !important;
+  }
+
+  .button-group button,
+  .button-group a {
+    width: 100% !important;
+    margin: 0.25rem 0 !important;
+  }
+}
+
+/* Mobile navigation improvements */
+@media (max-width: 768px) {
+  nav {
+    padding: 0.5rem !important;
+  }
+
+  /* Hide less important nav items on mobile */
+  .nav-hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Mobile-friendly forms */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    min-height: 44px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile-friendly modals */
+@media (max-width: 640px) {
+  .modal-content {
+    margin: 0.5rem !important;
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Touch-friendly spacing */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Add more spacing between clickable elements */
+  .mobile-spacing > * {
+    margin: 0.5rem 0;
+  }
+}
+
 .fade {
   opacity: 0;
   transition: opacity 0.6s ease, transform 0.6s ease;

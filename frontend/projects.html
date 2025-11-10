@@ -29,6 +29,7 @@
     </script>
     <!-- WARNING: cdn.tailwindcss.com should not be used in production. Use PostCSS or CLI for production builds. -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/mobile.css">
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
@@ -79,6 +80,31 @@
 </head>
 
 <body class="text-gray-800 ">
+    <!-- Authentication Check -->
+    <script>
+        // Check authentication on page load
+        (function() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (!token) {
+                console.warn('[Security] No authentication token found, redirecting to login');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Verify token format (JWT should have 3 parts)
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                console.warn('[Security] Invalid token format, redirecting to login');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            console.log('[Security] Authentication check passed');
+        })();
+    </script>
     <!-- Nav Start -->
     <div class="" id="nav-placeholder"></div>
     <!-- Nav End -->
@@ -890,13 +916,28 @@
                                         const tbody = document.getElementById(tableBodyId);
                                         tbody.innerHTML = '';
                                         projects.forEach(project => {
+                                            const themes = project.themes || [];
+                                            const locations = project.locations || [];
+                                            
                                             tbody.innerHTML += `
                                                 <tr>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.partner || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectTheme || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.county || ''}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${themes.slice(0, 2).map(t => `<span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">${t.name || t.code || 'N/A'}</span>`).join('')}
+                                                            ${themes.length > 2 ? `<span class="text-xs text-gray-500">+${themes.length - 2}</span>` : ''}
+                                                            ${themes.length === 0 ? '<span class="text-gray-400">No themes</span>' : ''}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${locations.slice(0, 2).map(l => `<span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">${l.county || l.mapsAddress || 'N/A'}</span>`).join('')}
+                                                            ${locations.length > 2 ? `<span class="text-xs text-gray-500">+${locations.length - 2}</span>` : ''}
+                                                            ${locations.length === 0 ? '<span class="text-gray-400">No locations</span>' : ''}
+                                                        </div>
+                                                    </td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
@@ -1010,8 +1051,18 @@
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.activityType || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.themes || []).map(t => t.name || t).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${(project.locations || []).map(l => l.mapsAddress || l.county || 'Unknown').join(', ')}</td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${(project.themes || []).slice(0, 2).map(t => `<span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">${t.name || t}</span>`).join('')}
+                                                            ${(project.themes || []).length > 2 ? `<span class="text-xs text-gray-500">+${(project.themes || []).length - 2} more</span>` : ''}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${(project.locations || []).slice(0, 2).map(l => `<span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">${l.mapsAddress || l.county || 'Unknown'}</span>`).join('')}
+                                                            ${(project.locations || []).length > 2 ? `<span class="text-xs text-gray-500">+${(project.locations || []).length - 2} more</span>` : ''}
+                                                        </div>
+                                                    </td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonRole || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonEmail || ''}</td>
@@ -1218,6 +1269,61 @@
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Two-Tier Approval Workflow Helper
+        function getApprovalWorkflowStatus(project) {
+            const status = project.approvalWorkflowStatus || 'UNKNOWN';
+            const statusMap = {
+                'PENDING_REVIEW': {
+                    label: 'Pending Review',
+                    description: 'Awaiting thematic reviewer',
+                    color: 'bg-yellow-100 text-yellow-800',
+                    icon: 'fa-clock'
+                },
+                'UNDER_REVIEW': {
+                    label: 'Under Review',
+                    description: 'Being reviewed by thematic reviewer',
+                    color: 'bg-blue-100 text-blue-800',
+                    icon: 'fa-search'
+                },
+                'PENDING_FINAL_APPROVAL': {
+                    label: 'Pending Final Approval',
+                    description: 'Reviewed, awaiting final approver',
+                    color: 'bg-purple-100 text-purple-800',
+                    icon: 'fa-hourglass-half'
+                },
+                'REVIEWED': {
+                    label: 'Reviewed',
+                    description: 'Passed review, ready for final approval',
+                    color: 'bg-indigo-100 text-indigo-800',
+                    icon: 'fa-check-circle'
+                },
+                'APPROVED': {
+                    label: 'Approved',
+                    description: 'Fully approved (both tiers)',
+                    color: 'bg-green-100 text-green-800',
+                    icon: 'fa-check-double'
+                },
+                'REJECTED_BY_REVIEWER': {
+                    label: 'Rejected by Reviewer',
+                    description: 'Rejected at review stage',
+                    color: 'bg-red-100 text-red-800',
+                    icon: 'fa-times-circle'
+                },
+                'REJECTED_BY_APPROVER': {
+                    label: 'Rejected by Approver',
+                    description: 'Rejected at final approval stage',
+                    color: 'bg-red-100 text-red-800',
+                    icon: 'fa-ban'
+                }
+            };
+            return statusMap[status] || {
+                label: status,
+                description: 'Unknown status',
+                color: 'bg-gray-100 text-gray-800',
+                icon: 'fa-question-circle'
+            };
+        }
+
         let map, heatLayer;
         let projects = [];
         let filteredProjects = [];
@@ -1348,14 +1454,48 @@
                            class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition">
                             <i class="fas fa-eye mr-1"></i>View
                         </button>
-                        <a href="${window.BASE_URL}/api/projects/${projectId}/documents/${doc.id}" 
-                           target="_blank"
+                        <button 
+                           onclick="downloadProjectDocument(${projectId}, ${doc.id}, '${doc.fileName}')"
                            class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
                             <i class="fas fa-download mr-1"></i>Download
-                        </a>
+                        </button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        // Download project document with authentication
+        async function downloadProjectDocument(projectId, documentId, fileName) {
+            try {
+                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                
+                const response = await fetch(
+                    `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('[Download] Error downloading document:', error);
+                alert('Failed to download document. Please try again.');
+            }
         }
 
         // Format file size for display
@@ -2246,9 +2386,12 @@
                                     <div class="flex justify-between">
                                         <dt class="text-gray-500">Partner:</dt>
                                         <dd class="text-gray-900">
-                                            <a class="" href="mailto:${project.partner || 'N/A'}">
-                                                Send Mail
-                                            </a>    
+                                            ${project.partner ? `
+                                                <a class="text-blue-600 hover:text-blue-800 underline flex items-center gap-1" href="mailto:${project.partner}" title="Send email to ${project.partner}">
+                                                    <i class="fas fa-envelope text-xs"></i>
+                                                    ${project.partner}
+                                                </a>
+                                            ` : 'N/A'}
                                         </dd>
                                     </div>
                                     <div class="flex justify-between">
@@ -2334,11 +2477,34 @@
             errorElement.classList.add('hidden');
 
             // Setup download button
-            downloadBtn.onclick = () => {
-                const link = document.createElement('a');
-                link.href = `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`;
-                link.download = fileName;
-                link.click();
+            downloadBtn.onclick = async () => {
+                try {
+                    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                    const response = await fetch(
+                        `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }
+                    );
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error('[Download] Error:', error);
+                    alert('Failed to download document.');
+                }
             };
 
             try {

@@ -3420,9 +3420,14 @@
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <span class="px-2 py-1 rounded text-xs font-medium ${themeClass}">
-                            ${project.projectTheme}
-                        </span>
+                        <div class="flex flex-wrap gap-1">
+                            ${(project.themes || []).slice(0, 2).map(theme => {
+                                const themeName = typeof theme === 'string' ? theme : (theme.name || theme.code || theme);
+                                const themeCode = typeof theme === 'string' ? theme : (theme.code || theme.name || theme);
+                                return `<span class="px-2 py-1 rounded text-xs font-medium ${getThemeClass(themeCode)}">${themeName}</span>`;
+                            }).join('')}
+                            ${(project.themes || []).length > 2 ? `<span class="text-xs text-gray-500">+${(project.themes || []).length - 2} more</span>` : ''}
+                        </div>
                         <button onclick="viewProject(${project.id})"
                             class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                             View Details →

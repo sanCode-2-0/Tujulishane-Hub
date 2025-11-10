@@ -6,7 +6,8 @@ package com.tujulishanehub.backend.models;
 public enum ProjectCategory {
     IMPLEMENTING("Implementing Project", "IMPLEMENTING"),
     RESEARCH("Research Project", "RESEARCH"),
-    PRIORITY("Priority Project", "PRIORITY");
+    PRIORITY("Priority Project", "PRIORITY"),
+    PAST_PROJECT("Past Project", "PAST_PROJECT");
 
     private final String displayName;
     private final String code;

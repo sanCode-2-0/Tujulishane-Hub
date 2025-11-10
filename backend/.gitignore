@@ -39,3 +39,4 @@ src/main/resources/db/migration/V1__Add_Project_Number.sql
 
 # SQL Files
 *.sql
+
