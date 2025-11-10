@@ -97,49 +97,6 @@
           Two-Tier Project Approval Management
         </h1>
 
-        <!-- Debug Info Panel (Remove after debugging) -->
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-          <h3 class="font-bold text-blue-900 mb-2">
-            🔧 Debug Information (For Debugging Only)
-          </h3>
-          <div class="text-sm text-blue-800 space-y-1">
-            <p>
-              <strong>User Role:</strong>
-              <span x-text="userRole || 'Not loaded'"></span>
-            </p>
-            <p>
-              <strong>Thematic Area:</strong>
-              <span x-text="userThematicArea || 'Not assigned'"></span>
-            </p>
-            <p><strong>Active Tab:</strong> <span x-text="activeTab"></span></p>
-            <p>
-              <strong>Projects for Review:</strong>
-              <span x-text="projectsForReview.length"></span>
-            </p>
-            <p>
-              <strong>Projects for Approval:</strong>
-              <span x-text="projectsForApproval.length"></span>
-            </p>
-            <p>
-              <strong>Reviewers:</strong>
-              <span x-text="allReviewers.length"></span>
-            </p>
-            <p>
-              <strong>BASE_URL:</strong>
-              <span x-text="window.BASE_URL || 'Not set'"></span>
-            </p>
-            <p>
-              <strong>Access Token:</strong>
-              <span
-                x-text="localStorage.getItem('accessToken') ? 'Present' : 'Missing'"
-              ></span>
-            </p>
-          </div>
-          <p class="text-xs text-blue-600 mt-2">
-            Open browser console (F12) for detailed logs
-          </p>
-        </div>
-
         <!-- Role-based tabs -->
         <div class="mb-6">
           <ul class="flex border-b" role="tablist">
@@ -157,6 +114,24 @@
                 <span
                   class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
                   x-text="projectsForReview.length"
+                ></span>
+              </button>
+            </li>
+
+            <!-- All Pending Approvals Tab (only for SUPER_ADMIN_APPROVER) -->
+            <li
+              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
+              class="mr-2"
+            >
+              <button
+                @click="activeTab = 'all-pending'"
+                :class="activeTab === 'all-pending' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
+                class="px-4 py-2 font-medium"
+              >
+                All Pending Approvals
+                <span
+                  class="ml-2 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs"
+                  x-text="allPendingProjects.length"
                 ></span>
               </button>
             </li>
@@ -226,6 +201,8 @@
                         <strong>Partner:</strong>
                         <span x-text="project.partner"></span>
                       </p>
+
+                      <!-- Themes -->
                       <div class="flex flex-wrap gap-2 mb-2">
                         <template
                           x-for="theme in project.themes"
@@ -233,28 +210,63 @@
                         >
                           <span
                             class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                            x-text="theme.displayName"
+                            x-text="theme.name || theme.displayName"
                           ></span>
                         </template>
                       </div>
-                      <p
-                        class="text-sm text-gray-600 mb-2"
-                        x-show="project.objectives"
-                      >
-                        <strong>Objectives:</strong>
-                        <span
-                          x-text="project.objectives?.substring(0, 150) + '...'"
+
+                      <!-- Budget -->
+                      <p class="text-sm text-gray-600 mb-2">
+                        <strong>Budget:</strong>
+                        <span class="text-green-700 font-semibold"
+                          >KES
+                          <span
+                            x-text="(project.budget || 0).toLocaleString()"
+                          ></span
                         ></span>
                       </p>
-                      <p class="text-xs text-gray-500">
-                        Submitted:
-                        <span x-text="formatDate(project.createdAt)"></span>
-                      </p>
+
+                      <!-- Locations -->
+                      <div
+                        class="text-sm text-gray-600 mb-2"
+                        x-show="project.locations && project.locations.length > 0"
+                      >
+                        <strong>Locations:</strong>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                          <template
+                            x-for="location in project.locations"
+                            :key="location.id"
+                          >
+                            <span
+                              class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
+                            >
+                              <i
+                                class="fas fa-map-marker-alt text-red-500 mr-1"
+                              ></i>
+                              <span
+                                x-text="location.county || location.mapsAddress || 'Unknown'"
+                              ></span>
+                            </span>
+                          </template>
+                        </div>
+                      </div>
+
+                      <!-- Start and End Dates -->
+                      <div class="flex gap-4 text-sm text-gray-600 mb-2">
+                        <p x-show="project.startDate">
+                          <strong>Start:</strong>
+                          <span x-text="project.startDate || 'N/A'"></span>
+                        </p>
+                        <p x-show="project.endDate">
+                          <strong>End:</strong>
+                          <span x-text="project.endDate || 'N/A'"></span>
+                        </p>
+                      </div>
                     </div>
                     <div class="ml-4">
                       <span
                         class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
-                        x-text="project.approvalWorkflowStatus"
+                        x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING_REVIEW'"
                       ></span>
                     </div>
                   </div>
@@ -271,6 +283,136 @@
                       class="px-4 py-2 bg-button text-white rounded hover:bg-green-600"
                     >
                       <i class="fas fa-check-circle mr-2"></i> Review Project
+                    </button>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Pending Approvals (Overview for Approvers) -->
+        <div x-show="activeTab === 'all-pending'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">
+              All Projects in Approval Pipeline
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">
+              Overview of all projects at different stages of the two-tier
+              approval process
+            </p>
+
+            <template x-if="allPendingProjects.length === 0">
+              <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-inbox text-4xl mb-2"></i>
+                <p>No projects in approval pipeline</p>
+              </div>
+            </template>
+
+            <div class="space-y-4">
+              <template x-for="project in allPendingProjects" :key="project.id">
+                <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <h3
+                        class="text-lg font-semibold mb-2"
+                        x-text="project.title"
+                      ></h3>
+                      <p class="text-sm text-gray-600 mb-2">
+                        <strong>Partner:</strong>
+                        <span x-text="project.partner"></span>
+                      </p>
+
+                      <!-- Themes -->
+                      <div class="flex flex-wrap gap-2 mb-2">
+                        <template
+                          x-for="theme in project.themes"
+                          :key="theme.code"
+                        >
+                          <span
+                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+                            x-text="theme.name || theme.displayName"
+                          ></span>
+                        </template>
+                      </div>
+
+                      <!-- Budget -->
+                      <p class="text-sm text-gray-600 mb-2">
+                        <strong>Budget:</strong>
+                        <span class="text-green-700 font-semibold"
+                          >KES
+                          <span
+                            x-text="(project.budget || 0).toLocaleString()"
+                          ></span
+                        ></span>
+                      </p>
+
+                      <!-- Locations -->
+                      <div
+                        class="text-sm text-gray-600 mb-2"
+                        x-show="project.locations && project.locations.length > 0"
+                      >
+                        <strong>Locations:</strong>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                          <template
+                            x-for="location in project.locations"
+                            :key="location.id"
+                          >
+                            <span
+                              class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
+                            >
+                              <i
+                                class="fas fa-map-marker-alt text-red-500 mr-1"
+                              ></i>
+                              <span
+                                x-text="location.county || location.mapsAddress || 'Unknown'"
+                              ></span>
+                            </span>
+                          </template>
+                        </div>
+                      </div>
+
+                      <!-- Start and End Dates -->
+                      <div class="flex gap-4 text-sm text-gray-600 mb-2">
+                        <p x-show="project.startDate">
+                          <strong>Start:</strong>
+                          <span x-text="project.startDate || 'N/A'"></span>
+                        </p>
+                        <p x-show="project.endDate">
+                          <strong>End:</strong>
+                          <span x-text="project.endDate || 'N/A'"></span>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <span
+                        :class="{
+                          'bg-yellow-100 text-yellow-800': project.approvalWorkflowStatus?.includes('PENDING_REVIEW') || project.approvalStatus === 'PENDING',
+                          'bg-blue-100 text-blue-800': project.approvalWorkflowStatus?.includes('PENDING_FINAL') || project.approvalStatus === 'SUBMITTED',
+                          'bg-purple-100 text-purple-800': project.approvalWorkflowStatus && !project.approvalWorkflowStatus.includes('PENDING')
+                        }"
+                        class="px-3 py-1 rounded-full text-xs font-medium"
+                        x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING'"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex gap-2">
+                    <button
+                      @click="viewProjectDetails(project.id)"
+                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    >
+                      <i class="fas fa-eye mr-2"></i> View Details
+                    </button>
+
+                    <!-- Show action button based on status -->
+                    <button
+                      x-show="project.approvalWorkflowStatus?.includes('PENDING_FINAL')"
+                      @click="openFinalApprovalModal(project)"
+                      class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      <i class="fas fa-check-double mr-2"></i> Review for Final
+                      Approval
                     </button>
                   </div>
                 </div>
@@ -323,24 +465,44 @@
 
                       <!-- Reviewer Information -->
                       <div
+                        x-show="project.reviewedBy"
                         class="bg-green-50 border-l-4 border-green-500 p-3 mb-2"
                       >
                         <p class="text-sm text-green-800 mb-1">
-                          <strong>Reviewed by:</strong> Reviewer #<span
-                            x-text="project.reviewedBy"
+                          <strong>✓ Reviewed by:</strong>
+                          <span
+                            x-text="getReviewerName(project.reviewedBy) || `User #${project.reviewedBy}`"
                           ></span>
+                          <span
+                            x-show="project.reviewedBy"
+                            class="text-xs text-green-600 ml-2"
+                          >
+                            (ID: <span x-text="project.reviewedBy"></span>)
+                          </span>
                         </p>
-                        <p class="text-sm text-green-800 mb-1">
+                        <p
+                          class="text-sm text-green-800 mb-1"
+                          x-show="project.reviewedAt"
+                        >
                           <strong>Reviewed on:</strong>
                           <span x-text="formatDate(project.reviewedAt)"></span>
                         </p>
-                        <p class="text-sm text-green-800">
-                          <strong>Reviewer Comments:</strong>
-                        </p>
+                        <div class="mt-2" x-show="project.reviewerComments">
+                          <p class="text-sm text-green-800 font-semibold mb-1">
+                            <i class="fas fa-comment-dots mr-1"></i> Reviewer
+                            Comments:
+                          </p>
+                          <p
+                            class="text-sm text-green-700 bg-white bg-opacity-50 p-2 rounded italic"
+                            x-text="project.reviewerComments"
+                          ></p>
+                        </div>
                         <p
-                          class="text-sm text-green-700 italic"
-                          x-text="project.reviewerComments || 'No comments provided'"
-                        ></p>
+                          x-show="!project.reviewerComments"
+                          class="text-xs text-green-600 italic mt-1"
+                        >
+                          No additional comments provided by reviewer
+                        </p>
                       </div>
                     </div>
                     <div class="ml-4">
@@ -691,6 +853,143 @@
           </div>
         </div>
       </div>
+
+      <!-- Project Details Modal -->
+      <div
+        id="projectDetailsModal"
+        class="hidden fixed inset-0 z-50 flex backdrop-blur-md items-center justify-center bg-black bg-opacity-50"
+        aria-hidden="true"
+        aria-modal="true"
+        aria-labelledby="projectDetailsTitle"
+      >
+        <div
+          class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
+        >
+          <div
+            class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-200"
+          >
+            <h2
+              id="projectDetailsTitle"
+              class="text-xl font-semibold text-blue-900"
+            >
+              Project Details
+            </h2>
+            <button
+              type="button"
+              class="text-gray-400 hover:text-gray-600"
+              onclick="closeProjectDetailsModal()"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <div id="projectDetailsContent" class="p-6">
+            <p class="text-gray-500">
+              <i class="fas fa-spinner fa-spin"></i> Loading...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Viewer Modal -->
+      <div
+        id="documentViewerModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        aria-modal="true"
+      >
+        <div
+          class="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden"
+        >
+          <!-- Modal Header -->
+          <div
+            class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200"
+          >
+            <h3
+              id="documentViewerFileName"
+              class="text-lg font-semibold text-gray-800"
+            >
+              Document Viewer
+            </h3>
+            <div class="flex gap-2">
+              <button
+                id="documentViewerDownloadBtn"
+                class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+              >
+                <i class="fas fa-download mr-1"></i>Download
+              </button>
+              <button
+                onclick="closeDocumentViewer()"
+                class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                <i class="fas fa-times mr-1"></i>Close
+              </button>
+            </div>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="relative w-full h-full p-4 overflow-auto">
+            <!-- Loading State -->
+            <div
+              id="documentViewerLoading"
+              class="flex items-center justify-center h-full"
+            >
+              <div class="text-center">
+                <i
+                  class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
+                ></i>
+                <p class="text-gray-600">Loading document...</p>
+              </div>
+            </div>
+
+            <!-- PDF/Image Content -->
+            <div id="documentViewerContent" class="hidden w-full h-full"></div>
+
+            <!-- Office Document Content -->
+            <div
+              id="officeDocumentViewerContent"
+              class="hidden w-full h-full"
+            ></div>
+
+            <!-- Unsupported Document -->
+            <div
+              id="unsupportedDocumentContent"
+              class="hidden flex items-center justify-center h-full"
+            >
+              <div class="text-center">
+                <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600 mb-4">
+                  This document type cannot be previewed.
+                </p>
+                <p class="text-sm text-gray-500">
+                  Please download the file to view it.
+                </p>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div
+              id="documentViewerError"
+              class="hidden flex items-center justify-center h-full"
+            >
+              <div class="text-center text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Error loading document</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- NAVIGATION LOADER DISABLED FOR DEBUGGING -->
@@ -709,6 +1008,7 @@
           // Projects data
           projectsForReview: [],
           projectsForApproval: [],
+          allPendingProjects: [], // Combined view for SUPER_ADMIN_APPROVER
 
           // Reviewers data
           allReviewers: [],
@@ -764,31 +1064,33 @@
               const token = localStorage.getItem("accessToken");
               if (!token) {
                 console.warn("No access token found");
-                // REDIRECT DISABLED FOR DEBUGGING
-                // window.location.href = 'index.html';
-                this.userRole = "SUPER_ADMIN"; // Mock role for testing
-                this.userThematicArea = "GBV"; // Mock thematic area for testing
+                window.location.href = "index.html";
                 return;
               }
 
-              const response = await fetch(`${window.BASE_URL}/api/auth/me`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
+              // Use /api/auth/profile instead of /api/auth/me (which returns 500)
+              const response = await fetch(
+                `${window.BASE_URL}/api/auth/profile`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
 
               if (response.ok) {
                 const data = await response.json();
                 console.log("User data:", data);
-                this.userRole = data.data.role;
-                this.userThematicArea =
-                  data.data.thematicArea || "Not Assigned";
+                // Handle both response structures: data.data or direct data
+                const userData = data.data || data;
+                this.userRole = userData.role;
+                this.userThematicArea = userData.thematicArea || "Not Assigned";
 
                 // Set initial tab based on role
                 if (this.userRole === "SUPER_ADMIN_REVIEWER") {
                   this.activeTab = "for-review";
                 } else if (this.userRole === "SUPER_ADMIN_APPROVER") {
-                  this.activeTab = "for-approval";
+                  this.activeTab = "all-pending"; // Start with overview
                 }
 
                 // Restrict access if not authorized
@@ -800,9 +1102,10 @@
                   ].includes(this.userRole)
                 ) {
                   console.warn("Access denied. User role:", this.userRole);
-                  // REDIRECT DISABLED FOR DEBUGGING
-                  // alert('Access denied. You do not have permission to access this page.');
-                  // window.location.href = 'dashboard.html';
+                  alert(
+                    "Access denied. You do not have permission to access this page."
+                  );
+                  window.location.href = "dashboard.html";
                 }
               } else {
                 console.error(
@@ -810,17 +1113,11 @@
                   response.status,
                   response.statusText
                 );
-                // REDIRECT DISABLED FOR DEBUGGING
-                // window.location.href = 'index.html';
-                this.userRole = "SUPER_ADMIN"; // Mock role for testing
-                this.userThematicArea = "GBV"; // Mock thematic area for testing
+                window.location.href = "index.html";
               }
             } catch (error) {
               console.error("Auth check failed:", error);
-              // REDIRECT DISABLED FOR DEBUGGING
-              // window.location.href = 'index.html';
-              this.userRole = "SUPER_ADMIN"; // Mock role for testing
-              this.userThematicArea = "GBV"; // Mock thematic area for testing
+              window.location.href = "index.html";
             }
           },
 
@@ -831,6 +1128,7 @@
               await Promise.all([
                 this.loadProjectsForReview(),
                 this.loadProjectsForApproval(),
+                this.loadAllPendingProjects(),
                 this.loadReviewers(),
               ]);
               console.log("All data loaded successfully");
@@ -848,6 +1146,7 @@
               console.log(
                 "Skipping loadProjectsForReview - role not authorized"
               );
+              this.projectsForReview = []; // Set to empty array
               return;
             }
 
@@ -863,10 +1162,14 @@
               );
             } catch (error) {
               console.error("Error loading projects for review:", error);
-              this.showToast(
-                "Failed to load projects for review: " + error.message,
-                "error"
-              );
+              // Don't show error toast if it's just a permissions issue
+              if (!error.message.includes("insufficient permissions")) {
+                this.showToast(
+                  "Failed to load projects for review: " + error.message,
+                  "error"
+                );
+              }
+              this.projectsForReview = []; // Set to empty array on error
             }
           },
 
@@ -877,6 +1180,7 @@
               console.log(
                 "Skipping loadProjectsForApproval - role not authorized"
               );
+              this.projectsForApproval = []; // Set to empty array
               return;
             }
 
@@ -892,10 +1196,96 @@
               );
             } catch (error) {
               console.error("Error loading projects for approval:", error);
-              this.showToast(
-                "Failed to load projects for approval: " + error.message,
-                "error"
+              // Don't show error toast if it's just a permissions issue
+              if (!error.message.includes("insufficient permissions")) {
+                this.showToast(
+                  "Failed to load projects for approval: " + error.message,
+                  "error"
+                );
+              }
+              this.projectsForApproval = []; // Set to empty array on error
+            }
+          },
+
+          async loadAllPendingProjects() {
+            if (
+              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+            ) {
+              console.log(
+                "Skipping loadAllPendingProjects - role not authorized"
               );
+              this.allPendingProjects = []; // Set to empty array
+              return;
+            }
+
+            console.log("Loading all pending projects...");
+            try {
+              // Fetch all projects with large page size to get comprehensive view
+              const allProjectsResponse = await this.apiCall(
+                "/api/projects?page=0&size=1000"
+              );
+
+              const allProjects = allProjectsResponse.data?.projects || [];
+
+              // Filter for projects in pending states (both new two-tier workflow and legacy approval status)
+              const pendingWorkflowStatuses = [
+                "PENDING_REVIEW",
+                "UNDER_REVIEW",
+                "REVIEWED",
+                "PENDING_FINAL_APPROVAL",
+              ];
+
+              const pendingApprovalStatuses = ["PENDING", "SUBMITTED"];
+
+              this.allPendingProjects = allProjects.filter((project) => {
+                // Check new two-tier workflow status first
+                if (
+                  project.approvalWorkflowStatus &&
+                  pendingWorkflowStatuses.includes(
+                    project.approvalWorkflowStatus
+                  )
+                ) {
+                  return true;
+                }
+
+                // Fallback to legacy approval status for projects not yet migrated
+                if (
+                  project.approvalStatus &&
+                  pendingApprovalStatuses.includes(project.approvalStatus)
+                ) {
+                  return true;
+                }
+
+                return false;
+              });
+
+              console.log(
+                "All pending projects loaded:",
+                this.allPendingProjects.length,
+                "projects in approval pipeline out of",
+                allProjects.length,
+                "total projects",
+                `(${
+                  this.allPendingProjects.filter(
+                    (p) => p.approvalWorkflowStatus
+                  ).length
+                } with workflow status,`,
+                `${
+                  this.allPendingProjects.filter(
+                    (p) => !p.approvalWorkflowStatus && p.approvalStatus
+                  ).length
+                } legacy pending)`
+              );
+            } catch (error) {
+              console.error("Error loading all pending projects:", error);
+              // Don't show error toast if it's just a permissions issue
+              if (!error.message.includes("insufficient permissions")) {
+                this.showToast(
+                  "Failed to load pending projects: " + error.message,
+                  "error"
+                );
+              }
+              this.allPendingProjects = []; // Set to empty array on error
             }
           },
 
@@ -904,6 +1294,8 @@
               !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
             ) {
               console.log("Skipping loadReviewers - role not authorized");
+              this.allReviewers = []; // Set to empty array
+              this.filteredReviewers = []; // Set to empty array
               return;
             }
 
@@ -915,10 +1307,15 @@
               console.log("Reviewers loaded:", this.allReviewers.length);
             } catch (error) {
               console.error("Error loading reviewers:", error);
-              this.showToast(
-                "Failed to load reviewers: " + error.message,
-                "error"
-              );
+              // Don't show error toast if it's just a permissions issue
+              if (!error.message.includes("insufficient permissions")) {
+                this.showToast(
+                  "Failed to load reviewers: " + error.message,
+                  "error"
+                );
+              }
+              this.allReviewers = []; // Set to empty array on error
+              this.filteredReviewers = []; // Set to empty array on error
             }
           },
 
@@ -983,6 +1380,7 @@
 
               this.showReviewModal = false;
               await this.loadProjectsForReview();
+              await this.loadAllPendingProjects(); // Refresh combined view
             } catch (error) {
               console.error("Error submitting review:", error);
               this.showToast(
@@ -1011,6 +1409,7 @@
               );
               this.showFinalApprovalModal = false;
               await this.loadProjectsForApproval();
+              await this.loadAllPendingProjects(); // Refresh combined view
             } catch (error) {
               console.error("Error submitting final approval:", error);
               this.showToast(
@@ -1041,6 +1440,7 @@
               this.showToast("Project rejected", "success");
               this.showFinalRejectModal = false;
               await this.loadProjectsForApproval();
+              await this.loadAllPendingProjects(); // Refresh combined view
             } catch (error) {
               console.error("Error rejecting project:", error);
               this.showToast(
@@ -1082,8 +1482,341 @@
             }
           },
 
-          viewProjectDetails(projectId) {
-            window.location.href = `projects.html?id=${projectId}`;
+          async viewProjectDetails(projectId) {
+            const modal = document.getElementById("projectDetailsModal");
+            const content = document.getElementById("projectDetailsContent");
+
+            modal.classList.remove("hidden");
+            content.innerHTML =
+              '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
+
+            try {
+              const data = await this.apiCall(`/api/projects/${projectId}`);
+
+              if (data.status === 200 && data.data) {
+                const project = data.data;
+
+                // Fetch documents
+                const documents = await this.fetchProjectDocuments(projectId);
+
+                // Render project details
+                content.innerHTML = `
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                      <h1 class="text-3xl font-extrabold text-blue-900">${
+                        project.title || "N/A"
+                      }</h1>
+                      
+                      <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Objectives</h4>
+                        <p class="text-gray-700 leading-relaxed">${
+                          project.objectives || "N/A"
+                        }</p>
+                      </div>
+                      
+                      ${
+                        project.themes && project.themes.length > 0
+                          ? `
+                      <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Themes</h4>
+                        <div class="flex flex-wrap gap-2">
+                          ${project.themes
+                            .map(
+                              (theme) =>
+                                `<span class="inline-flex items-center px-4 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium"><i class="fas fa-tag mr-2"></i>${
+                                  theme.name || theme.code
+                                }</span>`
+                            )
+                            .join("")}
+                        </div>
+                      </div>
+                      `
+                          : ""
+                      }
+
+                      ${
+                        project.locations && project.locations.length > 0
+                          ? `
+                      <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Locations</h4>
+                        <div class="mt-2 space-y-2">
+                          ${project.locations
+                            .map((loc) => {
+                              const isCoordinatesOnly =
+                                loc.mapsAddress &&
+                                /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(
+                                  loc.mapsAddress.trim()
+                                );
+                              const displayName =
+                                loc.mapsAddress && !isCoordinatesOnly
+                                  ? loc.mapsAddress
+                                  : loc.county
+                                  ? `${loc.county}${
+                                      loc.subCounty ? ", " + loc.subCounty : ""
+                                    }`
+                                  : "Unknown";
+                              const coordinates =
+                                loc.latitude && loc.longitude
+                                  ? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(
+                                      4
+                                    )}, ${loc.longitude.toFixed(4)})</span>`
+                                  : "";
+                              return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
+                            })
+                            .join("")}
+                        </div>
+                      </div>
+                      `
+                          : ""
+                      }
+
+                      <div class="pt-4 border-t">
+                        <h4 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
+                          <i class="fas fa-paperclip mr-2 text-gray-500"></i>Supporting Documents
+                        </h4>
+                        <div class="space-y-2">
+                          ${this.renderDocuments(documents, projectId)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="lg:col-span-1 bg-gray-50 p-6 rounded-lg space-y-6 h-fit border border-gray-200">
+                      <h3 class="text-lg font-bold text-blue-800 border-b pb-2 mb-4">Key Details</h3>
+                      
+                      <dl class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Project No:</dt>
+                          <dd class="font-semibold text-gray-900">${
+                            project.projectNo || "N/A"
+                          }</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Status:</dt>
+                          <dd><span class="inline-block px-3 py-1 text-xs rounded-full font-bold ${this.statusBadge(
+                            project.status
+                          )}">${project.status || "N/A"}</span></dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Partner:</dt>
+                          <dd class="text-gray-900">${
+                            project.partner || "N/A"
+                          }</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Budget:</dt>
+                          <dd class="font-bold text-green-700">KES ${(
+                            project.budget || 0
+                          ).toLocaleString()}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Start Date:</dt>
+                          <dd class="text-gray-900">${
+                            project.startDate || "N/A"
+                          }</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">End Date:</dt>
+                          <dd class="text-gray-900">${
+                            project.endDate || "N/A"
+                          }</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Activity Type:</dt>
+                          <dd class="text-gray-900">${
+                            project.activityType || "N/A"
+                          }</dd>
+                        </div>
+                        <div class="flex justify-between">
+                          <dt class="text-gray-500">Category:</dt>
+                          <dd class="text-gray-900">${
+                            project.projectCategory || "N/A"
+                          }</dd>
+                        </div>
+                      </dl>
+                      
+                      <div class="pt-4 border-t">
+                        <h4 class="text-base font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-user-tie mr-2"></i>Contact Person</h4>
+                        <div class="space-y-1 pl-4">
+                          <div class="text-gray-900 flex items-center text-sm">
+                            <i class="fas fa-user mr-2 w-4 text-center text-gray-400"></i>
+                            ${project.contactPersonName || "N/A"}
+                          </div>
+                          <div class="text-gray-900 flex items-center text-sm">
+                            <i class="fas fa-briefcase mr-2 w-4 text-center text-gray-400"></i>
+                            ${project.contactPersonRole || "N/A"}
+                          </div>
+                          <div class="text-gray-900 flex items-center text-sm">
+                            <i class="fas fa-envelope mr-2 w-4 text-center text-gray-400"></i>
+                            <a href="mailto:${
+                              project.contactPersonEmail
+                            }" class="text-blue-600 hover:text-blue-800">
+                              ${project.contactPersonEmail || "N/A"}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              } else {
+                content.innerHTML =
+                  '<p class="text-red-600">Failed to load project details.</p>';
+              }
+            } catch (error) {
+              console.error("Error loading project details:", error);
+              content.innerHTML =
+                '<p class="text-red-600">Error loading project details: ' +
+                error.message +
+                "</p>";
+            }
+          },
+
+          statusBadge(tag) {
+            const badges = {
+              active: "bg-green-200 text-green-800",
+              pending: "bg-yellow-200 text-yellow-800",
+              stalled: "bg-red-200 text-red-800",
+              completed: "bg-cyan-300 text-gray-800",
+            };
+            return badges[tag] || "bg-gray-200 text-gray-800";
+          },
+
+          getFileIcon(fileType) {
+            const lowerType = (fileType || "").toLowerCase();
+            if (lowerType.includes("pdf")) return "fa-file-pdf text-red-600";
+            if (lowerType.includes("word") || lowerType.includes("doc"))
+              return "fa-file-word text-blue-600";
+            if (
+              lowerType.includes("excel") ||
+              lowerType.includes("xls") ||
+              lowerType.includes("sheet")
+            )
+              return "fa-file-excel text-green-600";
+            if (lowerType.includes("powerpoint") || lowerType.includes("ppt"))
+              return "fa-file-powerpoint text-orange-600";
+            return "fa-file text-gray-600";
+          },
+
+          async fetchProjectDocuments(projectId) {
+            try {
+              console.log(
+                `[Documents] Fetching documents for project ID: ${projectId}`
+              );
+              const token =
+                localStorage.getItem("accessToken") ||
+                localStorage.getItem("token");
+
+              if (!token) {
+                console.error("[Documents] No authentication token found");
+                return null;
+              }
+
+              const response = await fetch(
+                `${window.BASE_URL}/api/projects/${projectId}/documents`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+
+              console.log(`[Documents] Response status:`, response.status);
+
+              if (response.ok) {
+                const data = await response.json();
+                console.log(`[Documents] Response data:`, data);
+
+                if (data.status === 200 && data.data) {
+                  console.log(
+                    `[Documents] Found ${data.data.length} documents for project ${projectId}`
+                  );
+                  return data.data;
+                } else {
+                  console.log(
+                    `[Documents] API returned non-200 status or no data:`,
+                    data
+                  );
+                }
+              } else {
+                console.warn(
+                  `[Documents] API call failed with status ${response.status}`
+                );
+                try {
+                  const errorData = await response.json();
+                  console.error(`[Documents] Error details:`, errorData);
+                } catch (e) {
+                  // Can't parse error response
+                }
+                return null;
+              }
+              return [];
+            } catch (error) {
+              console.error("[Documents] Error fetching documents:", error);
+              return null;
+            }
+          },
+
+          renderDocuments(documents, projectId) {
+            if (documents === null) {
+              return `<div class="p-3 bg-amber-50 border border-amber-200 rounded">
+                <p class="text-sm text-amber-800 flex items-center">
+                  <i class="fas fa-exclamation-triangle mr-2"></i>
+                  Unable to load documents at this time. The server encountered an error.
+                </p>
+                <p class="text-xs text-amber-600 mt-1">
+                  This project may have documents, but they cannot be retrieved right now.
+                </p>
+              </div>`;
+            }
+
+            if (!documents || documents.length === 0) {
+              return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';
+            }
+
+            return documents
+              .map(
+                (doc) => `
+              <div class="flex items-center justify-between py-2 border-b border-gray-100 hover:bg-gray-50 px-2 rounded">
+                <div class="flex items-center space-x-3">
+                  <i class="fas ${this.getFileIcon(doc.fileType)} text-xl"></i>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">${
+                      doc.fileName
+                    }</p>
+                    <p class="text-xs text-gray-500">${this.formatFileSize(
+                      doc.fileSize || doc.size
+                    )}</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button 
+                     onclick="viewProjectDocument(${projectId}, ${doc.id}, '${
+                  doc.fileName
+                }')"
+                     class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition">
+                      <i class="fas fa-eye mr-1"></i>View
+                  </button>
+                  <button 
+                     onclick="downloadProjectDocument(${projectId}, ${
+                  doc.id
+                }, '${doc.fileName}')"
+                     class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
+                      <i class="fas fa-download mr-1"></i>Download
+                  </button>
+                </div>
+              </div>
+            `
+              )
+              .join("");
+          },
+
+          formatFileSize(bytes) {
+            if (!bytes) return "Unknown size";
+            if (bytes < 1024) return bytes + " B";
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+            return (bytes / 1048576).toFixed(1) + " MB";
           },
 
           async apiCall(endpoint, method = "GET", body = null) {
@@ -1138,6 +1871,16 @@
             });
           },
 
+          getReviewerName(reviewerId) {
+            if (!reviewerId) return null;
+            // Find reviewer in the allReviewers list
+            const reviewer = this.allReviewers.find((r) => r.id === reviewerId);
+            if (reviewer) {
+              return reviewer.name || reviewer.email || `User #${reviewerId}`;
+            }
+            return null;
+          },
+
           showToast(message, type = "success") {
             this.toast.message = message;
             this.toast.type = type;
@@ -1148,6 +1891,172 @@
           },
         };
       }
+
+      // Global functions for onclick handlers
+      window.closeProjectDetailsModal = function () {
+        const modal = document.getElementById("projectDetailsModal");
+        modal.classList.add("hidden");
+      };
+
+      window.closeDocumentViewer = function () {
+        const modal = document.getElementById("documentViewerModal");
+        modal.classList.add("hidden");
+      };
+
+      window.viewProjectDocument = async function (
+        projectId,
+        documentId,
+        fileName = "Document"
+      ) {
+        const modal = document.getElementById("documentViewerModal");
+        const loadingElement = document.getElementById("documentViewerLoading");
+        const contentElement = document.getElementById("documentViewerContent");
+        const officeContentElement = document.getElementById(
+          "officeDocumentViewerContent"
+        );
+        const unsupportedElement = document.getElementById(
+          "unsupportedDocumentContent"
+        );
+        const errorElement = document.getElementById("documentViewerError");
+        const fileNameElement = document.getElementById(
+          "documentViewerFileName"
+        );
+        const downloadBtn = document.getElementById(
+          "documentViewerDownloadBtn"
+        );
+
+        // Show modal
+        modal.classList.remove("hidden");
+
+        // Set filename in modal title
+        fileNameElement.textContent = fileName || "Document";
+
+        // Reset states - hide all containers
+        loadingElement.classList.remove("hidden");
+        contentElement.classList.add("hidden");
+        officeContentElement.classList.add("hidden");
+        unsupportedElement.classList.add("hidden");
+        errorElement.classList.add("hidden");
+
+        // Setup download button
+        downloadBtn.onclick = () =>
+          window.downloadProjectDocument(projectId, documentId, fileName);
+
+        try {
+          const token =
+            localStorage.getItem("accessToken") ||
+            localStorage.getItem("token");
+          const response = await fetch(
+            `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const blob = await response.blob();
+          const fileType = blob.type.toLowerCase();
+
+          // Hide loading
+          loadingElement.classList.add("hidden");
+
+          // Handle PDF files
+          if (fileType.includes("pdf")) {
+            const url = URL.createObjectURL(blob);
+            contentElement.innerHTML = `<iframe src="${url}" class="w-full h-full" style="min-height: 600px;"></iframe>`;
+            contentElement.classList.remove("hidden");
+          }
+          // Handle images
+          else if (fileType.includes("image")) {
+            const url = URL.createObjectURL(blob);
+            contentElement.innerHTML = `<img src="${url}" class="max-w-full h-auto mx-auto" alt="${fileName}">`;
+            contentElement.classList.remove("hidden");
+          }
+          // Handle Office documents (Word, Excel, PowerPoint)
+          else if (
+            fileType.includes("word") ||
+            fileType.includes("document") ||
+            fileType.includes("sheet") ||
+            fileType.includes("excel") ||
+            fileType.includes("presentation") ||
+            fileType.includes("powerpoint")
+          ) {
+            const url = URL.createObjectURL(blob);
+            const encodedUrl = encodeURIComponent(url);
+            officeContentElement.innerHTML = `
+              <iframe 
+                src="https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}" 
+                class="w-full h-full" 
+                style="min-height: 600px;"
+                frameborder="0">
+              </iframe>
+            `;
+            officeContentElement.classList.remove("hidden");
+          }
+          // Unsupported file type
+          else {
+            unsupportedElement.classList.remove("hidden");
+          }
+        } catch (error) {
+          console.error("[Viewer] Error loading document:", error);
+          loadingElement.classList.add("hidden");
+          errorElement.innerHTML = `
+            <div class="text-center text-red-600">
+              <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+              <p class="text-lg font-semibold mb-2">Error loading document</p>
+              <p class="text-sm">${error.message}</p>
+              <button onclick="window.closeDocumentViewer()" 
+                      class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Close
+              </button>
+            </div>
+          `;
+          errorElement.classList.remove("hidden");
+        }
+      };
+
+      window.downloadProjectDocument = async function (
+        projectId,
+        documentId,
+        fileName
+      ) {
+        try {
+          const token =
+            localStorage.getItem("accessToken") ||
+            localStorage.getItem("token");
+
+          const response = await fetch(
+            `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error("[Download] Error downloading document:", error);
+          alert("Failed to download document. Please try again.");
+        }
+      };
     </script>
     <style>
       [x-cloak] {
