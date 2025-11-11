@@ -1,938 +1,405 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>User Settings</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-    <!-- Alpine.js -->
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#137fec",
-              "background-light": "#f6f7f8",
-            },
-            fontFamily: {
-              display: ["Manrope", "sans-serif"],
-            },
-            borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              full: "9999px",
-            },
-          },
-        },
-      };
-    </script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
-      rel="stylesheet"
-    />
-    <!-- Alpine.js -->
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <!-- Mapbox CSS -->
-    <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <!-- Mapbox JS -->
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-    <script src="./config.js"></script>
-    <script src="./set-base-url.js"></script>
+<head>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<title>User Settings</title>
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#137fec",
+						"background-light": "#f6f7f8",
+					},
+					fontFamily: {
+						display: ["Manrope", "sans-serif"],
+					},
+					borderRadius: {
+						DEFAULT: "0.25rem",
+						lg: "0.5rem",
+						xl: "0.75rem",
+						full: "9999px",
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Mapbox CSS -->
+	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+	<!-- Mapbox JS -->
+	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <!-- Modal Utilities -->
-    <script src="./modal-utils.js"></script>
+	<!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+	<script src="./config.js"></script>
+	<script src="./set-base-url.js"></script>
 
-    <!-- Authentication utilities -->
-    <script type="module">
-      // Try to load a local config override (frontend/config.local.js) if present.
-      (function () {
-        try {
-          var s = document.createElement("script");
-          s.src = "./config.local.js";
-          s.async = false;
-          document.head.appendChild(s);
-        } catch (e) {}
-      })();
+	<!-- Modal Utilities -->
+	<script src="./modal-utils.js"></script>
 
-      // Use window.BASE_URL which is already set by config.js loaded via script tag
-      const BASE_URL = window.BASE_URL;
-      console.log(
-        "[settings.html] Using BASE_URL:",
-        BASE_URL,
-        "- Environment:",
-        window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
-      );
-    </script>
-    <!-- Optional: Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#272E28",
-              secondary: "#f59e0b",
-              accent: "#00474C",
-              button: "#14B04C",
-              button_two: "#3482FF",
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      .fade-slide-enter {
-        opacity: 0;
-        transform: translateY(20px);
-      }
+	<!-- Authentication utilities -->
+	<script type="module">
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
 
-      .fade-slide-enter-active {
-        opacity: 1;
-        transform: translateY(0);
-        transition: all 0.4s ease;
-      }
+		// Use window.BASE_URL which is already set by config.js loaded via script tag
+		const BASE_URL = window.BASE_URL;
+		console.log(
+			"[settings.html] Using BASE_URL:",
+			BASE_URL,
+			"- Environment:",
+			window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+		);
+	</script>
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#272E28",
+						secondary: "#f59e0b",
+						accent: "#00474C",
+						button: "#14B04C",
+						button_two: "#3482FF",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
 
-      .fade-slide-leave {
-        opacity: 1;
-        transform: translateY(0);
-      }
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
 
-      .fade-slide-leave-active {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-      }
-    </style>
-  </head>
-  <body class="bg-background-light font-display text-slate-800">
-    <!-- Nav Start -->
-    <nav
-      x-data="{ open: false }"
-      class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <a
-          href="index.html"
-          class="flex items-center justify-center space-x-2 text-2xl font-bold text-teal-700 uppercase"
-        >
-          <img
-            src="resources/images/log2.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-          <img
-            src="resources/images/moh.png"
-            class="object-contain h-10 lg:h-12"
-            alt="Site Logo"
-          />
-        </a>
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
 
-        <button
-          @click="open = !open"
-          class="text-xl lg:hidden focus:outline-none text-gray-600 hover:text-gray-800"
-        >
-          <i class="fal fa-bars" x-show="!open"></i>
-          <i class="fal fa-times" x-show="open" x-cloak></i>
-        </button>
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+	</style>
+</head>
 
-        <ul
-          class="items-center hidden space-x-8 text-sm font-medium text-gray-800 lg:flex"
-        >
-          <li>
-            <a
-              href="index.html"
-              class="uppercase transition hover:text-lime-600"
-              >Home</a
-            >
-          </li>
-          <!-- Projects Dropdown -->
-          <li x-data="{ showprojectDropdown: false }" class="relative">
-            <button
-              @click="showprojectDropdown = !showprojectDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Projects <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showprojectDropdown"
-              @click.outside="showprojectDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-800">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a
-                    data-twe-toggle="modal"
-                    data-twe-target="#createNewProject"
-                  >
-                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
-                    Project
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html#my-projects">
-                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="all-projects.html">
-                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="past-projects.html">
-                    <i class="far fa-history mr-2 text-gray-500"></i> Past
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <!-- Collaborations Dropdown -->
-          <li x-data="{ collabDropdown: false }" class="relative">
-            <button
-              @click="collabDropdown = !collabDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="collabDropdown"
-              @click.outside="collabDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="priorities.html">
-                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                    Priorities
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="my-collaborations.html">
-                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                    Collaborations
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="announcements.html">
-                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a
-              href="announcements.html"
-              class="uppercase transition hover:text-indigo-600"
-            >
-              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
-            </a>
-          </li>
-        </ul>
-        <!-- Right-aligned Items (Admin + User) -->
-        <ul
-          class="flex items-center space-x-6 text-sm hidden lg:flex font-medium text-gray-800"
-        >
-          <li
-            x-data="{ showDropdown: false }"
-            class="relative hidden"
-            id="adminNav"
-          >
-            <button
-              @click="showDropdown = !showDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Admin <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showDropdown"
-              @click.outside="showDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="dashboard.html">Dashboard</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html">Project Management</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="members.html">Stakeholder Management</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <!-- User Dropdown -->
-          <li x-data="{ showUserDropdown: false }" class="relative">
-            <button
-              @click="showUserDropdown = !showUserDropdown"
-              class="font-semibold uppercase inline-flex items-center px-3 py-2 text-sm font-medium transition rounded-lg hover:bg-gray-100"
-            >
-              <i class="mr-2 fas fa-user-circle"></i>
-              <span id="userDisplayName">User</span>
-              <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showUserDropdown"
-              @click.outside="showUserDropdown = false"
-              x-transition
-              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-            >
-              <div class="px-4 py-3">
-                <div
-                  class="text-base font-semibold text-teal-900"
-                  id="userNameDisplay"
-                >
-                  Loading...
-                </div>
-                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                <div class="text-xs text-slate-400 mt-1">
-                  Role:
-                  <span
-                    id="userRoleDisplay"
-                    class="font-medium text-teal-600"
-                  ></span>
-                  | Status:
-                  <span
-                    id="userStatusDisplay"
-                    class="font-medium text-lime-500"
-                  ></span>
-                </div>
-              </div>
-              <ul class="py-2 text-sm text-teal-700">
-                <li>
-                  <a
-                    href="profile.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-user"></i> Profile
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="settings.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-cog"></i> Settings
-                  </a>
-                </li>
-                <li id="donorNav" class="hidden">
-                  <a
-                    href="donor-management.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
-                    Management
-                  </a>
-                </li>
-              </ul>
-              <div class="py-2">
-                <button
-                  onclick="authManager.logout()"
-                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
-                >
-                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                </button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <a
-              href="faq.html"
-              class="uppercase font-semibold transition text-blue-800 md:mr-3"
-            >
-              <i class="mr-2 fas fa-question-square"></i> FAQ's
-            </a>
-          </li>
-        </ul>
-      </div>
-      <!-- Nav Links - Mobile -->
-      <div
-        x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="px-6 pb-6 lg:hidden"
-      >
-        <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
-          <li>
-            <a
-              href="index.html"
-              class="uppercase transition hover:text-lime-600"
-              >Home</a
-            >
-          </li>
-          <li>
-            <a
-              href="announcements.html"
-              class="uppercase transition hover:text-indigo-600"
-            >
-              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
-            </a>
-          </li>
-          <!-- Projects Dropdown -->
-          <li x-data="{ showprojectDropdown: false }" class="relative">
-            <button
-              @click="showprojectDropdown = !showprojectDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Projects <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showprojectDropdown"
-              @click.outside="showprojectDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-800">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a
-                    data-twe-toggle="modal"
-                    data-twe-target="#createNewProject"
-                  >
-                    <i class="far fa-plus mr-3 text-emerald-500"></i> New
-                    Project
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html#my-projects">
-                    <i class="far fa-user-check mr-2 text-sky-500"></i> My
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="all-projects.html">
-                    <i class="far fa-folder-open mr-2 text-yellow-600"></i> All
-                    Projects
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="past-projects.html">
-                    <i class="far fa-history mr-2 text-gray-500"></i> Past
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <!-- Collaborations Dropdown -->
-          <li x-data="{ collabDropdown: false }" class="relative">
-            <button
-              @click="collabDropdown = !collabDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Collaborations <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="collabDropdown"
-              @click.outside="collabDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="priorities.html">
-                    <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH
-                    Priorities
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="my-collaborations.html">
-                    <i class="far fa-users-crown mr-2 text-fuchsia-600"></i> My
-                    Collaborations
-                  </a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="announcements.html">
-                    <i class="far fa-search mr-2 text-cyan-500"></i> Find
-                    Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a
-              href="announcements.html"
-              class="uppercase transition hover:text-indigo-600"
-            >
-              <i class="far fa-bullhorn mr-2 text-indigo-500"></i> Announcements
-            </a>
-          </li>
-          <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-            <!-- Announcements link moved to standalone nav item -->
-            <!-- Admin -->
-          </li>
-          <li
-            x-data="{ showDropdown: false }"
-            class="relative hidden"
-            id="adminNav"
-          >
-            <button
-              @click="showDropdown = !showDropdown"
-              class="font-semibold inline-flex items-center uppercase transition hover:text-lime-600"
-            >
-              Admin <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showDropdown"
-              @click.outside="showDropdown = false"
-              x-transition
-              class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-            >
-              <ul class="py-2 text-sm text-left text-teal-700">
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="dashboard.html">Dashboard</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="projects.html">Project Management</a>
-                </li>
-                <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                  <a href="members.html">Stakeholder Management</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <!-- User Dropdown -->
-          <li x-data="{ showUserDropdown: false }" class="relative">
-            <button
-              @click="showUserDropdown = !showUserDropdown"
-              class="font-semibold uppercase inline-flex items-center text-sm font-medium transition rounded-lg hover:bg-gray-100"
-            >
-              <i class="mr-2 fas fa-user-circle"></i>
-              <span id="userDisplayName">User</span>
-              <i class="ml-2 fad fa-chevron-down"></i>
-            </button>
-            <div
-              x-show="showUserDropdown"
-              @click.outside="showUserDropdown = false"
-              x-transition
-              class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl"
-            >
-              <div class="px-4 py-3">
-                <div
-                  class="text-base font-semibold text-teal-900"
-                  id="userNameDisplay"
-                >
-                  Loading...
-                </div>
-                <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
-                <div class="text-xs text-slate-400 mt-1">
-                  Role:
-                  <span
-                    id="userRoleDisplay"
-                    class="font-medium text-teal-600"
-                  ></span>
-                  | Status:
-                  <span
-                    id="userStatusDisplay"
-                    class="font-medium text-lime-500"
-                  ></span>
-                </div>
-              </div>
-              <ul class="py-2 text-sm text-teal-700">
-                <li>
-                  <a
-                    href="profile.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-user"></i> Profile
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="settings.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-cog"></i> Settings
-                  </a>
-                </li>
-                <li id="donorNav" class="hidden">
-                  <a
-                    href="donor-management.html"
-                    class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600"
-                  >
-                    <i class="mr-2 fas fa-hand-holding-heart"></i> Donor
-                    Management
-                  </a>
-                </li>
-              </ul>
-              <div class="py-2">
-                <button
-                  onclick="authManager.logout()"
-                  class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-100"
-                >
-                  <i class="mr-2 fas fa-sign-out-alt"></i> Logout
-                </button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <a
-              href="faq.html"
-              class="uppercase font-semibold transition text-blue-800 md:mr-3"
-            >
-              <i class="mr-2 fas fa-question-square"></i> FAQ's
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <!-- Nav End -->
-    <div
-      class="mt-20 relative flex min-h-screen w-full flex-col group/design-root"
-    >
-      <div class="layout-container flex h-full grow flex-col">
-        <main class="flex-1 p-4 sm:p-6 lg:p-8">
-          <div class="mx-auto flex max-w-6xl flex-col gap-8">
-            <div class="w-full">
-              <div class="rounded-xl border border-slate-200 bg-white">
-                <div class="p-6 border-b border-slate-200">
-                  <h2 class="text-2xl font-bold text-slate-900">
-                    Account Settings
-                  </h2>
-                  <p class="mt-1 text-slate-500">
-                    Manage your account preferences and security settings.
-                  </p>
-                </div>
-                <form class="p-6 space-y-6">
-                  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <label class="flex flex-col">
-                      <p class="text-base font-medium pb-2 text-slate-800">
-                        Email Address
-                      </p>
-                      <input
-                        id="settingsEmail"
-                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-4 text-base font-normal"
-                        type="email"
-                        value=""
-                      />
-                    </label>
-                  </div>
-                  <div class="flex justify-end pt-4">
-                    <button
-                      type="submit"
-                      class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-                    >
-                      Update Settings
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="w-full">
-              <div class="rounded-xl border border-slate-200 bg-white">
-                <div class="p-6 border-b border-slate-200">
-                  <h2 class="text-2xl font-bold text-slate-900">
-                    Notification Preferences
-                  </h2>
-                  <p class="mt-1 text-slate-500">
-                    Choose how you want to be notified about updates.
-                  </p>
-                </div>
-                <div class="p-6 space-y-4">
-                  <label class="flex items-center">
-                    <input
-                      id="emailNotifications"
-                      type="checkbox"
-                      class="rounded border-slate-300 text-primary focus:ring-primary"
-                    />
-                    <span class="ml-3 text-sm text-slate-800"
-                      >Email notifications for project updates</span
-                    >
-                  </label>
-                  <label class="flex items-center">
-                    <input
-                      id="smsNotifications"
-                      type="checkbox"
-                      class="rounded border-slate-300 text-primary focus:ring-primary"
-                    />
-                    <span class="ml-3 text-sm text-slate-800"
-                      >SMS notifications for important alerts</span
-                    >
-                  </label>
-                  <label class="flex items-center">
-                    <input
-                      id="pushNotifications"
-                      type="checkbox"
-                      class="rounded border-slate-300 text-primary focus:ring-primary"
-                    />
-                    <span class="ml-3 text-sm text-slate-800"
-                      >Push notifications in browser</span
-                    >
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-    <script src="auth.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", async function () {
-        if (!authManager.isAuthenticated()) {
-          window.location.href = "index.html";
-          return;
-        }
-        try {
-          const user = await authManager.getCurrentUser();
-          if (user) {
-            document.getElementById("settingsEmail").value = user.email || "";
-            // Load notification preferences from localStorage or user data
-            loadNotificationPreferences();
-          }
-        } catch (error) {
-          console.error("Failed to load user settings:", error);
-          await showAlert(
-            "Failed to load settings. Please try logging in again.",
-            "Error",
-            "error"
-          );
-          authManager.logout();
-        }
+<body class="bg-background-light font-display text-slate-800">
+	<div class="" id="nav-placeholder"></div>
+	<!-- Nav End -->
+	<div class="mt-20 relative flex min-h-screen w-full flex-col group/design-root">
+		<div class="layout-container flex h-full grow flex-col">
+			<main class="flex-1 p-4 sm:p-6 lg:p-8">
+				<div class="mx-auto flex max-w-6xl flex-col gap-8">
+					<div class="w-full">
+						<div class="rounded-xl border border-slate-200 bg-white">
+							<div class="p-6 border-b border-slate-200">
+								<h2 class="text-2xl font-bold text-blue-900">
+									Account Settings
+								</h2>
+								<p class="mt-1 text-slate-500">
+									Manage your account preferences and security settings.
+								</p>
+							</div>
+							<form class="p-6 space-y-6">
+								<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+									<label class="flex flex-col">
+										<p class="text-base font-medium pb-2 text-slate-800">
+											Email Address
+										</p>
+										<input id="settingsEmail"
+											class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-4 text-base font-normal"
+											type="email" value="" />
+									</label>
+								</div>
+								<div class="flex justify-end pt-4">
+									<button type="submit"
+										class="inline-flex items-center justify-center rounded-lg bg-blue-900 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-blue-900/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
+										Update Settings
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="w-full">
+						<div class="rounded-xl border border-slate-200 bg-white">
+							<div class="p-6 border-b border-slate-200">
+								<h2 class="text-2xl font-bold text-blue-900">
+									Notification Preferences
+								</h2>
+								<p class="mt-1 text-slate-500">
+									Choose how you want to be notified about updates.
+								</p>
+							</div>
+							<div class="p-6 space-y-4">
+								<label class="flex flex-wrap w-full items-center">
+									<input id="emailNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">Email notifications for project
+										updates</span>r
+								</label>
+								<label class="flex flex-wrap w-full items-center">
+									<input id="smsNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">SMS notifications for important
+										alerts</span>
+								</label>
+								<label class="flex flex-wrap w-full items-center">
+									<input id="pushNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">Push notifications in browser</span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+	<script src="auth.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", async function () {
+			if (!authManager.isAuthenticated()) {
+				window.location.href = "index.html";
+				return;
+			}
+			try {
+				const user = await authManager.getCurrentUser();
+				if (user) {
+					document.getElementById("settingsEmail").value = user.email || "";
+					// Load notification preferences from localStorage or user data
+					loadNotificationPreferences();
+				}
+			} catch (error) {
+				console.error("Failed to load user settings:", error);
+				await showAlert(
+					"Failed to load settings. Please try logging in again.",
+					"Error",
+					"error"
+				);
+				authManager.logout();
+			}
 
-        // Handle form submission
-        const form = document.querySelector("form");
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
+			// Handle form submission
+			const form = document.querySelector("form");
+			form.addEventListener("submit", async function (e) {
+				e.preventDefault();
 
-          const email = document.getElementById("settingsEmail").value;
+				const email = document.getElementById("settingsEmail").value;
 
-          try {
-            // Update email if changed
-            if (email !== (await authManager.getCurrentUser()).email) {
-              await updateEmail(email);
-            }
+				try {
+					// Update email if changed
+					if (email !== (await authManager.getCurrentUser()).email) {
+						await updateEmail(email);
+					}
 
-            // Save notification preferences
-            saveNotificationPreferences();
+					// Save notification preferences
+					saveNotificationPreferences();
 
-            await showAlert(
-              "Settings updated successfully!",
-              "Success",
-              "success"
-            );
-          } catch (error) {
-            console.error("Failed to update settings:", error);
-            await showAlert(
-              "Failed to update settings. Please try again.",
-              "Error",
-              "error"
-            );
-          }
-        });
-      });
+					await showAlert(
+						"Settings updated successfully!",
+						"Success",
+						"success"
+					);
+				} catch (error) {
+					console.error("Failed to update settings:", error);
+					await showAlert(
+						"Failed to update settings. Please try again.",
+						"Error",
+						"error"
+					);
+				}
+			});
+		});
 
-      function loadNotificationPreferences() {
-        const emailNotif =
-          localStorage.getItem("emailNotifications") === "true";
-        const smsNotif = localStorage.getItem("smsNotifications") === "true";
-        const pushNotif = localStorage.getItem("pushNotifications") === "true";
+		function loadNotificationPreferences() {
+			const emailNotif =
+				localStorage.getItem("emailNotifications") === "true";
+			const smsNotif = localStorage.getItem("smsNotifications") === "true";
+			const pushNotif = localStorage.getItem("pushNotifications") === "true";
 
-        document.getElementById("emailNotifications").checked = emailNotif;
-        document.getElementById("smsNotifications").checked = smsNotif;
-        document.getElementById("pushNotifications").checked = pushNotif;
-      }
+			document.getElementById("emailNotifications").checked = emailNotif;
+			document.getElementById("smsNotifications").checked = smsNotif;
+			document.getElementById("pushNotifications").checked = pushNotif;
+		}
 
-      function saveNotificationPreferences() {
-        const emailNotif =
-          document.getElementById("emailNotifications").checked;
-        const smsNotif = document.getElementById("smsNotifications").checked;
-        const pushNotif = document.getElementById("pushNotifications").checked;
+		function saveNotificationPreferences() {
+			const emailNotif =
+				document.getElementById("emailNotifications").checked;
+			const smsNotif = document.getElementById("smsNotifications").checked;
+			const pushNotif = document.getElementById("pushNotifications").checked;
 
-        localStorage.setItem("emailNotifications", emailNotif);
-        localStorage.setItem("smsNotifications", smsNotif);
-        localStorage.setItem("pushNotifications", pushNotif);
-      }
+			localStorage.setItem("emailNotifications", emailNotif);
+			localStorage.setItem("smsNotifications", smsNotif);
+			localStorage.setItem("pushNotifications", pushNotif);
+		}
 
-      async function updateEmail(newEmail) {
-        // Implement email update API call
-        const response = await fetch(
-          `${window.BASE_URL}/api/auth/update-email`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ email: newEmail }),
-          }
-        );
+		async function updateEmail(newEmail) {
+			// Implement email update API call
+			const response = await fetch(
+				`${window.BASE_URL}/api/auth/update-email`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
+					},
+					body: JSON.stringify({ email: newEmail }),
+				}
+			);
 
-        if (!response.ok) {
-          throw new Error("Failed to update email");
-        }
+			if (!response.ok) {
+				throw new Error("Failed to update email");
+			}
 
-        return response.json();
-      }
-    </script>
-    <script>
-      // Populate user dropdown with data from authManager
-      document.addEventListener("DOMContentLoaded", function () {
-        (async function () {
-          let user = authManager.getCachedUser();
-          if (!user) {
-            try {
-              await authManager.getCurrentUser();
-              user = authManager.getCachedUser();
-            } catch (err) {
-              console.error("[ERROR] Could not fetch user profile:", err);
-            }
-          }
-          // Wait a bit for authManager to initialize
-          setTimeout(() => {
-            const user = authManager.getCachedUser();
-            console.log("[DEBUG] Loading user data for dropdown:", user);
+			return response.json();
+		}
+	</script>
+	<script>
+		// Populate user dropdown with data from authManager
+		document.addEventListener("DOMContentLoaded", function () {
+			(async function () {
+				let user = authManager.getCachedUser();
+				if (!user) {
+					try {
+						await authManager.getCurrentUser();
+						user = authManager.getCachedUser();
+					} catch (err) {
+						console.error("[ERROR] Could not fetch user profile:", err);
+					}
+				}
+				// Wait a bit for authManager to initialize
+				setTimeout(() => {
+					const user = authManager.getCachedUser();
+					console.log("[DEBUG] Loading user data for dropdown:", user);
 
-            if (user) {
-              // Update user display name in button
-              const userDisplayName =
-                document.getElementById("userDisplayName");
-              if (userDisplayName) {
-                userDisplayName.textContent = user.name || user.email || "User";
-              }
+					if (user) {
+						// Update user display name in button
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						if (userDisplayName) {
+							userDisplayName.textContent = user.name || user.email || "User";
+						}
 
-              // Update user name in dropdown
-              const userNameDisplay =
-                document.getElementById("userNameDisplay");
-              if (userNameDisplay) {
-                userNameDisplay.textContent = user.name || "User";
-              }
+						// Update user name in dropdown
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						if (userNameDisplay) {
+							userNameDisplay.textContent = user.name || "User";
+						}
 
-              // Update email
-              const userEmailDisplay =
-                document.getElementById("userEmailDisplay");
-              if (userEmailDisplay) {
-                userEmailDisplay.textContent = user.email || "";
-              }
+						// Update email
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						if (userEmailDisplay) {
+							userEmailDisplay.textContent = user.email || "";
+						}
 
-              // Update role
-              const userRoleDisplay =
-                document.getElementById("userRoleDisplay");
-              if (userRoleDisplay) {
-                userRoleDisplay.textContent = user.role || "USER";
-              }
+						// Update role
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						if (userRoleDisplay) {
+							userRoleDisplay.textContent = user.role || "USER";
+						}
 
-              // Update status
-              const userStatusDisplay =
-                document.getElementById("userStatusDisplay");
-              if (userStatusDisplay) {
-                userStatusDisplay.textContent =
-                  user.approvalStatus || "PENDING";
-              }
+						// Update status
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent =
+								user.approvalStatus || "PENDING";
+						}
 
-              // Show admin nav if user is admin
-              console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
-              if (
-                user.role === "ADMIN" ||
-                user.role === "SUPER_ADMIN" ||
-                user.role === "SUPER_ADMIN_REVIEWER" ||
-                user.role === "SUPER_ADMIN_APPROVER"
-              ) {
-                console.log(
-                  "[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
-                );
+						// Show admin nav if user is admin
+						console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+						if (
+							user.role === "ADMIN" ||
+							user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+						) {
+							console.log(
+								"[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+							);
 
-                const adminNavItems = document.querySelectorAll("#adminNav");
-                adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+							const adminNavItems = document.querySelectorAll("#adminNav");
+							adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
 
-                // Show admin collaboration menu item
-                const adminCollabItem =
-                  document.getElementById("admin-collab-item");
-                if (adminCollabItem) {
-                  adminCollabItem.style.display = "block";
-                  console.log(
-                    "[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
-                  );
-                }
+							// Show admin collaboration menu item
+							const adminCollabItem =
+								document.getElementById("admin-collab-item");
+							if (adminCollabItem) {
+								adminCollabItem.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+								);
+							}
 
-                const adminCollabMobile = document.getElementById(
-                  "admin-collab-mobile"
-                );
-                if (adminCollabMobile) {
-                  adminCollabMobile.style.display = "block";
-                  console.log(
-                    "[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
-                  );
-                }
+							const adminCollabMobile = document.getElementById(
+								"admin-collab-mobile"
+							);
+							if (adminCollabMobile) {
+								adminCollabMobile.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+								);
+							}
 
-                // Load pending requests count
-                loadPendingRequestsCount();
-              } else if (user.role === "DONOR") {
-                const donorNavItems = document.querySelectorAll("#donorNav");
-                donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
-              }
-            } else {
-              console.warn("[DEBUG] No user data found in cache");
-            }
-          }, 500);
-        })();
-      });
-    </script>
-  </body>
+							// Load pending requests count
+							loadPendingRequestsCount();
+						} else if (user.role === "DONOR") {
+							const donorNavItems = document.querySelectorAll("#donorNav");
+							donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+						}
+					} else {
+						console.warn("[DEBUG] No user data found in cache");
+					}
+				}, 500);
+			})();
+		});
+	</script>
+</body>
+
 </html>
