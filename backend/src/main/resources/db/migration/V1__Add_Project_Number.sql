@@ -1,5 +1,14 @@
--- Add project_no column to projects table
-ALTER TABLE projects ADD COLUMN project_no VARCHAR(10) UNIQUE;
+-- Add project_no column to projects table (if it doesn't exist)
+-- This migration is idempotent - safe to run even if column already exists
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'projects' AND column_name = 'project_no'
+    ) THEN
+        ALTER TABLE projects ADD COLUMN project_no VARCHAR(10) UNIQUE;
+    END IF;
+END $$;
 
 -- Populate existing projects with generated project numbers
 -- Using CTE to assign sequential numbers starting from P-0001
