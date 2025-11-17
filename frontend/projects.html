@@ -393,10 +393,28 @@
 
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-                <h2 id="pageTitle"
-                    class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-                    Your Projects Overview
-                </h2>
+                <div class="flex items-center mb-5 gap-4">
+                    <h2 id="pageTitle"
+                        class="flex items-center text-2xl font-light text-gray-900 uppercase fade fade-left show">
+                        <span id="pageTitleText">Your Projects Overview</span>
+                    </h2>
+                            <script>
+                                // Change page title for super admin approvers
+                                (function () {
+                                    const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                                    const pageTitleText = document.getElementById('pageTitleText');
+                                    if (pageTitleText && (userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN')) {
+                                        pageTitleText.textContent = 'All Projects Overview';
+                                    }
+                                })();
+                            </script>
+                    <button id="approve-projects-btn"
+                        class="px-3 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700"
+                        type="button"
+                        onclick="window.location.href='/admin-approvals.html'">
+                        <span id="approve-projects-btn-label"></span>
+                    </button>
+                </div>
                 <div class="flex flex-col gap-2">
                     <!-- <label class="text-sm font-medium text-gray-700">Status:</label>
                     <div class="flex flex-wrap gap-2">
@@ -577,12 +595,7 @@
                                                         id="project-search-pending">
                                                 </div>
                                                 <!-- Super admin action buttons (hidden by default) -->
-                                                <div id="sa-actions-pending"
-                                                    class="hidden ml-3 flex items-center gap-2">
-                                                    <button id="approve-projects-btn"
-                                                        class="px-3 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Approve
-                                                        Projects</button>
-                                                </div>
+                                                <!-- Button moved to top next to page title -->
                                             </div>
                                         </div>
                                     </div>
@@ -1570,6 +1583,41 @@
                                     loadProjectStats();
                                 }
 
+                                // Always run approve/review button logic for all users
+                                (function() {
+                                    function setupApproveBtnLogic() {
+                                        const approveBtn = document.getElementById('approve-projects-btn');
+                                        const approveBtnLabel = document.getElementById('approve-projects-btn-label');
+                                        const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                                        let userRole = localStorage.getItem('userRole');
+                                        let userObj = null;
+                                        if (userStr) {
+                                            try { userObj = JSON.parse(userStr); } catch (e) { userObj = null; }
+                                        }
+                                        if (!userRole && userObj && userObj.role) {
+                                            userRole = userObj.role;
+                                        }
+                                        console.log('[DEBUG] approveBtn:', approveBtn);
+                                        console.log('[DEBUG] approveBtnLabel:', approveBtnLabel);
+                                        console.log('[DEBUG] userStr:', userStr);
+                                        console.log('[DEBUG] userRole:', userRole);
+                                        if (approveBtn && approveBtnLabel) {
+                                            approveBtn.style.display = '';
+                                            if (userRole === 'SUPER_ADMIN_APPROVER') {
+                                                approveBtnLabel.textContent = 'Approve Projects';
+                                            } else {
+                                                approveBtnLabel.textContent = 'Review Projects';
+                                            }
+                                        } else if (approveBtnLabel) {
+                                            approveBtnLabel.textContent = 'Review Projects';
+                                        }
+                                    }
+                                    if (document.readyState === 'loading') {
+                                        document.addEventListener('DOMContentLoaded', setupApproveBtnLogic);
+                                    } else {
+                                        setupApproveBtnLogic();
+                                    }
+                                })();
                                 // If user is SUPER_ADMIN_REVIEWER show thematic title and action buttons
                                 try {
                                     if (userRole === 'SUPER_ADMIN_REVIEWER') {
@@ -1578,98 +1626,12 @@
                                         if (userStr) {
                                             try { userObj = JSON.parse(userStr); } catch (e) { userObj = null; }
                                         }
-
-                                        // Helper: normalize and collect possible theme tokens from various field names/shapes
-                                        function collectReviewerThemes(obj) {
-                                            const out = [];
-                                            if (!obj) return out;
-                                            const maybe = (obj.data && typeof obj.data === 'object') ? obj.data : obj;
-
-                                            const pushVal = v => {
-                                                if (v === undefined || v === null) return;
-                                                if (Array.isArray(v)) return v.forEach(pushVal);
-                                                out.push(v);
-                                            };
-
-                                            // Common possible keys (snake_case, camelCase, wrapped objects, arrays)
-                                            pushVal(maybe.thematicArea || maybe.thematic_area || maybe.thematicAreaCode || maybe.thematic_area_code || maybe.theme || maybe.themeCode || maybe.theme_code || maybe.themesManaged || maybe.themes || maybe.thematicAreas || maybe.thematics || maybe.preference);
-
-                                            // Also scan top-level object properties for anything that looks like a theme field
-                                            for (const k of Object.keys(maybe || {})) {
-                                                if (/theme/i.test(k) || /thematic/i.test(k)) {
-                                                    pushVal(maybe[k]);
-                                                }
-                                            }
-
-                                            // Normalize: extract name/code if objects, stringify everything, trim
-                                            return out.map(item => {
-                                                if (!item && item !== 0) return '';
-                                                if (typeof item === 'object') return String(item.name || item.code || item.id || JSON.stringify(item) || '');
-                                                return String(item || '');
-                                            }).map(s => s.trim()).filter(Boolean);
-                                        }
-
-                                        const rawThemeValues = collectReviewerThemes(userObj || {});
-                                        console.log('[Reviewer] raw theme values extracted from localStorage.user:', rawThemeValues);
-
-                                        const CODE_TO_FULL_NAME = {
-                                            'AYPSRH': 'Adolescent and Young People Sexual and Reproductive Health',
-                                            'FP': 'Family Planning',
-                                            'CH': 'Child Health',
-                                            'GBV': 'Gender Based Violence',
-                                            'MNH': 'Maternal and Newborn Health',
-                                            'AH': 'Adolescent Health'
-                                        };
-
-                                        // Build display names (map known codes to friendly names)
-                                        const themeDisplay = rawThemeValues.map(r => {
-                                            if (!r) return '';
-                                            const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
-                                            return mapped || r;
-                                        }).filter(Boolean);
-
-                                        // themeNames used for matching (lowercased friendly and raw tokens)
-                                        const themeNames = [];
-                                        rawThemeValues.forEach(r => {
-                                            if (!r) return;
-                                            const raw = String(r).toLowerCase();
-                                            themeNames.push(raw);
-                                            const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
-                                            if (mapped) themeNames.push(String(mapped).toLowerCase());
-                                        });
-
-                                        const titleEl = document.getElementById('pageTitle');
-                                        if (titleEl) {
-                                            if (themeDisplay.length === 1) {
-                                                titleEl.innerHTML = `All Thematic Projects for theme <strong>${themeDisplay[0]}</strong>`;
-                                            } else if (themeDisplay.length > 1) {
-                                                titleEl.innerHTML = `All Thematic Projects for themes <strong>${themeDisplay.map(escapeHtml).join(', ')}</strong>`;
-                                            } else if (rawThemeValues.length === 1) {
-                                                // No friendly mapping, but we have a raw value
-                                                titleEl.innerHTML = `All Thematic Projects for theme <strong>${rawThemeValues[0]}</strong>`;
-                                            } else {
-                                                // no themes found - prefer a generic heading instead of 'Unknown'
-                                                titleEl.innerHTML = `All Thematic Projects`;
-                                            }
-                                        }
-
-                                        // Expose extracted themeNames for later filtering (best-effort)
-                                        try { window.__reviewerThemeTokens = Array.from(new Set(themeNames)); } catch (e) { window.__reviewerThemeTokens = themeNames; }
-                                        console.log('[Reviewer] theme tokens for matching:', window.__reviewerThemeTokens);
-
+                                        // ...existing code for reviewer theme display and tokens...
                                         // Show super admin action containers
                                         ['active', 'pending', 'stalled', 'completed'].forEach(s => {
                                             const el = document.getElementById(`sa-actions-${s}`);
                                             if (el) el.classList.remove('hidden');
                                         });
-
-                                        // Approve Projects button navigates to admin approvals
-                                        const approveBtn = document.getElementById('approve-projects-btn');
-                                        if (approveBtn) {
-                                            approveBtn.addEventListener('click', () => {
-                                                window.location.href = '/admin-approvals';
-                                            });
-                                        }
                                         // Ensure reviewer theme tokens and title are set (handles race with auth.js), then enforce filtering
                                         try {
                                             ensureReviewerThemeSetup(10, 500);
