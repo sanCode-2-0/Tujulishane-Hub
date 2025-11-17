@@ -466,6 +466,7 @@
                                     <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
+                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
@@ -491,6 +492,7 @@
                                     <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
+                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
@@ -516,6 +518,7 @@
                                     <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
+                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
@@ -541,6 +544,7 @@
                                     <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
+                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
                                                 <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
@@ -826,11 +830,13 @@
                                         const projects = data.data;
                                         const tbody = document.getElementById(tableBodyId);
                                         tbody.innerHTML = '';
+                                        let counter = 1;
                                         projects.forEach(project => {
                                             const themes = project.themes || [];
                                             const locations = project.locations || [];
                                             tbody.innerHTML += `
                                                 <tr>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">${counter++}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
@@ -847,6 +853,10 @@
                                                 </tr>
                                             `;
                                         });
+                                        // Add empty state message if no projects
+                                        if (tbody.innerHTML === '') {
+                                            tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">No ${status} projects found</td></tr>`;
+                                        }
                                     }
                                 } catch (e) {
                                     console.error(`Failed to load projects for status ${status}`, e);
@@ -864,7 +874,7 @@
                                 const hasAuthManager = !!(window.authManager && typeof window.authManager.apiCall === 'function');
 
                                 const showLoginMessage = () => {
-                                    const msg = '<tr><td colspan="8" class="px-4 py-3 text-sm text-gray-700">Please log in to view your projects.</td></tr>';
+                                    const msg = '<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">Please log in to view your projects.</td></tr>';
                                     document.getElementById('tbody-active').innerHTML = msg;
                                     document.getElementById('tbody-pending').innerHTML = msg;
                                     document.getElementById('tbody-stalled').innerHTML = msg;
@@ -936,6 +946,11 @@
 
                                     const counts = { active: 0, pending: 0, stalled: 0, completed: 0 };
 
+                                    let activeCounter = 1;
+                                    let pendingCounter = 1;
+                                    let stalledCounter = 1;
+                                    let completedCounter = 1;
+
                                     myProjects.forEach(project => {
                                         const status = (
                                             project.approvalStatus ||
@@ -948,6 +963,7 @@
                                         const locations = project.locations || [];
                                         const row = `
                                                 <tr>
+                                                    <td class="px-4 py-3 text-sm text-gray-700">{{number}}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
                                                     <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
@@ -965,16 +981,16 @@
                                             `;
 
                                         if (status === 'pending') {
-                                            tbPending.innerHTML += row;
+                                            tbPending.innerHTML += row.replace('{{number}}', pendingCounter++);
                                             counts.pending++;
                                         } else if (status === 'stalled' || status === 'stall' || status === 'stalled project') {
-                                            tbStalled.innerHTML += row;
+                                            tbStalled.innerHTML += row.replace('{{number}}', stalledCounter++);
                                             counts.stalled++;
                                         } else if (status === 'completed') {
-                                            tbCompleted.innerHTML += row;
+                                            tbCompleted.innerHTML += row.replace('{{number}}', completedCounter++);
                                             counts.completed++;
                                         } else {
-                                            tbActive.innerHTML += row;
+                                            tbActive.innerHTML += row.replace('{{number}}', activeCounter++);
                                             counts.active++;
                                         }
                                     });
@@ -983,6 +999,20 @@
                                     document.getElementById('count-pending').textContent = counts.pending;
                                     document.getElementById('count-stalled').textContent = counts.stalled;
                                     document.getElementById('count-completed').textContent = counts.completed;
+
+                                    // Add empty state messages
+                                    if (counts.active === 0) {
+                                        tbActive.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">You have no active projects</td></tr>';
+                                    }
+                                    if (counts.pending === 0) {
+                                        tbPending.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">You have no pending projects</td></tr>';
+                                    }
+                                    if (counts.stalled === 0) {
+                                        tbStalled.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">You have no stalled projects</td></tr>';
+                                    }
+                                    if (counts.completed === 0) {
+                                        tbCompleted.innerHTML = '<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">You have no completed projects</td></tr>';
+                                    }
 
                                 } catch (e) {
                                     console.error('Error loading my projects', e);
