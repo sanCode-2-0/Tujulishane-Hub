@@ -1403,6 +1403,19 @@
         });
       }
 
+      // Helper function to get thematic area display name
+      function getThematicAreaDisplayName(code) {
+        const thematicAreas = {
+          GBV: "GBV",
+          AYPSRH: "AYPSRH",
+          MNH: "MNH",
+          FP: "FP",
+          CH: "CH",
+          AH: "AH"
+        };
+        return thematicAreas[code] || code || "Not Assigned";
+      }
+
       function getStatusBadge(status) {
         const badges = {
           APPROVED: "bg-green-100 text-green-800",
@@ -1578,7 +1591,8 @@
                     user.organization?.name || "N/A"
                   }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "SUPER_ADMIN" ||
                         user.role === "SUPER_ADMIN_REVIEWER" ||
                         user.role === "SUPER_ADMIN_APPROVER"
@@ -1587,6 +1601,14 @@
                       }">
                           ${user.role}
                       </span>
+                      ${
+                        user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
+                          ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
+                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                          </span>`
+                          : ""
+                      }
+                      </div>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">${formatDate(
                     user.createdAt
@@ -1648,7 +1670,8 @@
                     user.organization?.name || "N/A"
                   }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "SUPER_ADMIN" ||
                         user.role === "SUPER_ADMIN_REVIEWER" ||
                         user.role === "SUPER_ADMIN_APPROVER"
@@ -1657,6 +1680,14 @@
                       }">
                           ${user.role}
                       </span>
+                      ${
+                        user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
+                          ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
+                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                          </span>`
+                          : ""
+                      }
+                      </div>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">
                       <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
@@ -1717,7 +1748,8 @@
                     user.organization?.name || "N/A"
                   }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "SUPER_ADMIN" ||
                         user.role === "SUPER_ADMIN_REVIEWER" ||
                         user.role === "SUPER_ADMIN_APPROVER"
@@ -1726,6 +1758,14 @@
                       }">
                           ${user.role}
                       </span>
+                      ${
+                        user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
+                          ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
+                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                          </span>`
+                          : ""
+                      }
+                      </div>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-500">
                       <div class="max-w-xs truncate" title="${
@@ -1784,7 +1824,8 @@
                     user.organization?.name || "N/A"
                   }</td>
                   <td class="px-4 py-3 text-sm text-gray-700">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "SUPER_ADMIN" ||
                         user.role === "SUPER_ADMIN_REVIEWER" ||
                         user.role === "SUPER_ADMIN_APPROVER"
@@ -1793,6 +1834,14 @@
                       }">
                           ${user.role}
                       </span>
+                      ${
+                        user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
+                          ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
+                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                          </span>`
+                          : ""
+                      }
+                      </div>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-700">
                       <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(

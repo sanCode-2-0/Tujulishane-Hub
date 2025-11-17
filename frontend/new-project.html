@@ -2028,6 +2028,10 @@
             addHospitalMarkers();
             // Initialize auto-save after map is ready
             initializeAutoSave();
+            // Initialize map search when the map is fully loaded
+            if (typeof initializeMapSearch === 'function') {
+              initializeMapSearch();
+            }
           });
         } catch (error) {
           console.error("Map initialization failed:", error);
@@ -2040,9 +2044,18 @@
       function initializeMapSearch() {
         const searchInput = document.getElementById("mapSearchInput");
         const searchResults = document.getElementById("searchResults");
+        // Guard: ensure DOM elements exist
+        if (!searchInput || !searchResults) {
+          console.warn("Map search: required DOM elements not found (mapSearchInput, searchResults)");
+          return;
+        }
+        const searchInputExists = !!searchInput;
         const clearSearchBtn = document.getElementById("clearSearchBtn");
         let searchTimeout;
         let currentSearchMarker = null;
+
+        // Debugging: log initialization
+        console.debug("Map search initialized", { searchInput: searchInputExists, mapIsReady: !!map });
 
         // Search input handler with debounce
         searchInput.addEventListener("input", function (e) {
@@ -2219,6 +2232,8 @@
 
         function selectSearchResult(feature) {
           const [lng, lat] = feature.center;
+          // Escape single quotes in text to avoid breaking onclick HTML
+          const safeText = (feature.text || "").replace(/'/g, "\\'");
 
           // Remove previous search marker
           if (currentSearchMarker) {
@@ -2237,7 +2252,7 @@
                 <div class="font-semibold text-gray-900">${feature.text}</div>
                 <div class="text-sm text-gray-600">${feature.place_name}</div>
                 <button 
-                  onclick="addSearchLocationToProject(${lat}, ${lng}, '${feature.text}')"
+                  onclick="addSearchLocationToProject(${lat}, ${lng}, '${safeText}')"
                   class="mt-2 w-full px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                 >
                   <i class="fas fa-plus mr-1"></i>

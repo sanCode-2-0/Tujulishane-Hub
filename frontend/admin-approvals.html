@@ -11,32 +11,20 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- Tailwind CSS (with custom config using inline script) -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#1e40af", // Custom Blue
-              secondary: "#f59e0b", // Custom Amber
-              accent: "#10b981", // Custom Green
-              dark: "#1f2937", // Gray-800
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
     <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS custom config (after CDN loads) -->
+    <script>
+      // Tailwind CDN doesn't support config, but we can use CSS variables or inline styles
+      // Custom colors are handled via CSS classes in main.css
+    </script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
-    <script src="styles/main.js"></script>
-    <!-- Modal Utilities -->
+    <!-- Configuration and Utilities -->
+    <script src="config.js"></script>
+    <script src="set-base-url.js"></script>
     <script src="modal-utils.js"></script>
     <script src="auth.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -180,6 +168,14 @@
               Your thematic area:
               <span class="font-semibold" x-text="userThematicArea"></span>
             </p>
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-1"></i>
+                <strong>Review Types:</strong> You may see initial approvals (Pending → Active), 
+                status change requests (Active → Stalled/Completed), or resume requests (Stalled → Active).
+                Past Projects go directly from Pending → Completed after approval.
+              </p>
+            </div>
 
             <template x-if="projectsForReview.length === 0">
               <div class="text-center py-8 text-gray-500">
@@ -262,11 +258,44 @@
                           <span x-text="project.endDate || 'N/A'"></span>
                         </p>
                       </div>
+
+                      <!-- Project Category -->
+                      <div class="mb-2" x-show="project.projectCategory">
+                        <span
+                          class="px-2 py-1 rounded text-xs font-medium"
+                          :class="{
+                            'bg-purple-100 text-purple-800': project.projectCategory === 'PRIORITY',
+                            'bg-indigo-100 text-indigo-800': project.projectCategory === 'PAST_PROJECT',
+                            'bg-gray-100 text-gray-800': project.projectCategory === 'IMPLEMENTING' || project.projectCategory === 'RESEARCH'
+                          }"
+                          x-text="project.projectCategory || 'N/A'"
+                        ></span>
+                      </div>
+
+                      <!-- Current Status & Request Type -->
+                      <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                        <p class="text-sm font-semibold text-blue-900 mb-1">
+                          <i class="fas fa-info-circle mr-1"></i>Review Context
+                        </p>
+                        <p class="text-xs text-blue-800">
+                          <strong>Current Status:</strong>
+                          <span class="ml-1 px-2 py-0.5 bg-white rounded text-xs font-medium" x-text="project.status || 'pending'"></span>
+                        </p>
+                        <p class="text-xs text-blue-800 mt-1" x-show="getReviewType(project)">
+                          <strong>Review Type:</strong>
+                          <span class="ml-1 font-medium" x-text="getReviewType(project)"></span>
+                        </p>
+                      </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex flex-col gap-2">
                       <span
-                        class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
+                        class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium text-center"
                         x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING_REVIEW'"
+                      ></span>
+                      <span
+                        class="px-3 py-1 rounded-full text-xs font-medium text-center"
+                        :class="getStatusBadgeClass(project.status)"
+                        x-text="project.status || 'pending'"
                       ></span>
                     </div>
                   </div>
@@ -301,6 +330,14 @@
               Overview of all projects at different stages of the two-tier
               approval process
             </p>
+            <div class="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+              <p class="text-sm text-purple-800">
+                <i class="fas fa-info-circle mr-1"></i>
+                <strong>Workflow Stages:</strong> Projects can be in initial approval (Pending → Active), 
+                status transitions (Active → Stalled/Completed), or resume requests (Stalled → Active).
+                Each requires two-tier approval: Thematic Review → Final Approval.
+              </p>
+            </div>
 
             <template x-if="allPendingProjects.length === 0">
               <div class="text-center py-8 text-gray-500">
@@ -646,6 +683,20 @@
               <strong>Project:</strong>
               <span x-text="selectedProject?.title"></span>
             </p>
+            <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded" x-show="selectedProject">
+              <p class="text-sm text-blue-900 mb-1">
+                <strong>Review Type:</strong>
+                <span x-text="selectedProject ? getReviewType(selectedProject) : 'Initial Approval'"></span>
+              </p>
+              <p class="text-xs text-blue-800" x-show="selectedProject">
+                <strong>Current Status:</strong>
+                <span class="ml-1 px-2 py-0.5 bg-white rounded" x-text="selectedProject?.status || 'pending'"></span>
+                <span x-show="selectedProject && selectedProject.projectCategory" class="ml-2">
+                  | <strong>Category:</strong>
+                  <span class="ml-1" x-text="selectedProject?.projectCategory || ''"></span>
+                </span>
+              </p>
+            </div>
 
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2"
@@ -1044,21 +1095,19 @@
           },
 
           async checkAuth() {
-            // Wait for BASE_URL to be set
+            // Wait for BASE_URL to be set (from set-base-url.js or auth.js)
             let retries = 0;
-            while (!window.BASE_URL && retries < 10) {
-              console.log("Waiting for BASE_URL to be set...");
+            const maxRetries = 20; // Increased but less verbose
+            while (!window.BASE_URL && retries < maxRetries) {
               await new Promise((resolve) => setTimeout(resolve, 100));
               retries++;
             }
 
             if (!window.BASE_URL) {
-              console.error("BASE_URL not set after waiting!");
+              console.warn("BASE_URL not set after waiting, using fallback");
               window.BASE_URL =
                 "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"; // Fallback
             }
-
-            console.log("Using BASE_URL:", window.BASE_URL);
 
             try {
               const token = localStorage.getItem("accessToken");
@@ -1084,7 +1133,15 @@
                 // Handle both response structures: data.data or direct data
                 const userData = data.data || data;
                 this.userRole = userData.role;
-                this.userThematicArea = userData.thematicArea || "Not Assigned";
+                // Handle thematicArea - it might be a string (enum name) or an object
+                if (userData.thematicArea) {
+                  // If it's an object with code/name, use code; if it's a string, use it directly
+                  this.userThematicArea = typeof userData.thematicArea === 'string' 
+                    ? userData.thematicArea 
+                    : (userData.thematicArea.code || userData.thematicArea.name || userData.thematicArea);
+                } else {
+                  this.userThematicArea = "Not Assigned";
+                }
 
                 // Set initial tab based on role
                 if (this.userRole === "SUPER_ADMIN_REVIEWER") {
@@ -1355,6 +1412,11 @@
           },
 
           async submitReview() {
+            if (!this.selectedProject || !this.selectedProject.id) {
+              this.showToast("No project selected", "error");
+              return;
+            }
+
             if (!this.reviewComments.trim()) {
               this.showToast("Please provide review comments", "error");
               return;
@@ -1393,6 +1455,11 @@
           },
 
           async submitFinalApproval() {
+            if (!this.selectedProject || !this.selectedProject.id) {
+              this.showToast("No project selected", "error");
+              return;
+            }
+
             this.loading = true;
             try {
               await this.apiCall(
@@ -1422,6 +1489,11 @@
           },
 
           async submitFinalRejection() {
+            if (!this.selectedProject || !this.selectedProject.id) {
+              this.showToast("No project selected", "error");
+              return;
+            }
+
             if (!this.rejectionReason.trim()) {
               this.showToast("Please provide a rejection reason", "error");
               return;
@@ -1879,6 +1951,51 @@
               return reviewer.name || reviewer.email || `User #${reviewerId}`;
             }
             return null;
+          },
+
+          getReviewType(project) {
+            // Null check
+            if (!project) return 'Initial Approval';
+            
+            // Determine what type of review/approval is being requested
+            const status = (project.status || '').toLowerCase();
+            const workflowStatus = (project.approvalWorkflowStatus || '').toUpperCase();
+            
+            // If workflow is PENDING_REVIEW or UNDER_REVIEW, check what's being requested
+            if (workflowStatus === 'PENDING_REVIEW' || workflowStatus === 'UNDER_REVIEW') {
+              if (status === 'pending') {
+                // New project initial approval
+                if (project.projectCategory === 'PAST_PROJECT') {
+                  return 'Initial Approval (Past Project → Completed)';
+                }
+                return 'Initial Approval (Pending → Active)';
+              } else if (status === 'active') {
+                // Active project requesting status change
+                // Check if there's a requested status in the project data
+                if (project.requestedStatus) {
+                  return `Status Change Request (Active → ${project.requestedStatus})`;
+                }
+                // Default: might be a general review
+                return 'Status Change Review';
+              } else if (status === 'stalled') {
+                return 'Resume Request (Stalled → Active)';
+              }
+            }
+            
+            return 'Initial Approval';
+          },
+
+          getStatusBadgeClass(status) {
+            const statusLower = (status || '').toLowerCase();
+            const classes = {
+              'pending': 'bg-yellow-100 text-yellow-800',
+              'active': 'bg-green-100 text-green-800',
+              'stalled': 'bg-orange-100 text-orange-800',
+              'completed': 'bg-blue-100 text-blue-800',
+              'abandoned': 'bg-red-100 text-red-800',
+              'rejected': 'bg-red-100 text-red-800'
+            };
+            return classes[statusLower] || 'bg-gray-100 text-gray-800';
           },
 
           showToast(message, type = "success") {
