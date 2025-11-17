@@ -82,28 +82,28 @@
 <body class="text-gray-800 ">
     <!-- Authentication Check -->
     <script>
-        // Check authentication on page load
-        (function() {
-            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-            if (!token) {
-                console.warn('[Security] No authentication token found, redirecting to login');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Verify token format (JWT should have 3 parts)
-            const parts = token.split('.');
-            if (parts.length !== 3) {
-                console.warn('[Security] Invalid token format, redirecting to login');
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            console.log('[Security] Authentication check passed');
-        })();
+            // Check authentication on page load
+            (function () {
+                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                if (!token) {
+                    console.warn('[Security] No authentication token found, redirecting to login');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Verify token format (JWT should have 3 parts)
+                const parts = token.split('.');
+                if (parts.length !== 3) {
+                    console.warn('[Security] Invalid token format, redirecting to login');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                console.log('[Security] Authentication check passed');
+            })();
     </script>
     <!-- Nav Start -->
     <div class="" id="nav-placeholder"></div>
@@ -144,12 +144,14 @@
                             <!-- Project Title -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Project Title</label>
-                                <input type="text" id="title" name="title" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <input type="text" id="title" name="title" required
+                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             </div>
                             <!-- Project Category -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Category</label>
-                                <input type="text" id="category" name="category" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <input type="text" id="category" name="category" required
+                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             </div>
                             <!-- Themes (checkboxes placeholder) -->
                             <div>
@@ -158,59 +160,72 @@
                                     <label><input type="checkbox" name="themes" value="Theme1"> Theme 1</label>
                                     <label><input type="checkbox" name="themes" value="Theme2"> Theme 2</label>
                                 </div>
-                                <p id="themesError" class="hidden text-sm text-red-600">Please select at least one theme.</p>
+                                <p id="themesError" class="hidden text-sm text-red-600">Please select at least one
+                                    theme.</p>
                             </div>
                             <!-- Locations -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Locations</label>
                                 <div id="locationsContainer"></div>
-                                <button type="button" id="addLocationBtn" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Add Location</button>
-                                <p id="locationsError" class="hidden text-sm text-red-600">Please add at least one location.</p>
+                                <button type="button" id="addLocationBtn"
+                                    class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Add Location</button>
+                                <p id="locationsError" class="hidden text-sm text-red-600">Please add at least one
+                                    location.</p>
                             </div>
                             <!-- Dates -->
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Start Date</label>
-                                    <input type="date" id="starttime_period" name="starttime_period" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <input type="date" id="starttime_period" name="starttime_period" required
+                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">End Date</label>
-                                    <input type="date" id="endtime_period" name="endtime_period" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <input type="date" id="endtime_period" name="endtime_period" required
+                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                             </div>
                             <!-- Activity Type -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Activity Type</label>
-                                <input type="text" id="activity_type" name="activity_type" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <input type="text" id="activity_type" name="activity_type" required
+                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             </div>
                             <!-- Contact Person -->
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Contact Person Name</label>
-                                    <input type="text" id="contact_person" name="contact_person" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <input type="text" id="contact_person" name="contact_person" required
+                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Contact Person Role</label>
-                                    <input type="text" name="contact_person_role" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <input type="text" name="contact_person_role" required
+                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Contact Person Email</label>
-                                    <input type="email" name="contact_person_mail" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <input type="email" name="contact_person_mail" required
+                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                             </div>
                             <!-- Objectives -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Objectives</label>
-                                <textarea id="gaps" name="gaps" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                                <textarea id="gaps" name="gaps" required
+                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                             </div>
                             <!-- Budget -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Budget (KES)</label>
-                                <input type="number" id="budget" name="budget" required class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <input type="number" id="budget" name="budget" required
+                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             </div>
                             <!-- Submit -->
                             <div class="pt-4">
-                                <button type="submit" class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">Create Project</button>
+                                <button type="submit"
+                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">Create
+                                    Project</button>
                             </div>
                         </form>
                     </div>
@@ -322,16 +337,19 @@
         </div>
 
         <!-- Document Viewer Modal -->
-        <div id="documentViewerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-modal="true">
+        <div id="documentViewerModal"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-modal="true">
             <div class="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200">
                     <h3 id="documentViewerFileName" class="text-lg font-semibold text-gray-800">Document Viewer</h3>
                     <div class="flex gap-2">
-                        <button id="documentViewerDownloadBtn" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+                        <button id="documentViewerDownloadBtn"
+                            class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
                             <i class="fas fa-download mr-1"></i>Download
                         </button>
-                        <button onclick="closeDocumentViewer()" class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">
+                        <button onclick="closeDocumentViewer()"
+                            class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">
                             <i class="fas fa-times mr-1"></i>Close
                         </button>
                     </div>
@@ -375,7 +393,8 @@
 
         <div class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
+                <h2 id="pageTitle"
+                    class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
                     Your Projects Overview
                 </h2>
                 <div class="flex flex-col gap-2">
@@ -442,42 +461,92 @@
                     <!--Pills content-->
                     <div class="mb-6">
                         <style>
-                          /* Custom table tweaks for professional look */
-                          .modern-table thead th {
-                            position: sticky;
-                            top: 0;
-                            background: #f9fafb;
-                            z-index: 2;
-                          }
-                          .modern-table tbody tr {
-                            transition: background 0.2s;
-                          }
-                          .modern-table tbody tr:nth-child(even) {
-                            background: #f3f4f6;
-                          }
-                          .modern-table tbody tr:hover {
-                            background: #e0e7ef;
-                          }
+                            /* Custom table tweaks for professional look */
+                            .modern-table thead th {
+                                position: sticky;
+                                top: 0;
+                                background: #f9fafb;
+                                z-index: 2;
+                            }
+
+                            .modern-table tbody tr {
+                                transition: background 0.2s;
+                            }
+
+                            .modern-table tbody tr:nth-child(even) {
+                                background: #f3f4f6;
+                            }
+
+                            .modern-table tbody tr:hover {
+                                background: #e0e7ef;
+                            }
                         </style>
                         <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" data-twe-tab-active>
                             <div class="px-4 py-4 md:px-0 sm:-mx-8">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
-                                    <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
+                                    <!-- Search and Filter Controls -->
+                                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                                        <div
+                                            class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                                            <div
+                                                class="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1">
+                                                <!-- Search Input -->
+                                                <div class="relative flex-1 max-w-md">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-search text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 bg-white shadow-sm"
+                                                        placeholder="Search projects..."
+                                                        oninput="filterProjectTables('tbody-active')"
+                                                        id="project-search-active">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table
+                                        class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Themes</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Locations</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Status</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Start Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">End Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Contact Person</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Budget (KES)</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Actions</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    #</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Project No</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Title</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Category</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Themes</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Locations</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Status</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Start Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    End Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Contact Person</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Budget (KES)</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody-active"></tbody>
@@ -489,21 +558,74 @@
                             id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                             <div class="px-4 py-4 md:px-0 sm:-mx-8">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
-                                    <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
+                                    <!-- Search and Filter Controls -->
+                                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                                        <div
+                                            class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                                            <div
+                                                class="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1">
+                                                <!-- Search Input -->
+                                                <div class="relative flex-1 max-w-md">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-search text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 bg-white shadow-sm"
+                                                        placeholder="Search projects..."
+                                                        oninput="filterProjectTables('tbody-pending')"
+                                                        id="project-search-pending">
+                                                </div>
+                                                <!-- Super admin action buttons (hidden by default) -->
+                                                <div id="sa-actions-pending"
+                                                    class="hidden ml-3 flex items-center gap-2">
+                                                    <button id="approve-projects-btn"
+                                                        class="px-3 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Approve
+                                                        Projects</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table
+                                        class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Themes</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Locations</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Status</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Start Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">End Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Contact Person</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Budget (KES)</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Actions</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    #</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Project No</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Title</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Category</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Themes</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Locations</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Status</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Start Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    End Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Contact Person</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Budget (KES)</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody-pending"></tbody>
@@ -515,21 +637,68 @@
                             id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                             <div class="px-4 py-4 md:px-0 sm:-mx-8">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
-                                    <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
+                                    <!-- Search and Filter Controls -->
+                                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                                        <div
+                                            class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                                            <div
+                                                class="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1">
+                                                <!-- Search Input -->
+                                                <div class="relative flex-1 max-w-md">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-search text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 bg-white shadow-sm"
+                                                        placeholder="Search projects..."
+                                                        oninput="filterProjectTables('tbody-stalled')"
+                                                        id="project-search-stalled">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table
+                                        class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Themes</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Locations</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Status</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Start Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">End Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Contact Person</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Budget (KES)</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Actions</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    #</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Project No</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Title</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Category</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Themes</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Locations</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Status</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Start Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    End Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Contact Person</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Budget (KES)</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody-stalled"></tbody>
@@ -541,21 +710,68 @@
                             id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab">
                             <div class="px-4 py-4 md:px-0 sm:-mx-8">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
-                                    <table class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
+                                    <!-- Search and Filter Controls -->
+                                    <div class="p-6 border-b border-gray-200 bg-gray-50">
+                                        <div
+                                            class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                                            <div
+                                                class="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1">
+                                                <!-- Search Input -->
+                                                <div class="relative flex-1 max-w-md">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-search text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 bg-white shadow-sm"
+                                                        placeholder="Search projects..."
+                                                        oninput="filterProjectTables('tbody-completed')"
+                                                        id="project-search-completed">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table
+                                        class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                         <thead>
                                             <tr>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">#</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Project No</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Title</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Category</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Themes</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Locations</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Status</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Start Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">End Date</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Contact Person</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Budget (KES)</th>
-                                                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">Actions</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    #</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Project No</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Title</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Category</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Themes</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Locations</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Status</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Start Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    End Date</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Contact Person</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Budget (KES)</th>
+                                                <th
+                                                    class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
+                                                    Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody-completed"></tbody>
@@ -788,6 +1004,125 @@
                                     .replace(/'/g, '&#39;');
                             }
 
+                            // Collect reviewer theme values from an object (supports many shapes)
+                            function collectReviewerThemesFromObject(obj) {
+                                const out = [];
+                                if (!obj) return out;
+                                const maybe = (obj.data && typeof obj.data === 'object') ? obj.data : obj;
+
+                                const pushVal = v => {
+                                    if (v === undefined || v === null) return;
+                                    if (Array.isArray(v)) return v.forEach(pushVal);
+                                    out.push(v);
+                                };
+
+                                pushVal(maybe.thematicArea || maybe.thematic_area || maybe.thematicAreaCode || maybe.thematic_area_code || maybe.theme || maybe.themeCode || maybe.theme_code || maybe.themesManaged || maybe.themes || maybe.thematicAreas || maybe.thematics || maybe.preference);
+                                for (const k of Object.keys(maybe || {})) {
+                                    if (/theme/i.test(k) || /thematic/i.test(k)) {
+                                        pushVal(maybe[k]);
+                                    }
+                                }
+
+                                return out.map(item => {
+                                    if (!item && item !== 0) return '';
+                                    if (typeof item === 'object') return String(item.name || item.code || item.id || JSON.stringify(item) || '');
+                                    return String(item || '');
+                                }).map(s => s.trim()).filter(Boolean);
+                            }
+
+                            // Attempt to update page title and reviewer tokens from localStorage; returns true when some value found
+                            function updateReviewerTitleAndTokens() {
+                                try {
+                                    const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                                    if (!userStr) return false;
+                                    let userObj = null;
+                                    try { userObj = JSON.parse(userStr); } catch (e) { userObj = null; }
+                                    const rawThemeValues = collectReviewerThemesFromObject(userObj || {});
+                                    console.log('[Reviewer] raw theme values extracted from localStorage.user:', rawThemeValues);
+
+                                    const CODE_TO_FULL_NAME = {
+                                        'AYPSRH': 'Adolescent and Young People Sexual and Reproductive Health',
+                                        'FP': 'Family Planning',
+                                        'CH': 'Child Health',
+                                        'GBV': 'Gender Based Violence',
+                                        'MNH': 'Maternal and Newborn Health',
+                                        'AH': 'Adolescent Health'
+                                    };
+
+                                    const themeDisplay = rawThemeValues.map(r => {
+                                        if (!r) return '';
+                                        const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
+                                        return mapped || r;
+                                    }).filter(Boolean);
+
+                                    const themeNames = [];
+                                    rawThemeValues.forEach(r => {
+                                        if (!r) return;
+                                        const raw = String(r).toLowerCase();
+                                        themeNames.push(raw);
+                                        const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
+                                        if (mapped) themeNames.push(String(mapped).toLowerCase());
+                                    });
+
+
+
+                                    const titleEl = document.getElementById('pageTitle');
+                                    // Safely read and parse current user from localStorage before accessing fields
+                                    (function safeLogThematic() {
+                                        try {
+                                            const raw = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                                            if (!raw) { console.log('Thematic', 'no currentUser in localStorage'); return; }
+                                            let cu = null;
+                                            try { cu = JSON.parse(raw); } catch (e) { cu = raw; }
+                                            const thematic = cu && (cu.thematicArea || cu.thematic_area || cu.theme || cu.themeCode || cu.theme_code || cu.preference) ? (cu.thematicArea || cu.thematic_area || cu.theme || cu.themeCode || cu.theme_code || cu.preference) : null;
+                                            const mapped = thematic ? CODE_TO_FULL_NAME[String(thematic).toUpperCase()] : null;
+                                            console.log('Thematic', mapped || thematic || 'none');
+                                        } catch (e) {
+                                            console.warn('safeLogThematic failed', e);
+                                        }
+                                    })();
+                                    // if (titleEl) {
+                                    //     if (themeDisplay.length === 1) {
+                                    //         titleEl.innerHTML = `All Thematic Projects for theme <strong>${escapeHtml(themeDisplay[0])}</strong>`;
+                                    //     } else if (themeDisplay.length > 1) {
+                                    //         titleEl.innerHTML = `All Thematic Projects for themes <strong>${themeDisplay.map(escapeHtml).join(', ')}</strong>`;
+                                    //     } else if (rawThemeValues.length === 1) {
+                                    //         titleEl.innerHTML = `All Thematic Projects for theme <strong>${escapeHtml(rawThemeValues[0])}</strong>`;
+                                    //     } else {
+                                    //             // no themes found - show generic heading without an 'Unknown' theme
+                                    //             titleEl.innerHTML = `All Thematic Projects`;
+                                    //         }
+                                    // }
+
+                                    try { window.__reviewerThemeTokens = Array.from(new Set(themeNames)); } catch (e) { window.__reviewerThemeTokens = themeNames; }
+                                    console.log('[Reviewer] theme tokens for matching:', window.__reviewerThemeTokens);
+
+                                    return rawThemeValues.length > 0 || themeDisplay.length > 0 || (window.__reviewerThemeTokens && window.__reviewerThemeTokens.length > 0);
+                                } catch (e) {
+                                    console.error('Error updating reviewer title and tokens', e);
+                                    return false;
+                                }
+                            }
+
+                            // Retry loop to wait for auth.js to populate localStorage.user (handles race conditions)
+                            function ensureReviewerThemeSetup(attempts = 10, delay = 300) {
+                                let tries = 0;
+                                const tick = () => {
+                                    const ok = updateReviewerTitleAndTokens();
+                                    if (ok) {
+                                        try { filterRenderedTableRowsByReviewerTheme(); } catch (e) { console.error('Error running reviewer filter after token setup', e); }
+                                        return;
+                                    }
+                                    tries++;
+                                    if (tries < attempts) {
+                                        setTimeout(tick, delay);
+                                    } else {
+                                        console.warn('ensureReviewerThemeSetup: no reviewer theme found after retries');
+                                    }
+                                };
+                                tick();
+                            }
+
                             function renderPartnerField(project) {
                                 // Prefer explicit organization name
                                 const orgName = project && project.organization && project.organization.name ? project.organization.name : (project && (project.organizationName || project.organization));
@@ -820,14 +1155,79 @@
                                         console.log('[Security] Partners/Donors should use my-projects endpoint, not status endpoint');
                                         return;
                                     }
-                                    
+
                                     const res = await fetch(`${API_BASE}/projects/status/${status}`);
                                     console.log(`[API] GET /projects/status/${status} response:`, res);
                                     if (!res.ok) throw new Error('HTTP ' + res.status);
                                     const data = await res.json();
                                     console.log(`[API] /projects/status/${status} data:`, data);
                                     if (data.status === 200) {
-                                        const projects = data.data;
+                                        let projects = data.data || [];
+                                        // If the current user is a SUPER_ADMIN_REVIEWER, filter projects to only those within their thematic areas
+                                        try {
+                                            const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                                            if (userRole === 'SUPER_ADMIN_REVIEWER') {
+                                                const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                                                let userObj = null;
+                                                if (userStr) {
+                                                    try { userObj = JSON.parse(userStr); } catch (e) { userObj = null; }
+                                                }
+                                                // Build reviewer theme list (prefer single `thematicArea`)
+                                                let themeListRaw = [];
+                                                if (userObj) {
+                                                    // Support different shapes: userObj may be the API response wrapper ({status,message,data: {...}})
+                                                    const maybe = userObj.data && typeof userObj.data === 'object' ? userObj.data : userObj;
+                                                    if (maybe.thematicArea) themeListRaw = [maybe.thematicArea];
+                                                    else if (Array.isArray(maybe.themes)) themeListRaw = maybe.themes;
+                                                    else if (Array.isArray(maybe.thematicAreas)) themeListRaw = maybe.thematicAreas;
+                                                    else if (maybe.themesManaged) themeListRaw = maybe.themesManaged;
+                                                }
+                                                const themeNames = (themeListRaw || []).map(t => typeof t === 'string' ? t.toLowerCase() : ((t.name || t.code || '') + '').toLowerCase()).filter(Boolean);
+
+                                                if (themeNames.length > 0) {
+                                                    projects = projects.filter(p => {
+                                                        try {
+                                                            // Gather all theme strings from the project
+                                                            let projectThemes = [];
+                                                            if (Array.isArray(p.themes)) {
+                                                                p.themes.forEach(t => {
+                                                                    if (!t) return;
+                                                                    if (typeof t === 'string') projectThemes.push(t.toLowerCase());
+                                                                    else {
+                                                                        if (t.name) projectThemes.push(String(t.name).toLowerCase());
+                                                                        if (t.code) projectThemes.push(String(t.code).toLowerCase());
+                                                                    }
+                                                                });
+                                                            }
+                                                            if (p.thematicArea) projectThemes.push(String(p.thematicArea).toLowerCase());
+                                                            if (p.theme) {
+                                                                if (typeof p.theme === 'string') projectThemes.push(p.theme.toLowerCase());
+                                                                else {
+                                                                    if (p.theme.name) projectThemes.push(String(p.theme.name).toLowerCase());
+                                                                    if (p.theme.code) projectThemes.push(String(p.theme.code).toLowerCase());
+                                                                }
+                                                            }
+                                                            if (p.themeCode) projectThemes.push(String(p.themeCode).toLowerCase());
+                                                            if (p.themeName) projectThemes.push(String(p.themeName).toLowerCase());
+                                                            projectThemes = projectThemes.filter(Boolean);
+                                                            if (projectThemes.length === 0) return false;
+
+                                                            // Partial, case-insensitive match: any project theme contains or is contained in any reviewer token
+                                                            for (const tn of themeNames) {
+                                                                for (const pt of projectThemes) {
+                                                                    if (pt.includes(tn) || tn.includes(pt)) return true;
+                                                                }
+                                                            }
+                                                            return false;
+                                                        } catch (inner) {
+                                                            return false;
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        } catch (filterErr) {
+                                            console.error('Error filtering projects for SUPER_ADMIN_REVIEWER', filterErr);
+                                        }
                                         const tbody = document.getElementById(tableBodyId);
                                         tbody.innerHTML = '';
                                         let counter = 1;
@@ -856,6 +1256,12 @@
                                         // Add empty state message if no projects
                                         if (tbody.innerHTML === '') {
                                             tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">No ${status} projects found</td></tr>`;
+                                        }
+                                        // If reviewer, ensure rendered rows are strictly filtered by thematic area
+                                        if ((localStorage.getItem('userRole') || '').toUpperCase() === 'SUPER_ADMIN_REVIEWER') {
+                                            try {
+                                                filterRenderedTableRowsByReviewerTheme();
+                                            } catch (e) { console.error('Error enforcing reviewer theme on rendered rows', e); }
                                         }
                                     }
                                 } catch (e) {
@@ -916,7 +1322,7 @@
                                     console.log('[loadMyProjects] API response:', json);
                                     const projects = (json && json.data) || [];
                                     console.log('[loadMyProjects] Projects array:', projects);
-                                    const userStr = localStorage.getItem('user');
+                                    const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
                                     let userEmail = '';
                                     if (userStr) {
                                         try {
@@ -1164,6 +1570,115 @@
                                     loadProjectStats();
                                 }
 
+                                // If user is SUPER_ADMIN_REVIEWER show thematic title and action buttons
+                                try {
+                                    if (userRole === 'SUPER_ADMIN_REVIEWER') {
+                                        const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                                        let userObj = null;
+                                        if (userStr) {
+                                            try { userObj = JSON.parse(userStr); } catch (e) { userObj = null; }
+                                        }
+
+                                        // Helper: normalize and collect possible theme tokens from various field names/shapes
+                                        function collectReviewerThemes(obj) {
+                                            const out = [];
+                                            if (!obj) return out;
+                                            const maybe = (obj.data && typeof obj.data === 'object') ? obj.data : obj;
+
+                                            const pushVal = v => {
+                                                if (v === undefined || v === null) return;
+                                                if (Array.isArray(v)) return v.forEach(pushVal);
+                                                out.push(v);
+                                            };
+
+                                            // Common possible keys (snake_case, camelCase, wrapped objects, arrays)
+                                            pushVal(maybe.thematicArea || maybe.thematic_area || maybe.thematicAreaCode || maybe.thematic_area_code || maybe.theme || maybe.themeCode || maybe.theme_code || maybe.themesManaged || maybe.themes || maybe.thematicAreas || maybe.thematics || maybe.preference);
+
+                                            // Also scan top-level object properties for anything that looks like a theme field
+                                            for (const k of Object.keys(maybe || {})) {
+                                                if (/theme/i.test(k) || /thematic/i.test(k)) {
+                                                    pushVal(maybe[k]);
+                                                }
+                                            }
+
+                                            // Normalize: extract name/code if objects, stringify everything, trim
+                                            return out.map(item => {
+                                                if (!item && item !== 0) return '';
+                                                if (typeof item === 'object') return String(item.name || item.code || item.id || JSON.stringify(item) || '');
+                                                return String(item || '');
+                                            }).map(s => s.trim()).filter(Boolean);
+                                        }
+
+                                        const rawThemeValues = collectReviewerThemes(userObj || {});
+                                        console.log('[Reviewer] raw theme values extracted from localStorage.user:', rawThemeValues);
+
+                                        const CODE_TO_FULL_NAME = {
+                                            'AYPSRH': 'Adolescent and Young People Sexual and Reproductive Health',
+                                            'FP': 'Family Planning',
+                                            'CH': 'Child Health',
+                                            'GBV': 'Gender Based Violence',
+                                            'MNH': 'Maternal and Newborn Health',
+                                            'AH': 'Adolescent Health'
+                                        };
+
+                                        // Build display names (map known codes to friendly names)
+                                        const themeDisplay = rawThemeValues.map(r => {
+                                            if (!r) return '';
+                                            const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
+                                            return mapped || r;
+                                        }).filter(Boolean);
+
+                                        // themeNames used for matching (lowercased friendly and raw tokens)
+                                        const themeNames = [];
+                                        rawThemeValues.forEach(r => {
+                                            if (!r) return;
+                                            const raw = String(r).toLowerCase();
+                                            themeNames.push(raw);
+                                            const mapped = CODE_TO_FULL_NAME[String(r).toUpperCase()];
+                                            if (mapped) themeNames.push(String(mapped).toLowerCase());
+                                        });
+
+                                        const titleEl = document.getElementById('pageTitle');
+                                        if (titleEl) {
+                                            if (themeDisplay.length === 1) {
+                                                titleEl.innerHTML = `All Thematic Projects for theme <strong>${themeDisplay[0]}</strong>`;
+                                            } else if (themeDisplay.length > 1) {
+                                                titleEl.innerHTML = `All Thematic Projects for themes <strong>${themeDisplay.map(escapeHtml).join(', ')}</strong>`;
+                                            } else if (rawThemeValues.length === 1) {
+                                                // No friendly mapping, but we have a raw value
+                                                titleEl.innerHTML = `All Thematic Projects for theme <strong>${rawThemeValues[0]}</strong>`;
+                                            } else {
+                                                // no themes found - prefer a generic heading instead of 'Unknown'
+                                                titleEl.innerHTML = `All Thematic Projects`;
+                                            }
+                                        }
+
+                                        // Expose extracted themeNames for later filtering (best-effort)
+                                        try { window.__reviewerThemeTokens = Array.from(new Set(themeNames)); } catch (e) { window.__reviewerThemeTokens = themeNames; }
+                                        console.log('[Reviewer] theme tokens for matching:', window.__reviewerThemeTokens);
+
+                                        // Show super admin action containers
+                                        ['active', 'pending', 'stalled', 'completed'].forEach(s => {
+                                            const el = document.getElementById(`sa-actions-${s}`);
+                                            if (el) el.classList.remove('hidden');
+                                        });
+
+                                        // Approve Projects button navigates to admin approvals
+                                        const approveBtn = document.getElementById('approve-projects-btn');
+                                        if (approveBtn) {
+                                            approveBtn.addEventListener('click', () => {
+                                                window.location.href = '/admin-approvals';
+                                            });
+                                        }
+                                        // Ensure reviewer theme tokens and title are set (handles race with auth.js), then enforce filtering
+                                        try {
+                                            ensureReviewerThemeSetup(10, 500);
+                                        } catch (e) { console.error('Error scheduling reviewer theme setup', e); }
+                                    }
+                                } catch (e) {
+                                    console.error('Error initializing SUPER_ADMIN_REVIEWER UI', e);
+                                }
+
                                 refreshProjectTables();
                             });
 
@@ -1292,12 +1807,12 @@
             try {
                 console.log(`[Documents] Fetching documents for project ID: ${projectId}`);
                 const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                
+
                 if (!token) {
                     console.error('[Documents] No authentication token found');
                     return null;
                 }
-                
+
                 const response = await fetch(`${window.BASE_URL}/api/projects/${projectId}/documents`, {
                     method: 'GET',
                     headers: {
@@ -1385,7 +1900,7 @@
         async function downloadProjectDocument(projectId, documentId, fileName) {
             try {
                 const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                
+
                 const response = await fetch(
                     `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
                     {
@@ -1751,13 +2266,112 @@
             link.click();
         }
 
+        // Filter project tables based on search
+        function filterProjectTables(tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            // Get search input for this tbody
+            const searchInput = document.getElementById(`project-search-${tbodyId.replace('tbody-', '')}`);
+
+            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            const rows = tbody.querySelectorAll('tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+
+                // Skip if it's the empty message row (has colspan)
+                if (cells.length === 1 && cells[0].hasAttribute('colspan')) {
+                    row.style.display = 'none'; // Hide message initially
+                    return;
+                }
+
+                if (cells.length < 7) return; // Not a data row
+
+                // Get cell texts
+                const projectNo = cells[1].textContent.toLowerCase();
+                const title = cells[2].textContent.toLowerCase();
+                const category = cells[3].textContent.toLowerCase();
+                const themes = cells[4].textContent.toLowerCase();
+                const locations = cells[5].textContent.toLowerCase();
+                const status = cells[6].textContent.toLowerCase();
+                const contact = cells[9].textContent.toLowerCase();
+                const budget = cells[10].textContent.toLowerCase();
+
+                // Check search term
+                const matchesSearch = !searchTerm ||
+                    projectNo.includes(searchTerm) ||
+                    title.includes(searchTerm) ||
+                    category.includes(searchTerm) ||
+                    themes.includes(searchTerm) ||
+                    locations.includes(searchTerm) ||
+                    contact.includes(searchTerm) ||
+                    budget.includes(searchTerm);
+
+                // Show/hide row
+                if (matchesSearch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show empty message if no rows visible
+            const messageRow = tbody.querySelector('tr td[colspan]');
+            if (messageRow) {
+                messageRow.parentElement.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+
+        // Enforce reviewer thematic area on already-rendered table rows
+        // Only update the reviewer thematic area title (filtering is now done on the data array)
+        function filterRenderedTableRowsByReviewerTheme() {
+            try {
+                const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+                if (!userStr) return;
+                let userObj = null;
+                try { userObj = JSON.parse(userStr); } catch (e) { return; }
+
+                const code = (userObj && (userObj.thematicArea || userObj.thematicAreaCode || userObj.themeCode) || '').toString().trim();
+                if (!code) return;
+
+                const themeDisplayMap = {
+                    'AYPSRH': 'Adolescent and Young People Sexual and Reproductive Health',
+                    'FP': 'Family Planning',
+                    'CH': 'Child Health',
+                    'GBV': 'Gender Based Violence',
+                    'MNH': 'Maternal and Newborn Health',
+                    'AH': 'Adolescent Health'
+                };
+
+                // Update the title if it's just the code (show friendly name when known)
+                const titleEl = document.getElementById('pageTitle');
+                if (titleEl) {
+                    const current = titleEl.textContent || '';
+                    const displayName = themeDisplayMap[code.toUpperCase()] || code;
+                    if (current.toLowerCase().includes('all thematic projects')) {
+                        if (displayName && String(displayName).toLowerCase() !== 'unknown') {
+                            titleEl.innerHTML = `All Thematic Projects for theme <strong>${displayName}</strong>`;
+                        } else {
+                            titleEl.innerHTML = `All Thematic Projects`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('filterRenderedTableRowsByReviewerTheme error', e);
+            }
+        }
+
         // Show/hide admin collaboration menu and load pending count
         document.addEventListener('DOMContentLoaded', async function () {
             const userRole = localStorage.getItem('userRole');
 
             // Populate user dropdown
             let user = null;
-            const userStr = localStorage.getItem('user');
+            const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
             if (userStr) {
                 try {
                     user = JSON.parse(userStr);
@@ -1941,7 +2555,7 @@
                     if (response.ok) {
                         // Extract project number from response
                         const projectNumber = result.data?.projectNo || result.projectNo || 'N/A';
-                        
+
                         // Show success message with project number and copy option
                         const projectNumberHtml = `
                             <div class="text-center">
@@ -1957,7 +2571,7 @@
                                 <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
                             </div>
                         `;
-                        
+
                         await showAlert(projectNumberHtml, 'Project Created Successfully!', 'success');
                         // Close modal and refresh page
                         const modal = document.getElementById('createNewProject');
@@ -2180,20 +2794,20 @@
                                 ` : ''}
                                 
                                 ${project.locations && project.locations.length > 0 ? `
-                                        // ...existing code...
+                                        
                                     <div>
                                         <strong class="text-gray-700">Locations:</strong>
                                         <div class="mt-2 space-y-1">
                                             ${project.locations.map(loc => {
-                                                // Check if mapsAddress is a meaningful address (not just coordinates)
-                                                const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
-                                                // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county
-                                                const displayName = (loc.mapsAddress && !isCoordinatesOnly) 
-                                                    ? loc.mapsAddress 
-                                                    : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
-                                                const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-2">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
-                                                return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}${coordinates}</div>`;
-                                            }).join('')}
+                            // Check if mapsAddress is a meaningful address (not just coordinates)
+                            const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
+                            // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county
+                            const displayName = (loc.mapsAddress && !isCoordinatesOnly)
+                                ? loc.mapsAddress
+                                : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                            const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-2">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
+                            return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}${coordinates}</div>`;
+                        }).join('')}
                                         </div>
                                     </div>
                                 ` : ''}
@@ -2291,15 +2905,15 @@
                                     <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Locations</h4>
                                     <div class="mt-2 space-y-2">
                                         ${project.locations.map(loc => {
-                                            // Check if mapsAddress is a meaningful address (not just coordinates)
-                                            const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
-                                            // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county/subcounty
-                                            const displayName = (loc.mapsAddress && !isCoordinatesOnly) 
-                                                ? loc.mapsAddress 
-                                                : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
-                                            const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
-                                            return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
-                                        }).join('')}
+                        // Check if mapsAddress is a meaningful address (not just coordinates)
+                        const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
+                        // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county/subcounty
+                        const displayName = (loc.mapsAddress && !isCoordinatesOnly)
+                            ? loc.mapsAddress
+                            : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                        const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
+                        return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
+                    }).join('')}
                                     </div>
                                 </div>
                                 ` : ''}
@@ -2396,7 +3010,7 @@
         };
 
         // View Project Document Function
-        window.viewProjectDocument = async function(projectId, documentId, fileName = 'Document') {
+        window.viewProjectDocument = async function (projectId, documentId, fileName = 'Document') {
             const modal = document.getElementById('documentViewerModal');
             const loadingElement = document.getElementById('documentViewerLoading');
             const contentElement = document.getElementById('documentViewerContent');
@@ -2432,9 +3046,9 @@
                             }
                         }
                     );
-                    
+
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    
+
                     const blob = await response.blob();
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -2452,10 +3066,10 @@
 
             try {
                 const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                
+
                 console.log(`[Document Viewer] Fetching document ${documentId} for project ${projectId}`);
                 console.log(`[Document Viewer] URL: ${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}/view`);
-                
+
                 const response = await fetch(
                     `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}/view`,
                     {
@@ -2510,7 +3124,7 @@
                 // Convert response to blob (required for authenticated requests)
                 const blob = await response.blob();
                 console.log('Blob created, size:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
-                
+
                 const url = URL.createObjectURL(blob);
 
                 loadingElement.classList.add('hidden');
@@ -2534,8 +3148,8 @@
                             alt="${fileName}" />
                     `;
                     contentElement.classList.remove('hidden');
-                } else if (contentType.includes('word') || contentType.includes('excel') || contentType.includes('powerpoint') || 
-                           fileName.match(/\.(docx?|xlsx?|pptx?)$/i)) {
+                } else if (contentType.includes('word') || contentType.includes('excel') || contentType.includes('powerpoint') ||
+                    fileName.match(/\.(docx?|xlsx?|pptx?)$/i)) {
                     // For Office documents, we need to use the direct URL with Office viewer
                     // Note: This requires the document to be publicly accessible or use a different auth method
                     const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(window.BASE_URL + '/api/projects/' + projectId + '/documents/' + documentId)}`;
@@ -2547,7 +3161,7 @@
             } catch (error) {
                 console.error('[Document Viewer] Error viewing document:', error);
                 loadingElement.classList.add('hidden');
-                
+
                 // Show detailed error message
                 errorElement.innerHTML = `
                     <div class="text-center">
@@ -2572,7 +3186,7 @@
             }
         };
 
-        window.closeDocumentViewer = function() {
+        window.closeDocumentViewer = function () {
             const modal = document.getElementById('documentViewerModal');
             modal.classList.add('hidden');
         };
