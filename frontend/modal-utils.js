@@ -228,7 +228,7 @@ window.showAlert = function (message, title = "Notice", type = "info") {
 
     // Set content
     titleTextElement.textContent = title;
-    messageElement.textContent = message;
+    messageElement.innerHTML = message; // Changed from textContent to innerHTML to support HTML content
 
     // Set icon based on type
     iconElement.className = "";

@@ -903,9 +903,16 @@
                                 return escapeHtml(name);
                             }
 
-                            // Fetch and render projects by status
+                            // Fetch and render projects by status (ADMIN/SUPER_ADMIN only)
                             async function loadProjectsByStatus(status, tableBodyId) {
                                 try {
+                                    // Check if user is admin before loading
+                                    const userRole = localStorage.getItem('userRole');
+                                    if (userRole === 'PARTNER' || userRole === 'DONOR') {
+                                        console.log('[Security] Partners/Donors should use my-projects endpoint, not status endpoint');
+                                        return;
+                                    }
+                                    
                                     const res = await fetch(`${API_BASE}/projects/status/${status}`);
                                     console.log(`[API] GET /projects/status/${status} response:`, res);
                                     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -2022,7 +2029,26 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        await showAlert('Project created successfully!', 'Success', 'success');
+                        // Extract project number from response
+                        const projectNumber = result.data?.projectNo || result.projectNo || 'N/A';
+                        
+                        // Show success message with project number and copy option
+                        const projectNumberHtml = `
+                            <div class="text-center">
+                                <p class="text-lg mb-4">Your project has been created successfully!</p>
+                                <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+                                    <p class="text-sm text-gray-600 mb-2">Your Project Number:</p>
+                                    <p class="text-2xl font-bold text-blue-700" id="projectNumberDisplay">${projectNumber}</p>
+                                </div>
+                                <button onclick="navigator.clipboard.writeText('${projectNumber}').then(() => alert('Project number copied to clipboard!'))" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                                    <i class="fas fa-copy mr-2"></i>Copy Project Number
+                                </button>
+                                <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
+                            </div>
+                        `;
+                        
+                        await showAlert(projectNumberHtml, 'Project Created Successfully!', 'success');
                         // Close modal and refresh page
                         const modal = document.getElementById('createNewProject');
                         if (modal) {

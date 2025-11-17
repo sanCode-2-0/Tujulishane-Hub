@@ -629,36 +629,6 @@
             class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
           >
             <div
-              class="text-5xl font-light font-extrabold text-green-600"
-              x-text="regions"
-            ></div>
-            <p
-              class="mt-3 text-base font-thin font-medium text-gray-600"
-              id="regionsLabel"
-            >
-              Regions
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
-              class="text-5xl font-light font-extrabold text-purple-600"
-              x-text="users"
-            ></div>
-            <p
-              class="mt-3 text-base font-thin font-medium text-gray-600"
-              id="usersLabel"
-            >
-              Teams
-            </p>
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center p-6 text-center transition-all duration-300 ease-in-out transform bg-white rounded-2xl fade fade-up hover:scale-105"
-          >
-            <div
               class="text-5xl font-light font-extrabold text-yellow-600"
               x-text="amountDisplay"
             ></div>
@@ -2538,10 +2508,6 @@
 
         Object.keys(themeDefinitions).forEach((themeCode) => {
           const theme = themeDefinitions[themeCode];
-          const stats = themeStats[themeCode] || {
-            projectCount: 0,
-            locationCount: 0,
-          };
 
           html += `
             <div class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between">
@@ -2557,21 +2523,12 @@
               <p class="text-lg text-gray-600">
                 ${theme.description}
               </p>
-              <div class="mt-3 flex justify-between items-center">
-                <p class="text-md text-gray-500 mb-2">
-                  <span class="font-bold text-gray-800">${stats.projectCount}</span> Projects
-                </p>
-                <p class="text-md text-gray-500 mb-2">
-                  <span class="font-bold text-gray-800">${stats.locationCount}</span> Locations
-                </p>
-                
-              </div>
             </div>
           `;
         });
 
         container.innerHTML = html;
-        console.log("Rendered thematic areas with dynamic data");
+        console.log("Rendered thematic areas with definitions only");
       }
 
       // Render default thematic areas when API fails
@@ -2598,19 +2555,6 @@
               <p class="text-lg text-gray-600">
                 ${theme.description}
               </p>
-              <div class="mt-3 flex justify-between items-center">
-                <p class="text-md text-gray-500 mb-2">
-                  <span class="font-bold text-gray-800">0</span> Projects
-                </p>
-                <p class="text-md text-gray-500 mb-2">
-                  <span class="font-bold text-gray-800">0</span> Locations
-                </p>
-                <div class="flex gap-2">
-                  <a href="#" class="text-md rounded-md flex-center text-button_two font-medium">
-                    More Info <i class="far fa-chevron-right text-xs ml-0.5"></i>
-                  </a>
-                </div>
-              </div>
             </div>
           `;
         });

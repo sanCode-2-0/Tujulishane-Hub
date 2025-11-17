@@ -1,12 +1,16 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.0'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'com.tujulishanehub'
 version = '1.0.0'
-sourceCompatibility = '20'
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
 
 configurations {
     compileOnly {
@@ -39,11 +43,11 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     
     // Lombok (updated for Java 21 compatibility)
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
     
     // Documentation (updated version)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -54,11 +58,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// Heroku deployment task
+task stage(dependsOn: 'bootJar')
+
 // Build configuration for Docker
 jar {
     enabled = false
 }
 
 bootJar {
-    archiveFileName = 'app.jar'
 }

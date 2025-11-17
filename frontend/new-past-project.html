@@ -2885,8 +2885,6 @@
               contactPersonEmail: data.contact_person_mail,
               projectCategory: "PAST_PROJECT", // Mark as past/completed project
               status: "completed", // Mark as completed past project
-              completionPercentage: 100, // Fully completed
-              completedAt: new Date().toISOString(), // Timestamp of completion
             };
 
             console.log("Project data object to send:", projectData);
@@ -3018,7 +3016,8 @@
             );
 
             if (response.ok) {
-              console.log("Project created successfully!");
+              const result = await response.json();
+              console.log("Project created successfully!", result);
 
               // Clear the draft from localStorage after successful submission
               clearFormDraft();
@@ -3027,9 +3026,28 @@
               loadingOverlay.classList.add("hidden");
               enableSubmitButton();
 
+              // Extract project number from response
+              const projectNumber = result.data?.projectNo || result.projectNo || 'N/A';
+              
+              // Show success message with project number and copy option
+              const projectNumberHtml = `
+                <div class="text-center">
+                  <p class="text-lg mb-4">Your past project has been created successfully!</p>
+                  <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Your Project Number:</p>
+                    <p class="text-2xl font-bold text-blue-700" id="projectNumberDisplay">${projectNumber}</p>
+                  </div>
+                  <button onclick="navigator.clipboard.writeText('${projectNumber}').then(() => alert('Project number copied to clipboard!'))" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-copy mr-2"></i>Copy Project Number
+                  </button>
+                  <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
+                </div>
+              `;
+              
               await showAlert(
-                "Project created successfully!",
-                "Success",
+                projectNumberHtml,
+                "Past Project Created Successfully!",
                 "success"
               );
               window.location.href = "projects.html";

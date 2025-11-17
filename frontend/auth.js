@@ -80,6 +80,11 @@ class AuthManager {
         const data = await response.json();
         console.log("[auth.js] getCurrentUser: received data", data);
         localStorage.setItem(this.userKey, JSON.stringify(data.data));
+        // Store user role separately for easy access
+        if (data.data && data.data.role) {
+          localStorage.setItem('userRole', data.data.role);
+          console.log("[auth.js] getCurrentUser: userRole set to", data.data.role);
+        }
         const storedUser = localStorage.getItem(this.userKey);
         console.log(
           "[auth.js] getCurrentUser: user in localStorage now =",

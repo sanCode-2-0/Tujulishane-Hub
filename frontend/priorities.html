@@ -671,8 +671,16 @@
               });
             });
 
-            // Store projects globally for display
-            projects = projectsData;
+            // Filter to show only priority projects
+            // Check both isPriority field and projectCategory field
+            const priorityProjects = projectsData.filter(project => 
+              project.isPriority === true || 
+              project.projectCategory === 'PRIORITY'
+            );
+            console.log(`Filtered to ${priorityProjects.length} priority projects out of ${projectsData.length} total projects`);
+            
+            // Store priority projects globally for display
+            projects = priorityProjects;
 
             // Populate county filter dropdown
             populateCountyFilter();
@@ -680,13 +688,13 @@
             // Add markers to map
             console.log(
               "Adding markers to map for",
-              projectsData.length,
-              "projects"
+              priorityProjects.length,
+              "priority projects"
             );
-            addMarkersToMap(projectsData);
+            addMarkersToMap(priorityProjects);
 
             // Display projects in the UI
-            updateFeaturedProject(projectsData);
+            updateFeaturedProject(priorityProjects);
             applyFilters();
           } else {
             console.warn("API response not OK, loading sample projects");
@@ -1612,10 +1620,12 @@
         );
 
         function updateThemeCounter() {
-          const checkedCount = document.querySelectorAll(
-            'input[name="theme[]"]:checked'
-          ).length;
-          selectedThemesCount.textContent = checkedCount;
+          if (selectedThemesCount) {
+            const checkedCount = document.querySelectorAll(
+              'input[name="theme[]"]:checked'
+            ).length;
+            selectedThemesCount.textContent = checkedCount;
+          }
         }
 
         // Handle "Select All" checkbox
@@ -1652,9 +1662,9 @@
       });
 
       // Handle new project form submission
-      document
-        .getElementById("newProjectForm")
-        .addEventListener("submit", async function (e) {
+      const newProjectForm = document.getElementById("newProjectForm");
+      if (newProjectForm) {
+        newProjectForm.addEventListener("submit", async function (e) {
           e.preventDefault();
 
           // Validate required fields by checking form data directly
@@ -1801,10 +1811,28 @@
               const result = await response.json();
               console.log("✅ Priority project created successfully:", result);
 
-              // Show success message
+              // Extract project number from response
+              const projectNumber = result.data?.projectNo || result.projectNo || 'N/A';
+              
+              // Show success message with project number and copy option
+              const projectNumberHtml = `
+                <div class="text-center">
+                  <p class="text-lg mb-4">Your priority project has been created successfully!</p>
+                  <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Your Project Number:</p>
+                    <p class="text-2xl font-bold text-blue-700" id="projectNumberDisplay">${projectNumber}</p>
+                  </div>
+                  <button onclick="navigator.clipboard.writeText('${projectNumber}').then(() => alert('Project number copied to clipboard!'))" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-copy mr-2"></i>Copy Project Number
+                  </button>
+                  <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
+                </div>
+              `;
+
               await showAlert(
-                "Priority project created successfully! Your project has been submitted for review.",
-                "Success",
+                projectNumberHtml,
+                "Priority Project Created Successfully!",
                 "success"
               );
 
@@ -1854,6 +1882,7 @@
             );
           }
         });
+      }
 
       // Initialize new project modal when it's shown
       document.addEventListener("DOMContentLoaded", function () {
@@ -1940,17 +1969,25 @@
             return;
           }
 
+          // Get current user email
+          const user = authManager.getCachedUser();
+          if (!user || !user.email) {
+            await showAlert(
+              "Unable to retrieve user information. Please log in again.",
+              "Error",
+              "error"
+            );
+            return;
+          }
+
+          // Send as query parameters, not JSON body
           const response = await fetch(
-            `${window.BASE_URL}/api/projects/${projectId}/collaborators`,
+            `${window.BASE_URL}/api/projects/${projectId}/collaborators?collaboratorEmail=${encodeURIComponent(user.email)}&role=COLLABORATOR`,
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
               },
-              body: JSON.stringify({
-                role: "COLLABORATOR", // Default role for new collaborators
-              }),
             }
           );
 
