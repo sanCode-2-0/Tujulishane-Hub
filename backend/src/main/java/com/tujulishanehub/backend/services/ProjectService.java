@@ -46,6 +46,9 @@ public class ProjectService {
     @Autowired
     private EmailService emailService;
     
+    @Autowired
+    private UserService userService;
+    
     /**
      * Create a new project with automatic coordinate extraction for locations
      */
@@ -525,7 +528,20 @@ public class ProjectService {
             Project project = new Project();
             project.setProjectNo(generateProjectNo());
             project.setTitle(request.getTitle());
-            project.setPartner(userEmail); // Override with authenticated user
+            
+            // Set partner field: Only override with userEmail if request doesn't have a partner OR user is not a super admin
+            // Super admins can create projects on behalf of partners, so preserve the partner from request
+            com.tujulishanehub.backend.models.User currentUser = userService.getUserByEmail(userEmail);
+            if (currentUser != null && currentUser.isSuperAdmin() && request.getPartner() != null && !request.getPartner().trim().isEmpty()) {
+                // Super admin creating project for a partner - use the partner from request
+                project.setPartner(request.getPartner());
+                logger.debug("Super admin {} creating project for partner: {}", userEmail, request.getPartner());
+            } else {
+                // Regular user creating their own project
+                project.setPartner(userEmail);
+                logger.debug("User {} creating their own project", userEmail);
+            }
+            
             project.setProjectCategory(request.getProjectCategory());
             project.setStartDate(request.getStartDate());
             project.setEndDate(request.getEndDate());
@@ -543,6 +559,12 @@ public class ProjectService {
             if ("completed".equalsIgnoreCase(request.getStatus())) {
                 project.setCompletedAt(java.time.LocalDateTime.now());
             }
+            
+            // CRITICAL: Ensure ALL projects go through approval workflow, regardless of who creates them
+            // Even super admins must have their projects reviewed and approved
+            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
+            project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW);
+            logger.debug("Set approval status to PENDING and workflow status to PENDING_REVIEW for all new projects");
 
             logger.debug("About to call replaceThemes with themes: {}", request.getThemes());
             replaceThemes(project, request.getThemes());
