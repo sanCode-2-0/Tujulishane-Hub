@@ -35,7 +35,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     // PostgreSQL for production (prod profile)
     runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-core:10.21.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.21.0'
     
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -51,7 +52,7 @@ dependencies {
     
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.securi/*  */ty:spring-security-test'
 }
 
 tasks.named('test') {
@@ -59,7 +60,14 @@ tasks.named('test') {
 }
 
 // Heroku deployment task
-task stage(dependsOn: 'bootJar')
+task stage(dependsOn: 'bootJar') {
+    doLast {
+        copy {
+            from 'build/libs/app.jar'
+            into '.'
+        }
+    }
+}
 
 // Build configuration for Docker
 jar {
@@ -67,4 +75,5 @@ jar {
 }
 
 bootJar {
+    archiveFileName = 'app.jar'
 }

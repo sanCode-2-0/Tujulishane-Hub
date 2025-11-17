@@ -406,10 +406,11 @@
           <!-- Main Content Area -->
           <div class="flex flex-col md:col-span-3 fade fade-left lg:col-span-5">
             <!-- Create New Project Button -->
-            <div class="mb-4">
+            <div class="mb-4" id="createPriorityBtnContainer" style="display:none;">
               <button
                 onclick="window.location.href='new-priority.html'"
                 class="flex items-center justify-center px-6 py-3 text-base font-semibold text-white transition duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                id="createPriorityBtn"
               >
                 <i class="mr-2 fas fa-plus"></i> Create New Priority Project
               </button>
@@ -525,6 +526,20 @@
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script>
+      // Show 'Create New Priority' button only for super admins
+      document.addEventListener('DOMContentLoaded', async function () {
+        try {
+          if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+            const user = await window.authManager.getCurrentUser();
+            if (user && (user.role === 'SUPER_ADMIN' || (Array.isArray(user.roles) && user.roles.includes('SUPER_ADMIN')))) {
+              const btnContainer = document.getElementById('createPriorityBtnContainer');
+              if (btnContainer) btnContainer.style.display = '';
+            }
+          }
+        } catch (e) {
+          // Fail silently
+        }
+      });
       let map;
       let projects = [];
       let filteredProjects = [];
