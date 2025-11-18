@@ -111,161 +111,7 @@
 
     <div class="min-h-screen pt-12 bg-gray-100">
 
-        <!-- New Project -->
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
-                            New Project
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
 
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-                        <form id="newProjectForm" class="space-y-5">
-                            <!-- Project Title -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Project Title</label>
-                                <input type="text" id="title" name="title" required
-                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                            </div>
-                            <!-- Project Category -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Category</label>
-                                <input type="text" id="category" name="category" required
-                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                            </div>
-                            <!-- Themes (checkboxes placeholder) -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Themes</label>
-                                <div id="themesContainer">
-                                    <label><input type="checkbox" name="themes" value="Theme1"> Theme 1</label>
-                                    <label><input type="checkbox" name="themes" value="Theme2"> Theme 2</label>
-                                </div>
-                                <p id="themesError" class="hidden text-sm text-red-600">Please select at least one
-                                    theme.</p>
-                            </div>
-                            <!-- Locations -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Locations</label>
-                                <div id="locationsContainer"></div>
-                                <button type="button" id="addLocationBtn"
-                                    class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Add Location</button>
-                                <p id="locationsError" class="hidden text-sm text-red-600">Please add at least one
-                                    location.</p>
-                            </div>
-                            <!-- Dates -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Start Date</label>
-                                    <input type="date" id="starttime_period" name="starttime_period" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">End Date</label>
-                                    <input type="date" id="endtime_period" name="endtime_period" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                            </div>
-                            <!-- Activity Type -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Activity Type</label>
-                                <input type="text" id="activity_type" name="activity_type" required
-                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                            </div>
-                            <!-- Contact Person -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Contact Person Name</label>
-                                    <input type="text" id="contact_person" name="contact_person" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Contact Person Role</label>
-                                    <input type="text" name="contact_person_role" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Contact Person Email</label>
-                                    <input type="email" name="contact_person_mail" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                            </div>
-                            <!-- Objectives -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Objectives</label>
-                                <textarea id="gaps" name="gaps" required
-                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                            </div>
-                            <!-- Budget -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Budget (KES)</label>
-                                <input type="number" id="budget" name="budget" required
-                                    class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                            </div>
-                            <!-- Submit -->
-                            <div class="pt-4">
-                                <button type="submit"
-                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">Create
-                                    Project</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="submitReport" tabindex="-1" aria-labelledby="submitReport" aria-modal="true" role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
-                            Submit Report
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Reject Project Modal -->
         <div id="rejectProjectModal"
@@ -398,20 +244,19 @@
                         class="flex items-center text-2xl font-light text-gray-900 uppercase fade fade-left show">
                         <span id="pageTitleText">Your Projects Overview</span>
                     </h2>
-                            <script>
-                                // Change page title for super admin approvers
-                                (function () {
-                                    const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-                                    const pageTitleText = document.getElementById('pageTitleText');
-                                    if (pageTitleText && (userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN')) {
-                                        pageTitleText.textContent = 'All Projects Overview';
-                                    }
-                                })();
-                            </script>
+                    <script>
+                        // Change page title for super admin approvers
+                        (function () {
+                            const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                            const pageTitleText = document.getElementById('pageTitleText');
+                            if (pageTitleText && (userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN')) {
+                                pageTitleText.textContent = 'All Projects Overview';
+                            }
+                        })();
+                    </script>
                     <button id="approve-projects-btn"
-                        class="px-3 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700"
-                        type="button"
-                        onclick="window.location.href='/admin-approvals.html'">
+                        class="px-3 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700" type="button"
+                        onclick="window.location.href='/frontend/admin-approvals.html'">
                         <span id="approve-projects-btn-label"></span>
                     </button>
                 </div>
@@ -1248,20 +1093,94 @@
                                             const themes = project.themes || [];
                                             const locations = project.locations || [];
                                             tbody.innerHTML += `
-                                                <tr>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${counter++}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${themes.map(t => t.name || t.code || t).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${locations.map(l => l.county || l.mapsAddress || l).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.status || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.budget || ''}</td>
-                                                    <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                                                        <button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button>
+                                                <tr class="hover:bg-gray-50 transition items-center duration-150 ease-in-out">
+                                                    
+                                                    <td class="px-6 py-4 gap-1 items-center text-sm text-gray-600">
+                                                        <span class="bg-gray-100 whitespace-nowrap text-black text-xs px-2 py-1 rounded-lg">
+                                                            <span class="whitespace-nowrap font-medium text-gray-900">${counter++}</span>
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4 gap-1 items-center text-sm text-gray-600">
+                                                        <span class="bg-yellow-100 whitespace-nowrap text-black text-xs px-2 py-1 rounded-lg">
+                                                            <span class="whitespace-nowrap font-medium text-gray-900">${project.projectNo || project.id || counter++}</span>
+                                                        </span>
+                                                    </td>
+                                                    
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        <span class="whitespace-nowrap text-sm font-medium text-gray-900">${project.title || 'N/A'}</span>
+                                                    </td>
+                                                    
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        <span class="whitespace-nowrap text-sm font-medium text-gray-900">${project.projectCategory || 'N/A'}</span>
+                                                    </td>
+                                                    
+                                                    <td class="px-6 py-4 text-sm text-gray-600">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${themes.length > 0 ? themes.map(t => `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap">${t.name || t.code || 'Theme'}</span>`).join('') : '<span class="text-xs italic text-gray-400">N/A</span>'}
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-6 py-4 text-sm text-gray-600">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            ${locations.length > 0 ? locations.map(l => `
+                                                                <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs whitespace-nowrap">
+                                                                    <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
+                                                                    <span>${l.county || l.mapsAddress || 'Location'}</span>
+                                                                </span>
+                                                            `).join('') : '<span class="text-xs italic text-gray-400">N/A</span>'}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                        ${(() => {
+                                                    const status = project.status || 'PENDING_REVIEW';
+                                                    let colorClass = 'bg-yellow-100 text-yellow-800'; // Default PENDING_REVIEW / PENDING
+
+                                                    if (status.includes('FINAL') || status === 'Ongoing') {
+                                                        colorClass = 'bg-blue-100 text-blue-800';
+                                                    } else if (status === 'Completed' || status === 'APPROVED') {
+                                                        colorClass = 'bg-green-100 text-green-800';
+                                                    }
+
+                                                    return `<span class="px-3 py-1 ${colorClass} rounded-full text-xs font-medium">${status.replace(/_/g, ' ')}</span>`;
+                                                })()}
+                                                    </td>
+
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        <div class="flex flex-col gap-1">
+                                                            ${project.startDate || 'N/A'}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        <div class="flex flex-col gap-1">
+                                                            ${project.endDate || 'N/A'}
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        ${project.contactPersonName || project.projectCategory || 'N/A'}
+                                                    </td>
+
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">
+                                                        KES ${project.budget ? project.budget.toLocaleString() : 'N/A'}
+                                                    </td>
+
+
+
+
+                                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                        <div class="flex gap-2 justify-end">
+                                                            <button onclick="viewProjectDetails(${project.id})"
+                                                                class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
+                                                                title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button onclick="openReviewModal(project)"
+                                                                class="text-white bg-blue-600 hover:bg-green-600 px-2 py-1 rounded transition"
+                                                                title="Review Project">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             `;
@@ -1381,24 +1300,79 @@
                                         const themes = project.themes || [];
                                         const locations = project.locations || [];
                                         const row = `
-                                                <tr>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">{{number}}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectNo || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.title || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.projectCategory || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${themes.map(t => t.name || t.code || t).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${locations.map(l => l.county || l.mapsAddress || l).join(', ')}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.status || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.startDate || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.endDate || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.contactPersonName || ''}</td>
-                                                    <td class="px-4 py-3 text-sm text-gray-700">${project.budget || ''}</td>
-                                                    <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
-                                                        <button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button>
-                                                    </td>
-                                                </tr>
-                                            `;
+                                            <tr class="hover:bg-gray-50 transition items-center duration-150 ease-in-out">
+                                                
+                                                <td class="px-6 py-4 gap-1 items-center text-sm text-gray-600">
+                                                    <span class="bg-purple-100 text-black text-xs px-2 py-1 rounded-lg">
+                                                        <span class="whitespace-nowrap font-medium text-gray-900">${project.projectNo || project.id || 'N/A'}</span>
+                                                    </span>
+                                                    <br class="my-1">
+                                                    <span class="whitespace-nowrap text-sm font-medium text-gray-900">${project.title || 'Untitled Project'}</span>
+                                                </td>
 
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    ${project.partner || 'Unknown Partner'}
+                                                </td>
+
+                                                <td class="px-6 py-4 text-sm text-gray-600">
+                                                    <div class="flex flex-wrap gap-1">
+                                                        ${themes.map(t => `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap">${t.name || t.code || 'Theme'}</span>`).join('')}
+                                                    </div>
+                                                </td>
+
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">
+                                                    KES ${project.budget ? project.budget.toLocaleString() : '0'}
+                                                </td>
+
+                                                <td class="px-6 py-4 text-sm text-gray-600">
+                                                    <div class="flex flex-wrap gap-1">
+                                                        ${locations.map(l => `
+                                                            <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs whitespace-nowrap">
+                                                                <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
+                                                                <span>${l.county || l.mapsAddress || 'Location'}</span>
+                                                            </span>
+                                                        `).join('')}
+                                                    </div>
+                                                </td>
+
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    <div class="flex flex-col gap-1">
+                                                        ${project.startDate ? `<span>Start: ${project.startDate}</span>` : ''}
+                                                        ${project.endDate ? `<span>End: ${project.endDate}</span>` : ''}
+                                                    </div>
+                                                </td>
+
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                    ${(() => {
+                                                const status = project.status || project.approvalWorkflowStatus || 'PENDING_REVIEW';
+                                                let colorClass = 'bg-yellow-100 text-yellow-800'; // Default PENDING_REVIEW / PENDING
+
+                                                if (status.includes('PENDING_FINAL') || status === 'SUBMITTED') {
+                                                    colorClass = 'bg-blue-100 text-blue-800'; // Submitted/Pending Final
+                                                } else if (status === 'APPROVED' || status === 'COMPLETED') {
+                                                    colorClass = 'bg-green-100 text-green-800'; // Approved/Completed
+                                                }
+
+                                                return `<span class="px-3 py-1 ${colorClass} rounded-full text-xs font-medium">${status.replace(/_/g, ' ')}</span>`;
+                                            })()}
+                                                </td>
+
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div class="flex gap-2 justify-end">
+                                                        <button onclick="viewProjectDetails(${project.id})"
+                                                            class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
+                                                            title="View Details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button onclick="openReviewModal(project)"
+                                                            class="text-white bg-blue-600 hover:bg-green-600 px-2 py-1 rounded transition"
+                                                            title="Review Project">
+                                                            <i class="fas fa-check-circle"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
                                         if (status === 'pending') {
                                             tbPending.innerHTML += row.replace('{{number}}', pendingCounter++);
                                             counts.pending++;
@@ -1584,7 +1558,7 @@
                                 }
 
                                 // Always run approve/review button logic for all users
-                                (function() {
+                                (function () {
                                     function setupApproveBtnLogic() {
                                         const approveBtn = document.getElementById('approve-projects-btn');
                                         const approveBtnLabel = document.getElementById('approve-projects-btn-label');
