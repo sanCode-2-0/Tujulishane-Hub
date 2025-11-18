@@ -1,1646 +1,1660 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Project - RMNCAH</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tailwind CSS custom config (after CDN loads) -->
-    <script>
-      // Tailwind CDN doesn't support config, but we can use CSS variables or inline styles
-      // Custom colors are handled via CSS classes in main.css
-    </script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
-    />
-    <!-- Configuration and Utilities -->
-    <script src="config.js"></script>
-    <script src="set-base-url.js"></script>
-    <script src="modal-utils.js"></script>
-    <script src="auth.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
-    ></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
-      rel="stylesheet"
-    />
-  </head>
-
-  <body class="bg-gray-50">
-    <div x-data="approvalApp()" x-init="init()">
-      <!-- Navigation -->
-      <div id="nav-placeholder"></div>
-
-      <!-- Loading Overlay -->
-      <div
-        x-show="loading"
-        class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
-      >
-        <div class="text-center">
-          <i class="fas fa-spinner fa-spin text-4xl text-white"></i>
-          <p class="text-white mt-4">Loading...</p>
-        </div>
-      </div>
-
-      <!-- Toast Notification -->
-      <div
-        x-show="toast.show"
-        x-transition
-        :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
-        class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50"
-      >
-        <span x-text="toast.message"></span>
-      </div>
-
-      <!-- Main Content -->
-      <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">
-          Two-Tier Project Approval Management
-        </h1>
-
-        <!-- Role-based tabs -->
-        <div class="mb-6">
-          <ul class="flex border-b" role="tablist">
-            <!-- Reviewer Tab (only for SUPER_ADMIN_REVIEWER) -->
-            <li
-              x-show="userRole === 'SUPER_ADMIN_REVIEWER' || userRole === 'SUPER_ADMIN'"
-              class="mr-2"
-            >
-              <button
-                @click="activeTab = 'for-review'"
-                :class="activeTab === 'for-review' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                class="px-4 py-2 font-medium"
-              >
-                Projects for Review
-                <span
-                  class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
-                  x-text="projectsForReview.length"
-                ></span>
-              </button>
-            </li>
-
-            <!-- All Pending Approvals Tab (only for SUPER_ADMIN_APPROVER) -->
-            <li
-              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
-              class="mr-2"
-            >
-              <button
-                @click="activeTab = 'all-pending'"
-                :class="activeTab === 'all-pending' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                class="px-4 py-2 font-medium"
-              >
-                All Pending Approvals
-                <span
-                  class="ml-2 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs"
-                  x-text="allPendingProjects.length"
-                ></span>
-              </button>
-            </li>
-
-            <!-- Approver Tab (only for SUPER_ADMIN_APPROVER) -->
-            <li
-              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
-              class="mr-2"
-            >
-              <button
-                @click="activeTab = 'for-approval'"
-                :class="activeTab === 'for-approval' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                class="px-4 py-2 font-medium"
-              >
-                Awaiting Final Approval
-                <span
-                  class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                  x-text="projectsForApproval.length"
-                ></span>
-              </button>
-            </li>
-
-            <!-- Reviewer Management (only for SUPER_ADMIN_APPROVER and SUPER_ADMIN) -->
-            <li
-              x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'"
-              class="mr-2"
-            >
-              <button
-                @click="activeTab = 'reviewers'"
-                :class="activeTab === 'reviewers' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
-                class="px-4 py-2 font-medium"
-              >
-                Manage Reviewers
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Projects for Review (Reviewer View) -->
-        <div x-show="activeTab === 'for-review'" class="space-y-4">
-          <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">
-              Projects in Your Thematic Area
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Your thematic area:
-              <span class="font-semibold" x-text="userThematicArea"></span>
-            </p>
-            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p class="text-sm text-blue-800">
-                <i class="fas fa-info-circle mr-1"></i>
-                <strong>Review Types:</strong> You may see initial approvals (Pending → Active), 
-                status change requests (Active → Stalled/Completed), or resume requests (Stalled → Active).
-                Past Projects go directly from Pending → Completed after approval.
-              </p>
-            </div>
-
-            <template x-if="projectsForReview.length === 0">
-              <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-2"></i>
-                <p>No projects awaiting review</p>
-              </div>
-            </template>
-
-            <div class="space-y-4">
-              <template x-for="project in projectsForReview" :key="project.id">
-                <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                  <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                      <h3
-                        class="text-lg font-semibold mb-2"
-                        x-text="project.title"
-                      ></h3>
-                      <p class="text-sm text-gray-600 mb-2">
-                        <strong>Partner:</strong>
-                        <span x-text="project.partner"></span>
-                      </p>
-
-                      <!-- Themes -->
-                      <div class="flex flex-wrap gap-2 mb-2">
-                        <template
-                          x-for="theme in project.themes"
-                          :key="theme.code"
-                        >
-                          <span
-                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                            x-text="theme.name || theme.displayName"
-                          ></span>
-                        </template>
-                      </div>
-
-                      <!-- Budget -->
-                      <p class="text-sm text-gray-600 mb-2">
-                        <strong>Budget:</strong>
-                        <span class="text-green-700 font-semibold"
-                          >KES
-                          <span
-                            x-text="(project.budget || 0).toLocaleString()"
-                          ></span
-                        ></span>
-                      </p>
-
-                      <!-- Locations -->
-                      <div
-                        class="text-sm text-gray-600 mb-2"
-                        x-show="project.locations && project.locations.length > 0"
-                      >
-                        <strong>Locations:</strong>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                          <template
-                            x-for="location in project.locations"
-                            :key="location.id"
-                          >
-                            <span
-                              class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                            >
-                              <i
-                                class="fas fa-map-marker-alt text-red-500 mr-1"
-                              ></i>
-                              <span
-                                x-text="location.county || location.mapsAddress || 'Unknown'"
-                              ></span>
-                            </span>
-                          </template>
-                        </div>
-                      </div>
-
-                      <!-- Start and End Dates -->
-                      <div class="flex gap-4 text-sm text-gray-600 mb-2">
-                        <p x-show="project.startDate">
-                          <strong>Start:</strong>
-                          <span x-text="project.startDate || 'N/A'"></span>
-                        </p>
-                        <p x-show="project.endDate">
-                          <strong>End:</strong>
-                          <span x-text="project.endDate || 'N/A'"></span>
-                        </p>
-                      </div>
-
-                      <!-- Project Category -->
-                      <div class="mb-2" x-show="project.projectCategory">
-                        <span
-                          class="px-2 py-1 rounded text-xs font-medium"
-                          :class="{
-                            'bg-purple-100 text-purple-800': project.projectCategory === 'PRIORITY',
-                            'bg-indigo-100 text-indigo-800': project.projectCategory === 'PAST_PROJECT',
-                            'bg-gray-100 text-gray-800': project.projectCategory === 'IMPLEMENTING' || project.projectCategory === 'RESEARCH'
-                          }"
-                          x-text="project.projectCategory || 'N/A'"
-                        ></span>
-                      </div>
-
-                      <!-- Current Status & Request Type -->
-                      <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
-                        <p class="text-sm font-semibold text-blue-900 mb-1">
-                          <i class="fas fa-info-circle mr-1"></i>Review Context
-                        </p>
-                        <p class="text-xs text-blue-800">
-                          <strong>Current Status:</strong>
-                          <span class="ml-1 px-2 py-0.5 bg-white rounded text-xs font-medium" x-text="project.status || 'pending'"></span>
-                        </p>
-                        <p class="text-xs text-blue-800 mt-1" x-show="getReviewType(project)">
-                          <strong>Review Type:</strong>
-                          <span class="ml-1 font-medium" x-text="getReviewType(project)"></span>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="ml-4 flex flex-col gap-2">
-                      <span
-                        class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium text-center"
-                        x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING_REVIEW'"
-                      ></span>
-                      <span
-                        class="px-3 py-1 rounded-full text-xs font-medium text-center"
-                        :class="getStatusBadgeClass(project.status)"
-                        x-text="project.status || 'pending'"
-                      ></span>
-                    </div>
-                  </div>
-
-                  <div class="mt-4 flex gap-2">
-                    <button
-                      @click="viewProjectDetails(project.id)"
-                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      <i class="fas fa-eye mr-2"></i> View Details
-                    </button>
-                    <button
-                      @click="openReviewModal(project)"
-                      class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
-                      <i class="fas fa-check-circle mr-2"></i> Review Project
-                    </button>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-
-        <!-- All Pending Approvals (Overview for Approvers) -->
-        <div x-show="activeTab === 'all-pending'" class="space-y-4">
-          <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">
-              All Projects in Approval Pipeline
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Overview of all projects at different stages of the two-tier
-              approval process
-            </p>
-            <div class="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-              <p class="text-sm text-purple-800">
-                <i class="fas fa-info-circle mr-1"></i>
-                <strong>Workflow Stages:</strong> Projects can be in initial approval (Pending → Active), 
-                status transitions (Active → Stalled/Completed), or resume requests (Stalled → Active).
-                Each requires two-tier approval: Thematic Review → Final Approval.
-              </p>
-            </div>
-
-            <template x-if="allPendingProjects.length === 0">
-              <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-2"></i>
-                <p>No projects in approval pipeline</p>
-              </div>
-            </template>
-
-            <div class="space-y-4">
-              <template x-for="project in allPendingProjects" :key="project.id">
-                <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                  <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                      <h3
-                        class="text-lg font-semibold mb-2"
-                        x-text="project.title"
-                      ></h3>
-                      <p class="text-sm text-gray-600 mb-2">
-                        <strong>Partner:</strong>
-                        <span x-text="project.partner"></span>
-                      </p>
-
-                      <!-- Themes -->
-                      <div class="flex flex-wrap gap-2 mb-2">
-                        <template
-                          x-for="theme in project.themes"
-                          :key="theme.code"
-                        >
-                          <span
-                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                            x-text="theme.name || theme.displayName"
-                          ></span>
-                        </template>
-                      </div>
-
-                      <!-- Budget -->
-                      <p class="text-sm text-gray-600 mb-2">
-                        <strong>Budget:</strong>
-                        <span class="text-green-700 font-semibold"
-                          >KES
-                          <span
-                            x-text="(project.budget || 0).toLocaleString()"
-                          ></span
-                        ></span>
-                      </p>
-
-                      <!-- Locations -->
-                      <div
-                        class="text-sm text-gray-600 mb-2"
-                        x-show="project.locations && project.locations.length > 0"
-                      >
-                        <strong>Locations:</strong>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                          <template
-                            x-for="location in project.locations"
-                            :key="location.id"
-                          >
-                            <span
-                              class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                            >
-                              <i
-                                class="fas fa-map-marker-alt text-red-500 mr-1"
-                              ></i>
-                              <span
-                                x-text="location.county || location.mapsAddress || 'Unknown'"
-                              ></span>
-                            </span>
-                          </template>
-                        </div>
-                      </div>
-
-                      <!-- Start and End Dates -->
-                      <div class="flex gap-4 text-sm text-gray-600 mb-2">
-                        <p x-show="project.startDate">
-                          <strong>Start:</strong>
-                          <span x-text="project.startDate || 'N/A'"></span>
-                        </p>
-                        <p x-show="project.endDate">
-                          <strong>End:</strong>
-                          <span x-text="project.endDate || 'N/A'"></span>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="ml-4">
-                      <span
-                        :class="{
-                          'bg-yellow-100 text-yellow-800': project.approvalWorkflowStatus?.includes('PENDING_REVIEW') || project.approvalStatus === 'PENDING',
-                          'bg-blue-100 text-blue-800': project.approvalWorkflowStatus?.includes('PENDING_FINAL') || project.approvalStatus === 'SUBMITTED',
-                          'bg-purple-100 text-purple-800': project.approvalWorkflowStatus && !project.approvalWorkflowStatus.includes('PENDING')
-                        }"
-                        class="px-3 py-1 rounded-full text-xs font-medium"
-                        x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING'"
-                      ></span>
-                    </div>
-                  </div>
-
-                  <div class="mt-4 flex gap-2">
-                    <button
-                      @click="viewProjectDetails(project.id)"
-                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      <i class="fas fa-eye mr-2"></i> View Details
-                    </button>
-
-                    <!-- Show action button based on status -->
-                    <button
-                      x-show="project.approvalWorkflowStatus?.includes('PENDING_FINAL')"
-                      @click="openFinalApprovalModal(project)"
-                      class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    >
-                      <i class="fas fa-check-double mr-2"></i> Review for Final
-                      Approval
-                    </button>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-
-        <!-- Projects Awaiting Final Approval (Approver View) -->
-        <div x-show="activeTab === 'for-approval'" class="space-y-4">
-          <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">
-              Projects Awaiting Final Approval
-            </h2>
-
-            <template x-if="projectsForApproval.length === 0">
-              <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-2"></i>
-                <p>No projects awaiting final approval</p>
-              </div>
-            </template>
-
-            <div class="space-y-4">
-              <template
-                x-for="project in projectsForApproval"
-                :key="project.id"
-              >
-                <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                  <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                      <h3
-                        class="text-lg font-semibold mb-2"
-                        x-text="project.title"
-                      ></h3>
-                      <p class="text-sm text-gray-600 mb-2">
-                        <strong>Partner:</strong>
-                        <span x-text="project.partner"></span>
-                      </p>
-                      <div class="flex flex-wrap gap-2 mb-2">
-                        <template
-                          x-for="theme in project.themes"
-                          :key="theme.code"
-                        >
-                          <span
-                            class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                            x-text="theme.displayName"
-                          ></span>
-                        </template>
-                      </div>
-
-                      <!-- Reviewer Information -->
-                      <div
-                        x-show="project.reviewedBy"
-                        class="bg-green-50 border-l-4 border-green-500 p-3 mb-2"
-                      >
-                        <p class="text-sm text-green-800 mb-1">
-                          <strong>✓ Reviewed by:</strong>
-                          <span
-                            x-text="getReviewerName(project.reviewedBy) || `User #${project.reviewedBy}`"
-                          ></span>
-                          <span
-                            x-show="project.reviewedBy"
-                            class="text-xs text-green-600 ml-2"
-                          >
-                            (ID: <span x-text="project.reviewedBy"></span>)
-                          </span>
-                        </p>
-                        <p
-                          class="text-sm text-green-800 mb-1"
-                          x-show="project.reviewedAt"
-                        >
-                          <strong>Reviewed on:</strong>
-                          <span x-text="formatDate(project.reviewedAt)"></span>
-                        </p>
-                        <div class="mt-2" x-show="project.reviewerComments">
-                          <p class="text-sm text-green-800 font-semibold mb-1">
-                            <i class="fas fa-comment-dots mr-1"></i> Reviewer
-                            Comments:
-                          </p>
-                          <p
-                            class="text-sm text-green-700 bg-white bg-opacity-50 p-2 rounded italic"
-                            x-text="project.reviewerComments"
-                          ></p>
-                        </div>
-                        <p
-                          x-show="!project.reviewerComments"
-                          class="text-xs text-green-600 italic mt-1"
-                        >
-                          No additional comments provided by reviewer
-                        </p>
-                      </div>
-                    </div>
-                    <div class="ml-4">
-                      <span
-                        class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
-                        x-text="project.approvalWorkflowStatus"
-                      ></span>
-                    </div>
-                  </div>
-
-                  <div class="mt-4 flex gap-2">
-                    <button
-                      @click="viewProjectDetails(project.id)"
-                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      <i class="fas fa-eye mr-2"></i> View Full Details
-                    </button>
-                    <button
-                      @click="openFinalApprovalModal(project)"
-                      class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    >
-                      <i class="fas fa-check-double mr-2"></i> Final Approve
-                    </button>
-                    <button
-                      @click="openFinalRejectModal(project)"
-                      class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      <i class="fas fa-times-circle mr-2"></i> Reject
-                    </button>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-
-        <!-- Reviewer Management (Approver/SUPER_ADMIN Only) -->
-        <div x-show="activeTab === 'reviewers'" class="space-y-4">
-          <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Manage Reviewers</h2>
-
-            <!-- Thematic Area Filter -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2"
-                >Filter by Thematic Area:</label
-              >
-              <select
-                x-model="selectedThemeFilter"
-                @change="filterReviewers()"
-                class="px-4 py-2 border rounded"
-              >
-                <option value="">All Reviewers</option>
-                <option value="GBV">GBV - Gender-Based Violence</option>
-                <option value="AYPSRH">
-                  AYPSRH - Adolescent and Young People SRH
-                </option>
-                <option value="MNH">MNH - Maternal and Newborn Health</option>
-                <option value="FP">FP - Family Planning</option>
-                <option value="CH">CH - Child Health</option>
-                <option value="AH">AH - Adolescent Health</option>
-              </select>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                    >
-                      Name
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                    >
-                      Email
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                    >
-                      Thematic Area
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <template
-                    x-for="reviewer in filteredReviewers"
-                    :key="reviewer.id"
-                  >
-                    <tr>
-                      <td
-                        class="px-6 py-4 whitespace-nowrap"
-                        x-text="reviewer.name"
-                      ></td>
-                      <td
-                        class="px-6 py-4 whitespace-nowrap"
-                        x-text="reviewer.email"
-                      ></td>
-                      <td class="px-6 py-4 whitespace-nowrap">
-                        <span
-                          class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                          x-text="reviewer.thematicArea || 'Not Assigned'"
-                        ></span>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap">
-                        <button
-                          @click="openAssignThemeModal(reviewer)"
-                          class="text-button hover:text-green-700"
-                        >
-                          <i class="fas fa-edit mr-1"></i> Assign Theme
-                        </button>
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Review Modal -->
-      <div
-        x-show="showReviewModal"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        x-cloak
-      >
-        <div class="flex items-center justify-center min-h-screen px-4">
-          <div
-            class="fixed inset-0 bg-black opacity-50"
-            @click="showReviewModal = false"
-          ></div>
-          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-            <h3 class="text-2xl font-bold mb-4">Review Project</h3>
-            <p class="mb-2">
-              <strong>Project:</strong>
-              <span x-text="selectedProject?.title"></span>
-            </p>
-            <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded" x-show="selectedProject">
-              <p class="text-sm text-blue-900 mb-1">
-                <strong>Review Type:</strong>
-                <span x-text="selectedProject ? getReviewType(selectedProject) : 'Initial Approval'"></span>
-              </p>
-              <p class="text-xs text-blue-800" x-show="selectedProject">
-                <strong>Current Status:</strong>
-                <span class="ml-1 px-2 py-0.5 bg-white rounded" x-text="selectedProject?.status || 'pending'"></span>
-                <span x-show="selectedProject && selectedProject.projectCategory" class="ml-2">
-                  | <strong>Category:</strong>
-                  <span class="ml-1" x-text="selectedProject?.projectCategory || ''"></span>
-                </span>
-              </p>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2"
-                >Your Decision:</label
-              >
-              <div class="flex gap-4">
-                <label class="flex items-center">
-                    <input
-                      type="radio"
-                      x-model="reviewDecision"
-                      value="approve"
-                      class="mr-2 border-gray-400 border-2 appearance-auto"
-                    />
-                  <span>Approve for Final Review</span>
-                </label>
-                <label class="flex items-center">
-                    <input
-                      type="radio"
-                      x-model="reviewDecision"
-                      value="reject"
-                      class="mr-2 border-gray-400 border-2 appearance-auto"
-                    />
-                  <span>Reject (Needs Revision)</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Comments:</label>
-              <textarea
-                x-model="reviewComments"
-                rows="4"
-                class="w-full px-3 py-2 border rounded"
-                placeholder="Provide detailed feedback..."
-              ></textarea>
-            </div>
-
-            <div class="flex gap-2 justify-end">
-              <button
-                @click="showReviewModal = false"
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                @click="submitReview()"
-                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Submit Review
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Final Approval Modal -->
-      <div
-        x-show="showFinalApprovalModal"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        x-cloak
-      >
-        <div class="flex items-center justify-center min-h-screen px-4">
-          <div
-            class="fixed inset-0 bg-black opacity-50"
-            @click="showFinalApprovalModal = false"
-          ></div>
-          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-            <h3 class="text-2xl font-bold mb-4">Final Approval</h3>
-            <p class="mb-4">
-              <strong>Project:</strong>
-              <span x-text="selectedProject?.title"></span>
-            </p>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2"
-                >Final Comments (Optional):</label
-              >
-              <textarea
-                x-model="finalComments"
-                rows="3"
-                class="w-full px-3 py-2 border rounded"
-                placeholder="Add any final comments..."
-              ></textarea>
-            </div>
-
-            <div class="flex gap-2 justify-end">
-              <button
-                @click="showFinalApprovalModal = false"
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                @click="submitFinalApproval()"
-                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                <i class="fas fa-check-double mr-2"></i> Grant Final Approval
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Final Reject Modal -->
-      <div
-        x-show="showFinalRejectModal"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        x-cloak
-      >
-        <div class="flex items-center justify-center min-h-screen px-4">
-          <div
-            class="fixed inset-0 bg-black opacity-50"
-            @click="showFinalRejectModal = false"
-          ></div>
-          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
-            <h3 class="text-2xl font-bold mb-4 text-red-600">Reject Project</h3>
-            <p class="mb-4">
-              <strong>Project:</strong>
-              <span x-text="selectedProject?.title"></span>
-            </p>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2"
-                >Rejection Reason (Required):</label
-              >
-              <textarea
-                x-model="rejectionReason"
-                rows="4"
-                class="w-full px-3 py-2 border rounded"
-                placeholder="Provide detailed reason for rejection..."
-                required
-              ></textarea>
-            </div>
-
-            <div class="flex gap-2 justify-end">
-              <button
-                @click="showFinalRejectModal = false"
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                @click="submitFinalRejection()"
-                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                <i class="fas fa-times-circle mr-2"></i> Reject Project
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Assign Theme Modal -->
-      <div
-        x-show="showAssignThemeModal"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        x-cloak
-      >
-        <div class="flex items-center justify-center min-h-screen px-4">
-          <div
-            class="fixed inset-0 bg-black opacity-50"
-            @click="showAssignThemeModal = false"
-          ></div>
-          <div class="relative bg-white rounded-lg p-8 max-w-md w-full">
-            <h3 class="text-2xl font-bold mb-4">Assign Thematic Area</h3>
-            <p class="mb-4">
-              <strong>Reviewer:</strong>
-              <span x-text="selectedReviewer?.name"></span>
-            </p>
-
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2"
-                >Thematic Area:</label
-              >
-              <select
-                x-model="assignedTheme"
-                class="w-full px-3 py-2 border rounded"
-              >
-                <option value="">Select Theme</option>
-                <option value="GBV">GBV - Gender-Based Violence</option>
-                <option value="AYPSRH">
-                  AYPSRH - Adolescent and Young People SRH
-                </option>
-                <option value="MNH">MNH - Maternal and Newborn Health</option>
-                <option value="FP">FP - Family Planning</option>
-                <option value="CH">CH - Child Health</option>
-                <option value="AH">AH - Adolescent Health</option>
-              </select>
-            </div>
-
-            <div class="flex gap-2 justify-end">
-              <button
-                @click="showAssignThemeModal = false"
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                @click="submitAssignTheme()"
-                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Assign
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Project Details Modal -->
-      <div
-        id="projectDetailsModal"
-        class="hidden fixed inset-0 z-50 flex backdrop-blur-md items-center justify-center bg-black bg-opacity-50"
-        aria-hidden="true"
-        aria-modal="true"
-        aria-labelledby="projectDetailsTitle"
-      >
-        <div
-          class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
-        >
-          <div
-            class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-200"
-          >
-            <h2
-              id="projectDetailsTitle"
-              class="text-xl font-semibold text-blue-900"
-            >
-              Project Details
-            </h2>
-            <button
-              type="button"
-              class="text-gray-400 hover:text-gray-600"
-              onclick="closeProjectDetailsModal()"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          </div>
-          <div id="projectDetailsContent" class="p-6">
-            <p class="text-gray-500">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Document Viewer Modal -->
-      <div
-        id="documentViewerModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        aria-modal="true"
-      >
-        <div
-          class="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden"
-        >
-          <!-- Modal Header -->
-          <div
-            class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200"
-          >
-            <h3
-              id="documentViewerFileName"
-              class="text-lg font-semibold text-gray-800"
-            >
-              Document Viewer
-            </h3>
-            <div class="flex gap-2">
-              <button
-                id="documentViewerDownloadBtn"
-                class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-              >
-                <i class="fas fa-download mr-1"></i>Download
-              </button>
-              <button
-                onclick="closeDocumentViewer()"
-                class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
-              >
-                <i class="fas fa-times mr-1"></i>Close
-              </button>
-            </div>
-          </div>
-
-          <!-- Modal Body -->
-          <div class="relative w-full h-full p-4 overflow-auto">
-            <!-- Loading State -->
-            <div
-              id="documentViewerLoading"
-              class="flex items-center justify-center h-full"
-            >
-              <div class="text-center">
-                <i
-                  class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
-                ></i>
-                <p class="text-gray-600">Loading document...</p>
-              </div>
-            </div>
-
-            <!-- PDF/Image Content -->
-            <div id="documentViewerContent" class="hidden w-full h-full"></div>
-
-            <!-- Office Document Content -->
-            <div
-              id="officeDocumentViewerContent"
-              class="hidden w-full h-full"
-            ></div>
-
-            <!-- Unsupported Document -->
-            <div
-              id="unsupportedDocumentContent"
-              class="hidden flex items-center justify-center h-full"
-            >
-              <div class="text-center">
-                <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
-                <p class="text-gray-600 mb-4">
-                  This document type cannot be previewed.
-                </p>
-                <p class="text-sm text-gray-500">
-                  Please download the file to view it.
-                </p>
-              </div>
-            </div>
-
-            <!-- Error State -->
-            <div
-              id="documentViewerError"
-              class="hidden flex items-center justify-center h-full"
-            >
-              <div class="text-center text-red-600">
-                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                <p>Error loading document</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NAVIGATION LOADER DISABLED FOR DEBUGGING -->
-    <!-- <script src="styles/loadNav.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <script src="styles/authnav.js"></script>
-    <script src="styles/loadNav.js"></script>
-    <script>
-      function approvalApp() {
-        return {
-          loading: false,
-          activeTab: "for-review",
-          userRole: "",
-          userThematicArea: "",
-
-          // Projects data
-          projectsForReview: [],
-          projectsForApproval: [],
-          allPendingProjects: [], // Combined view for SUPER_ADMIN_APPROVER
-
-          // Reviewers data
-          allReviewers: [],
-          filteredReviewers: [],
-          selectedThemeFilter: "",
-
-          // Modal states
-          showReviewModal: false,
-          showFinalApprovalModal: false,
-          showFinalRejectModal: false,
-          showAssignThemeModal: false,
-
-          // Form data
-          selectedProject: null,
-          reviewDecision: "approve",
-          reviewComments: "",
-          finalComments: "",
-          rejectionReason: "",
-
-          selectedReviewer: null,
-          assignedTheme: "",
-
-          // Toast notification
-          toast: {
-            show: false,
-            message: "",
-            type: "success",
-          },
-
-          async init() {
-            await this.checkAuth();
-            await this.loadData();
-          },
-
-          async checkAuth() {
-            // Wait for BASE_URL to be set (from set-base-url.js or auth.js)
-            let retries = 0;
-            const maxRetries = 20; // Increased but less verbose
-            while (!window.BASE_URL && retries < maxRetries) {
-              await new Promise((resolve) => setTimeout(resolve, 100));
-              retries++;
-            }
-
-            if (!window.BASE_URL) {
-              console.warn("BASE_URL not set after waiting, using fallback");
-              window.BASE_URL =
-                "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"; // Fallback
-            }
-
-            try {
-              const token = localStorage.getItem("accessToken");
-              if (!token) {
-                console.warn("No access token found");
-                window.location.href = "index.html";
-                return;
-              }
-
-              // Use /api/auth/profile instead of /api/auth/me (which returns 500)
-              const response = await fetch(
-                `${window.BASE_URL}/api/auth/profile`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
-
-              if (response.ok) {
-                const data = await response.json();
-                console.log("User data:", data);
-                // Handle both response structures: data.data or direct data
-                const userData = data.data || data;
-                this.userRole = userData.role;
-                // Handle thematicArea - it might be a string (enum name) or an object
-                if (userData.thematicArea) {
-                  // If it's an object with code/name, use code; if it's a string, use it directly
-                  this.userThematicArea = typeof userData.thematicArea === 'string' 
-                    ? userData.thematicArea 
-                    : (userData.thematicArea.code || userData.thematicArea.name || userData.thematicArea);
-                } else {
-                  this.userThematicArea = "Not Assigned";
-                }
-
-                // Set initial tab based on role
-                if (this.userRole === "SUPER_ADMIN_REVIEWER") {
-                  this.activeTab = "for-review";
-                } else if (this.userRole === "SUPER_ADMIN_APPROVER") {
-                  this.activeTab = "all-pending"; // Start with overview
-                }
-
-                // Restrict access if not authorized
-                if (
-                  ![
-                    "SUPER_ADMIN",
-                    "SUPER_ADMIN_REVIEWER",
-                    "SUPER_ADMIN_APPROVER",
-                  ].includes(this.userRole)
-                ) {
-                  console.warn("Access denied. User role:", this.userRole);
-                  alert(
-                    "Access denied. You do not have permission to access this page."
-                  );
-                  window.location.href = "dashboard.html";
-                }
-              } else {
-                console.error(
-                  "Auth response not OK:",
-                  response.status,
-                  response.statusText
-                );
-                window.location.href = "index.html";
-              }
-            } catch (error) {
-              console.error("Auth check failed:", error);
-              window.location.href = "index.html";
-            }
-          },
-
-          async loadData() {
-            this.loading = true;
-            console.log("Loading data... User role:", this.userRole);
-            try {
-              await Promise.all([
-                this.loadProjectsForReview(),
-                this.loadProjectsForApproval(),
-                this.loadAllPendingProjects(),
-                this.loadReviewers(),
-              ]);
-              console.log("All data loaded successfully");
-            } catch (error) {
-              console.error("Error loading data:", error);
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async loadProjectsForReview() {
-            if (
-              !["SUPER_ADMIN_REVIEWER", "SUPER_ADMIN"].includes(this.userRole)
-            ) {
-              console.log(
-                "Skipping loadProjectsForReview - role not authorized"
-              );
-              this.projectsForReview = []; // Set to empty array
-              return;
-            }
-
-            console.log("Loading projects for review...");
-            try {
-              const response = await this.apiCall(
-                "/api/projects/admin/projects-for-review"
-              );
-              this.projectsForReview = response.data || [];
-              console.log(
-                "Projects for review loaded:",
-                this.projectsForReview.length
-              );
-            } catch (error) {
-              console.error("Error loading projects for review:", error);
-              // Don't show error toast if it's just a permissions issue
-              if (!error.message.includes("insufficient permissions")) {
-                this.showToast(
-                  "Failed to load projects for review: " + error.message,
-                  "error"
-                );
-              }
-              this.projectsForReview = []; // Set to empty array on error
-            }
-          },
-
-          async loadProjectsForApproval() {
-            if (
-              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
-            ) {
-              console.log(
-                "Skipping loadProjectsForApproval - role not authorized"
-              );
-              this.projectsForApproval = []; // Set to empty array
-              return;
-            }
-
-            console.log("Loading projects for approval...");
-            try {
-              const response = await this.apiCall(
-                "/api/projects/admin/projects-awaiting-final-approval"
-              );
-              this.projectsForApproval = response.data || [];
-              console.log(
-                "Projects for approval loaded:",
-                this.projectsForApproval.length
-              );
-            } catch (error) {
-              console.error("Error loading projects for approval:", error);
-              // Don't show error toast if it's just a permissions issue
-              if (!error.message.includes("insufficient permissions")) {
-                this.showToast(
-                  "Failed to load projects for approval: " + error.message,
-                  "error"
-                );
-              }
-              this.projectsForApproval = []; // Set to empty array on error
-            }
-          },
-
-          async loadAllPendingProjects() {
-            if (
-              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
-            ) {
-              console.log(
-                "Skipping loadAllPendingProjects - role not authorized"
-              );
-              this.allPendingProjects = []; // Set to empty array
-              return;
-            }
-
-            console.log("Loading all pending projects...");
-            try {
-              // Fetch all projects with large page size to get comprehensive view
-              const allProjectsResponse = await this.apiCall(
-                "/api/projects?page=0&size=1000"
-              );
-
-              const allProjects = allProjectsResponse.data?.projects || [];
-
-              // Filter for projects in pending states (both new two-tier workflow and legacy approval status)
-              const pendingWorkflowStatuses = [
-                "PENDING_REVIEW",
-                "UNDER_REVIEW",
-                "REVIEWED",
-                "PENDING_FINAL_APPROVAL",
-              ];
-
-              const pendingApprovalStatuses = ["PENDING", "SUBMITTED"];
-
-              this.allPendingProjects = allProjects.filter((project) => {
-                // Check new two-tier workflow status first
-                if (
-                  project.approvalWorkflowStatus &&
-                  pendingWorkflowStatuses.includes(
-                    project.approvalWorkflowStatus
-                  )
-                ) {
-                  return true;
-                }
-
-                // Fallback to legacy approval status for projects not yet migrated
-                if (
-                  project.approvalStatus &&
-                  pendingApprovalStatuses.includes(project.approvalStatus)
-                ) {
-                  return true;
-                }
-
-                return false;
-              });
-
-              console.log(
-                "All pending projects loaded:",
-                this.allPendingProjects.length,
-                "projects in approval pipeline out of",
-                allProjects.length,
-                "total projects",
-                `(${
-                  this.allPendingProjects.filter(
-                    (p) => p.approvalWorkflowStatus
-                  ).length
-                } with workflow status,`,
-                `${
-                  this.allPendingProjects.filter(
-                    (p) => !p.approvalWorkflowStatus && p.approvalStatus
-                  ).length
-                } legacy pending)`
-              );
-            } catch (error) {
-              console.error("Error loading all pending projects:", error);
-              // Don't show error toast if it's just a permissions issue
-              if (!error.message.includes("insufficient permissions")) {
-                this.showToast(
-                  "Failed to load pending projects: " + error.message,
-                  "error"
-                );
-              }
-              this.allPendingProjects = []; // Set to empty array on error
-            }
-          },
-
-          async loadReviewers() {
-            if (
-              !["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
-            ) {
-              console.log("Skipping loadReviewers - role not authorized");
-              this.allReviewers = []; // Set to empty array
-              this.filteredReviewers = []; // Set to empty array
-              return;
-            }
-
-            console.log("Loading reviewers...");
-            try {
-              const response = await this.apiCall("/api/auth/admin/reviewers");
-              this.allReviewers = response.data || [];
-              this.filteredReviewers = this.allReviewers;
-              console.log("Reviewers loaded:", this.allReviewers.length);
-            } catch (error) {
-              console.error("Error loading reviewers:", error);
-              // Don't show error toast if it's just a permissions issue
-              if (!error.message.includes("insufficient permissions")) {
-                this.showToast(
-                  "Failed to load reviewers: " + error.message,
-                  "error"
-                );
-              }
-              this.allReviewers = []; // Set to empty array on error
-              this.filteredReviewers = []; // Set to empty array on error
-            }
-          },
-
-          filterReviewers() {
-            if (!this.selectedThemeFilter) {
-              this.filteredReviewers = this.allReviewers;
-            } else {
-              this.filteredReviewers = this.allReviewers.filter(
-                (r) => r.thematicArea === this.selectedThemeFilter
-              );
-            }
-          },
-
-          openReviewModal(project) {
-            this.selectedProject = project;
-            this.reviewDecision = "approve";
-            this.reviewComments = "";
-            this.showReviewModal = true;
-          },
-
-          openFinalApprovalModal(project) {
-            this.selectedProject = project;
-            this.finalComments = "";
-            this.showFinalApprovalModal = true;
-          },
-
-          openFinalRejectModal(project) {
-            this.selectedProject = project;
-            this.rejectionReason = "";
-            this.showFinalRejectModal = true;
-          },
-
-          openAssignThemeModal(reviewer) {
-            this.selectedReviewer = reviewer;
-            this.assignedTheme = reviewer.thematicArea || "";
-            this.showAssignThemeModal = true;
-          },
-
-          async submitReview() {
-            if (!this.selectedProject || !this.selectedProject.id) {
-              this.showToast("No project selected", "error");
-              return;
-            }
-
-            if (!this.reviewComments.trim()) {
-              this.showToast("Please provide review comments", "error");
-              return;
-            }
-
-            this.loading = true;
-            try {
-              await this.apiCall(
-                `/api/projects/admin/review/${this.selectedProject.id}`,
-                "POST",
-                {
-                  approved: this.reviewDecision === "approve",
-                  comments: this.reviewComments,
-                }
-              );
-
-              this.showToast(
-                this.reviewDecision === "approve"
-                  ? "Project approved for final review!"
-                  : "Review completed - revisions requested",
-                "success"
-              );
-
-              this.showReviewModal = false;
-              await this.loadProjectsForReview();
-              await this.loadAllPendingProjects(); // Refresh combined view
-            } catch (error) {
-              console.error("Error submitting review:", error);
-              this.showToast(
-                error.message || "Failed to submit review",
-                "error"
-              );
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async submitFinalApproval() {
-            if (!this.selectedProject || !this.selectedProject.id) {
-              this.showToast("No project selected", "error");
-              return;
-            }
-
-            this.loading = true;
-            try {
-              await this.apiCall(
-                `/api/projects/admin/final-approve/${this.selectedProject.id}`,
-                "POST",
-                {
-                  comments: this.finalComments,
-                }
-              );
-
-              this.showToast(
-                "Project finally approved successfully!",
-                "success"
-              );
-              this.showFinalApprovalModal = false;
-              await this.loadProjectsForApproval();
-              await this.loadAllPendingProjects(); // Refresh combined view
-            } catch (error) {
-              console.error("Error submitting final approval:", error);
-              this.showToast(
-                error.message || "Failed to approve project",
-                "error"
-              );
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async submitFinalRejection() {
-            if (!this.selectedProject || !this.selectedProject.id) {
-              this.showToast("No project selected", "error");
-              return;
-            }
-
-            if (!this.rejectionReason.trim()) {
-              this.showToast("Please provide a rejection reason", "error");
-              return;
-            }
-
-            this.loading = true;
-            try {
-              await this.apiCall(
-                `/api/projects/admin/final-reject/${this.selectedProject.id}`,
-                "POST",
-                {
-                  reason: this.rejectionReason,
-                }
-              );
-
-              this.showToast("Project rejected", "success");
-              this.showFinalRejectModal = false;
-              await this.loadProjectsForApproval();
-              await this.loadAllPendingProjects(); // Refresh combined view
-            } catch (error) {
-              console.error("Error rejecting project:", error);
-              this.showToast(
-                error.message || "Failed to reject project",
-                "error"
-              );
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async submitAssignTheme() {
-            if (!this.assignedTheme) {
-              this.showToast("Please select a thematic area", "error");
-              return;
-            }
-
-            this.loading = true;
-            try {
-              await this.apiCall(
-                `/api/auth/admin/assign-thematic-area/${this.selectedReviewer.id}`,
-                "POST",
-                {
-                  thematicArea: this.assignedTheme,
-                }
-              );
-
-              this.showToast("Thematic area assigned successfully!", "success");
-              this.showAssignThemeModal = false;
-              await this.loadReviewers();
-            } catch (error) {
-              console.error("Error assigning theme:", error);
-              this.showToast(
-                error.message || "Failed to assign thematic area",
-                "error"
-              );
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async viewProjectDetails(projectId) {
-            const modal = document.getElementById("projectDetailsModal");
-            const content = document.getElementById("projectDetailsContent");
-
-            modal.classList.remove("hidden");
-            content.innerHTML =
-              '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
-
-            try {
-              const data = await this.apiCall(`/api/projects/${projectId}`);
-
-              if (data.status === 200 && data.data) {
-                const project = data.data;
-
-                // Fetch documents
-                const documents = await this.fetchProjectDocuments(projectId);
-
-                // Render project details
-                content.innerHTML = `
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>New Project - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS (with custom config using inline script) -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="styles/main.js"></script>
+	<!-- Modal Utilities -->
+	<script src="modal-utils.js"></script>
+	<script src="auth.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-50">
+	<div id="nav-placeholder"></div>
+	<div x-data="approvalApp()" x-init="init()">
+		<!-- Navigation -->
+
+		<!-- Loading Overlay -->
+		<div x-show="loading" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+			<div class="text-center">
+				<i class="fas fa-spinner fa-spin text-4xl text-white"></i>
+				<p class="text-white mt-4">Loading...</p>
+			</div>
+		</div>
+
+		<!-- Toast Notification -->
+		<div x-show="toast.show" x-transition :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+			class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+			<span x-text="toast.message"></span>
+		</div>
+
+		<!-- Main Content -->
+		<div class=" mx-auto px-4 py-8">
+
+			<!-- Role-based tabs -->
+			<div class="mb-6 mt-12 pt-8">
+				<ul class="flex flex-wrap justify-between max-w-5xl mt-6 mx-auto" role="tablist">
+					<li x-show="userRole === 'SUPER_ADMIN_REVIEWER' || userRole === 'SUPER_ADMIN'" class="mr-2">
+						<button @click="activeTab = 'for-review'"
+							:class="activeTab === 'for-review' ? 'border-b-2 border-primary text-white bg-primary shadow-md rounded-md' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md'"
+							class="px-4 py-2 font-medium transition duration-200 ease-in-out">
+							Projects for Review
+							<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
+								x-text="projectsForReview.length"></span>
+						</button>
+					</li>
+
+					<li x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'" class="mr-2">
+						<button @click="activeTab = 'all-pending'"
+							:class="activeTab === 'all-pending' ? 'border-b-2 border-primary text-white bg-primary shadow-md rounded-md' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md'"
+							class="px-4 py-2 font-medium transition duration-200 ease-in-out">
+							All Pending Approvals
+							<span class="ml-2 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs"
+								x-text="allPendingProjects.length"></span>
+						</button>
+					</li>
+
+					<li x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'" class="mr-2">
+						<button @click="activeTab = 'for-approval'"
+							:class="activeTab === 'for-approval' ? 'border-b-2 border-primary text-white bg-primary shadow-md rounded-md' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md'"
+							class="px-4 py-2 font-medium transition duration-200 ease-in-out">
+							Awaiting Final Approval
+							<span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+								x-text="projectsForApproval.length"></span>
+						</button>
+					</li>
+
+					<li x-show="userRole === 'SUPER_ADMIN_APPROVER' || userRole === 'SUPER_ADMIN'" class="mr-2">
+						<button @click="activeTab = 'reviewers'"
+							:class="activeTab === 'reviewers' ? 'border-b-2 border-primary text-white bg-primary shadow-md rounded-md' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md'"
+							class="px-4 py-2 font-medium transition duration-200 ease-in-out">
+							Manage Reviewers
+						</button>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Projects for Review (Reviewer View) -->
+			<div x-show="activeTab === 'for-review'" class="space-y-4">
+				<div class="bg-white rounded-lg shadow p-6">
+					<h2 class="text-xl font-bold mb-4">
+						Projects in Your Thematic Area
+					</h2>
+					<p class="text-sm text-gray-600 mb-4">
+						Your thematic area:
+						<span class="font-semibold" x-text="userThematicArea"></span>
+					</p>
+
+					<template x-if="projectsForReview.length === 0">
+						<div class="text-center py-8 text-gray-500">
+							<i class="fas fa-inbox text-4xl mb-2"></i>
+							<p>No projects awaiting review</p>
+						</div>
+					</template>
+
+					<div id="project-dashboard">
+
+						<div class="mb-4">
+							<div class="relative w-full md:w-1/2 lg:w-1/3">
+								<input type="text" id="search-input"
+									placeholder="Search projects by title, partner, or status..."
+									oninput="filterTable()"
+									class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm transition">
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-search text-gray-400"></i>
+								</div>
+							</div>
+						</div>
+
+						<div class="overflow-x-auto shadow-lg rounded-lg">
+							<table id="project-table" class="min-w-full divide-y divide-gray-200">
+								<thead class="bg-gray-50">
+									<tr>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Project Title
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Partner
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Themes
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Budget (KES)
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Locations
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Dates
+										</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Status
+										</th>
+										<th scope="col" class="relative px-6 py-3">
+											<span class="sr-only">Actions</span>
+										</th>
+									</tr>
+								</thead>
+								<tbody id="table-body" class="bg-white divide-y divide-gray-200">
+									<template x-for="project in projectsForReview" :key="project.id">
+										<tr class="hover:bg-gray-50 transition items-center duration-150 ease-in-out">
+											<td class="px-6 py-4 gap-1 items-center text-sm text-gray-600">
+												<span class="bg-yellow-100 text-black text-xs px-2 py-1 rounded-lg ">
+													#<span class="whitespace-nowrap font-medium text-gray-900"
+														x-text="project.id">
+													</span>
+												</span><br class="my-1">
+												<span class="whitespace-nowrap text-sm font-medium text-gray-900"
+													x-text="project.title">
+												</span>
+											</td>
+											<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
+												x-text="project.partner"></td>
+
+											<td class="px-6 py-4 text-sm text-gray-600">
+												<div class="flex flex-wrap gap-1">
+													<template x-for="theme in project.themes" :key="theme.code">
+														<span
+															class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap"
+															x-text="theme.name || theme.displayName"></span>
+													</template>
+												</div>
+											</td>
+
+											<td
+												class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">
+												KES <span x-text="(project.budget || 0).toLocaleString()"></span>
+											</td>
+
+											<td class="px-6 py-4 text-sm text-gray-600">
+												<div class="flex flex-wrap gap-1"
+													x-show="project.locations && project.locations.length > 0">
+													<template x-for="location in project.locations" :key="location.id">
+														<span
+															class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs whitespace-nowrap">
+															<i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
+															<span
+																x-text="location.county || location.mapsAddress || 'Unknown'"></span>
+														</span>
+													</template>
+												</div>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+												<div class="flex flex-col gap-1">
+													<span x-show="project.startDate">
+														Start: <span x-text="project.startDate"></span>
+													</span>
+													<span x-show="project.endDate">
+														End: <span x-text="project.endDate"></span>
+													</span>
+												</div>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-sm">
+												<span
+													class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium"
+													x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING_REVIEW'"></span>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+												<div class="flex gap-2 justify-end">
+													<button @click="viewProjectDetails(project.id)"
+														class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
+														title="View Details">
+														<i class="fas fa-eye"></i>
+													</button>
+													<button @click="openReviewModal(project)"
+														class="text-white bg-blue-600 hover:bg-green-600 px-2 py-1 rounded transition"
+														title="Review Project">
+														<i class="fas fa-check-circle"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+							<div id="no-results" class="px-6 py-8 text-center text-gray-500 italic hidden">
+								No projects found matching your search term.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- All Pending Approvals (Overview for Approvers) -->
+			<div x-show="activeTab === 'all-pending'" class="space-y-4">
+				<div class="bg-white rounded-lg shadow p-6">
+					<h2 class="text-xl font-bold mb-4">
+						All Projects in Approval Pipeline
+					</h2>
+					<p class="text-sm text-gray-600 mb-4">
+						Overview of all projects at different stages of the two-tier
+						approval process
+					</p>
+
+					<template x-if="allPendingProjects.length === 0">
+						<div class="text-center py-8 text-gray-500">
+							<i class="fas fa-inbox text-4xl mb-2"></i>
+							<p>No projects in approval pipeline</p>
+						</div>
+					</template>
+
+					<div id="projects-dashboards">
+						<div class="mb-4">
+							<div class="relative w-full md:w-1/2 lg:w-1/3">
+								<input type="text" id="search-input-pending"
+									placeholder="Search all pending projects..."
+									oninput="filterTabled('search-input-pending', 'table-body-pending', 'no-results-pending')"
+									class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm transition">
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-search text-gray-400"></i>
+								</div>
+							</div>
+						</div>
+
+						<div class="overflow-x-auto shadow-lg rounded-lg">
+							<table id="project-table-pending" class="min-w-full divide-y divide-gray-200">
+								<thead class="bg-gray-50">
+									<tr>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Project Title</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Partner</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Themes</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Budget (KES)</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Locations</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Dates</th>
+										<th scope="col"
+											class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Status</th>
+										<th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span>
+										</th>
+									</tr>
+								</thead>
+								<tbody id="table-body-pending" class="bg-white divide-y divide-gray-200">
+									<template x-for="project in allPendingProjects" :key="project.id">
+										<tr class="hover:bg-gray-50 transition items-center duration-150 ease-in-out">
+											<td class="px-6 py-4 gap-1 items-center text-sm text-gray-600">
+												<span class="bg-purple-100 text-black text-xs px-2 py-1 rounded-lg">
+													#<span class="whitespace-nowrap font-medium text-gray-900"
+														x-text="project.id"></span>
+												</span><br class="my-1">
+												<span class="whitespace-nowrap text-sm font-medium text-gray-900"
+													x-text="project.title"></span>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
+												x-text="project.partner"></td>
+
+											<td class="px-6 py-4 text-sm text-gray-600">
+												<div class="flex flex-wrap gap-1">
+													<template x-for="theme in project.themes" :key="theme.code">
+														<span
+															class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap"
+															x-text="theme.name || theme.displayName"></span>
+													</template>
+												</div>
+											</td>
+
+											<td
+												class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">
+												KES <span x-text="(project.budget || 0).toLocaleString()"></span>
+											</td>
+
+											<td class="px-6 py-4 text-sm text-gray-600">
+												<div class="flex flex-wrap gap-1"
+													x-show="project.locations && project.locations.length > 0">
+													<template x-for="location in project.locations" :key="location.id">
+														<span
+															class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs whitespace-nowrap">
+															<i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
+															<span
+																x-text="location.county || location.mapsAddress || 'Unknown'"></span>
+														</span>
+													</template>
+												</div>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+												<div class="flex flex-col gap-1">
+													<span x-show="project.startDate">Start: <span
+															x-text="project.startDate"></span></span>
+													<span x-show="project.endDate">End: <span
+															x-text="project.endDate"></span></span>
+												</div>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-sm">
+												<span :class="{
+                                'bg-yellow-100 text-yellow-800': project.approvalWorkflowStatus?.includes('PENDING_REVIEW') || project.approvalStatus === 'PENDING',
+                                'bg-blue-100 text-blue-800': project.approvalWorkflowStatus?.includes('PENDING_FINAL') || project.approvalStatus === 'SUBMITTED',
+                                'bg-purple-100 text-purple-800': project.approvalWorkflowStatus && !project.approvalWorkflowStatus.includes('PENDING')
+                            }" class="px-3 py-1 rounded-full text-xs font-medium"
+													x-text="project.approvalWorkflowStatus || project.approvalStatus || 'PENDING'"></span>
+											</td>
+
+											<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+												<div class="flex gap-2 justify-end">
+													<button @click="viewProjectDetails(project.id)"
+														class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
+														title="View Details">
+														<i class="fas fa-eye"></i>
+													</button>
+													<button
+														x-show="project.approvalWorkflowStatus?.includes('PENDING_FINAL')"
+														@click="openFinalApprovalModal(project)"
+														class="text-white bg-green-600 hover:bg-green-700 px-2 py-1 rounded transition"
+														title="Review for Final Approval">
+														<i class="fas fa-check-double"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+							<div id="no-results-pending" class="px-6 py-8 text-center text-gray-500 italic hidden">
+								No pending projects found matching your search term.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Projects Awaiting Final Approval (Approver View) -->
+			<div x-show="activeTab === 'for-approval'" class="space-y-4">
+				<div class="bg-white rounded-lg shadow p-6">
+					<h2 class="text-xl font-bold mb-4">
+						Projects Awaiting Final Approval
+					</h2>
+
+					<template x-if="projectsForApproval.length === 0">
+						<div class="text-center py-8 text-gray-500">
+							<i class="fas fa-inbox text-4xl mb-2"></i>
+							<p>No projects awaiting final approval</p>
+						</div>
+					</template>
+
+					<div class="space-y-4">
+						<div id="project-approval-dashboard">
+
+							<div class="mb-4">
+								<div class="relative w-full md:w-1/2 lg:w-1/3">
+									<input type="text" id="search-input-approval"
+										placeholder="Search projects for final approval..."
+										oninput="filterTable('search-input-approval', 'table-body-approval', 'no-results-approval')"
+										class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm transition">
+									<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+										<i class="fas fa-search text-gray-400"></i>
+									</div>
+								</div>
+							</div>
+
+							<div class="overflow-x-auto shadow-lg rounded-lg">
+								<table id="project-table-approval" class="min-w-full divide-y divide-gray-200">
+									<thead class="bg-gray-50">
+										<tr>
+											<th scope="col"
+												class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Project & Partner
+											</th>
+											<th scope="col"
+												class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Themes
+											</th>
+											<th scope="col"
+												class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Reviewer Details
+											</th>
+											<th scope="col"
+												class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Status
+											</th>
+											<th scope="col" class="relative px-6 py-3">
+												<span class="sr-only">Actions</span>
+											</th>
+										</tr>
+									</thead>
+									<tbody id="table-body-approval" class="bg-white divide-y divide-gray-200">
+										<template x-for="project in projectsForApproval" :key="project.id">
+											<tr
+												class="hover:bg-gray-50 transition items-center duration-150 ease-in-out">
+												<td class="px-6 py-4 text-sm text-gray-600">
+													<span class="whitespace-nowrap font-semibold text-gray-900"
+														x-text="project.title"></span>
+													<p class="text-xs text-gray-500 mt-1">
+														Partner: <span class="whitespace-nowrap"
+															x-text="project.partner"></span>
+													</p>
+												</td>
+
+												<td class="px-6 py-4 text-sm text-gray-600">
+													<div class="flex flex-wrap gap-1">
+														<template x-for="theme in project.themes" :key="theme.code">
+															<span
+																class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap"
+																x-text="theme.displayName"></span>
+														</template>
+													</div>
+												</td>
+
+												<td class="px-6 py-4 text-xs text-green-800">
+													<div x-show="project.reviewedBy"
+														class="bg-green-50 p-2 rounded border-l-2 border-green-500">
+														<p class="font-semibold">
+															<i class="fas fa-user-check mr-1"></i>
+															<span
+																x-text="getReviewerName(project.reviewedBy) || `User #${project.reviewedBy}`"></span>
+														</p>
+														<p class="text-xs text-green-600" x-show="project.reviewedAt">
+															On: <span x-text="formatDate(project.reviewedAt)"></span>
+														</p>
+														<p class="text-xs italic mt-1 truncate"
+															x-show="project.reviewerComments"
+															x-text="project.reviewerComments.substring(0, 40) + '...'">
+														</p>
+														<p class="text-xs italic mt-1"
+															x-show="!project.reviewerComments">
+															No comments.
+														</p>
+													</div>
+													<span x-show="!project.reviewedBy"
+														class="text-gray-500 italic">Awaiting Review</span>
+												</td>
+
+												<td class="px-6 py-4 whitespace-nowrap text-sm">
+													<span
+														class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
+														x-text="project.approvalWorkflowStatus"></span>
+												</td>
+
+												<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+													<div class="flex gap-2 justify-end">
+														<button @click="viewProjectDetails(project.id)"
+															class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
+															title="View Full Details">
+															<i class="fas fa-eye"></i>
+														</button>
+														<button @click="openFinalApprovalModal(project)"
+															class="text-white bg-green-600 hover:bg-green-700 px-2 py-1 rounded transition"
+															title="Final Approve">
+															<i class="fas fa-check-double"></i>
+														</button>
+														<button @click="openFinalRejectModal(project)"
+															class="text-white bg-red-600 hover:bg-red-700 px-2 py-1 rounded transition"
+															title="Reject">
+															<i class="fas fa-times-circle"></i>
+														</button>
+													</div>
+												</td>
+											</tr>
+										</template>
+									</tbody>
+								</table>
+								<div id="no-results-approval" class="px-6 py-8 text-center text-gray-500 italic hidden">
+									No projects for final approval found matching your search term.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Reviewer Management (Approver/SUPER_ADMIN Only) -->
+			<div x-show="activeTab === 'reviewers'" class="space-y-4">
+				<div class="bg-white rounded-lg shadow p-6">
+					<h2 class="text-xl font-bold mb-4">Manage Reviewers</h2>
+
+					<!-- Thematic Area Filter -->
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2">Filter by Thematic Area:</label>
+						<select x-model="selectedThemeFilter" @change="filterReviewers()"
+							class="px-4 py-2 border rounded">
+							<option value="">All Reviewers</option>
+							<option value="GBV">GBV - Gender-Based Violence</option>
+							<option value="AYPSRH">
+								AYPSRH - Adolescent and Young People SRH
+							</option>
+							<option value="MNH">MNH - Maternal and Newborn Health</option>
+							<option value="FP">FP - Family Planning</option>
+							<option value="CH">CH - Child Health</option>
+							<option value="AH">AH - Adolescent Health</option>
+						</select>
+					</div>
+
+					<div class="overflow-x-auto">
+						<table class="min-w-full divide-y divide-gray-200">
+							<thead class="bg-gray-50">
+								<tr>
+									<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+										Name
+									</th>
+									<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+										Email
+									</th>
+									<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+										Thematic Area
+									</th>
+									<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+										Actions
+									</th>
+								</tr>
+							</thead>
+							<tbody class="bg-white divide-y divide-gray-200">
+								<template x-for="reviewer in filteredReviewers" :key="reviewer.id">
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.name"></td>
+										<td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.email"></td>
+										<td class="px-6 py-4 whitespace-nowrap">
+											<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+												x-text="reviewer.thematicArea || 'Not Assigned'"></span>
+										</td>
+										<td class="px-6 py-4 whitespace-nowrap">
+											<button @click="openAssignThemeModal(reviewer)"
+												class="text-blue-600 hover:text-green-700">
+												<i class="fas fa-edit mr-1"></i> Assign Theme
+											</button>
+										</td>
+									</tr>
+								</template>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Review Modal -->
+		<div x-show="showReviewModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+			<div class="flex items-center justify-center min-h-screen px-4">
+				<div class="fixed inset-0 bg-black opacity-50" @click="showReviewModal = false"></div>
+				<div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+					<h3 class="text-2xl font-bold mb-4">Review Project</h3>
+					<p class="mb-2">
+						<strong>Project:</strong>
+						<span x-text="selectedProject?.title"></span>
+					</p>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2">Your Decision:</label>
+						<div class="flex gap-4">
+							<label class="flex items-center">
+								<input type="radio" x-model="reviewDecision" value="approve" class="mr-2" />
+								<span>Approve for Final Review</span>
+							</label>
+							<label class="flex items-center">
+								<input type="radio" x-model="reviewDecision" value="reject" class="mr-2" />
+								<span>Reject (Needs Revision)</span>
+							</label>
+						</div>
+					</div>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2">Comments:</label>
+						<textarea x-model="reviewComments" rows="4" class="w-full px-3 py-2 border rounded"
+							placeholder="Provide detailed feedback..."></textarea>
+					</div>
+
+					<div class="flex gap-2 justify-end">
+						<button @click="showReviewModal = false"
+							class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+							Cancel
+						</button>
+						<button @click="submitReview()"
+							class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-green-600">
+							Submit Review
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div x-show="showFinalApprovalModal"
+			class="fixed backdrop-blur-md inset-0 z-50 overflow-y-auto transition-opacity duration-300 ease-out" x-cloak
+			x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+			x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+			<div class="flex items-center justify-center min-h-screen p-4">
+
+				<div class="fixed inset-0 bg-gray-900 bg-opacity-70" @click="showFinalApprovalModal = false"></div>
+
+				<div class="relative bg-white rounded-xl shadow-2xl transform transition-all sm:my-8 max-w-3xl w-full"
+					x-transition:enter="ease-out duration-300"
+					x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave="ease-in duration-200"
+					x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
+					<div class="px-6 py-4 border-b border-gray-100 bg-green-50 rounded-t-xl">
+						<h3 class="text-xl font-extrabold text-green-800 flex items-center">
+							<i class="fas fa-certificate mr-3 text-green-600"></i>
+							Grant Final Approval
+						</h3>
+					</div>
+
+					<div class="p-6">
+						<div class="mb-5 p-3 bg-gray-50 rounded-lg border border-gray-200">
+							<p class="text-sm font-semibold text-gray-700 mb-1">Project Title:</p>
+							<p class="text-lg font-bold text-gray-900" x-text="selectedProject?.title"></p>
+						</div>
+
+						<div class="mb-6">
+							<label for="final-comments" class="block text-sm font-bold text-gray-700 mb-2">
+								<i class="fas fa-comment-alt mr-1 text-gray-500"></i>
+								Final Comments (Optional):
+							</label>
+							<textarea id="final-comments" x-model="finalComments" rows="3"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 transition"
+								placeholder="Add any final comments for the records..."></textarea>
+						</div>
+					</div>
+
+					<div class="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end gap-3 border-t border-gray-100">
+						<button @click="showFinalApprovalModal = false"
+							class="flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition duration-150">
+							<i class="fas fa-times mr-2"></i>
+							Cancel
+						</button>
+						<button @click="submitFinalApproval()"
+							class="flex items-center px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 transition duration-150">
+							<i class="fas fa-check-double mr-2"></i>
+							Grant Final Approval
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div x-show="showFinalRejectModal"
+			class="fixed backdrop-blur-md inset-0 z-50 overflow-y-auto transition-opacity duration-300 ease-out" x-cloak
+			x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+			x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+			<div class="flex items-center justify-center min-h-screen p-4">
+
+				<div class="fixed inset-0 bg-gray-900 bg-opacity-70" @click="showFinalRejectModal = false"></div>
+
+				<div class="relative bg-white rounded-xl shadow-2xl transform transition-all sm:my-8 max-w-3xl w-full"
+					x-transition:enter="ease-out duration-300"
+					x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave="ease-in duration-200"
+					x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
+					<div class="px-6 py-4 border-b border-gray-100 bg-red-50 rounded-t-xl">
+						<h3 class="text-xl font-extrabold text-red-800 flex items-center">
+							<i class="fas fa-exclamation-triangle mr-3 text-red-600"></i>
+							Reject Project
+						</h3>
+					</div>
+
+					<div class="p-6">
+						<div class="mb-5 p-3 bg-red-50 rounded-lg border border-red-200">
+							<p class="text-sm font-semibold text-red-700 mb-1">Project Title:</p>
+							<p class="text-lg font-bold text-red-900" x-text="selectedProject?.title"></p>
+						</div>
+
+						<div class="mb-6">
+							<label for="rejection-reason" class="block text-sm font-bold text-gray-700 mb-2">
+								<i class="fas fa-exclamation-circle mr-1 text-red-500"></i>
+								Rejection Reason (Required):
+							</label>
+							<textarea id="rejection-reason" x-model="rejectionReason" rows="4"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 transition"
+								placeholder="Provide detailed, constructive reason for rejection..."
+								required></textarea>
+						</div>
+					</div>
+
+					<div class="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end gap-3 border-t border-gray-100">
+						<button @click="showFinalRejectModal = false"
+							class="flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition duration-150">
+							<i class="fas fa-undo mr-2"></i>
+							Cancel
+						</button>
+						<button @click="submitFinalRejection()" :disabled="!rejectionReason"
+							class="flex items-center px-5 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-md hover:bg-red-700 disabled:opacity-50 transition duration-150">
+							<i class="fas fa-times-circle mr-2"></i>
+							Reject Project
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Final Reject Modal -->
+		<div x-show="showFinalRejectModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+			<div class="flex items-center justify-center min-h-screen px-4">
+				<div class="fixed inset-0 bg-black opacity-50" @click="showFinalRejectModal = false"></div>
+				<div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+					<h3 class="text-2xl font-bold mb-4 text-red-600">Reject Project</h3>
+					<p class="mb-4">
+						<strong>Project:</strong>
+						<span x-text="selectedProject?.title"></span>
+					</p>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2">Rejection Reason (Required):</label>
+						<textarea x-model="rejectionReason" rows="4" class="w-full px-3 py-2 border rounded"
+							placeholder="Provide detailed reason for rejection..." required></textarea>
+					</div>
+
+					<div class="flex gap-2 justify-end">
+						<button @click="showFinalRejectModal = false"
+							class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+							Cancel
+						</button>
+						<button @click="submitFinalRejection()"
+							class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+							<i class="fas fa-times-circle mr-2"></i> Reject Project
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Assign Theme Modal -->
+		<div x-show="showAssignThemeModal"
+			class="fixed backdrop-blur-md inset-0 z-50 overflow-y-auto transition-opacity duration-300 ease-out" x-cloak
+			x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+			x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+			<div class="flex items-center justify-center min-h-screen p-4">
+
+				<div class="fixed inset-0 bg-gray-900 bg-opacity-70" @click="showAssignThemeModal = false"></div>
+
+				<div class="relative bg-white rounded-xl shadow-2xl transform transition-all sm:my-8 max-w-3xl w-full"
+					x-transition:enter="ease-out duration-300"
+					x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave="ease-in duration-200"
+					x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
+					<div class="px-6 py-4 border-b border-gray-100 bg-blue-50 rounded-t-xl">
+						<h3 class="text-xl font-extrabold text-blue-800 flex items-center">
+							<i class="fas fa-tags mr-3 text-blue-600"></i>
+							Assign Thematic Area
+						</h3>
+					</div>
+
+					<div class="p-6">
+						<div class="mb-5 p-3 bg-gray-50 rounded-lg border border-gray-200">
+							<p class="text-xs font-normal text-gray-700">
+								<i class="fas fa-user-tag text-gray-500 mr-2"></i>
+								Reviewer to Assign:
+							</p>
+							<p class="text-lg font-bold text-gray-900 ml-5" x-text="selectedReviewer?.name || 'N/A'">
+							</p>
+						</div>
+
+						<div class="mb-6">
+							<label class="block text-md font-bold text-gray-700 mb-3 border-b pb-2">Select
+								Specializations:</label>
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2">
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="GBV"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">GBV - Gender-Based
+										Violence</span>
+								</label>
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="AYPSRH"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">AYPSRH - Adolescent/Young
+										People SRH</span>
+								</label>
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="MNH"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">MNH - Maternal and Newborn
+										Health</span>
+								</label>
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="FP"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">FP - Family Planning</span>
+								</label>
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="CH"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">CH - Child Health</span>
+								</label>
+								<label
+									class="flex items-center p-2 bg-white rounded-lg border cursor-pointer hover:bg-blue-50 transition duration-150">
+									<input type="checkbox" x-model="assignedThemes" value="AH"
+										class="h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+									<span class="ml-3 text-sm font-medium text-gray-700">AH - Adolescent
+										Health</span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end gap-3 border-t border-gray-100">
+						<button @click="showAssignThemeModal = false"
+							class="flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition duration-150">
+							<i class="fas fa-times mr-2"></i>
+							Cancel
+						</button>
+						<button @click="submitAssignTheme()" :disabled="assignedThemes.length === 0"
+							class="flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 disabled:opacity-50 transition duration-150">
+							<i class="fas fa-arrow-circle-right mr-2"></i>
+							Assign (<span x-text="assignedThemes.length"></span>)
+						</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- Project Details Modal -->
+		<div id="projectDetailsModal"
+			class="hidden fixed inset-0 z-50 flex backdrop-blur-md items-center justify-center bg-black bg-opacity-50"
+			aria-hidden="true" aria-modal="true" aria-labelledby="projectDetailsTitle">
+			<div class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">
+				<div class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-200">
+					<h2 id="projectDetailsTitle" class="text-xl font-semibold text-blue-900">
+						Project Details
+					</h2>
+					<button type="button" class="text-gray-400 hover:text-gray-600"
+						onclick="closeProjectDetailsModal()">
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"></path>
+						</svg>
+					</button>
+				</div>
+				<div id="projectDetailsContent" class="p-6">
+					<p class="text-gray-500">
+						<i class="fas fa-spinner fa-spin"></i> Loading...
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Document Viewer Modal -->
+		<div id="documentViewerModal"
+			class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-modal="true">
+			<div class="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
+				<!-- Modal Header -->
+				<div class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200">
+					<h3 id="documentViewerFileName" class="text-lg font-semibold text-gray-800">
+						Document Viewer
+					</h3>
+					<div class="flex gap-2">
+						<button id="documentViewerDownloadBtn"
+							class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+							<i class="fas fa-download mr-1"></i>Download
+						</button>
+						<button onclick="closeDocumentViewer()"
+							class="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">
+							<i class="fas fa-times mr-1"></i>Close
+						</button>
+					</div>
+				</div>
+
+				<!-- Modal Body -->
+				<div class="relative w-full h-full p-4 overflow-auto">
+					<!-- Loading State -->
+					<div id="documentViewerLoading" class="flex items-center justify-center h-full">
+						<div class="text-center">
+							<i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+							<p class="text-gray-600">Loading document...</p>
+						</div>
+					</div>
+
+					<!-- PDF/Image Content -->
+					<div id="documentViewerContent" class="hidden w-full h-full"></div>
+
+					<!-- Office Document Content -->
+					<div id="officeDocumentViewerContent" class="hidden w-full h-full"></div>
+
+					<!-- Unsupported Document -->
+					<div id="unsupportedDocumentContent" class="hidden flex items-center justify-center h-full">
+						<div class="text-center">
+							<i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+							<p class="text-gray-600 mb-4">
+								This document type cannot be previewed.
+							</p>
+							<p class="text-sm text-gray-500">
+								Please download the file to view it.
+							</p>
+						</div>
+					</div>
+
+					<!-- Error State -->
+					<div id="documentViewerError" class="hidden flex items-center justify-center h-full">
+						<div class="text-center text-red-600">
+							<i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+							<p>Error loading document</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- NAVIGATION LOADER DISABLED FOR DEBUGGING -->
+	<!-- <script src="styles/loadNav.js"></script> -->
+
+	<script>
+
+		function filterTabled(inputId, tbodyId, noResultsId) {
+			// 1. Get elements and search term
+			const input = document.getElementById(inputId);
+			const filter = input.value.toUpperCase();
+
+			const tbody = document.getElementById(tbodyId);
+			// Safely get all <tr> elements within the <tbody>, ignoring the Alpine <template>
+			const trs = Array.from(tbody.children).filter(el => el.tagName === 'TR');
+			const noResults = document.getElementById(noResultsId);
+
+			let foundMatch = false;
+
+			// 2. Iterate and filter rows
+			for (let i = 0; i < trs.length; i++) {
+				const row = trs[i];
+				const tds = row.getElementsByTagName('td');
+				let rowText = '';
+
+				// Concatenate all cell text for broad search matching
+				for (let j = 0; j < tds.length; j++) {
+					rowText += tds[j].innerText + ' ';
+				}
+
+				// Show/Hide row based on match
+				if (rowText.toUpperCase().indexOf(filter) > -1) {
+					row.style.display = "";
+					foundMatch = true;
+				} else {
+					row.style.display = "none";
+				}
+			}
+
+			// 3. Handle "No Results" message visibility
+			if (noResults) {
+				noResults.style.display = foundMatch ? 'none' : 'block';
+			}
+		}
+	</script>
+	<script>
+		function filterTable() {
+			// 1. Get the current search term and convert it to lower case
+			const input = document.getElementById('search-input');
+			const filter = input.value.toUpperCase();
+
+			// 2. Get the table body and all its rows
+			const tbody = document.getElementById('table-body');
+			const trs = tbody.getElementsByTagName('tr');
+
+			let foundMatch = false;
+
+			// 3. Iterate through all table rows, starting after the template element
+			for (let i = 0; i < trs.length; i++) {
+				const row = trs[i];
+
+				// Get all cells in the current row
+				const tds = row.getElementsByTagName('td');
+				let rowText = '';
+
+				// Concatenate all text content from visible columns (tds)
+				for (let j = 0; j < tds.length; j++) {
+					// Get the displayed text content of the cell
+					rowText += tds[j].innerText + ' ';
+				}
+
+				// Check if the row's combined text includes the filter term
+				if (rowText.toUpperCase().indexOf(filter) > -1) {
+					row.style.display = ""; // Show the row
+					foundMatch = true;
+				} else {
+					row.style.display = "none"; // Hide the row
+				}
+			}
+
+			// 4. Handle "No Results" message visibility
+			const noResults = document.getElementById('no-results');
+			if (noResults) {
+				noResults.style.display = foundMatch ? 'none' : 'block';
+			}
+		}
+
+		// Optional: You might need to call this once if the initial list is empty or if you load data dynamically.
+		// window.onload = filterTable;
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script>
+		function approvalApp() {
+			return {
+				loading: false,
+				activeTab: "for-review",
+				userRole: "",
+				userThematicArea: "",
+
+				// Projects data
+				projectsForReview: [],
+				projectsForApproval: [],
+				allPendingProjects: [], // Combined view for SUPER_ADMIN_APPROVER
+
+				// Reviewers data
+				allReviewers: [],
+				filteredReviewers: [],
+				selectedThemeFilter: "",
+
+				// Modal states
+				showReviewModal: false,
+				showFinalApprovalModal: false,
+				showFinalRejectModal: false,
+				showAssignThemeModal: false,
+
+				// Form data
+				selectedProject: null,
+				reviewDecision: "approve",
+				reviewComments: "",
+				finalComments: "",
+				rejectionReason: "",
+
+				selectedReviewer: null,
+				assignedTheme: "",
+
+				// Toast notification
+				toast: {
+					show: false,
+					message: "",
+					type: "success",
+				},
+
+				async init() {
+					await this.checkAuth();
+					await this.loadData();
+				},
+
+				async checkAuth() {
+					// Wait for BASE_URL to be set
+					let retries = 0;
+					while (!window.BASE_URL && retries < 10) {
+						console.log("Waiting for BASE_URL to be set...");
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						retries++;
+					}
+
+					if (!window.BASE_URL) {
+						console.error("BASE_URL not set after waiting!");
+						window.BASE_URL =
+							"https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"; // Fallback
+					}
+
+					console.log("Using BASE_URL:", window.BASE_URL);
+
+					try {
+						const token = localStorage.getItem("accessToken");
+						if (!token) {
+							console.warn("No access token found");
+							window.location.href = "index.html";
+							return;
+						}
+
+						// Use /api/auth/profile instead of /api/auth/me (which returns 500)
+						const response = await fetch(
+							`${window.BASE_URL}/api/auth/profile`,
+							{
+								headers: {
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+
+						if (response.ok) {
+							const data = await response.json();
+							console.log("User data:", data);
+							// Handle both response structures: data.data or direct data
+							const userData = data.data || data;
+							this.userRole = userData.role;
+							this.userThematicArea = userData.thematicArea || "Not Assigned";
+
+							// Set initial tab based on role
+							if (this.userRole === "SUPER_ADMIN_REVIEWER") {
+								this.activeTab = "for-review";
+							} else if (this.userRole === "SUPER_ADMIN_APPROVER") {
+								this.activeTab = "all-pending"; // Start with overview
+							}
+
+							// Restrict access if not authorized
+							if (
+								![
+									"SUPER_ADMIN",
+									"SUPER_ADMIN_REVIEWER",
+									"SUPER_ADMIN_APPROVER",
+								].includes(this.userRole)
+							) {
+								console.warn("Access denied. User role:", this.userRole);
+								alert(
+									"Access denied. You do not have permission to access this page."
+								);
+								window.location.href = "dashboard.html";
+							}
+						} else {
+							console.error(
+								"Auth response not OK:",
+								response.status,
+								response.statusText
+							);
+							window.location.href = "index.html";
+						}
+					} catch (error) {
+						console.error("Auth check failed:", error);
+						window.location.href = "index.html";
+					}
+				},
+
+				async loadData() {
+					this.loading = true;
+					console.log("Loading data... User role:", this.userRole);
+					try {
+						await Promise.all([
+							this.loadProjectsForReview(),
+							this.loadProjectsForApproval(),
+							this.loadAllPendingProjects(),
+							this.loadReviewers(),
+						]);
+						console.log("All data loaded successfully");
+					} catch (error) {
+						console.error("Error loading data:", error);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async loadProjectsForReview() {
+					if (
+						!["SUPER_ADMIN_REVIEWER", "SUPER_ADMIN"].includes(this.userRole)
+					) {
+						console.log(
+							"Skipping loadProjectsForReview - role not authorized"
+						);
+						this.projectsForReview = []; // Set to empty array
+						return;
+					}
+
+					console.log("Loading projects for review...");
+					try {
+						const response = await this.apiCall(
+							"/api/projects/admin/projects-for-review"
+						);
+						this.projectsForReview = response.data || [];
+						console.log(
+							"Projects for review loaded:",
+							this.projectsForReview.length
+						);
+					} catch (error) {
+						console.error("Error loading projects for review:", error);
+						// Don't show error toast if it's just a permissions issue
+						if (!error.message.includes("insufficient permissions")) {
+							this.showToast(
+								"Failed to load projects for review: " + error.message,
+								"error"
+							);
+						}
+						this.projectsForReview = []; // Set to empty array on error
+					}
+				},
+
+				async loadProjectsForApproval() {
+					if (
+						!["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+					) {
+						console.log(
+							"Skipping loadProjectsForApproval - role not authorized"
+						);
+						this.projectsForApproval = []; // Set to empty array
+						return;
+					}
+
+					console.log("Loading projects for approval...");
+					try {
+						const response = await this.apiCall(
+							"/api/projects/admin/projects-awaiting-final-approval"
+						);
+						this.projectsForApproval = response.data || [];
+						console.log(
+							"Projects for approval loaded:",
+							this.projectsForApproval.length
+						);
+					} catch (error) {
+						console.error("Error loading projects for approval:", error);
+						// Don't show error toast if it's just a permissions issue
+						if (!error.message.includes("insufficient permissions")) {
+							this.showToast(
+								"Failed to load projects for approval: " + error.message,
+								"error"
+							);
+						}
+						this.projectsForApproval = []; // Set to empty array on error
+					}
+				},
+
+				async loadAllPendingProjects() {
+					if (
+						!["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+					) {
+						console.log(
+							"Skipping loadAllPendingProjects - role not authorized"
+						);
+						this.allPendingProjects = []; // Set to empty array
+						return;
+					}
+
+					console.log("Loading all pending projects...");
+					try {
+						// Fetch all projects with large page size to get comprehensive view
+						const allProjectsResponse = await this.apiCall(
+							"/api/projects?page=0&size=1000"
+						);
+
+						const allProjects = allProjectsResponse.data?.projects || [];
+
+						// Filter for projects in pending states (both new two-tier workflow and legacy approval status)
+						const pendingWorkflowStatuses = [
+							"PENDING_REVIEW",
+							"UNDER_REVIEW",
+							"REVIEWED",
+							"PENDING_FINAL_APPROVAL",
+						];
+
+						const pendingApprovalStatuses = ["PENDING", "SUBMITTED"];
+
+						this.allPendingProjects = allProjects.filter((project) => {
+							// Check new two-tier workflow status first
+							if (
+								project.approvalWorkflowStatus &&
+								pendingWorkflowStatuses.includes(
+									project.approvalWorkflowStatus
+								)
+							) {
+								return true;
+							}
+
+							// Fallback to legacy approval status for projects not yet migrated
+							if (
+								project.approvalStatus &&
+								pendingApprovalStatuses.includes(project.approvalStatus)
+							) {
+								return true;
+							}
+
+							return false;
+						});
+
+						console.log(
+							"All pending projects loaded:",
+							this.allPendingProjects.length,
+							"projects in approval pipeline out of",
+							allProjects.length,
+							"total projects",
+							`(${this.allPendingProjects.filter(
+								(p) => p.approvalWorkflowStatus
+							).length
+							} with workflow status,`,
+							`${this.allPendingProjects.filter(
+								(p) => !p.approvalWorkflowStatus && p.approvalStatus
+							).length
+							} legacy pending)`
+						);
+					} catch (error) {
+						console.error("Error loading all pending projects:", error);
+						// Don't show error toast if it's just a permissions issue
+						if (!error.message.includes("insufficient permissions")) {
+							this.showToast(
+								"Failed to load pending projects: " + error.message,
+								"error"
+							);
+						}
+						this.allPendingProjects = []; // Set to empty array on error
+					}
+				},
+
+				async loadReviewers() {
+					if (
+						!["SUPER_ADMIN_APPROVER", "SUPER_ADMIN"].includes(this.userRole)
+					) {
+						console.log("Skipping loadReviewers - role not authorized");
+						this.allReviewers = []; // Set to empty array
+						this.filteredReviewers = []; // Set to empty array
+						return;
+					}
+
+					console.log("Loading reviewers...");
+					try {
+						const response = await this.apiCall("/api/auth/admin/reviewers");
+						this.allReviewers = response.data || [];
+						this.filteredReviewers = this.allReviewers;
+						console.log("Reviewers loaded:", this.allReviewers.length);
+					} catch (error) {
+						console.error("Error loading reviewers:", error);
+						// Don't show error toast if it's just a permissions issue
+						if (!error.message.includes("insufficient permissions")) {
+							this.showToast(
+								"Failed to load reviewers: " + error.message,
+								"error"
+							);
+						}
+						this.allReviewers = []; // Set to empty array on error
+						this.filteredReviewers = []; // Set to empty array on error
+					}
+				},
+
+				filterReviewers() {
+					if (!this.selectedThemeFilter) {
+						this.filteredReviewers = this.allReviewers;
+					} else {
+						this.filteredReviewers = this.allReviewers.filter(
+							(r) => r.thematicArea === this.selectedThemeFilter
+						);
+					}
+				},
+
+				openReviewModal(project) {
+					this.selectedProject = project;
+					this.reviewDecision = "approve";
+					this.reviewComments = "";
+					this.showReviewModal = true;
+				},
+
+				openFinalApprovalModal(project) {
+					this.selectedProject = project;
+					this.finalComments = "";
+					this.showFinalApprovalModal = true;
+				},
+
+				openFinalRejectModal(project) {
+					this.selectedProject = project;
+					this.rejectionReason = "";
+					this.showFinalRejectModal = true;
+				},
+
+				openAssignThemeModal(reviewer) {
+					this.selectedReviewer = reviewer;
+					this.assignedTheme = reviewer.thematicArea || "";
+					this.showAssignThemeModal = true;
+				},
+
+				async submitReview() {
+					if (!this.reviewComments.trim()) {
+						this.showToast("Please provide review comments", "error");
+						return;
+					}
+
+					this.loading = true;
+					try {
+						await this.apiCall(
+							`/api/projects/admin/review/${this.selectedProject.id}`,
+							"POST",
+							{
+								approved: this.reviewDecision === "approve",
+								comments: this.reviewComments,
+							}
+						);
+
+						this.showToast(
+							this.reviewDecision === "approve"
+								? "Project approved for final review!"
+								: "Review completed - revisions requested",
+							"success"
+						);
+
+						this.showReviewModal = false;
+						await this.loadProjectsForReview();
+						await this.loadAllPendingProjects(); // Refresh combined view
+					} catch (error) {
+						console.error("Error submitting review:", error);
+						this.showToast(
+							error.message || "Failed to submit review",
+							"error"
+						);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async submitFinalApproval() {
+					this.loading = true;
+					try {
+						await this.apiCall(
+							`/api/projects/admin/final-approve/${this.selectedProject.id}`,
+							"POST",
+							{
+								comments: this.finalComments,
+							}
+						);
+
+						this.showToast(
+							"Project finally approved successfully!",
+							"success"
+						);
+						this.showFinalApprovalModal = false;
+						await this.loadProjectsForApproval();
+						await this.loadAllPendingProjects(); // Refresh combined view
+					} catch (error) {
+						console.error("Error submitting final approval:", error);
+						this.showToast(
+							error.message || "Failed to approve project",
+							"error"
+						);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async submitFinalRejection() {
+					if (!this.rejectionReason.trim()) {
+						this.showToast("Please provide a rejection reason", "error");
+						return;
+					}
+
+					this.loading = true;
+					try {
+						await this.apiCall(
+							`/api/projects/admin/final-reject/${this.selectedProject.id}`,
+							"POST",
+							{
+								reason: this.rejectionReason,
+							}
+						);
+
+						this.showToast("Project rejected", "success");
+						this.showFinalRejectModal = false;
+						await this.loadProjectsForApproval();
+						await this.loadAllPendingProjects(); // Refresh combined view
+					} catch (error) {
+						console.error("Error rejecting project:", error);
+						this.showToast(
+							error.message || "Failed to reject project",
+							"error"
+						);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async submitAssignTheme() {
+					if (!this.assignedTheme) {
+						this.showToast("Please select a thematic area", "error");
+						return;
+					}
+
+					this.loading = true;
+					try {
+						await this.apiCall(
+							`/api/auth/admin/assign-thematic-area/${this.selectedReviewer.id}`,
+							"POST",
+							{
+								thematicArea: this.assignedTheme,
+							}
+						);
+
+						this.showToast("Thematic area assigned successfully!", "success");
+						this.showAssignThemeModal = false;
+						await this.loadReviewers();
+					} catch (error) {
+						console.error("Error assigning theme:", error);
+						this.showToast(
+							error.message || "Failed to assign thematic area",
+							"error"
+						);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async viewProjectDetails(projectId) {
+					const modal = document.getElementById("projectDetailsModal");
+					const content = document.getElementById("projectDetailsContent");
+
+					modal.classList.remove("hidden");
+					content.innerHTML =
+						'<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
+
+					try {
+						const data = await this.apiCall(`/api/projects/${projectId}`);
+
+						if (data.status === 200 && data.data) {
+							const project = data.data;
+
+							// Fetch documents
+							const documents = await this.fetchProjectDocuments(projectId);
+
+							// Render project details
+							content.innerHTML = `
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 space-y-8">
-                      <h1 class="text-3xl font-extrabold text-blue-900">${
-                        project.title || "N/A"
-                      }</h1>
+                      <h1 class="text-3xl font-extrabold text-blue-900">${project.title || "N/A"
+								}</h1>
                       
                       <div>
                         <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Objectives</h4>
-                        <p class="text-gray-700 leading-relaxed">${
-                          project.objectives || "N/A"
-                        }</p>
+                        <p class="text-gray-700 leading-relaxed">${project.objectives || "N/A"
+								}</p>
                       </div>
                       
-                      ${
-                        project.themes && project.themes.length > 0
-                          ? `
+                      ${project.themes && project.themes.length > 0
+									? `
                       <div>
                         <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Themes</h4>
                         <div class="flex flex-wrap gap-2">
                           ${project.themes
-                            .map(
-                              (theme) =>
-                                `<span class="inline-flex items-center px-4 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium"><i class="fas fa-tag mr-2"></i>${
-                                  theme.name || theme.code
-                                }</span>`
-                            )
-                            .join("")}
+										.map(
+											(theme) =>
+												`<span class="inline-flex items-center px-4 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium"><i class="fas fa-tag mr-2"></i>${theme.name || theme.code
+												}</span>`
+										)
+										.join("")}
                         </div>
                       </div>
                       `
-                          : ""
-                      }
+									: ""
+								}
 
-                      ${
-                        project.locations && project.locations.length > 0
-                          ? `
+                      ${project.locations && project.locations.length > 0
+									? `
                       <div>
                         <h4 class="text-xl font-bold text-gray-800 mb-3 border-b pb-1">Locations</h4>
                         <div class="mt-2 space-y-2">
                           ${project.locations
-                            .map((loc) => {
-                              const isCoordinatesOnly =
-                                loc.mapsAddress &&
-                                /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(
-                                  loc.mapsAddress.trim()
-                                );
-                              const displayName =
-                                loc.mapsAddress && !isCoordinatesOnly
-                                  ? loc.mapsAddress
-                                  : loc.county
-                                  ? `${loc.county}${
-                                      loc.subCounty ? ", " + loc.subCounty : ""
-                                    }`
-                                  : "Unknown";
-                              const coordinates =
-                                loc.latitude && loc.longitude
-                                  ? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(
-                                      4
-                                    )}, ${loc.longitude.toFixed(4)})</span>`
-                                  : "";
-                              return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
-                            })
-                            .join("")}
+										.map((loc) => {
+											const isCoordinatesOnly =
+												loc.mapsAddress &&
+												/^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(
+													loc.mapsAddress.trim()
+												);
+											const displayName =
+												loc.mapsAddress && !isCoordinatesOnly
+													? loc.mapsAddress
+													: loc.county
+														? `${loc.county}${loc.subCounty ? ", " + loc.subCounty : ""
+														}`
+														: "Unknown";
+											const coordinates =
+												loc.latitude && loc.longitude
+													? `<span class="text-xs text-gray-500 ml-6">(${loc.latitude.toFixed(
+														4
+													)}, ${loc.longitude.toFixed(4)})</span>`
+													: "";
+											return `<div class="text-gray-800 flex items-start"><i class="fas fa-map-marker-alt text-red-500 mr-2 w-4 text-center mt-1"></i><div>${displayName}${coordinates}</div></div>`;
+										})
+										.join("")}
                         </div>
                       </div>
                       `
-                          : ""
-                      }
+									: ""
+								}
 
                       <div class="pt-4 border-t">
                         <h4 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
@@ -1658,51 +1672,40 @@
                       <dl class="space-y-3 text-sm">
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Project No:</dt>
-                          <dd class="font-semibold text-gray-900">${
-                            project.projectNo || "N/A"
-                          }</dd>
+                          <dd class="font-semibold text-gray-900">${project.projectNo || "N/A"
+								}</dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Status:</dt>
                           <dd><span class="inline-block px-3 py-1 text-xs rounded-full font-bold ${this.statusBadge(
-                            project.status
-                          )}">${project.status || "N/A"}</span></dd>
-                        </div>
-                        <div class="flex justify-between">
-                          <dt class="text-gray-500">Partner:</dt>
-                          <dd class="text-gray-900">${
-                            project.partner || "N/A"
-                          }</dd>
+									project.status
+								)}">${project.status || "N/A"}</span></dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Budget:</dt>
                           <dd class="font-bold text-green-700">KES ${(
-                            project.budget || 0
-                          ).toLocaleString()}</dd>
+									project.budget || 0
+								).toLocaleString()}</dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Start Date:</dt>
-                          <dd class="text-gray-900">${
-                            project.startDate || "N/A"
-                          }</dd>
+                          <dd class="text-gray-900">${project.startDate || "N/A"
+								}</dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">End Date:</dt>
-                          <dd class="text-gray-900">${
-                            project.endDate || "N/A"
-                          }</dd>
+                          <dd class="text-gray-900">${project.endDate || "N/A"
+								}</dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Activity Type:</dt>
-                          <dd class="text-gray-900">${
-                            project.activityType || "N/A"
-                          }</dd>
+                          <dd class="text-gray-900">${project.activityType || "N/A"
+								}</dd>
                         </div>
                         <div class="flex justify-between">
                           <dt class="text-gray-500">Category:</dt>
-                          <dd class="text-gray-900">${
-                            project.projectCategory || "N/A"
-                          }</dd>
+                          <dd class="text-gray-900">${project.projectCategory || "N/A"
+								}</dd>
                         </div>
                       </dl>
                       
@@ -1719,9 +1722,8 @@
                           </div>
                           <div class="text-gray-900 flex items-center text-sm">
                             <i class="fas fa-envelope mr-2 w-4 text-center text-gray-400"></i>
-                            <a href="mailto:${
-                              project.contactPersonEmail
-                            }" class="text-blue-600 hover:text-blue-800">
+                            <a href="mailto:${project.contactPersonEmail
+								}" class="text-blue-600 hover:text-blue-800">
                               ${project.contactPersonEmail || "N/A"}
                             </a>
                           </div>
@@ -1730,109 +1732,109 @@
                     </div>
                   </div>
                 `;
-              } else {
-                content.innerHTML =
-                  '<p class="text-red-600">Failed to load project details.</p>';
-              }
-            } catch (error) {
-              console.error("Error loading project details:", error);
-              content.innerHTML =
-                '<p class="text-red-600">Error loading project details: ' +
-                error.message +
-                "</p>";
-            }
-          },
+						} else {
+							content.innerHTML =
+								'<p class="text-red-600">Failed to load project details.</p>';
+						}
+					} catch (error) {
+						console.error("Error loading project details:", error);
+						content.innerHTML =
+							'<p class="text-red-600">Error loading project details: ' +
+							error.message +
+							"</p>";
+					}
+				},
 
-          statusBadge(tag) {
-            const badges = {
-              active: "bg-green-200 text-green-800",
-              pending: "bg-yellow-200 text-yellow-800",
-              stalled: "bg-red-200 text-red-800",
-              completed: "bg-cyan-300 text-gray-800",
-            };
-            return badges[tag] || "bg-gray-200 text-gray-800";
-          },
+				statusBadge(tag) {
+					const badges = {
+						active: "bg-green-200 text-green-800",
+						pending: "bg-yellow-200 text-yellow-800",
+						stalled: "bg-red-200 text-red-800",
+						completed: "bg-cyan-300 text-gray-800",
+					};
+					return badges[tag] || "bg-gray-200 text-gray-800";
+				},
 
-          getFileIcon(fileType) {
-            const lowerType = (fileType || "").toLowerCase();
-            if (lowerType.includes("pdf")) return "fa-file-pdf text-red-600";
-            if (lowerType.includes("word") || lowerType.includes("doc"))
-              return "fa-file-word text-blue-600";
-            if (
-              lowerType.includes("excel") ||
-              lowerType.includes("xls") ||
-              lowerType.includes("sheet")
-            )
-              return "fa-file-excel text-green-600";
-            if (lowerType.includes("powerpoint") || lowerType.includes("ppt"))
-              return "fa-file-powerpoint text-orange-600";
-            return "fa-file text-gray-600";
-          },
+				getFileIcon(fileType) {
+					const lowerType = (fileType || "").toLowerCase();
+					if (lowerType.includes("pdf")) return "fa-file-pdf text-red-600";
+					if (lowerType.includes("word") || lowerType.includes("doc"))
+						return "fa-file-word text-blue-600";
+					if (
+						lowerType.includes("excel") ||
+						lowerType.includes("xls") ||
+						lowerType.includes("sheet")
+					)
+						return "fa-file-excel text-green-600";
+					if (lowerType.includes("powerpoint") || lowerType.includes("ppt"))
+						return "fa-file-powerpoint text-orange-600";
+					return "fa-file text-gray-600";
+				},
 
-          async fetchProjectDocuments(projectId) {
-            try {
-              console.log(
-                `[Documents] Fetching documents for project ID: ${projectId}`
-              );
-              const token =
-                localStorage.getItem("accessToken") ||
-                localStorage.getItem("token");
+				async fetchProjectDocuments(projectId) {
+					try {
+						console.log(
+							`[Documents] Fetching documents for project ID: ${projectId}`
+						);
+						const token =
+							localStorage.getItem("accessToken") ||
+							localStorage.getItem("token");
 
-              if (!token) {
-                console.error("[Documents] No authentication token found");
-                return null;
-              }
+						if (!token) {
+							console.error("[Documents] No authentication token found");
+							return null;
+						}
 
-              const response = await fetch(
-                `${window.BASE_URL}/api/projects/${projectId}/documents`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+						const response = await fetch(
+							`${window.BASE_URL}/api/projects/${projectId}/documents`,
+							{
+								method: "GET",
+								headers: {
+									Authorization: `Bearer ${token}`,
+									"Content-Type": "application/json",
+								},
+							}
+						);
 
-              console.log(`[Documents] Response status:`, response.status);
+						console.log(`[Documents] Response status:`, response.status);
 
-              if (response.ok) {
-                const data = await response.json();
-                console.log(`[Documents] Response data:`, data);
+						if (response.ok) {
+							const data = await response.json();
+							console.log(`[Documents] Response data:`, data);
 
-                if (data.status === 200 && data.data) {
-                  console.log(
-                    `[Documents] Found ${data.data.length} documents for project ${projectId}`
-                  );
-                  return data.data;
-                } else {
-                  console.log(
-                    `[Documents] API returned non-200 status or no data:`,
-                    data
-                  );
-                }
-              } else {
-                console.warn(
-                  `[Documents] API call failed with status ${response.status}`
-                );
-                try {
-                  const errorData = await response.json();
-                  console.error(`[Documents] Error details:`, errorData);
-                } catch (e) {
-                  // Can't parse error response
-                }
-                return null;
-              }
-              return [];
-            } catch (error) {
-              console.error("[Documents] Error fetching documents:", error);
-              return null;
-            }
-          },
+							if (data.status === 200 && data.data) {
+								console.log(
+									`[Documents] Found ${data.data.length} documents for project ${projectId}`
+								);
+								return data.data;
+							} else {
+								console.log(
+									`[Documents] API returned non-200 status or no data:`,
+									data
+								);
+							}
+						} else {
+							console.warn(
+								`[Documents] API call failed with status ${response.status}`
+							);
+							try {
+								const errorData = await response.json();
+								console.error(`[Documents] Error details:`, errorData);
+							} catch (e) {
+								// Can't parse error response
+							}
+							return null;
+						}
+						return [];
+					} catch (error) {
+						console.error("[Documents] Error fetching documents:", error);
+						return null;
+					}
+				},
 
-          renderDocuments(documents, projectId) {
-            if (documents === null) {
-              return `<div class="p-3 bg-amber-50 border border-amber-200 rounded">
+				renderDocuments(documents, projectId) {
+					if (documents === null) {
+						return `<div class="p-3 bg-amber-50 border border-amber-200 rounded">
                 <p class="text-sm text-amber-800 flex items-center">
                   <i class="fas fa-exclamation-triangle mr-2"></i>
                   Unable to load documents at this time. The server encountered an error.
@@ -1841,270 +1843,222 @@
                   This project may have documents, but they cannot be retrieved right now.
                 </p>
               </div>`;
-            }
+					}
 
-            if (!documents || documents.length === 0) {
-              return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';
-            }
+					if (!documents || documents.length === 0) {
+						return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';
+					}
 
-            return documents
-              .map(
-                (doc) => `
+					return documents
+						.map(
+							(doc) => `
               <div class="flex items-center justify-between py-2 border-b border-gray-100 hover:bg-gray-50 px-2 rounded">
                 <div class="flex items-center space-x-3">
                   <i class="fas ${this.getFileIcon(doc.fileType)} text-xl"></i>
                   <div>
-                    <p class="text-sm font-medium text-gray-800">${
-                      doc.fileName
-                    }</p>
+                    <p class="text-sm font-medium text-gray-800">${doc.fileName
+								}</p>
                     <p class="text-xs text-gray-500">${this.formatFileSize(
-                      doc.fileSize || doc.size
-                    )}</p>
+									doc.fileSize || doc.size
+								)}</p>
                   </div>
                 </div>
                 <div class="flex gap-2">
                   <button 
-                     onclick="viewProjectDocument(${projectId}, ${doc.id}, '${
-                  doc.fileName
-                }')"
+                     onclick="viewProjectDocument(${projectId}, ${doc.id}, '${doc.fileName
+								}')"
                      class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition">
                       <i class="fas fa-eye mr-1"></i>View
                   </button>
                   <button 
-                     onclick="downloadProjectDocument(${projectId}, ${
-                  doc.id
-                }, '${doc.fileName}')"
+                     onclick="downloadProjectDocument(${projectId}, ${doc.id
+								}, '${doc.fileName}')"
                      class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
                       <i class="fas fa-download mr-1"></i>Download
                   </button>
                 </div>
               </div>
             `
-              )
-              .join("");
-          },
+						)
+						.join("");
+				},
 
-          formatFileSize(bytes) {
-            if (!bytes) return "Unknown size";
-            if (bytes < 1024) return bytes + " B";
-            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-            return (bytes / 1048576).toFixed(1) + " MB";
-          },
+				formatFileSize(bytes) {
+					if (!bytes) return "Unknown size";
+					if (bytes < 1024) return bytes + " B";
+					if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+					return (bytes / 1048576).toFixed(1) + " MB";
+				},
 
-          async apiCall(endpoint, method = "GET", body = null) {
-            const token = localStorage.getItem("accessToken");
-            const options = {
-              method,
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            };
+				async apiCall(endpoint, method = "GET", body = null) {
+					const token = localStorage.getItem("accessToken");
+					const options = {
+						method,
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
+						},
+					};
 
-            if (body) {
-              options.body = JSON.stringify(body);
-            }
+					if (body) {
+						options.body = JSON.stringify(body);
+					}
 
-            console.log(`API Call: ${method} ${endpoint}`, body);
+					console.log(`API Call: ${method} ${endpoint}`, body);
 
-            try {
-              const response = await fetch(
-                `${window.BASE_URL}${endpoint}`,
-                options
-              );
-              console.log(
-                `API Response: ${response.status} ${response.statusText}`
-              );
+					try {
+						const response = await fetch(
+							`${window.BASE_URL}${endpoint}`,
+							options
+						);
+						console.log(
+							`API Response: ${response.status} ${response.statusText}`
+						);
 
-              const data = await response.json();
-              console.log("API Data:", data);
+						const data = await response.json();
+						console.log("API Data:", data);
 
-              if (!response.ok) {
-                console.error("API Error:", data);
-                throw new Error(data.message || "API call failed");
-              }
+						if (!response.ok) {
+							console.error("API Error:", data);
+							throw new Error(data.message || "API call failed");
+						}
 
-              return data;
-            } catch (error) {
-              console.error("API Call Exception:", error);
-              throw error;
-            }
-          },
+						return data;
+					} catch (error) {
+						console.error("API Call Exception:", error);
+						throw error;
+					}
+				},
 
-          formatDate(dateString) {
-            if (!dateString) return "N/A";
-            const date = new Date(dateString);
-            return date.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-          },
+				formatDate(dateString) {
+					if (!dateString) return "N/A";
+					const date = new Date(dateString);
+					return date.toLocaleDateString("en-US", {
+						year: "numeric",
+						month: "short",
+						day: "numeric",
+						hour: "2-digit",
+						minute: "2-digit",
+					});
+				},
 
-          getReviewerName(reviewerId) {
-            if (!reviewerId) return null;
-            // Find reviewer in the allReviewers list
-            const reviewer = this.allReviewers.find((r) => r.id === reviewerId);
-            if (reviewer) {
-              return reviewer.name || reviewer.email || `User #${reviewerId}`;
-            }
-            return null;
-          },
+				getReviewerName(reviewerId) {
+					if (!reviewerId) return null;
+					// Find reviewer in the allReviewers list
+					const reviewer = this.allReviewers.find((r) => r.id === reviewerId);
+					if (reviewer) {
+						return reviewer.name || reviewer.email || `User #${reviewerId}`;
+					}
+					return null;
+				},
 
-          getReviewType(project) {
-            // Null check
-            if (!project) return 'Initial Approval';
-            
-            // Determine what type of review/approval is being requested
-            const status = (project.status || '').toLowerCase();
-            const workflowStatus = (project.approvalWorkflowStatus || '').toUpperCase();
-            
-            // If workflow is PENDING_REVIEW or UNDER_REVIEW, check what's being requested
-            if (workflowStatus === 'PENDING_REVIEW' || workflowStatus === 'UNDER_REVIEW') {
-              if (status === 'pending') {
-                // New project initial approval
-                if (project.projectCategory === 'PAST_PROJECT') {
-                  return 'Initial Approval (Past Project → Completed)';
-                }
-                return 'Initial Approval (Pending → Active)';
-              } else if (status === 'active') {
-                // Active project requesting status change
-                // Check if there's a requested status in the project data
-                if (project.requestedStatus) {
-                  return `Status Change Request (Active → ${project.requestedStatus})`;
-                }
-                // Default: might be a general review
-                return 'Status Change Review';
-              } else if (status === 'stalled') {
-                return 'Resume Request (Stalled → Active)';
-              }
-            }
-            
-            return 'Initial Approval';
-          },
+				showToast(message, type = "success") {
+					this.toast.message = message;
+					this.toast.type = type;
+					this.toast.show = true;
+					setTimeout(() => {
+						this.toast.show = false;
+					}, 3000);
+				},
+			};
+		}
 
-          getStatusBadgeClass(status) {
-            const statusLower = (status || '').toLowerCase();
-            const classes = {
-              'pending': 'bg-yellow-100 text-yellow-800',
-              'active': 'bg-green-100 text-green-800',
-              'stalled': 'bg-orange-100 text-orange-800',
-              'completed': 'bg-blue-100 text-blue-800',
-              'abandoned': 'bg-red-100 text-red-800',
-              'rejected': 'bg-red-100 text-red-800'
-            };
-            return classes[statusLower] || 'bg-gray-100 text-gray-800';
-          },
+		// Global functions for onclick handlers
+		window.closeProjectDetailsModal = function () {
+			const modal = document.getElementById("projectDetailsModal");
+			modal.classList.add("hidden");
+		};
 
-          showToast(message, type = "success") {
-            this.toast.message = message;
-            this.toast.type = type;
-            this.toast.show = true;
-            setTimeout(() => {
-              this.toast.show = false;
-            }, 3000);
-          },
-        };
-      }
+		window.closeDocumentViewer = function () {
+			const modal = document.getElementById("documentViewerModal");
+			modal.classList.add("hidden");
+		};
 
-      // Global functions for onclick handlers
-      window.closeProjectDetailsModal = function () {
-        const modal = document.getElementById("projectDetailsModal");
-        modal.classList.add("hidden");
-      };
+		window.viewProjectDocument = async function (
+			projectId,
+			documentId,
+			fileName = "Document"
+		) {
+			const modal = document.getElementById("documentViewerModal");
+			const loadingElement = document.getElementById("documentViewerLoading");
+			const contentElement = document.getElementById("documentViewerContent");
+			const officeContentElement = document.getElementById(
+				"officeDocumentViewerContent"
+			);
+			const unsupportedElement = document.getElementById(
+				"unsupportedDocumentContent"
+			);
+			const errorElement = document.getElementById("documentViewerError");
+			const fileNameElement = document.getElementById(
+				"documentViewerFileName"
+			);
+			const downloadBtn = document.getElementById(
+				"documentViewerDownloadBtn"
+			);
 
-      window.closeDocumentViewer = function () {
-        const modal = document.getElementById("documentViewerModal");
-        modal.classList.add("hidden");
-      };
+			// Show modal
+			modal.classList.remove("hidden");
 
-      window.viewProjectDocument = async function (
-        projectId,
-        documentId,
-        fileName = "Document"
-      ) {
-        const modal = document.getElementById("documentViewerModal");
-        const loadingElement = document.getElementById("documentViewerLoading");
-        const contentElement = document.getElementById("documentViewerContent");
-        const officeContentElement = document.getElementById(
-          "officeDocumentViewerContent"
-        );
-        const unsupportedElement = document.getElementById(
-          "unsupportedDocumentContent"
-        );
-        const errorElement = document.getElementById("documentViewerError");
-        const fileNameElement = document.getElementById(
-          "documentViewerFileName"
-        );
-        const downloadBtn = document.getElementById(
-          "documentViewerDownloadBtn"
-        );
+			// Set filename in modal title
+			fileNameElement.textContent = fileName || "Document";
 
-        // Show modal
-        modal.classList.remove("hidden");
+			// Reset states - hide all containers
+			loadingElement.classList.remove("hidden");
+			contentElement.classList.add("hidden");
+			officeContentElement.classList.add("hidden");
+			unsupportedElement.classList.add("hidden");
+			errorElement.classList.add("hidden");
 
-        // Set filename in modal title
-        fileNameElement.textContent = fileName || "Document";
+			// Setup download button
+			downloadBtn.onclick = () =>
+				window.downloadProjectDocument(projectId, documentId, fileName);
 
-        // Reset states - hide all containers
-        loadingElement.classList.remove("hidden");
-        contentElement.classList.add("hidden");
-        officeContentElement.classList.add("hidden");
-        unsupportedElement.classList.add("hidden");
-        errorElement.classList.add("hidden");
+			try {
+				const token =
+					localStorage.getItem("accessToken") ||
+					localStorage.getItem("token");
+				const response = await fetch(
+					`${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
 
-        // Setup download button
-        downloadBtn.onclick = () =>
-          window.downloadProjectDocument(projectId, documentId, fileName);
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        try {
-          const token =
-            localStorage.getItem("accessToken") ||
-            localStorage.getItem("token");
-          const response = await fetch(
-            `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+				const blob = await response.blob();
+				const fileType = blob.type.toLowerCase();
 
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+				// Hide loading
+				loadingElement.classList.add("hidden");
 
-          const blob = await response.blob();
-          const fileType = blob.type.toLowerCase();
-
-          // Hide loading
-          loadingElement.classList.add("hidden");
-
-          // Handle PDF files
-          if (fileType.includes("pdf")) {
-            const url = URL.createObjectURL(blob);
-            contentElement.innerHTML = `<iframe src="${url}" class="w-full h-full" style="min-height: 600px;"></iframe>`;
-            contentElement.classList.remove("hidden");
-          }
-          // Handle images
-          else if (fileType.includes("image")) {
-            const url = URL.createObjectURL(blob);
-            contentElement.innerHTML = `<img src="${url}" class="max-w-full h-auto mx-auto" alt="${fileName}">`;
-            contentElement.classList.remove("hidden");
-          }
-          // Handle Office documents (Word, Excel, PowerPoint)
-          else if (
-            fileType.includes("word") ||
-            fileType.includes("document") ||
-            fileType.includes("sheet") ||
-            fileType.includes("excel") ||
-            fileType.includes("presentation") ||
-            fileType.includes("powerpoint")
-          ) {
-            const url = URL.createObjectURL(blob);
-            const encodedUrl = encodeURIComponent(url);
-            officeContentElement.innerHTML = `
+				// Handle PDF files
+				if (fileType.includes("pdf")) {
+					const url = URL.createObjectURL(blob);
+					contentElement.innerHTML = `<iframe src="${url}" class="w-full h-full" style="min-height: 600px;"></iframe>`;
+					contentElement.classList.remove("hidden");
+				}
+				// Handle images
+				else if (fileType.includes("image")) {
+					const url = URL.createObjectURL(blob);
+					contentElement.innerHTML = `<img src="${url}" class="max-w-full h-auto mx-auto" alt="${fileName}">`;
+					contentElement.classList.remove("hidden");
+				}
+				// Handle Office documents (Word, Excel, PowerPoint)
+				else if (
+					fileType.includes("word") ||
+					fileType.includes("document") ||
+					fileType.includes("sheet") ||
+					fileType.includes("excel") ||
+					fileType.includes("presentation") ||
+					fileType.includes("powerpoint")
+				) {
+					const url = URL.createObjectURL(blob);
+					const encodedUrl = encodeURIComponent(url);
+					officeContentElement.innerHTML = `
               <iframe 
                 src="https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}" 
                 class="w-full h-full" 
@@ -2112,16 +2066,16 @@
                 frameborder="0">
               </iframe>
             `;
-            officeContentElement.classList.remove("hidden");
-          }
-          // Unsupported file type
-          else {
-            unsupportedElement.classList.remove("hidden");
-          }
-        } catch (error) {
-          console.error("[Viewer] Error loading document:", error);
-          loadingElement.classList.add("hidden");
-          errorElement.innerHTML = `
+					officeContentElement.classList.remove("hidden");
+				}
+				// Unsupported file type
+				else {
+					unsupportedElement.classList.remove("hidden");
+				}
+			} catch (error) {
+				console.error("[Viewer] Error loading document:", error);
+				loadingElement.classList.add("hidden");
+				errorElement.innerHTML = `
             <div class="text-center text-red-600">
               <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
               <p class="text-lg font-semibold mb-2">Error loading document</p>
@@ -2132,53 +2086,54 @@
               </button>
             </div>
           `;
-          errorElement.classList.remove("hidden");
-        }
-      };
+				errorElement.classList.remove("hidden");
+			}
+		};
 
-      window.downloadProjectDocument = async function (
-        projectId,
-        documentId,
-        fileName
-      ) {
-        try {
-          const token =
-            localStorage.getItem("accessToken") ||
-            localStorage.getItem("token");
+		window.downloadProjectDocument = async function (
+			projectId,
+			documentId,
+			fileName
+		) {
+			try {
+				const token =
+					localStorage.getItem("accessToken") ||
+					localStorage.getItem("token");
 
-          const response = await fetch(
-            `${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+				const response = await fetch(
+					`${window.BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}`);
+				}
 
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        } catch (error) {
-          console.error("[Download] Error downloading document:", error);
-          alert("Failed to download document. Please try again.");
-        }
-      };
-    </script>
-    <style>
-      [x-cloak] {
-        display: none !important;
-      }
-    </style>
-  </body>
+				const blob = await response.blob();
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement("a");
+				link.href = url;
+				link.download = fileName;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+				URL.revokeObjectURL(url);
+			} catch (error) {
+				console.error("[Download] Error downloading document:", error);
+				alert("Failed to download document. Please try again.");
+			}
+		};
+	</script>
+	<style>
+		[x-cloak] {
+			display: none !important;
+		}
+	</style>
+</body>
+
 </html>
