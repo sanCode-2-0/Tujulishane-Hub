@@ -1997,7 +1997,7 @@
 
           // Send as query parameters, not JSON body
           const response = await fetch(
-            `${window.BASE_URL}/api/projects/${projectId}/collaborators?collaboratorEmail=${encodeURIComponent(user.email)}&role=COLLABORATOR`,
+            `${window.BASE_URL}/api/projects/${projectId}/collaborators?collaboratorEmail=${encodeURIComponent(user.email)}&role=EDITOR`,
             {
               method: "POST",
               headers: {
