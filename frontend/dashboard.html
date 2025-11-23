@@ -11,7 +11,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- Tailwind CSS (with custom config using inline script) -->
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS config -->
     <script>
       tailwind.config = {
         theme: {
@@ -29,13 +31,10 @@
         },
       };
     </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
-    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
@@ -56,23 +55,13 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <!-- Leaflet CSS -->
+    <!-- Mapbox CSS -->
     <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
-    <!-- Leaflet JS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN"
-      crossorigin=""
-    />
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz"
-      crossorigin=""
-    ></script>
+    <!-- Mapbox JS -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
@@ -172,8 +161,8 @@
       })();
     </script>
     <script>
-      // AuthManager instance
-      const authManager = new AuthManager();
+      // AuthManager instance is available as window.authManager
+      var authManager = window.authManager;
       let dashboardStats = {};
       let dashboardProjects = [];
       let dashboardOrgs = [];
@@ -272,15 +261,17 @@
             else if (p.organizationType === "DEVELOPMENT")
               orgTypeCounts.Development++;
           });
-          let orgChart = new ApexCharts(document.querySelector("#orgChart"), {
-            chart: { type: "donut", height: 350 },
-            series: [orgTypeCounts.Implementing, orgTypeCounts.Development],
-            labels: ["Implementing", "Development"],
-            colors: ["#A08BFB", "#FFF560"],
-            legend: { position: "bottom" },
-            dataLabels: { enabled: true },
-          });
-          orgChart.render();
+          if (document.querySelector("#orgChart")) {
+            let orgChart = new ApexCharts(document.querySelector("#orgChart"), {
+              chart: { type: "donut", height: 350 },
+              series: [orgTypeCounts.Implementing, orgTypeCounts.Development],
+              labels: ["Implementing", "Development"],
+              colors: ["#A08BFB", "#FFF560"],
+              legend: { position: "bottom" },
+              dataLabels: { enabled: true },
+            });
+            orgChart.render();
+          }
 
           // Bar chart (by topic)
           let topicCounts = {};
@@ -289,39 +280,35 @@
           });
           let topics = Object.keys(topicCounts);
           let topicVals = topics.map((t) => topicCounts[t]);
-          let barChart = new ApexCharts(document.querySelector("#barChart"), {
-            chart: { type: "bar", height: 400 },
-            series: [{ name: "Projects", data: topicVals }],
-            xaxis: { categories: topics },
-            legend: { position: "top" },
-          });
-          barChart.render();
+          if (document.querySelector("#barChart")) {
+            let barChart = new ApexCharts(document.querySelector("#barChart"), {
+              chart: { type: "bar", height: 400 },
+              series: [{ name: "Projects", data: topicVals }],
+              xaxis: { categories: topics },
+              legend: { position: "top" },
+            });
+            barChart.render();
+          }
         }
       }
 
       function renderMap() {
-        // Remove static markers, use dashboardMapProjects
-        if (!window.L) return;
-        let map = L.map("kenyaMap", {
-          center: [-0.0236, 37.9062],
-          zoom: 6.3,
-          scrollWheelZoom: false,
-          dragging: true,
-          touchZoom: false,
-          doubleClickZoom: true,
-          boxZoom: false,
-          keyboard: false,
-          zoomControl: true,
-        });
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
+        // Add markers for dashboardMapProjects
         dashboardMapProjects.forEach((p) => {
           if (p.latitude && p.longitude) {
-            L.marker([p.latitude, p.longitude])
-              .addTo(map)
-              .bindTooltip(p.name || p.title || "Project");
+            const el = document.createElement("div");
+            el.className = "marker";
+            el.style.backgroundColor = "#22c55e"; // green for active
+            el.style.width = "20px";
+            el.style.height = "20px";
+            el.style.borderRadius = "50%";
+            el.style.border = "2px solid white";
+            el.style.cursor = "pointer";
+            el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+
+            new mapboxgl.Marker(el)
+              .setLngLat([p.longitude, p.latitude])
+              .addTo(map);
           }
         });
       }
@@ -903,31 +890,27 @@
                       let mapInitialized = false;
                       function initMapPicker() {
                         if (mapInitialized) return;
-                        mapPicker = L.map("newProjectMap", {
-                          center: [-0.0236, 37.9062],
+                        mapPicker = new mapboxgl.Map({
+                          container: "newProjectMap",
+                          style: "mapbox://styles/mapbox/streets-v11",
+                          center: [37.9062, -0.0236],
                           zoom: 6.3,
-                          scrollWheelZoom: true,
-                          dragging: true,
-                          doubleClickZoom: true,
-                          boxZoom: true,
-                          keyboard: true,
-                          zoomControl: true,
                         });
-                        L.tileLayer(
-                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                          {
-                            maxZoom: 19,
-                            attribution: "&copy; OpenStreetMap contributors",
-                          }
-                        ).addTo(mapPicker);
+                        mapPicker.addControl(new mapboxgl.NavigationControl(), "top-right");
                         mapPicker.on("click", function (e) {
-                          if (markerPicker) mapPicker.removeLayer(markerPicker);
-                          markerPicker = L.marker(e.latlng).addTo(mapPicker);
-                          latInput.value = e.latlng.lat;
-                          lngInput.value = e.latlng.lng;
-                          latLngDisplay.textContent = `${e.latlng.lat.toFixed(
-                            5
-                          )}, ${e.latlng.lng.toFixed(5)}`;
+                          if (markerPicker) markerPicker.remove();
+                          const el = document.createElement("div");
+                          el.style.backgroundColor = "#ef4444";
+                          el.style.width = "20px";
+                          el.style.height = "20px";
+                          el.style.borderRadius = "50%";
+                          el.style.border = "2px solid white";
+                          markerPicker = new mapboxgl.Marker(el)
+                            .setLngLat(e.lngLat)
+                            .addTo(mapPicker);
+                          latInput.value = e.lngLat.lat;
+                          lngInput.value = e.lngLat.lng;
+                          latLngDisplay.textContent = `${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`;
                         });
                         mapInitialized = true;
                       }
@@ -2423,8 +2406,10 @@
         },
       };
 
-      var chart = new ApexCharts(document.querySelector("#orgChart"), options);
-      chart.render();
+      if (document.querySelector("#orgChart")) {
+        var chart = new ApexCharts(document.querySelector("#orgChart"), options);
+        chart.render();
+      }
     </script>
     <script>
       var options = {
@@ -2453,8 +2438,10 @@
         },
       };
 
-      var chart = new ApexCharts(document.querySelector("#teamChart"), options);
-      chart.render();
+      if (document.querySelector("#teamChart")) {
+        var chart = new ApexCharts(document.querySelector("#teamChart"), options);
+        chart.render();
+      }
     </script>
     <script>
       var options = {
@@ -2521,8 +2508,10 @@
         },
       };
 
-      var chart = new ApexCharts(document.querySelector("#barChart"), options);
-      chart.render();
+      if (document.querySelector("#barChart")) {
+        var chart = new ApexCharts(document.querySelector("#barChart"), options);
+        chart.render();
+      }
     </script>
 
     <script src="styles/effects.js"></script>
@@ -2568,23 +2557,29 @@
       let dateRangeFrom = null;
       let dateRangeTo = null;
 
+      function getStatusColor(status) {
+        const colors = {
+          active: "#22c55e",
+          pending: "#eab308",
+          stalled: "#ef4444",
+          abandoned: "#6b7280",
+        };
+        return colors[status] || "#6b7280";
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
-        map = L.map("kenyaMap", {
-          center: [-0.0236, 37.9062],
+        // Set Mapbox access token
+        mapboxgl.accessToken = "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+        map = new mapboxgl.Map({
+          container: "kenyaMap",
+          style: "mapbox://styles/mapbox/streets-v11",
+          center: [37.9062, -0.0236], // lng, lat
           zoom: 6.3,
-          scrollWheelZoom: false,
-          dragging: true,
-          touchZoom: false,
-          doubleClickZoom: true,
-          boxZoom: false,
-          keyboard: false,
-          zoomControl: true, // keeps the + / – buttons visible
         });
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
+        // Add zoom and rotation controls
+        map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
         const markerData = [
           { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
@@ -2651,19 +2646,24 @@
           ).toISOString();
           data.status = data.tag;
 
-          const marker = L.marker([data.lat, data.lng], {
-            icon: icons.default(data.tag),
-          })
-            .addTo(map)
-            .bindTooltip(data.name)
-            .on("click", function () {
-              if (selectedMarker && selectedMarker !== this) {
-                selectedMarker.setIcon(icons.default(selectedMarker.tag));
-              }
-              this.setIcon(icons.selected(data.tag));
-              selectedMarker = this;
-              showProjectInfo(data);
-            });
+          // Create marker element
+          const el = document.createElement("div");
+          el.className = "marker";
+          el.style.backgroundColor = getStatusColor(data.tag);
+          el.style.width = "20px";
+          el.style.height = "20px";
+          el.style.borderRadius = "50%";
+          el.style.border = "2px solid white";
+          el.style.cursor = "pointer";
+          el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat([data.lng, data.lat])
+            .addTo(map);
+
+          el.addEventListener("click", () => {
+            showProjectInfo(data);
+          });
 
           marker.data = data;
           marker.tag = data.tag;
@@ -2672,31 +2672,39 @@
 
         highlightMarkers("all");
 
-        document
-          .getElementById("searchInput")
-          .addEventListener("input", (e) => {
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
             searchQuery = e.target.value.trim().toLowerCase();
             currentPage = 1;
             highlightMarkers(currentFilter);
           });
+        }
 
-        document.getElementById("dateFrom").addEventListener("change", (e) => {
-          dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-          currentPage = 1;
-          highlightMarkers(currentFilter);
-        });
+        const dateFrom = document.getElementById("dateFrom");
+        if (dateFrom) {
+          dateFrom.addEventListener("change", (e) => {
+            dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+          });
+        }
 
-        document.getElementById("dateTo").addEventListener("change", (e) => {
-          dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-          currentPage = 1;
-          highlightMarkers(currentFilter);
-        });
+        const dateTo = document.getElementById("dateTo");
+        if (dateTo) {
+          dateTo.addEventListener("change", (e) => {
+            dateRangeTo = e.target.value ? new Date(e.target.value) : null;
+            currentPage = 1;
+            highlightMarkers(currentFilter);
+          });
+        }
 
-        document
-          .getElementById("sortSelect")
-          .addEventListener("change", (e) => {
+        const sortSelect = document.getElementById("sortSelect");
+        if (sortSelect) {
+          sortSelect.addEventListener("change", (e) => {
             sortProjects(e.target.value);
           });
+        }
       });
 
       function showProjectInfo(project) {
@@ -2745,10 +2753,12 @@
         currentFilter = tag;
         const accordion = document.getElementById("projectAccordion");
         const infoBox = document.getElementById("projectInfo");
-        infoBox.classList.add("hidden");
-        accordion.innerHTML = "";
-        accordion.classList.remove("hidden");
-        accordion.classList.add("opacity-0", "translate-y-4");
+        if (infoBox) infoBox.classList.add("hidden");
+        if (accordion) {
+          accordion.innerHTML = "";
+          accordion.classList.remove("hidden");
+          accordion.classList.add("opacity-0", "translate-y-4");
+        }
 
         let filteredMarkers = markers.filter((marker) => {
           const p = marker.data;
@@ -2783,13 +2793,17 @@
         updatePaginationControls(totalPages);
 
         markers.forEach((marker) => {
-          marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
+          if (marker.getElement()) {
+            marker.getElement().style.opacity = filteredMarkers.includes(marker) ? 1 : 0.1;
+          }
         });
 
-        setTimeout(
-          () => accordion.classList.remove("opacity-0", "translate-y-4"),
-          10
-        );
+        if (accordion) {
+          setTimeout(
+            () => accordion.classList.remove("opacity-0", "translate-y-4"),
+            10
+          );
+        }
 
         paginated.forEach((marker, idx) => {
           const i = markers.indexOf(marker);
@@ -2832,7 +2846,9 @@
                 </div>
             `;
 
-          accordion.appendChild(item);
+          if (accordion) {
+            accordion.appendChild(item);
+          }
 
           item
             .querySelector(`[data-toggle="collapse-${i}"]`)
@@ -2846,6 +2862,7 @@
 
       function updatePaginationControls(totalPages) {
         const container = document.getElementById("paginationControls");
+        if (!container) return;
         container.innerHTML = "";
         for (let i = 1; i <= totalPages; i++) {
           const btn = document.createElement("button");
