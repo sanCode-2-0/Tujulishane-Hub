@@ -15,6 +15,7 @@ public class ProjectResponse {
     private String projectNo;
     private String partner;
     private String partnerName;
+    private String createdByRole;
     private String title;
     private ProjectCategory projectCategory;
     private LocalDate startDate;
@@ -68,6 +69,14 @@ public class ProjectResponse {
 
     public void setPartnerName(String partnerName) {
         this.partnerName = partnerName;
+    }
+
+    public String getCreatedByRole() {
+        return createdByRole;
+    }
+
+    public void setCreatedByRole(String createdByRole) {
+        this.createdByRole = createdByRole;
     }
 
     public String getTitle() {

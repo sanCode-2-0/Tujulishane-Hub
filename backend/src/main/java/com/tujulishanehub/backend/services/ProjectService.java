@@ -466,6 +466,7 @@ public class ProjectService {
             Optional<User> partnerUser = userService.findByEmail(project.getPartner());
             if (partnerUser.isPresent()) {
                 response.setPartnerName(partnerUser.get().getName());
+                response.setCreatedByRole(partnerUser.get().getRole().name());
             }
             response.setTitle(project.getTitle());
             response.setProjectCategory(project.getProjectCategory());
