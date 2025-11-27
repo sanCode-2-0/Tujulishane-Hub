@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,14 @@ public class ProjectController {
                     doc.setFileSize(file.getSize()); // Store file size
                     doc.setData(file.getBytes());
                     doc.setProject(createdProject);
+                    
+                    // Set additional fields
+                    User currentUser = userService.findByEmail(userEmail).orElse(null);
+                    doc.setUploadedBy(currentUser);
+                    LocalDateTime now = LocalDateTime.now();
+                    doc.setUploadDate(now);
+                    doc.setCreatedAt(now);
+                    
                     projectDocumentRepository.save(doc);
                 }
             }

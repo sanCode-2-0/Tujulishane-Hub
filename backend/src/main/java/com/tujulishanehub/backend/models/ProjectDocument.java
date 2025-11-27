@@ -1,6 +1,7 @@
 package com.tujulishanehub.backend.models;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class ProjectDocument {
@@ -20,6 +21,19 @@ public class ProjectDocument {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploaded_by")
+    private User uploadedBy;
+
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus status = DocumentStatus.ACTIVE;
+
+    @Column(name = "upload_date")
+    private LocalDateTime uploadDate;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -38,4 +52,16 @@ public class ProjectDocument {
 
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
+
+    public User getUploadedBy() { return uploadedBy; }
+    public void setUploadedBy(User uploadedBy) { this.uploadedBy = uploadedBy; }
+
+    public DocumentStatus getStatus() { return status; }
+    public void setStatus(DocumentStatus status) { this.status = status; }
+
+    public LocalDateTime getUploadDate() { return uploadDate; }
+    public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

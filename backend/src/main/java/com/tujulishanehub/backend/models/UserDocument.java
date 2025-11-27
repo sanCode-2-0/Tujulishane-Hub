@@ -12,8 +12,9 @@ public class UserDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "file_name", nullable = false)
     private String fileName;
@@ -28,12 +29,25 @@ public class UserDocument {
     @JdbcTypeCode(SqlTypes.VARBINARY)
     private byte[] fileData;
 
-    @Column(name = "uploaded_at", nullable = false, updatable = false)
-    private LocalDateTime uploadedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploaded_by")
+    private User uploadedBy;
+
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus status = DocumentStatus.ACTIVE;
+
+    @Column(name = "upload_date")
+    private LocalDateTime uploadDate;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        uploadedAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        if (uploadDate == null) {
+            uploadDate = createdAt;
+        }
     }
 
     // Getters and setters
@@ -45,12 +59,12 @@ public class UserDocument {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getFileName() {
@@ -85,11 +99,35 @@ public class UserDocument {
         this.fileData = fileData;
     }
 
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
+    public User getUploadedBy() {
+        return uploadedBy;
     }
 
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
+    public void setUploadedBy(User uploadedBy) {
+        this.uploadedBy = uploadedBy;
+    }
+
+    public DocumentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocumentStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(LocalDateTime uploadDate) {
+        this.uploadDate = uploadDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

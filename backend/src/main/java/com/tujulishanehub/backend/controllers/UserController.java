@@ -19,12 +19,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,11 +105,17 @@ public class UserController {
                     for (MultipartFile file : documents) {
                         if (!file.isEmpty()) {
                             UserDocument document = new UserDocument();
-                            document.setUserId(registeredUser.getId());
+                            document.setUser(registeredUser);
                             document.setFileName(file.getOriginalFilename());
                             document.setFileType(file.getContentType());
                             document.setFileSize(file.getSize());
                             document.setFileData(file.getBytes());
+                            
+                            // Set additional fields
+                            document.setUploadedBy(registeredUser); // User uploads their own documents
+                            LocalDateTime now = LocalDateTime.now();
+                            document.setUploadDate(now);
+                            document.setCreatedAt(now);
                             
                             userDocumentRepository.save(document);
                             logger.info("Saved supporting document: {} for user: {}", file.getOriginalFilename(), email);
@@ -1088,7 +1096,7 @@ public class UserController {
                     metadata.put("fileName", doc.getFileName());
                     metadata.put("fileType", doc.getFileType());
                     metadata.put("fileSize", doc.getFileSize() != null ? doc.getFileSize() : 0);
-                    metadata.put("uploadedAt", doc.getUploadedAt() != null ? doc.getUploadedAt().toString() : null);
+                    metadata.put("uploadedAt", doc.getCreatedAt() != null ? doc.getCreatedAt().toString() : null);
                     metadata.put("documentType", doc.getFileName()); // Using fileName as documentType for now
                     return metadata;
                 })
@@ -1139,7 +1147,7 @@ public class UserController {
             UserDocument document = documentOpt.get();
             
             // Verify the document belongs to the specified user
-            if (!document.getUserId().equals(userId)) {
+            if (!document.getUser().getId().equals(userId)) {
                 logger.warn("Document {} does not belong to user {}", documentId, userId);
                 ApiResponse<Void> response = new ApiResponse<>(
                     HttpStatus.BAD_REQUEST.value(),
@@ -1194,7 +1202,7 @@ public class UserController {
             UserDocument document = documentOpt.get();
             
             // Verify the document belongs to the specified user
-            if (!document.getUserId().equals(userId)) {
+            if (!document.getUser().getId().equals(userId)) {
                 logger.warn("Document {} does not belong to user {}", documentId, userId);
                 ApiResponse<Void> response = new ApiResponse<>(
                     HttpStatus.BAD_REQUEST.value(),
