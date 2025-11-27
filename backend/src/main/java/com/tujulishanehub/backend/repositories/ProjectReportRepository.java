@@ -194,4 +194,10 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
      */
     @Query("SELECT COUNT(r) > 0 FROM ProjectReport r WHERE r.project.id = :projectId AND r.reportStatus = 'PUBLISHED'")
     boolean hasPublishedReports(@Param("projectId") Long projectId);
+    
+    /**
+     * Find all reports with relationships for admin dashboard
+     */
+    @Query("SELECT r FROM ProjectReport r LEFT JOIN FETCH r.project p ORDER BY r.createdAt DESC")
+    List<ProjectReport> findAllWithRelationships();
 }

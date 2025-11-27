@@ -660,6 +660,10 @@ function renderTable(tabId, data, columns) {
           value = date.toLocaleDateString('en-GB') + ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         }
       }
+      // Format file sizes
+      if (col === 'size' && value) {
+        value = formatFileSize(value);
+      }
       td.textContent = value;
       row.appendChild(td);
     });
@@ -673,6 +677,14 @@ function renderTable(tabId, data, columns) {
 
 function getNestedValue(obj, path) {
   return path.split('.').reduce((current, key) => current && current[key], obj);
+}
+
+function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 async function fetchProjects() {
@@ -1031,7 +1043,7 @@ async function fetchPastProjects() {
 
 async function fetchProjectReports() {
   try {
-    const response = await apiFetch('/api/reports/admin/review');
+    const response = await apiFetch('/api/project-reports');
     if (!response.ok) throw new Error('Failed to fetch project reports');
     const data = await response.json();
     const reports = data.data?.projectReports || data.data?.content || data.data || data;
@@ -1039,7 +1051,7 @@ async function fetchProjectReports() {
       console.error('Project reports data not array:', reports);
       return;
     }
-    renderTable('tab-projectreports', reports, ['title', 'project.title', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
+    renderTable('tab-projectreports', reports, ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
     filterInputs.forEach(input => {

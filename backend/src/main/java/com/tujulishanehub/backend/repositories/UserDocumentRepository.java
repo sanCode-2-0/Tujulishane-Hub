@@ -14,6 +14,6 @@ public interface UserDocumentRepository extends JpaRepository<UserDocument, Long
     /**
      * Get all user documents with relationships loaded for admin dashboard
      */
-    @Query("SELECT d FROM UserDocument d JOIN FETCH d.user u JOIN FETCH d.uploadedBy ub WHERE d.status = 'ACTIVE'")
+    @Query("SELECT d FROM UserDocument d LEFT JOIN FETCH d.user u LEFT JOIN FETCH d.uploadedBy ub WHERE d.status = 'ACTIVE'")
     List<UserDocument> findAllActiveWithRelationships();
 }

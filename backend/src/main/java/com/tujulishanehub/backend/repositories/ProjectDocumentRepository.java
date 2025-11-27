@@ -21,7 +21,7 @@ public interface ProjectDocumentRepository extends JpaRepository<ProjectDocument
     /**
      * Get all project documents with relationships loaded for admin dashboard
      */
-    @Query("SELECT d FROM ProjectDocument d JOIN FETCH d.project p JOIN FETCH d.uploadedBy u WHERE d.status = 'ACTIVE'")
+    @Query("SELECT d FROM ProjectDocument d LEFT JOIN FETCH d.project p LEFT JOIN FETCH d.uploadedBy u WHERE d.status = 'ACTIVE'")
     List<ProjectDocument> findAllActiveWithRelationships();
 }
 
