@@ -1,9 +1,14 @@
 package com.tujulishanehub.backend.controllers;
 
 import com.tujulishanehub.backend.models.Announcement;
+import com.tujulishanehub.backend.models.Message;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.payload.AnnouncementRequest;
+import com.tujulishanehub.backend.payload.MessageRequest;
 import com.tujulishanehub.backend.services.AnnouncementService;
+import com.tujulishanehub.backend.services.MessageService;
+import com.tujulishanehub.backend.services.UserService;
+import com.tujulishanehub.backend.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,12 @@ public class AnnouncementController {
     
     @Autowired
     private AnnouncementService announcementService;
+    
+    @Autowired
+    private MessageService messageService;
+    
+    @Autowired
+    private UserService userService;
     
     /**
      * Create new announcement (Partners only)
@@ -192,6 +203,79 @@ public class AnnouncementController {
             ApiResponse<Object> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Failed to close announcement",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @GetMapping("/{id}/messages")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<Message>>> getMessages(@PathVariable Long id) {
+        try {
+            Announcement announcement = announcementService.getAnnouncementById(id).orElse(null);
+            if (announcement == null) {
+                ApiResponse<List<Message>> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Announcement not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            List<Message> messages = messageService.getMessagesForAnnouncement(announcement);
+            
+            ApiResponse<List<Message>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Messages retrieved successfully",
+                messages
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving messages: {}", e.getMessage(), e);
+            ApiResponse<List<Message>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve messages",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @PostMapping("/{id}/messages")
+    @PreAuthorize("hasRole('SUPER_ADMIN_REVIEWER')")
+    public ResponseEntity<ApiResponse<Message>> sendMessage(
+            @PathVariable Long id,
+            @Valid @RequestBody MessageRequest request) {
+        try {
+            Announcement announcement = announcementService.getAnnouncementById(id).orElse(null);
+            if (announcement == null) {
+                ApiResponse<Message> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Announcement not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            
+            Message message = messageService.saveMessage(request.getMessage(), userService.getUserByEmail(userEmail), announcement);
+            
+            ApiResponse<Message> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Message sent successfully",
+                message
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+        } catch (Exception e) {
+            logger.error("Error sending message: {}", e.getMessage(), e);
+            ApiResponse<Message> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to send message",
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

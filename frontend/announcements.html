@@ -96,7 +96,7 @@
     </style>
   </head>
 
-  <body class="bg-gray-50">
+  <body x-data="announcementsApp()" x-init="init()" class="bg-gray-50">
     <!-- Define announcementsApp before Alpine initializes -->
     <script>
       window.announcementsApp = function announcementsApp() {
@@ -105,6 +105,18 @@
           myProjects: [],
           organizations: [],
           myCollaborationRequests: [], // Track user's submitted requests
+          chatMessages: [],
+          sendingMessage: false,
+          newMessage: "",
+          searchText: "",
+          filterStatus: "",
+          sortOrder: "NEWEST",
+          activeSlide: 0,
+          media: [
+            { type: 'image', src: 'resources/images/main-1.jpg' },
+            { type: 'image', src: 'resources/images/main-2.jpg' },
+            { type: 'image', src: 'resources/images/main-3.jpg' }
+          ],
           loading: true,
           creating: false,
           submitting: false,
@@ -466,6 +478,7 @@
           viewDetails(announcement) {
             this.selectedAnnouncement = announcement;
             this.showDetailsModal = true;
+            this.loadChatMessages(announcement.id);
           },
 
           requestCollaboration(announcement) {
@@ -619,23 +632,66 @@
 
             return hasRequested;
           },
+
+          isDeadlineImminent(deadline) {
+            if (!deadline) return false;
+            const now = new Date();
+            const deadlineDate = new Date(deadline);
+            const diffTime = deadlineDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays <= 7 && diffDays >= 0; // Imminent if within 7 days and not past
+          },
+
+          async loadChatMessages(announcementId) {
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(`${window.BASE_URL}/api/announcements/${announcementId}/messages`, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (response.ok) {
+                const data = await response.json();
+                this.chatMessages = data.data || [];
+              }
+            } catch (error) {
+              console.error("Error loading chat messages:", error);
+            }
+          },
+
+          async sendMessage() {
+            if (!this.newMessage.trim()) return;
+            this.sendingMessage = true;
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ message: this.newMessage })
+              });
+              if (response.ok) {
+                this.newMessage = "";
+                await this.loadChatMessages(this.selectedAnnouncement.id);
+              } else {
+                await showAlert("Failed to send message", "Error", "error");
+              }
+            } catch (error) {
+              console.error("Error sending message:", error);
+              await showAlert("Failed to send message", "Error", "error");
+            } finally {
+              this.sendingMessage = false;
+            }
+          },
         };
       };
     </script>
     <div class="" id="nav-placeholder"></div>
-    <div x-data="announcementsApp()" x-init="init()">
+    <div>
       <!-- Main Content -->
       <section class="relative z-0 overflow-hidden" id="top">
         <div class="w-full overflow-hidden">
           <div
-            x-data="{
-						activeSlide: 0,
-						media: [
-						{ type: 'image', src: 'resources/images/main-1.jpg' },
-						{ type: 'image', src: 'resources/images/main-2.jpg' },
-						{ type: 'image', src: 'resources/images/main-3.jpg' }
-						]
-					}"
             x-init="setInterval(() => { activeSlide = (activeSlide + 1) % media.length }, 7000)"
             class="relative w-full min-h-[75vh] md:h-[50vh] flex flex-col justify-end"
           >
@@ -925,14 +981,10 @@
                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
                 :disabled="myProjects.length === 0"
               >
-                <option value="">
-                  <template x-if="myProjects.length === 0">
-                    -- No projects available. Create a project first --
-                  </template>
-                  <template x-if="myProjects.length > 0">
-                    -- Select a project --
-                  </template>
-                </option>
+                <option
+                  x-text="myProjects.length === 0 ? '-- No projects available. Create a project first --' : '-- Select a project --'"
+                  value=""
+                >
                 <template x-for="project in myProjects" :key="project.id">
                   <option
                     :value="project.id"
@@ -1184,6 +1236,41 @@
                 As an admin, you manage collaboration requests but cannot create
                 them. Only Partner users can request collaboration.
               </p>
+            </div>
+
+            <!-- Chat Section -->
+            <div x-show="hasAlreadyRequested(selectedAnnouncement) || userRole === 'SUPER_ADMIN_REVIEWER'" class="mt-6 border-t pt-4">
+              <h4 class="font-semibold text-gray-700 mb-4">Chat</h4>
+              <div class="space-y-2 max-h-64 overflow-y-auto mb-4">
+                <template x-for="msg in chatMessages" :key="msg.id">
+                  <div class="bg-gray-100 p-3 rounded-lg">
+                    <p class="text-gray-800" x-text="msg.message"></p>
+                    <small class="text-gray-500" x-text="(msg.sender?.name || 'Unknown') + ' - ' + new Date(msg.createdAt || msg.timestamp).toLocaleString()"></small>
+                  </div>
+                </template>
+                <div x-show="chatMessages.length === 0" class="text-gray-500 text-center py-4">
+                  No messages yet.
+                </div>
+              </div>
+              <div x-show="userRole === 'SUPER_ADMIN_REVIEWER'">
+                <form @submit.prevent="sendMessage()">
+                  <textarea
+                    x-model="newMessage"
+                    required
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary resize-none"
+                    rows="3"
+                    placeholder="Type your message about this theme..."
+                  ></textarea>
+                  <button
+                    type="submit"
+                    :disabled="sendingMessage || !newMessage.trim()"
+                    class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span x-show="!sendingMessage">Send Message</span>
+                    <span x-show="sendingMessage"><i class="fas fa-spinner fa-spin mr-2"></i>Sending...</span>
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
