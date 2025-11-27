@@ -5,9 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Tailwind CSS (with custom config using inline script) -->
     <script>
         tailwind.config = {
@@ -347,7 +344,7 @@
     <script>
         // Global state for selected files (accessible by validateBeforeSubmit)
         window.selectedFiles = [];
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Element References
             const fileUploadArea = document.getElementById('fileUploadArea');
@@ -622,7 +619,7 @@
                     formData.append("organization", organization);
                 }
                 formData.append("accountType", accountType);
-                
+
                 if (accountType === "PARTNER" && parentDonorId) {
                     formData.append("parentDonorId", parentDonorId);
                 }
