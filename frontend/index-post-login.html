@@ -2067,8 +2067,8 @@
               : "an unspecified region";
           })()}</strong>,
 					this project ${
-            project.partner
-              ? `is supported by <strong>${project.partner}</strong>`
+            project.partnerName
+              ? `is supported by <strong>${project.partnerName}</strong>`
               : "has partners to be announced"
           } 
 					with an estimated budget of <strong>${
@@ -3439,8 +3439,8 @@
                   }</p>
                   <p><strong>Budget:</strong> ${budget}</p>
                   <p><strong>Partner:</strong> ${
-                    project.partner && project.partner !== "TBD"
-                      ? project.partner
+                    project.partnerName && project.partnerName !== "TBD"
+                      ? project.partnerName
                       : "Partner information pending"
                   }</p>
                   <p><strong>Status:</strong>

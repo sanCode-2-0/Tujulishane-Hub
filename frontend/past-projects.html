@@ -557,7 +557,7 @@
 												Partner
 											</dt>
 											<dd class="text-sm text-gray-900"
-												x-text="selectedProject?.partner || 'N/A'"></dd>
+												x-text="selectedProject?.partnerName || 'N/A'"></dd>
 										</div>
 										<div>
 											<dt class="text-sm font-medium text-gray-500">Theme</dt>
@@ -812,7 +812,7 @@
 									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
 										(project.title && project.title.toLowerCase().includes(searchTerm)) ||
 										(project.projectNo && project.projectNo.toLowerCase().includes(searchTerm)) ||
-										(project.partner && project.partner.toLowerCase().includes(searchTerm)) ||
+										(project.partnerName && project.partnerName.toLowerCase().includes(searchTerm)) ||
 										(project.objectives && project.objectives.toLowerCase().includes(searchTerm)) ||
 										(project.description && project.description.toLowerCase().includes(searchTerm))
 									);
@@ -881,7 +881,7 @@
 								if (this.filters.partner) {
 									const partnerTerm = this.filters.partner.toLowerCase();
 									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
-										project.partner && project.partner.toLowerCase().includes(partnerTerm)
+										project.partnerName && project.partnerName.toLowerCase().includes(partnerTerm)
 									);
 								}
 
@@ -1037,7 +1037,7 @@
 
 										<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500 border-t pt-3 mt-3">
 											<span class="flex items-center text-gray-700 font-medium">
-												<i class="far fa-user mr-1 text-xs"></i> ${project.partner || "N/A"}
+												<i class="far fa-user mr-1 text-xs"></i> ${project.partnerName || "N/A"}
 											</span>
 											<span class="flex items-center">
 												<i class="fas fa-map-marker-alt mr-1 text-xs"></i> ${project.locations?.[0]?.county ||
