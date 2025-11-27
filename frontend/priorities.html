@@ -254,14 +254,14 @@
                     </div>
                   </div>
                   <div class="flex flex-col items-center w-1/2 sm:w-auto">
-                    <i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
+                    <i class="fad fa-handshake text-lg lg:text-2xl"></i>
                     <div class="mt-2">
                       <span
                         id="totalStakeholdersCount"
                         class="font-bold tracking-wider"
                         >10</span
                       >
-                      <span class="font-thin">Locations</span>
+                      <span class="font-thin">Stakeholders</span>
                     </div>
                   </div>
                 </div>
@@ -618,6 +618,7 @@
         // Load projects after map is initialized
         map.on("load", () => {
           loadProjectsForMap();
+          loadProjectStatistics();
         });
 
         // Search input event listener
@@ -2056,6 +2057,254 @@
             "error"
           );
         }
+      }
+
+      // Load project statistics for counters
+      async function loadProjectStatistics() {
+        try {
+          const response = await authManager.apiCall(
+            "/api/projects/statistics",
+            "GET"
+          );
+          if (!response || !response.ok) {
+            console.error("Failed to fetch statistics, using defaults");
+            useDefaultStatistics();
+            return;
+          }
+
+          const stats = await response.json();
+          console.log("[DEBUG] Statistics loaded:", stats);
+
+          // Calculate statistics from the API response
+          if (stats.data) {
+            const data = stats.data;
+
+            // Calculate total budget and active projects by fetching all projects
+            let totalBudget = 0;
+            let activeProjects = [];
+            let regions = 0;
+            let locations = 0;
+            let projects = 0;
+            try {
+              const projectsResponse = await authManager.apiCall(
+                "/api/projects?page=0&size=1000&sortBy=id&sortDir=desc",
+                "GET"
+              );
+              if (projectsResponse.ok) {
+                const projectsData = await projectsResponse.json();
+                if (
+                  projectsData.status === 200 &&
+                  projectsData.data &&
+                  projectsData.data.projects
+                ) {
+                  const allProjects = projectsData.data.projects;
+                  activeProjects = allProjects.filter(p => p.status?.toLowerCase() === 'active');
+                  projects = activeProjects.length;
+                  console.log("[DEBUG] Active projects count:", projects);
+                  totalBudget = activeProjects.reduce((sum, project) => {
+                    return sum + (project.budget || 0);
+                  }, 0);
+                  // Calculate unique counties from active projects
+                  const countySet = new Set();
+                  activeProjects.forEach(p => {
+                    if (p.county) countySet.add(p.county);
+                  });
+                  regions = countySet.size;
+                  console.log("[DEBUG] Unique counties set:", Array.from(countySet));
+                  console.log("[DEBUG] Regions count:", regions);
+                  // Calculate projects with coordinates from statistics API
+                  locations = data.projectsWithCoordinates || locations;
+                  console.log(
+                    "[DEBUG] Active projects:", projects,
+                    "Regions:", regions,
+                    "Locations:", locations,
+                    "Total budget:", totalBudget
+                  );
+                }
+              }
+            } catch (budgetError) {
+              console.error(
+                "Error fetching projects for statistics calculation:",
+                budgetError
+              );
+              // Fallback to API stats
+              regions = data.countyCounts ? data.countyCounts.length : 0;
+              locations = data.projectsWithCoordinates || data.totalProjects || 0;
+              projects = 0;
+              totalBudget = 0;
+            }
+
+            // Calculate stakeholders count (PARTNERS and DONORS only)
+            let stakeholdersCount = 0;
+            try {
+              console.log("[DEBUG] Loading user statistics for stakeholders count...");
+              const usersResponse = await fetch(
+                `${window.BASE_URL}/api/auth/admin/users`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${authManager.getToken()}`,
+                  },
+                }
+              );
+
+              if (usersResponse.ok) {
+                const usersData = await usersResponse.json();
+                console.log("[DEBUG] Users API response status:", usersResponse.status);
+                console.log("[DEBUG] Users data loaded:", usersData);
+                console.log("[DEBUG] Users data structure:", {
+                  hasData: !!usersData.data,
+                  isArray: Array.isArray(usersData.data),
+                  dataLength: usersData.data?.length,
+                });
+
+                if (usersData.data && Array.isArray(usersData.data)) {
+                  const totalUsers = usersData.data.length;
+
+                  // Debug: Log all unique roles and organization types
+                  const roles = [...new Set(usersData.data.map((u) => u.role))];
+                  const orgTypes = [
+                    ...new Set(
+                      usersData.data
+                        .map((u) => u.organization?.organizationType)
+                        .filter(Boolean)
+                    ),
+                  ];
+                  console.log("[DEBUG] Available user roles:", roles);
+                  console.log("[DEBUG] Available organization types:", orgTypes);
+                  console.log(
+                    "[DEBUG] Sample user data:",
+                    usersData.data.slice(0, 3)
+                  );
+
+                  // Calculate stakeholders as users with PARTNER or DONOR roles
+                  const stakeholders = usersData.data.filter((user) => {
+                    return user.role === "PARTNER" || user.role === "DONOR";
+                  }).length;
+                  console.log("[DEBUG] Stakeholders calculation:", {
+                    totalUsers,
+                    stakeholders,
+                    partnerCount: usersData.data.filter((u) => u.role === "PARTNER")
+                      .length,
+                    donorCount: usersData.data.filter((u) => u.role === "DONOR")
+                      .length,
+                    filteredStakeholders: usersData.data
+                      .filter((user) => user.role === "PARTNER" || user.role === "DONOR")
+                      .map((u) => ({
+                        id: u.id,
+                        role: u.role,
+                        orgType:
+                          u.organization?.organizationType || u.organization?.type,
+                      })),
+                  });
+                  stakeholdersCount = stakeholders;
+                  console.log("[DEBUG] Final stakeholders count (PARTNERS+DONORS):", stakeholdersCount);
+                }
+              } else {
+                console.warn(
+                  "[DEBUG] Failed to load user statistics, keeping default stakeholders count of 0"
+                );
+              }
+            } catch (userError) {
+              console.error("Error fetching users for stakeholders count:", userError);
+              stakeholdersCount = 0;
+            }
+
+            // Store the statistics in a global variable
+            window.statsData = {
+              locations: locations,
+              projects: projects,
+              regions: regions,
+              users: stakeholdersCount,
+              amount: totalBudget,
+            };
+
+            console.log("[DEBUG] Calculated statsData:", window.statsData);
+
+            // Update the hero statistics display with the actual data
+            updateStatisticsDisplay(data);
+          } else {
+            console.warn("[DEBUG] No stats.data found, using defaults");
+            useDefaultStatistics();
+          }
+        } catch (error) {
+          console.error("Error loading statistics:", error);
+          useDefaultStatistics();
+        }
+      }
+
+      function updateStatisticsDisplay(stats) {
+        console.log("📊 Updating statistics display with:", stats);
+
+        // Use calculated statsData instead of API stats
+        const calculatedStats = window.statsData || {};
+
+        // Update hero section statistics
+        const totalProjectsElement =
+          document.getElementById("totalProjectsCount");
+        const totalCountiesElement =
+          document.getElementById("totalCountiesCount");
+        const totalStakeholdersElement = document.getElementById(
+          "totalStakeholdersCount"
+        );
+
+        // Calculate counties count - handle both array and object formats
+        let countiesCount = 0;
+        if (stats.countyCounts) {
+          if (Array.isArray(stats.countyCounts)) {
+            countiesCount = stats.countyCounts.length;
+          } else if (typeof stats.countyCounts === "object") {
+            countiesCount = Object.keys(stats.countyCounts).length;
+          }
+        }
+
+        if (totalProjectsElement) {
+          const projectCount = calculatedStats.projects || 0;
+          totalProjectsElement.textContent = projectCount;
+          console.log("✅ Updated total projects count:", projectCount);
+        } else {
+          console.warn("⚠️ totalProjectsElement not found");
+        }
+
+        if (totalCountiesElement) {
+          const counties = calculatedStats.regions || countiesCount;
+          totalCountiesElement.textContent = counties;
+          console.log("✅ Updated total counties count:", counties);
+        } else {
+          console.warn("⚠️ totalCountiesElement not found");
+        }
+
+        if (totalStakeholdersElement) {
+          const stakeholdersCount = calculatedStats.users || stats.totalStakeholders || 0;
+          totalStakeholdersElement.textContent = stakeholdersCount;
+          console.log(
+            "✅ Updated total stakeholders count:",
+            stakeholdersCount
+          );
+        } else {
+          console.warn("⚠️ totalStakeholdersElement not found");
+        }
+
+        console.log("📊 Hero statistics updated:", {
+          projects: calculatedStats.projects,
+          counties: calculatedStats.regions,
+          stakeholders: calculatedStats.users,
+        });
+      }
+
+      function useDefaultStatistics() {
+        console.log("[DEBUG] Using default statistics");
+        window.statsData = {
+          locations: 0,
+          projects: 0,
+          regions: 0,
+          users: 0,
+          amount: 0,
+        };
+        updateStatisticsDisplay({
+          totalProjects: 0,
+          countyCounts: [],
+          totalStakeholders: 0,
+        });
       }
     </script>
   </body>
