@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<title>Universal Dashboard</title>
+	<link rel="stylesheet" href="styles/main.css">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+		rel="stylesheet" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+		rel="stylesheet" />
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<style>
+		.material-symbols-outlined {
+			font-variation-settings:
+				'FILL' 0,
+				'wght' 400,
+				'GRAD' 0,
+				'opsz' 24
+		}
+	</style>
+
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<script src="config.js"></script>
+	<script src="auth.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#1e40af',   // Custom Blue
+						secondary: '#f59e0b', // Custom Amber
+						accent: '#10b981',    // Custom Green
+						dark: '#1f2937',      // Gray-800
+					},
+					fontFamily: {
+						sans: ['Inter', 'sans-serif'],
+					}
+				}
+			}
+		}
+	</script>
+</head>
+
+<body class="font-display ">
+	<div x-data="setup()" x-init="$refs.loading.classList.add('hidden');" @resize.window="watchScreen()">
+		<div class="flex antialiased text-gray-900 bg-gray-100">
+			<!-- Loading screen -->
+			<div x-ref="loading"
+				class="fixed h-screen inset-0 z-50 flex items-center justify-center text-2xl font-semibold text-white bg-indigo-800">
+				Loading.....
+			</div>
+
+			<!-- Sidebar -->
+			<div class="flex h-screen fixed flex-shrink-0 transition-all">
+				<div x-show="isSidebarOpen" @click="isSidebarOpen = false"
+					class="fixed inset-0 z-10 bg-black bg-opacity-50 lg:hidden"></div>
+				<div x-show="isSidebarOpen" class="fixed inset-y-0 z-10 w-16 bg-white"></div>
+
+				<!-- Mobile bottom bar -->
+				<nav aria-label="Options"
+					class="fixed inset-x-0 bottom-0 flex flex-row-reverse items-center justify-between px-4 py-2 bg-white border-t border-indigo-100 sm:hidden shadow-t rounded-t-3xl">
+					<!-- Menu button -->
+					<button
+						@click="(isSidebarOpen && currentSidebarTab == 'linksTab') ? isSidebarOpen = false : isSidebarOpen = true; currentSidebarTab = 'linksTab'"
+						class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
+						:class="(isSidebarOpen && currentSidebarTab == 'linksTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
+						<span class="sr-only">Toggle sidebar</span>
+						<svg aria-hidden="true" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+								d="M4 6h16M4 12h16M4 18h7" />
+						</svg>
+					</button>
+
+					<!-- Logo -->
+					<a href="#" class="flex">
+						<img class="w-10 h-auto" src="resources/images/log2.png" alt="K-UI" />
+						<img class="w-10 h-auto" src="resources/images/gov.png" alt="K-UI" />
+					</a>
+
+					<!-- User avatar button -->
+					<div class="relative flex items-center flex-shrink-0 p-2" x-data="{ isOpen: false }">
+						<button @click="isOpen = !isOpen; $nextTick(() => {isOpen ? $refs.userMenu.focus() : null})"
+							class="transition-opacity rounded-lg opacity-80 hover:opacity-100 focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2">
+							<img class="w-8 h-8 rounded-lg shadow-md"
+								src="https://avatars.githubusercontent.com/u/57622665?s=460&u=8f581f4c4acd4c18c33a87b3e6476112325e8b38&v=4"
+								alt="Ahmed Kamel" />
+							<span class="sr-only">User menu</span>
+						</button>
+						<div x-show="isOpen" @click.away="isOpen = false" @keydown.escape="isOpen = false"
+							x-ref="userMenu" tabindex="-1"
+							class="absolute w-48 py-1 mt-2 origin-bottom-left bg-white rounded-md shadow-lg left-10 bottom-14 focus:outline-none"
+							role="menu" aria-orientation="vertical" aria-label="user menu">
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Your Profile</a>
+
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Settings</a>
+
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Sign out</a>
+						</div>
+					</div>
+				</nav>
+
+				<!-- Left mini bar -->
+				<nav aria-label="Options"
+					class="z-20 flex-col items-center flex-shrink-0 hidden w-16 py-4 bg-primary/40 border-r-2 border-indigo-100 shadow-md sm:flex rounded-tr-3xl rounded-br-3xl">
+					<!-- Logo -->
+					<div class="flex-shrink-0 py-4">
+						<a href="#">
+							<img class="w-9 mb-4 -mt-4 h-auto" src="resources/images/log2.png" alt="K-UI" />
+							<img class="w-10 h-auto" src="resources/images/gov.png" alt="K-UI" />
+						</a>
+					</div>
+					<div class="flex flex-col items-center flex-1 p-2 space-y-4">
+						<!-- Menu button -->
+						<button
+							@click="(isSidebarOpen && currentSidebarTab == 'linksTab') ? isSidebarOpen = false : isSidebarOpen = true; currentSidebarTab = 'linksTab'"
+							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 text-black hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
+							:class="(isSidebarOpen && currentSidebarTab == 'linksTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
+							<span class="sr-only">Toggle sidebar</span>
+							<i class="far fa-home p-1"></i>
+						</button>
+						<!-- Messages button -->
+						<button
+							@click="(isSidebarOpen && currentSidebarTab == 'messagesTab') ? isSidebarOpen = false : isSidebarOpen = true; currentSidebarTab = 'messagesTab'"
+							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
+							:class="(isSidebarOpen && currentSidebarTab == 'messagesTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
+							<span class="sr-only">Toggle message panel</span>
+							<i class="far fa-comment-alt p-1"></i>
+						</button>
+						<!-- Notifications button -->
+						<button
+							@click="(isSidebarOpen && currentSidebarTab == 'notificationsTab') ? isSidebarOpen = false : isSidebarOpen = true; currentSidebarTab = 'notificationsTab'"
+							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
+							:class="(isSidebarOpen && currentSidebarTab == 'notificationsTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
+							<span class="sr-only">Toggle notifications panel</span>
+							<i class="far fa-users p-1"></i>
+						</button>
+					</div>
+
+					<!-- User avatar -->
+					<div class="relative flex items-center flex-shrink-0 p-2" x-data="{ isOpen: false }">
+						<button @click="isOpen = !isOpen; $nextTick(() => {isOpen ? $refs.userMenu.focus() : null})"
+							class="transition-opacity bg-primary p-2 rounded-lg opacity-80 hover:opacity-100 focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2">
+							<i class="far fa-user-crown text-white p-1"></i>
+							<span class="sr-only">User menu</span>
+						</button>
+						<div x-show="isOpen" @click.away="isOpen = false" @keydown.escape="isOpen = false"
+							x-ref="userMenu" tabindex="-1"
+							class="absolute w-48 py-1 mt-2 origin-bottom-left bg-white rounded-md shadow-lg left-10 bottom-14 focus:outline-none"
+							role="menu" aria-orientation="vertical" aria-label="user menu">
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Your Profile</a>
+
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Settings</a>
+
+							<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+								role="menuitem">Sign out</a>
+						</div>
+					</div>
+				</nav>
+
+				<div x-transition:enter="transform transition-transform duration-300"
+					x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+					x-transition:leave="transform transition-transform duration-300"
+					x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+					x-show="isSidebarOpen"
+					class="fixed inset-y-0 left-0 z-10 flex-shrink-0 w-64 bg-white border-r-2 border-indigo-100 shadow-lg sm:left-16 rounded-tr-3xl rounded-br-3xl sm:w-72 lg:static lg:w-64">
+
+					<nav x-show="currentSidebarTab == 'linksTab'" aria-label="Main" class="flex flex-col h-full">
+						<!-- Logo -->
+						<div class="flex items-center justify-center flex-shrink-0 py-10">
+							<a href="#" class="font-extrabold text-2xl text-primary">
+								RMNCAH
+							</a>
+						</div>
+
+						<!-- Links -->
+						<div class="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
+							<!--Pills navigation-->
+							<ul class="mb-5 flex list-none flex-col flex-wrap ps-0 md:flex-row" role="tablist"
+								data-twe-nav-ref>
+								<li role="presentation" class="flex-grow basis-0 text-center">
+									<a href="#rmncahDs"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="rmncahDashboard" data-twe-toggle="pill" data-twe-target="#rmncahDs"
+										data-twe-nav-active role="tab" aria-controls="rmncahDs" aria-selected="true">
+										Dashboard</a>
+								</li>
+								<li role="profile" class="flex-grow basis-0 text-center">
+									<a href="#tab-projects"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="rmncahProjects" data-twe-toggle="pill" data-twe-target="#tab-projects"
+										role="tab" aria-controls="tab-projects" aria-selected="false">
+										Projects</a>
+								</li>
+								<li role="profile" class="flex-grow basis-0 text-center">
+									<a href="#tab-collaboration"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="rmncahProjects" data-twe-toggle="pill" data-twe-target="#tab-collaboration"
+										role="tab" aria-controls="tab-collaboration" aria-selected="false">
+										Collaborations
+									</a>
+								</li>
+							</ul>
+
+						</div>
+					</nav>
+
+					<section x-show="currentSidebarTab == 'messagesTab'" class="px-4 py-6">
+						<!-- Logo -->
+						<div class="flex items-center justify-center flex-shrink-0 pt-10 pb-5">
+							<a href="#" class="font-bold uppercase text-lg text-primary">
+								Announcements
+							</a>
+						</div>
+
+						<!-- Links -->
+						<div class="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
+							<ul class="mb-5 flex list-none flex-col flex-wrap ps-0 md:flex-row" role="tablist"
+								data-twe-nav-ref>
+								<li role="presentation" class="flex-grow basis-0 text-center">
+									<a href="#rmncahNAs"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="announcementDashboard" data-twe-toggle="pill" data-twe-target="#rmncahNAs"
+										role="tab" aria-controls="rmncahNAs" aria-selected="false">
+										New Announcements</a>
+								</li>
+								<li role="profile" class="flex-grow basis-0 text-center">
+									<a href="#tab-announcements"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="announcementProjects" data-twe-toggle="pill"
+										data-twe-target="#tab-announcements" role="tab"
+										aria-controls="tab-announcements" aria-selected="false">
+										Past Announcements</a>
+								</li>
+							</ul>
+						</div>
+					</section>
+
+					<section x-show="currentSidebarTab == 'notificationsTab'" class="px-4 py-6">
+						<!-- Logo -->
+						<div class="flex items-center justify-center flex-shrink-0 pt-10 pb-5">
+							<a href="#" class="font-bold uppercase text-lg text-primary">
+								Members
+							</a>
+						</div>
+
+						<!-- Links -->
+						<div class="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
+							<ul class="mb-5 flex list-none flex-col flex-wrap ps-0 md:flex-row" role="tablist"
+								data-twe-nav-ref>
+								<li role="presentation" class="flex-grow basis-0 text-center">
+									<a href="#tab-users"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="tab-usersers" data-twe-toggle="pill" data-twe-target="#tab-users" role="tab"
+										aria-controls="tab-users" aria-selected="false">
+										Users</a>
+								</li>
+								<li role="profile" class="flex-grow basis-0 text-center">
+									<a href="#tab-organizations"
+										class="my-2 block rounded bg-zinc-100 px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-black data-[twe-nav-active]:!bg-primary data-[twe-nav-active]:text-white md:me-4"
+										id="rmncahOrganizations" data-twe-toggle="pill"
+										data-twe-target="#tab-organizations" role="tab"
+										aria-controls="tab-organizations" aria-selected="false">
+										Organizations</a>
+								</li>
+							</ul>
+						</div>
+					</section>
+				</div>
+			</div>
+
+			<div class="flex flex-col flex-1">
+				<div class="flex flex-1">
+					<!-- Main -->
+					<main class="flex items-center max-w-6xl mx-auto justify-center flex-1 px-4 py-8">
+
+						<!--Pills content-->
+						<div class="mb-6 w-full">
+							<div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="rmncahDs" role="tabpanel" aria-labelledby="rmncahDs-mark" data-twe-tab-active>
+
+								<section class="min-h-screen py-10">
+									<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+										<div id="kpi-container"
+											class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+										</div>
+
+										<div class="mb-10 flex justify-between items-center">
+											<span class="text-sm text-gray-500">
+												Last Updated: <span id="lastUpdated"></span>
+											</span>
+										</div>
+
+										<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+
+											<div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+												<h2 class="text-xl font-semibold mb-4 text-gray-900">
+													Project Status by Theme</h2>
+												<div id="barChart"></div>
+											</div>
+
+											<div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+												<h2 class="text-xl font-semibold mb-4 text-gray-900">
+													Resource Distribution (%)</h2>
+												<div id="teamChart"></div>
+											</div>
+										</div>
+
+										<h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
+											Performance by Thematic Area
+										</h2>
+
+										<div id="detail-card-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+										</div>
+
+									</div>
+								</section>
+							</div>
+							<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="tab-projects" role="tabpanel" aria-labelledby="tab-projects-mark">
+								<!-- Projects Card -->
+								<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+									<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+										<h3 class="text-lg font-bold text-black">Projects</h3>
+										<div class="flex items-center gap-2">
+											<button
+												class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light  pl-3 pr-2 text-sm font-medium text-black hover:bg-gray-200">
+												<span class="material-symbols-outlined text-base">file_download</span>
+												<span>Export CSV</span>
+											</button>
+										</div>
+									</div>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm text-left text-gray-500">
+											<thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+												<tr>
+													<th class="px-6 py-3" scope="col">Title</th>
+													<th class="px-6 py-3" scope="col">Partner</th>
+													<th class="px-6 py-3" scope="col">Project No</th>
+													<th class="px-6 py-3" scope="col">Category</th>
+													<th class="px-6 py-3" scope="col">Status</th>
+													<th class="px-6 py-3" scope="col">Start Date</th>
+													<th class="px-6 py-3" scope="col">End Date</th>
+													<th class="px-6 py-3" scope="col">Budget</th>
+													<th class="px-6 py-3" scope="col">Created At</th>
+													<th class="px-6 py-3" scope="col"><span
+															class="sr-only">Actions</span></th>
+												</tr>
+												<tr class="filter-row bg-gray-100">
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Title"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="0"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Partner"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="1"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Project No"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="2"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Category"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="3"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="4"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Start Date"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="5"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter End Date"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="6"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Budget"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="7"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Created At"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="8"></th>
+													<th class="px-6 py-2"></th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+									<nav aria-label="Table navigation" class="flex items-center justify-between p-4">
+										<span class="text-sm font-normal text-gray-500">Showing <span
+												class="font-semibold text-gray-900">1-1</span> of <span
+												class="font-semibold text-gray-900">1</span></span>
+										<ul class="inline-flex -space-x-px text-sm h-8">
+											<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700   "
+													href="#">Previous</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   "
+													href="#">1</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700   "
+													href="#">Next</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="rmncahNAs" role="tabpanel" aria-labelledby="rmncahNAs-mark">
+								New Announcement
+							</div>
+							<div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="tab-collaboration" role="tabpanel" aria-labelledby="tab-collaboration-mark">
+								<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+									<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+										<h3 class="text-lg font-bold text-black">Collaboration
+											Requests</h3>
+										<div class="flex items-center gap-2">
+											<button
+												class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light pl-3 pr-2 text-sm font-medium text-black hover:bg-gray-200">
+												<span class="material-symbols-outlined text-base">file_download</span>
+												<span>Export CSV</span>
+											</button>
+										</div>
+									</div>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm text-left text-gray-500">
+											<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+												<tr>
+													<th class="px-6 py-3" scope="col">Requester</th>
+													<th class="px-6 py-3" scope="col">Project</th>
+													<th class="px-6 py-3" scope="col">Organization</th>
+													<th class="px-6 py-3" scope="col">Status</th>
+													<th class="px-6 py-3" scope="col">Message</th>
+													<th class="px-6 py-3" scope="col">Date</th>
+													<th class="px-6 py-3" scope="col"><span
+															class="sr-only">Actions</span></th>
+												</tr>
+												<tr class="filter-row bg-gray-100">
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Requester"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="0"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Project"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="1"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Organization"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="2"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="3"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Message"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="4"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="5"></th>
+													<th class="px-6 py-2"></th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+									<nav aria-label="Table navigation" class="flex items-center justify-between p-4">
+										<span class="text-sm font-normal text-gray-500">Showing <span
+												class="font-semibold text-gray-900">1-1</span> of <span
+												class="font-semibold text-gray-900">1</span></span>
+										<ul class="inline-flex -space-x-px text-sm h-8">
+											<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Previous</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+													href="#">1</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Next</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="tab-announcements" role="tabpanel" aria-labelledby="tab-announcements-mark">
+								<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+									<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+										<h3 class="text-lg font-bold text-black">Announcements</h3>
+										<div class="flex items-center gap-2">
+											<button
+												class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light pl-3 pr-2 text-sm font-medium text-black hover:bg-gray-200">
+												<span class="material-symbols-outlined text-base">file_download</span>
+												<span>Export CSV</span>
+											</button>
+										</div>
+									</div>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm text-left text-gray-500">
+											<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+												<tr>
+													<th class="px-6 py-3" scope="col">Title</th>
+													<th class="px-6 py-3" scope="col">Content</th>
+													<th class="px-6 py-3" scope="col">Date</th>
+													<th class="px-6 py-3" scope="col">Created By</th>
+													<th class="px-6 py-3" scope="col">Status</th>
+													<th class="px-6 py-3" scope="col">Priority</th>
+													<th class="px-6 py-3" scope="col">Created At</th>
+													<th class="px-6 py-3" scope="col"><span
+															class="sr-only">Actions</span></th>
+												</tr>
+												<tr class="filter-row bg-gray-100">
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Title"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="0"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Content"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="1"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="2"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Created By"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="3"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="4"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Priority"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="5"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Created At"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="6"></th>
+													<th class="px-6 py-2"></th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+									<nav aria-label="Table navigation" class="flex items-center justify-between p-4">
+										<span class="text-sm font-normal text-gray-500">Showing <span
+												class="font-semibold text-gray-900">1-1</span> of <span
+												class="font-semibold text-gray-900">1</span></span>
+										<ul class="inline-flex -space-x-px text-sm h-8">
+											<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Previous</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+													href="#">1</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Next</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="tab-users" role="tabpanel" aria-labelledby="tab-users-mark">
+
+								<div class="bg-white rounded-xl border border-gray-200  overflow-hidden mb-8">
+									<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+										<h3 class="text-lg font-bold text-black">Users</h3>
+										<div class="flex items-center gap-2">
+											<button
+												class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light pl-3 pr-2 text-sm font-medium text-black hover:bg-gray-200 ">
+												<span class="material-symbols-outlined text-base">file_download</span>
+												<span>Export CSV</span>
+											</button>
+										</div>
+									</div>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm text-left text-gray-500">
+											<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+												<tr>
+													<th class="px-6 py-3" scope="col">Name</th>
+													<th class="px-6 py-3" scope="col">Email</th>
+													<th class="px-6 py-3" scope="col">Role</th>
+													<th class="px-6 py-3" scope="col">Status</th>
+													<th class="px-6 py-3" scope="col">Organization</th>
+													<th class="px-6 py-3" scope="col">Created At</th>
+													<th class="px-6 py-3" scope="col"><span
+															class="sr-only">Actions</span></th>
+												</tr>
+												<tr class="filter-row bg-gray-100">
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Name"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="0"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Email"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="1"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Role"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="2"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="3"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Organization"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="4"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Created At"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="5"></th>
+													<th class="px-6 py-2"></th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+									<nav aria-label="Table navigation" class="flex items-center justify-between p-4">
+										<span class="text-sm font-normal text-gray-500">Showing <span
+												class="font-semibold text-gray-900">1-1</span> of <span
+												class="font-semibold text-gray-900">1</span></span>
+										<ul class="inline-flex -space-x-px text-sm h-8">
+											<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700   "
+													href="#">Previous</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   "
+													href="#">1</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700   "
+													href="#">Next</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+								id="tab-organizations" role="tabpanel" aria-labelledby="tab-organizations-mark">
+
+								<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+									<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+										<h3 class="text-lg font-bold text-black">Organizations
+										</h3>
+										<div class="flex items-center gap-2">
+											<button
+												class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light pl-3 pr-2 text-sm font-medium text-black hover:bg-gray-200">
+												<span class="material-symbols-outlined text-base">file_download</span>
+												<span>Export CSV</span>
+											</button>
+										</div>
+									</div>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm text-left text-gray-500">
+											<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+												<tr>
+													<th class="px-6 py-3" scope="col">Name</th>
+													<th class="px-6 py-3" scope="col">Type</th>
+													<th class="px-6 py-3" scope="col">Email</th>
+													<th class="px-6 py-3" scope="col">Location</th>
+													<th class="px-6 py-3" scope="col">Status</th>
+													<th class="px-6 py-3" scope="col">Created At</th>
+													<th class="px-6 py-3" scope="col"><span
+															class="sr-only">Actions</span></th>
+												</tr>
+												<tr class="filter-row bg-gray-100">
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Name"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="0"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="1"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Email"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="2"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Location"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="3"></th>
+													<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="4"></th>
+													<th class="px-6 py-2"><input type="text"
+															placeholder="Filter Created At"
+															class="filter-input w-full px-2 py-1 text-xs border rounded"
+															data-column="5"></th>
+													<th class="px-6 py-2"></th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+									<nav aria-label="Table navigation" class="flex items-center justify-between p-4">
+										<span class="text-sm font-normal text-gray-500">Showing <span
+												class="font-semibold text-gray-900">1-1</span> of <span
+												class="font-semibold text-gray-900">1</span></span>
+										<ul class="inline-flex -space-x-px text-sm h-8">
+											<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Previous</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+													href="#">1</a></li>
+											<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
+													href="#">Next</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+						</div>
+					</main>
+				</div>
+			</div>
+		</div>
+
+		<!-- Panels -->
+
+		<!-- Settings Panel -->
+		<!-- Backdrop -->
+		<div x-show="isSettingsPanelOpen" class="fixed inset-0 bg-black bg-opacity-50"
+			@click="isSettingsPanelOpen = false" aria-hidden="true"></div>
+		<!-- Panel -->
+		<section x-transition:enter="transform transition-transform duration-300"
+			x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+			x-transition:leave="transform transition-transform duration-300" x-transition:leave-start="translate-x-0"
+			x-transition:leave-end="translate-x-full" x-show="isSettingsPanelOpen"
+			class="fixed inset-y-0 right-0 w-64 bg-white border-l border-indigo-100 rounded-l-3xl">
+			<div class="px-4 py-8">
+				<h2 class="text-lg font-semibold">Settings</h2>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		// --- 1. Utility Functions ---
+		const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+		const formatNumber = (num) => num.toLocaleString();
+		const formatCurrency = (num) => '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+		// --- 2. Analytic Metric Generator for Detail Cards ---
+		function generateCategoryAnalytics() {
+			const totalProjects = rand(40, 150);
+			const active = rand(Math.floor(totalProjects * 0.3), Math.floor(totalProjects * 0.7));
+			const pending = rand(Math.floor(totalProjects * 0.1), Math.floor(totalProjects * 0.3));
+			const stalled = rand(Math.floor(totalProjects * 0.05), Math.floor(totalProjects * 0.2));
+			const completed = Math.max(0, totalProjects - active - pending - stalled); // Ensure non-negative
+
+			return {
+				totalCost: rand(5, 50), // Millions
+				totalProjects: totalProjects,
+				active: active,
+				pending: pending,
+				stalled: stalled,
+				completed: completed,
+				avgDurationMonths: rand(12, 48),
+				expectedCompletion: `Q${rand(1, 4)} ${new Date().getFullYear() + rand(0, 2)}`
+			};
+		}
+
+		// --- 3. Program Data Structure ---
+		const categories = [
+			{ code: 'GBV', name: 'Gender-Based Violence', icon: 'fas fa-hand-rock', color: 'red' },
+			{ code: 'AYPSRH', name: 'Adolescent & Youth SRH', icon: 'fas fa-baby', color: 'blue' },
+			{ code: 'MWH', name: 'Maternal & Women\'s Health', icon: 'fas fa-heartbeat', color: 'pink' },
+			{ code: 'FP', name: 'Family Planning', icon: 'fas fa-users', color: 'indigo' },
+			{ code: 'CH', name: 'Child Health', icon: 'fas fa-child', color: 'green' },
+			{ code: 'A', name: 'AIDS/HIV', icon: 'fas fa-ribbon', color: 'gray' },
+			{ code: 'AS', name: 'Adolescent Sexuality', icon: 'fas fa-venus-mars', color: 'purple' },
+			{ code: 'MERL', name: 'M&E, Research, Learning', icon: 'fas fa-search', color: 'yellow' },
+		];
+
+		// --- 4. KPI Definitions ---
+		const kpis = [
+			{ title: "Total Projects", value: rand(100, 500), unit: "", color: "indigo", change: rand(5, 15), isPositive: true },
+			{ title: "Investment (USD)", value: rand(10, 50), unit: "M", color: "green", change: rand(1, 5), isPositive: false, formatter: (val) => formatCurrency(val) },
+			{ title: "Beneficiaries Reached", value: rand(50000, 200000), unit: "", color: "yellow", change: rand(15, 30), isPositive: true, formatter: (val) => formatNumber(val) },
+			{ title: "Average Completion Rate", value: rand(60, 95), unit: "%", color: "red", change: 0, isPositive: false, formatter: (val) => val },
+		];
+
+
+		// --- 5. Main Rendering Logic ---
+		function renderDashboard() {
+			document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' });
+
+			// A. Render KPI Cards
+			const kpiHTML = kpis.map(kpi => {
+				const changeColor = kpi.isPositive ? 'text-green-500' : 'text-red-500';
+				const changeIcon = kpi.isPositive ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+				const formattedValue = (kpi.formatter || formatNumber)(kpi.value);
+
+				return `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-${kpi.color}-500">
+                        <p class="text-sm font-medium text-gray-500">${kpi.title}</p>
+                        <p class="mt-1 text-3xl font-semibold text-gray-900">
+                            ${formattedValue}${kpi.unit}
+                        </p>
+                        <div class="text-sm ${changeColor} mt-2">
+                            ${kpi.change > 0 ? `<i class="${changeIcon}"></i> ${kpi.change}% Change` : `<i class="fas fa-equals"></i> Steady Performance`}
+                        </div>
+                    </div>
+                `;
+			}).join('');
+			document.getElementById('kpi-container').innerHTML = kpiHTML;
+
+
+			// B. Render Detail Cards
+			const detailCardHTML = categories.map(cat => {
+				const data = generateCategoryAnalytics();
+
+				const completedPercent = ((data.completed / data.totalProjects) * 100).toFixed(0);
+
+				return `
+                    <div class="bg-white p-6 rounded-xl shadow-md transition duration-300 hover:shadow-xl border-t-4 border-${cat.color}-500">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-gray-500">${cat.name}</span>
+                                <h3 class="text-xl font-bold text-gray-900">
+                                    <i class="${cat.icon} mr-2 text-${cat.color}-600"></i> ${cat.code}
+                                </h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm text-gray-400">Total Cost</span>
+                                <p class="text-2xl font-extrabold text-green-600">
+                                    ${formatCurrency(data.totalCost)}M
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+
+                        <div class="mb-4">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">
+                                Status Breakdown (${data.totalProjects} Projects Total)
+                            </p>
+                            <div class="flex h-3 rounded overflow-hidden">
+                                <div style="width: ${((data.active / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-blue-500" title="${data.active} Active"></div>
+                                <div style="width: ${((data.pending / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-yellow-500" title="${data.pending} Pending"></div>
+                                <div style="width: ${((data.stalled / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-red-500" title="${data.stalled} Stalled"></div>
+                                <div style="width: ${((data.completed / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-green-500" title="${data.completed} Completed"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 text-sm text-gray-700">
+                             <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-check-double mr-2 text-green-500"></i> Completed Rate:</span> 
+                                <span class="font-bold text-lg text-green-500">${completedPercent}%</span>
+                            </p>
+                            <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-clock mr-2 text-gray-500"></i> Avg Duration:</span> 
+                                <span class="font-bold">${data.avgDurationMonths} months</span>
+                            </p>
+                            <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-calendar-alt mr-2 text-indigo-500"></i> Next Milestone:</span> 
+                                <span class="font-bold">${data.expectedCompletion}</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+			}).join('');
+			document.getElementById('detail-card-container').innerHTML = detailCardHTML;
+		}
+
+
+		// --- 6. ApexCharts Initialization ---
+
+		// Bar Chart Data (Project Status by Area)
+		var barCategories = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MERL"];
+		var activeData = [15, 20, 18, 12, 5, 25, 9, 7];
+		var pendingData = [8, 10, 7, 5, 3, 15, 4, 3];
+		var stalledData = [3, 4, 2, 1, 1, 5, 2, 1];
+		var completedData = [30, 45, 35, 25, 10, 50, 20, 15];
+
+		var barOptions = {
+			chart: {
+				type: "bar", height: 400, stacked: false, id: 'projectStatusChart'
+			},
+			plotOptions: { bar: { horizontal: false, columnWidth: "70%" } },
+			dataLabels: { enabled: false },
+			series: [
+				{ name: "Active", data: activeData },
+				{ name: "Pending", data: pendingData },
+				{ name: "Stalled", data: stalledData },
+				{ name: "Completed", data: completedData },
+			],
+			xaxis: {
+				categories: barCategories,
+				title: { text: "Programmatic Area" },
+				labels: { rotate: -45 }
+			},
+			yaxis: { title: { text: "Number of Projects/Interventions" } },
+			legend: { position: "top" },
+			colors: ['#3B82F6', '#F59E0B', '#EF4444', '#10B981'], // blue, yellow, red, green
+			tooltip: { y: { formatter: function (val) { return val.toFixed(0) + " Projects"; } } }
+		};
+
+		// Donut Chart Data (Resource Distribution)
+		var donutSeriesData = [8, 14, 27, 21, 3, 2, 17, 8];
+		var donutLabels = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MERL"];
+		var donutColors = ["#EF4444", "#3B82F6", "#EC4899", "#6366F1", "#10B981", "#6B7280", "#9333ea", "#F59E0B"];
+
+		var donutOptions = {
+			chart: { type: "donut", height: 350 },
+			series: donutSeriesData,
+			labels: donutLabels,
+			colors: donutColors,
+			legend: { position: "bottom" },
+			dataLabels: { enabled: true, formatter: function (val) { return val.toFixed(0) + "%"; } },
+			tooltip: { y: { formatter: function (val, opts) { return opts.w.config.series[opts.seriesIndex] + "% of Focus"; } } },
+		};
+
+		// --- 7. Initialization on Load ---
+		document.addEventListener('DOMContentLoaded', () => {
+			renderDashboard();
+
+			// Render Charts after the DOM is ready
+			var barChart = new ApexCharts(document.querySelector("#barChart"), barOptions);
+			barChart.render();
+
+			var donutChart = new ApexCharts(document.querySelector("#teamChart"), donutOptions);
+			donutChart.render();
+		});
+
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.3/dist/alpine.min.js" defer></script>
+	<script>
+		const setup = () => {
+			return {
+				isSidebarOpen: false,
+				currentSidebarTab: null,
+				isSettingsPanelOpen: false,
+				isSubHeaderOpen: false,
+				watchScreen() {
+					if (window.innerWidth <= 1024) {
+						this.isSidebarOpen = false
+					}
+				},
+			}
+		}
+	</script>
+	<script>
+		async function apiFetch(endpoint, options = {}) {
+			const token = window.authManager.getToken();
+			if (!token) {
+				alert('Not authenticated. Please log in.');
+				window.location.href = 'index.html';
+				return;
+			}
+			return fetch(`${window.BASE_URL}${endpoint}`, {
+				...options,
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					...options.headers,
+				},
+			});
+		}
+
+		function renderTable(tabId, data, columns) {
+			const tbody = document.querySelector(`#${tabId} tbody`);
+			if (!tbody) return;
+			tbody.innerHTML = '';
+			if (!Array.isArray(data)) {
+				console.error('Data is not an array for', tabId, ':', data);
+				return;
+			}
+			data.forEach(item => {
+				const row = document.createElement('tr');
+				row.className = 'bg-white border-b hover:bg-gray-50 ';
+				columns.forEach(col => {
+					const td = document.createElement('td');
+					td.className = 'px-6 py-4';
+					let value = getNestedValue(item, col) || '';
+					// Format dates
+					if ((col.includes('Date') || col.includes('At')) && value) {
+						const date = new Date(value);
+						if (!isNaN(date)) {
+							value = date.toLocaleDateString('en-GB') + ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+						}
+					}
+					// Format file sizes
+					if (col === 'size' && value) {
+						value = formatFileSize(value);
+					}
+					td.textContent = value;
+					row.appendChild(td);
+				});
+				const actionTd = document.createElement('td');
+				actionTd.className = 'px-6 py-4 text-right';
+				actionTd.innerHTML = '';
+				row.appendChild(actionTd);
+				tbody.appendChild(row);
+			});
+		}
+
+		function getNestedValue(obj, path) {
+			return path.split('.').reduce((current, key) => current && current[key], obj);
+		}
+
+		function formatFileSize(bytes) {
+			if (!bytes || bytes === 0) return '0 B';
+			const k = 1024;
+			const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+			const i = Math.floor(Math.log(bytes) / Math.log(k));
+			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+		}
+
+		async function fetchProjects() {
+			try {
+				const response = await apiFetch('/api/projects');
+				if (!response.ok) throw new Error('Failed to fetch projects');
+				const data = await response.json();
+				const projects = data.data?.projects || data.data?.content || data.data || data;
+				if (!Array.isArray(projects)) {
+					console.error('Projects data not array:', projects);
+					return;
+				}
+				renderTable('tab-projects', projects, ['title', 'partner', 'projectNo', 'projectCategory', 'status', 'startDate', 'endDate', 'budget', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-projects tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projects button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projects.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Partner', 'Project No', 'Category', 'Status', 'Start Date', 'End Date', 'Budget', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projects tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching projects:', error);
+			}
+		}
+
+		async function fetchUsers() {
+			try {
+				const response = await apiFetch('/api/auth/admin/users');
+				if (!response.ok) throw new Error('Failed to fetch users');
+				const data = await response.json();
+				const users = data.data?.users || data.data?.content || data.data || data;
+				if (!Array.isArray(users)) {
+					console.error('Users data not array:', users);
+					return;
+				}
+				renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization.name', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-users .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-users tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-users button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('users.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Name', 'Email', 'Role', 'Status', 'Organization', 'Created At'];
+					const rows = document.querySelectorAll('#tab-users tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching users:', error);
+			}
+		}
+
+		async function fetchOrganizations() {
+			try {
+				const response = await apiFetch('/api/organizations');
+				if (!response.ok) throw new Error('Failed to fetch organizations');
+				const data = await response.json();
+				const orgs = data.data?.organizations || data.data?.content || data.data || data;
+				if (!Array.isArray(orgs)) {
+					console.error('Organizations data not array:', orgs);
+					return;
+				}
+				renderTable('tab-organizations', orgs, ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-organizations .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-organizations tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-organizations button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('organizations.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Name', 'Type', 'Email', 'Location', 'Status', 'Created At'];
+					const rows = document.querySelectorAll('#tab-organizations tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching organizations:', error);
+			}
+		}
+
+		async function fetchAnnouncements() {
+			try {
+				const response = await apiFetch('/api/announcements');
+				if (!response.ok) throw new Error('Failed to fetch announcements');
+				const data = await response.json();
+				const announcements = data.data?.announcements || data.data?.content || data.data || data;
+				if (!Array.isArray(announcements)) {
+					console.error('Announcements data not array:', announcements);
+					return;
+				}
+				renderTable('tab-announcements', announcements, ['title', 'content', 'deadline', 'createdBy.name', 'status', 'collaborationType', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-announcements .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-announcements tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-announcements button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('announcements.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Content', 'Date', 'Created By', 'Status', 'Priority', 'Created At'];
+					const rows = document.querySelectorAll('#tab-announcements tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching announcements:', error);
+			}
+		}
+
+		async function fetchCollaborationRequests() {
+			try {
+				const response = await apiFetch('/api/collaboration-requests/admin/all');
+				if (!response.ok) throw new Error('Failed to fetch collaboration requests');
+				const data = await response.json();
+				const requests = data.data?.collaborationRequests || data.data?.content || data.data || data;
+				if (!Array.isArray(requests)) {
+					console.error('Collaboration requests data not array:', requests);
+					return;
+				}
+				renderTable('tab-collaboration', requests, ['requestingUser.name', 'announcement.title', 'requestingOrganization.name', 'status', 'message', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-collaboration .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-collaboration tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-collaboration button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('collaborationrequests.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Requester', 'Project', 'Organization', 'Status', 'Message', 'Date'];
+					const rows = document.querySelectorAll('#tab-collaboration tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching collaboration requests:', error);
+			}
+		}
+
+		async function fetchPastProjects() {
+			try {
+				const response = await apiFetch('/api/past-projects');
+				if (!response.ok) throw new Error('Failed to fetch past projects');
+				const data = await response.json();
+				const projects = data.data?.pastProjects || data.data?.content || data.data || data;
+				if (!Array.isArray(projects)) {
+					console.error('Past projects data not array:', projects);
+					return;
+				}
+				renderTable('tab-pastprojects', projects, ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-pastprojects .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-pastprojects tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-pastprojects button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('pastprojects.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Objectives', 'Partner', 'Category', 'Status', 'Budget', 'End Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-pastprojects tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching past projects:', error);
+			}
+		}
+
+		async function fetchProjectReports() {
+			try {
+				const response = await apiFetch('/api/project-reports');
+				if (!response.ok) throw new Error('Failed to fetch project reports');
+				const data = await response.json();
+				const reports = data.data?.projectReports || data.data?.content || data.data || data;
+				if (!Array.isArray(reports)) {
+					console.error('Project reports data not array:', reports);
+					return;
+				}
+				renderTable('tab-projectreports', reports, ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-projectreports tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projectreports button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectreports.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Project', 'Submitted By', 'Type', 'Status', 'Submitted At', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projectreports tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project reports:', error);
+			}
+		}
+
+		async function fetchProjectCollaborators() {
+			try {
+				const response = await apiFetch('/api/projects/admin/collaborators');
+				if (!response.ok) throw new Error('Failed to fetch project collaborators');
+				const data = await response.json();
+				const collaborators = data.data?.projectCollaborators || data.data?.content || data.data || data;
+				if (!Array.isArray(collaborators)) {
+					console.error('Project collaborators data not array:', collaborators);
+					return;
+				}
+				renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-collaborators tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-collaborators button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectcollaborators.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['User', 'Project', 'Organization', 'Role', 'Status', 'Date Added'];
+					const rows = document.querySelectorAll('#tab-collaborators tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project collaborators:', error);
+			}
+		}
+
+		async function fetchProjectDocuments() {
+			try {
+				const response = await apiFetch('/api/project-documents');
+				if (!response.ok) throw new Error('Failed to fetch project documents');
+				const data = await response.json();
+				const documents = data.data?.projectDocuments || data.data?.content || data.data || data;
+				if (!Array.isArray(documents)) {
+					console.error('Project documents data not array:', documents);
+					return;
+				}
+				renderTable('tab-projectdocs', documents, ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projectdocs .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-projectdocs tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projectdocs button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectdocuments.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['File Name', 'Project', 'Uploaded By', 'Type', 'Size', 'Status', 'Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projectdocs tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project documents:', error);
+			}
+		}
+
+		async function fetchUserDocuments() {
+			try {
+				const response = await apiFetch('/api/user-documents');
+				if (!response.ok) throw new Error('Failed to fetch user documents');
+				const data = await response.json();
+				const documents = data.data?.userDocuments || data.data?.content || data.data || data;
+				if (!Array.isArray(documents)) {
+					console.error('User documents data not array:', documents);
+					return;
+				}
+				renderTable('tab-userdocs', documents, ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-userdocs .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-userdocs tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-userdocs button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('userdocuments.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['File Name', 'User', 'Uploaded By', 'Type', 'Size', 'Status', 'Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-userdocs tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching user documents:', error);
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			// Tab definitions by role
+			const allTabs = [
+				{ key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+				{ key: 'projects', label: 'Projects', icon: 'folder' },
+				{ key: 'users', label: 'Users', icon: 'group' },
+				{ key: 'organizations', label: 'Organizations', icon: 'apartment' },
+				{ key: 'announcements', label: 'Announcements', icon: 'campaign' },
+				{ key: 'collaboration', label: 'Collaboration Requests', icon: 'handshake' },
+				{ key: 'pastprojects', label: 'Past Projects', icon: 'history' },
+				{ key: 'projectdocs', label: 'Project Documents', icon: 'description' },
+				{ key: 'projectreports', label: 'Project Reports', icon: 'assessment' },
+				{ key: 'userdocs', label: 'User Documents', icon: 'badge' },
+				{ key: 'collaborators', label: 'Project Collaborators', icon: 'groups' }
+			];
+			const roleTabs = {
+				SUPER_ADMIN: allTabs,
+				SUPER_ADMIN_APPROVER: allTabs,
+				SUPER_ADMIN_REVIEWER: allTabs,
+				DONOR: [
+					allTabs[0], // Dashboard
+					allTabs[1], // Projects
+					allTabs[3], // Organizations
+					allTabs[6], // Past Projects
+					allTabs[7], // Project Documents
+					allTabs[8], // Project Reports
+					allTabs[10] // Project Collaborators
+				],
+				PARTNER: [
+					allTabs[0], // Dashboard
+					allTabs[1], // Projects
+					allTabs[6], // Past Projects
+					allTabs[7], // Project Documents
+					allTabs[8], // Project Reports
+					allTabs[10] // Project Collaborators
+				]
+			};
+			// Get userRole from localStorage
+			const userRole = localStorage.getItem('userRole') || 'SUPER_ADMIN_REVIEWER';
+			const tabs = roleTabs[userRole] || roleTabs['PARTNER'];
+			// Render sidebar tabs
+			const sidebarTabsContainer = document.getElementById('sidebar-tabs');
+			sidebarTabsContainer.innerHTML = '';
+			tabs.forEach((tab, idx) => {
+				const a = document.createElement('a');
+				a.className = 'sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-black hover:bg-gray-100';
+				a.setAttribute('data-tab', tab.key);
+				a.setAttribute('href', '#');
+				a.innerHTML = `<span class="material-symbols-outlined">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
+				if (idx === 0) {
+					a.classList.add('bg-primary/10', 'text-primary',);
+				}
+				sidebarTabsContainer.appendChild(a);
+			});
+			// Tab switching logic
+			const sidebarTabs = document.querySelectorAll('.sidebar-tab');
+			const tabSections = {
+				dashboard: document.getElementById('tab-dashboard'),
+				projects: document.getElementById('tab-projects'),
+				users: document.getElementById('tab-users'),
+				organizations: document.getElementById('tab-organizations'),
+				announcements: document.getElementById('tab-announcements'),
+				collaboration: document.getElementById('tab-collaboration'),
+				pastprojects: document.getElementById('tab-pastprojects'),
+				projectdocs: document.getElementById('tab-projectdocs'),
+				projectreports: document.getElementById('tab-projectreports'),
+				userdocs: document.getElementById('tab-userdocs'),
+				collaborators: document.getElementById('tab-collaborators')
+			};
+			function showTab(tab) {
+				Object.values(tabSections).forEach(section => {
+					if (section) section.style.display = 'none';
+				});
+				if (tabSections[tab]) {
+					tabSections[tab].style.display = '';
+					if (tab === 'projects') fetchProjects();
+					else if (tab === 'users') fetchUsers();
+					else if (tab === 'organizations') fetchOrganizations();
+					else if (tab === 'announcements') fetchAnnouncements();
+					else if (tab === 'pastprojects') fetchPastProjects();
+					else if (tab === 'collaboration') fetchCollaborationRequests();
+					else if (tab === 'projectreports') fetchProjectReports();
+					else if (tab === 'collaborators') fetchProjectCollaborators();
+					else if (tab === 'projectdocs') fetchProjectDocuments();
+					else if (tab === 'userdocs') fetchUserDocuments();
+				}
+				sidebarTabs.forEach(btn => btn.classList.remove('bg-primary/10', 'text-primary',));
+				const activeBtn = Array.from(sidebarTabs).find(btn => btn.getAttribute('data-tab') === tab);
+				if (activeBtn) activeBtn.classList.add('bg-primary/10', 'text-primary',);
+			}
+			sidebarTabs.forEach(btn => {
+				btn.addEventListener('click', function (e) {
+					e.preventDefault();
+					const tab = btn.getAttribute('data-tab');
+					showTab(tab);
+				});
+			});
+			// Show first tab by default
+			showTab(tabs[0].key);
+		});
+	</script>
+</body>
+
+</html>
