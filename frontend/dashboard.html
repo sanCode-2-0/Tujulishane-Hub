@@ -252,7 +252,6 @@
 											<th class="px-6 py-3" scope="col">Email</th>
 											<th class="px-6 py-3" scope="col">Location</th>
 											<th class="px-6 py-3" scope="col">Status</th>
-											<th class="px-6 py-3" scope="col">Projects</th>
 											<th class="px-6 py-3" scope="col">Created At</th>
 											<th class="px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
 										</tr>
@@ -262,8 +261,7 @@
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Email" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="2"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Location" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="3"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Status" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="4"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Projects" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="5"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="6"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="5"></th>
 											<th class="px-6 py-2"></th>
 										</tr>
 									</thead>
@@ -271,11 +269,10 @@
 										<!-- Example row -->
 										<tr class="bg-white dark:bg-gray-900/50 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
 											<td class="px-6 py-4">Innovate Inc.</td>
-											<td class="px-6 py-4">Non-Profit</td>
+											<td class="px-6 py-4">NGO</td>
 											<td class="px-6 py-4">info@innovate.com</td>
 											<td class="px-6 py-4">Nairobi</td>
-											<td class="px-6 py-4">Active</td>
-											<td class="px-6 py-4">12</td>
+											<td class="px-6 py-4">APPROVED</td>
 											<td class="px-6 py-4">2023-01-01</td>
 											<td class="px-6 py-4 text-right"><button class="text-primary hover:underline font-medium">View</button></td>
 										</tr>
@@ -765,7 +762,7 @@ function renderTable(tabId, data, columns) {
     columns.forEach(col => {
       const td = document.createElement('td');
       td.className = 'px-6 py-4';
-      let value = item[col] || '';
+      let value = getNestedValue(item, col) || '';
       // Format dates
       if ((col.includes('Date') || col.includes('At')) && value) {
         const date = new Date(value);
@@ -782,6 +779,10 @@ function renderTable(tabId, data, columns) {
     row.appendChild(actionTd);
     tbody.appendChild(row);
   });
+}
+
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((current, key) => current && current[key], obj);
 }
 
 async function fetchProjects() {
@@ -853,7 +854,7 @@ async function fetchUsers() {
       console.error('Users data not array:', users);
       return;
     }
-    renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization', 'createdAt']);
+    renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization.name', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-users .filter-input');
     filterInputs.forEach(input => {
@@ -912,7 +913,7 @@ async function fetchOrganizations() {
       console.error('Organizations data not array:', orgs);
       return;
     }
-    renderTable('tab-organizations', orgs, ['name', 'type', 'email', 'location', 'status', 'projects', 'createdAt']);
+    renderTable('tab-organizations', orgs, ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-organizations .filter-input');
     filterInputs.forEach(input => {
@@ -940,7 +941,7 @@ async function fetchOrganizations() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['Name', 'Type', 'Email', 'Location', 'Status', 'Projects', 'Created At'];
+      const headers = ['Name', 'Type', 'Email', 'Location', 'Status', 'Created At'];
       const rows = document.querySelectorAll('#tab-organizations tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
@@ -971,7 +972,7 @@ async function fetchAnnouncements() {
       console.error('Announcements data not array:', announcements);
       return;
     }
-    renderTable('tab-announcements', announcements, ['title', 'content', 'date', 'createdBy', 'status', 'priority', 'createdAt']);
+    renderTable('tab-announcements', announcements, ['title', 'content', 'deadline', 'createdBy.name', 'status', 'collaborationType', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-announcements .filter-input');
     filterInputs.forEach(input => {
@@ -1022,7 +1023,7 @@ async function fetchAnnouncements() {
 
 async function fetchCollaborationRequests() {
   try {
-    const response = await apiFetch('/api/collaboration-requests');
+    const response = await apiFetch('/api/collaboration-requests/admin/all');
     if (!response.ok) throw new Error('Failed to fetch collaboration requests');
     const data = await response.json();
     const requests = data.data?.collaborationRequests || data.data?.content || data.data || data;
@@ -1030,7 +1031,7 @@ async function fetchCollaborationRequests() {
       console.error('Collaboration requests data not array:', requests);
       return;
     }
-    renderTable('tab-collaboration', requests, ['requester', 'project', 'organization', 'status', 'message', 'date', 'createdAt']);
+    renderTable('tab-collaboration', requests, ['requestingUser.name', 'announcement.title', 'requestingOrganization.name', 'status', 'message', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-collaboration .filter-input');
     filterInputs.forEach(input => {
@@ -1058,7 +1059,7 @@ async function fetchCollaborationRequests() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['Requester', 'Project', 'Organization', 'Status', 'Message', 'Date', 'Created At'];
+      const headers = ['Requester', 'Announcement', 'Organization', 'Status', 'Message', 'Created At'];
       const rows = document.querySelectorAll('#tab-collaboration tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
@@ -1089,7 +1090,7 @@ async function fetchPastProjects() {
       console.error('Past projects data not array:', projects);
       return;
     }
-    renderTable('tab-pastprojects', projects, ['name', 'description', 'organization', 'category', 'status', 'budget', 'completionDate', 'createdAt']);
+    renderTable('tab-pastprojects', projects, ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-pastprojects .filter-input');
     filterInputs.forEach(input => {
@@ -1117,7 +1118,7 @@ async function fetchPastProjects() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['Name', 'Description', 'Organization', 'Category', 'Status', 'Budget', 'Completion Date', 'Created At'];
+      const headers = ['Title', 'Objectives', 'Partner', 'Category', 'Status', 'Budget', 'End Date', 'Created At'];
       const rows = document.querySelectorAll('#tab-pastprojects tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
@@ -1140,7 +1141,7 @@ async function fetchPastProjects() {
 
 async function fetchProjectReports() {
   try {
-    const response = await apiFetch('/api/project-reports');
+    const response = await apiFetch('/api/reports/admin/review');
     if (!response.ok) throw new Error('Failed to fetch project reports');
     const data = await response.json();
     const reports = data.data?.projectReports || data.data?.content || data.data || data;
@@ -1148,7 +1149,7 @@ async function fetchProjectReports() {
       console.error('Project reports data not array:', reports);
       return;
     }
-    renderTable('tab-projectreports', reports, ['reportTitle', 'project', 'createdBy', 'type', 'status', 'date', 'createdAt']);
+    renderTable('tab-projectreports', reports, ['title', 'project.title', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
     filterInputs.forEach(input => {
@@ -1176,7 +1177,7 @@ async function fetchProjectReports() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['Report Title', 'Project', 'Created By', 'Type', 'Status', 'Date', 'Created At'];
+      const headers = ['Title', 'Project', 'Submitted By', 'Type', 'Status', 'Submitted At', 'Created At'];
       const rows = document.querySelectorAll('#tab-projectreports tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
@@ -1207,7 +1208,7 @@ async function fetchProjectCollaborators() {
       console.error('Project collaborators data not array:', collaborators);
       return;
     }
-    renderTable('tab-collaborators', collaborators, ['user', 'project', 'organization', 'role', 'status', 'dateAdded', 'createdAt']);
+    renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
     filterInputs.forEach(input => {
@@ -1235,7 +1236,7 @@ async function fetchProjectCollaborators() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['User', 'Project', 'Organization', 'Role', 'Status', 'Date Added', 'Created At'];
+      const headers = ['User', 'Project', 'Organization', 'Role', 'Status', 'Date Added'];
       const rows = document.querySelectorAll('#tab-collaborators tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
