@@ -237,6 +237,7 @@ public class ProjectController {
      * Get project by ID
      */
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(@PathVariable Long id) {
         try {
             Optional<Project> project = projectService.getProjectById(id);
@@ -284,7 +285,10 @@ public class ProjectController {
             
             // Check if user is admin, super admin, owner, or collaborator with edit permission
             boolean isAdmin = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
+                                   a.getAuthority().equals("ROLE_SUPER_ADMIN") ||
+                                   a.getAuthority().equals("ROLE_SUPER_ADMIN_REVIEWER") ||
+                                   a.getAuthority().equals("ROLE_SUPER_ADMIN_APPROVER"));
             boolean isOwner = projectService.isProjectOwner(id, userEmail);
             boolean canEdit = projectCollaboratorService.canEditProject(id, userEmail);
             
@@ -333,7 +337,7 @@ public class ProjectController {
      * Delete project
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Object>> deleteProject(@PathVariable Long id) {
         try {
             projectService.deleteProject(id);

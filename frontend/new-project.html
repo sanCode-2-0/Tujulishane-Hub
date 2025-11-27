@@ -11,7 +11,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- Tailwind CSS (with custom config using inline script) -->
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/mobile.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -29,14 +31,10 @@
         },
       };
     </script>
-    <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/mobile.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
-    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
@@ -923,6 +921,10 @@
           // Fetch project data
           const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
           const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+          
+          console.log('Edit mode: Fetching project data for ID:', projectId);
+          console.log('API_BASE:', API_BASE);
+          console.log('Token exists:', !!token);
 
           const response = await fetch(`${API_BASE}/api/projects/${projectId}`, {
             method: 'GET',
@@ -932,16 +934,29 @@
             }
           });
 
+          console.log('Response status:', response.status);
+          console.log('Response ok:', response.ok);
+
           if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Failed to fetch project data. Status:', response.status, 'Response:', errorText);
             throw new Error('Failed to fetch project data');
           }
 
           const data = await response.json();
+          console.log('Project data received:', data);
           const project = data.data;
 
           // Initialize form components
           initializeCountyDropdown("countySelect", "subCountySelect");
-          initializeMap();
+          
+          // Initialize map (optional for edit mode - skip if it fails)
+          try {
+            initializeMap();
+          } catch (mapError) {
+            console.warn('Map initialization failed in edit mode, continuing without map:', mapError);
+          }
+          
           initializeThemeSelection();
           initializeFileUpload();
           initializeFormProgress();
@@ -949,6 +964,12 @@
 
           // Pre-fill form with project data
           await prefillFormWithProjectData(project);
+
+          // Fetch and display existing documents
+          await fetchAndDisplayExistingDocuments(projectId);
+
+          // Initialize theme selection after pre-filling to ensure display updates
+          initializeThemeSelection();
 
           // Update progress text back to normal
           if (progressText) {
@@ -966,57 +987,133 @@
       async function prefillFormWithProjectData(project) {
         // Basic Information
         if (project.title) document.getElementById('title').value = project.title;
-        if (project.startDate) document.getElementById('starttime_period').value = project.startDate.split('T')[0];
-        if (project.endDate) document.getElementById('endtime_period').value = project.endDate.split('T')[0];
-        if (project.activityType) document.getElementById('activity_type').value = project.activityType;
+        if (project.startDate || project.starttime_period) {
+          // Handle both API format (startDate) and draft format (starttime_period)
+          const startDateStr = project.startDate || project.starttime_period;
+          console.log('Prefill startDate:', startDateStr, typeof startDateStr);
+          if (startDateStr) {
+            // Handle different date formats
+            let startDate;
+            if (typeof startDateStr === 'string') {
+              // If it's already a date string in YYYY-MM-DD format, use it directly
+              startDate = startDateStr.includes('T') ? 
+                new Date(startDateStr).toISOString().split('T')[0] : startDateStr;
+            } else if (startDateStr instanceof Date) {
+              startDate = startDateStr.toISOString().split('T')[0];
+            } else {
+              // Try to parse as date
+              startDate = new Date(startDateStr).toISOString().split('T')[0];
+            }
+            console.log('Setting start date to:', startDate);
+            document.getElementById('starttime_period').value = startDate;
+          }
+        }
+        if (project.endDate || project.endtime_period) {
+          // Handle both API format (endDate) and draft format (endtime_period)
+          const endDateStr = project.endDate || project.endtime_period;
+          console.log('Prefill endDate:', endDateStr, typeof endDateStr);
+          if (endDateStr) {
+            // Handle different date formats
+            let endDate;
+            if (typeof endDateStr === 'string') {
+              // If it's already a date string in YYYY-MM-DD format, use it directly
+              endDate = endDateStr.includes('T') ? 
+                new Date(endDateStr).toISOString().split('T')[0] : endDateStr;
+            } else if (endDateStr instanceof Date) {
+              endDate = endDateStr.toISOString().split('T')[0];
+            } else {
+              // Try to parse as date
+              endDate = new Date(endDateStr).toISOString().split('T')[0];
+            }
+            console.log('Setting end date to:', endDate);
+            document.getElementById('endtime_period').value = endDate;
+          }
+        }
+        if (project.activityType || project.activity_type) {
+          document.getElementById('activity_type').value = project.activityType || project.activity_type;
+        }
 
         // Contact Information
-        if (project.contactPersonName) document.getElementById('contact_person_name').value = project.contactPersonName;
-        if (project.contactPersonRole) document.getElementById('contact_person_role').value = project.contactPersonRole;
-        if (project.contactPersonEmail) document.getElementById('contact_person_email').value = project.contactPersonEmail;
+        if (project.contactPersonName || project.contact_person_name) {
+          document.getElementById('contact_person_name').value = project.contactPersonName || project.contact_person_name;
+        }
+        if (project.contactPersonRole || project.contact_person_role) {
+          document.getElementById('contact_person_role').value = project.contactPersonRole || project.contact_person_role;
+        }
+        if (project.contactPersonEmail || project.contact_person_email) {
+          document.getElementById('contact_person_email').value = project.contactPersonEmail || project.contact_person_email;
+        }
 
         // Budget & Objectives
+        if (project.currency) document.getElementById('currency').value = project.currency;
         if (project.budget) document.getElementById('budget').value = project.budget;
         if (project.objectives) document.getElementById('objectives').value = project.objectives;
 
         // Themes
         if (project.themes && project.themes.length > 0) {
           project.themes.forEach(theme => {
-            const themeId = theme.id || theme.code || theme.name;
-            const checkbox = document.querySelector(`input[name="themes"][value="${themeId}"]`);
-            if (checkbox) {
-              checkbox.checked = true;
+            // Handle both API response format (object with code) and draft format (string)
+            const themeCode = typeof theme === 'string' ? theme : theme.code;
+            if (themeCode) {
+              const checkbox = document.querySelector(`input[name="themes"][value="${themeCode}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              }
             }
           });
-          updateThemeDisplay();
+          // Update theme display after checking boxes
+          updateThemeDisplayAfterPrefill();
         }
 
         // Locations
         if (project.locations && project.locations.length > 0) {
           // Clear existing locations
-          const locationsContainer = document.getElementById('locationsContainer');
-          if (locationsContainer) {
-            locationsContainer.innerHTML = '';
-          }
-
-          // Add locations
+          selectedLocations = [];
+          
+          // Add project locations to selectedLocations array
           project.locations.forEach((location, index) => {
-            if (index === 0) {
-              // First location - update existing fields
-              document.getElementById('countySelect').value = location.county || '';
-              document.getElementById('subCountySelect').value = location.subCounty || '';
+            const locationData = {
+              id: index + 1, // Use index as ID since we don't have the original ID
+              lat: location.latitude || location.lat,
+              lng: location.longitude || location.lng,
+              name: location.mapsAddress || location.name || null,
+              county: location.county || null,
+              subCounty: location.subCounty || null
+            };
+            selectedLocations.push(locationData);
+          });
+          
+          // Update the locations display
+          updateLocationsDisplay();
+          
+          // Also update the hidden form field
+          const locationsInput = document.getElementById('project_locations');
+          if (locationsInput) {
+            locationsInput.value = JSON.stringify(selectedLocations.map(loc => ({
+              county: loc.county,
+              subCounty: loc.subCounty,
+              mapsAddress: loc.name,
+              latitude: loc.lat,
+              longitude: loc.lng
+            })));
+          }
+          
+          // Set primary location in dropdowns (first location)
+          if (project.locations[0]) {
+            const primaryLocation = project.locations[0];
+            if (primaryLocation.county) {
+              document.getElementById('countySelect').value = primaryLocation.county;
               // Trigger sub-county update
               document.getElementById('countySelect').dispatchEvent(new Event('change'));
               
-              // Set map location if coordinates exist
-              if (location.latitude && location.longitude) {
-                // This would need to be implemented based on the map initialization
-              }
-            } else {
-              // Additional locations - add new location entries
-              // This would need to be implemented based on the location management code
+              // Set sub-county after a short delay to allow county change to process
+              setTimeout(() => {
+                if (primaryLocation.subCounty) {
+                  document.getElementById('subCountySelect').value = primaryLocation.subCounty;
+                }
+              }, 100);
             }
-          });
+          }
         }
 
         // Store project ID for form submission
@@ -1026,19 +1123,234 @@
         }
       }
 
+      // Fetch and display existing documents for edit mode
+      async function fetchAndDisplayExistingDocuments(projectId) {
+        try {
+          const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+          const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+
+          console.log('Fetching existing documents for project:', projectId);
+
+          const response = await fetch(`${API_BASE}/api/projects/${projectId}/documents`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            console.warn('Failed to fetch existing documents:', response.status);
+            return;
+          }
+
+          const data = await response.json();
+          const documents = data.data || [];
+
+          console.log('Fetched existing documents:', documents);
+
+          // Display existing documents
+          displayExistingDocuments(documents, projectId);
+
+        } catch (error) {
+          console.error('Error fetching existing documents:', error);
+        }
+      }
+
+      // Display existing documents in the file upload section
+      function displayExistingDocuments(documents, projectId) {
+        const selectedFilesDiv = document.getElementById("selectedFiles");
+        const filesList = document.getElementById("filesList");
+
+        if (documents.length === 0) {
+          return; // No existing documents to display
+        }
+
+        // Show the files section
+        selectedFilesDiv.classList.remove("hidden");
+
+        // Add existing documents to the list
+        documents.forEach((doc) => {
+
+        // Add existing documents to the list
+        documents.forEach((doc) => {
+          const fileDiv = document.createElement("div");
+          fileDiv.className = "flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200";
+          fileDiv.dataset.documentId = doc.id;
+          fileDiv.dataset.projectId = projectId;
+          fileDiv.dataset.fileName = doc.fileName;
+
+          const fileIcon = getFileIcon(doc.fileName);
+          const fileSize = formatFileSize(doc.size);
+
+          fileDiv.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <i class="${fileIcon} text-green-600"></i>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">${doc.fileName}</p>
+                <p class="text-xs text-gray-500">${fileSize} • Existing document</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button type="button" class="view-document-btn text-blue-500 hover:text-blue-700 transition-colors text-sm" title="View Document">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button type="button" class="download-document-btn text-green-500 hover:text-green-700 transition-colors text-sm" title="Download Document">
+                <i class="fas fa-download"></i>
+              </button>
+              <span class="text-xs text-green-600 font-medium">Existing</span>
+            </div>
+          `;
+
+          // Add event listeners to the buttons
+          const viewBtn = fileDiv.querySelector('.view-document-btn');
+          const downloadBtn = fileDiv.querySelector('.download-document-btn');
+
+          viewBtn.addEventListener('click', function() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+            const viewUrl = `${API_BASE}/api/projects/${projectId}/documents/${doc.id}/view`;
+            window.open(viewUrl, '_blank');
+          });
+
+          downloadBtn.addEventListener('click', function() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+            const downloadUrl = `${API_BASE}/api/projects/${projectId}/documents/${doc.id}`;
+            
+            fetch(downloadUrl, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.style.display = 'none';
+              link.setAttribute('download', doc.fileName);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+              console.error('Error downloading document:', error);
+              alert('Failed to download document. Please try again.');
+            });
+          });
+
+          filesList.appendChild(fileDiv);
+        });
+      }
+
+      // Download existing document - handled inline
+      /*
+      window.downloadExistingDocument = function(projectId, documentId, fileName) {
+        const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+        const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+        
+        // Create a temporary link to download the document
+        const downloadUrl = `${API_BASE}/api/projects/${projectId}/documents/${documentId}`;
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.style.display = 'none';
+        link.setAttribute('download', fileName);
+        
+        // Add authorization header (this might not work for downloads, but let's try)
+        fetch(downloadUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+          console.error('Error downloading document:', error);
+          alert('Failed to download document. Please try again.');
+        });
+      };
+      */
+
+      // Update theme display after pre-filling data
+      function updateThemeDisplayAfterPrefill() {
+        const themeCheckboxes = document.querySelectorAll('input[name="themes"]');
+        const themesCountDisplay = document.getElementById("themesCount");
+        const selectedThemesDisplay = document.getElementById("selectedThemesDisplay");
+
+        const selectedThemes = Array.from(themeCheckboxes)
+          .filter((checkbox) => checkbox.checked)
+          .map((checkbox) => checkbox.value);
+
+        if (themesCountDisplay) {
+          themesCountDisplay.textContent = selectedThemes.length;
+        }
+
+        // Update visual feedback for each theme option
+        themeCheckboxes.forEach((checkbox) => {
+          const themeOption = checkbox.closest(".theme-option");
+          if (themeOption) {
+            const checkmark = themeOption.querySelector(".checkmark");
+
+            if (checkbox.checked) {
+              themeOption.classList.add("border-blue-500", "bg-blue-50");
+              themeOption.classList.remove("border-gray-200", "hover:border-blue-400");
+              if (checkmark) checkmark.classList.remove("hidden");
+            } else {
+              themeOption.classList.remove("border-blue-500", "bg-blue-50");
+              themeOption.classList.add("border-gray-200");
+              if (checkmark) checkmark.classList.add("hidden");
+            }
+          }
+        });
+
+        // Update counter styling
+        if (selectedThemesDisplay) {
+          if (selectedThemes.length > 0) {
+            selectedThemesDisplay.classList.remove("bg-gray-100", "text-gray-600");
+            selectedThemesDisplay.classList.add("bg-blue-50", "text-blue-700");
+          } else {
+            selectedThemesDisplay.classList.remove("bg-blue-50", "text-blue-700");
+            selectedThemesDisplay.classList.add("bg-gray-100", "text-gray-600");
+          }
+        }
+      }
+
       // Initialize everything when DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
         // Check if we're in edit mode
         const urlParams = new URLSearchParams(window.location.search);
         const editProjectId = urlParams.get('edit');
         
+        console.log('Checking for edit mode. URL params:', window.location.search);
+        console.log('Edit project ID:', editProjectId);
+        
         if (editProjectId) {
           // We're in edit mode
+          console.log('Entering edit mode for project ID:', editProjectId);
           initializeEditMode(editProjectId);
         } else {
           // Normal create mode
+          console.log('Entering create mode');
           initializeCountyDropdown("countySelect", "subCountySelect");
-          initializeMap();
+          
+          // Initialize map (optional - skip if it fails)
+          try {
+            initializeMap();
+          } catch (mapError) {
+            console.warn('Map initialization failed in create mode, continuing without map:', mapError);
+          }
+          
           initializeThemeSelection();
           initializeFileUpload();
           initializeFormProgress();
@@ -1433,8 +1745,10 @@
           (loc) => loc.id === locationId
         );
         if (locationIndex !== -1) {
-          // Remove marker from map
-          selectedLocations[locationIndex].marker.remove();
+          // Remove marker from map (only if it exists)
+          if (selectedLocations[locationIndex].marker) {
+            selectedLocations[locationIndex].marker.remove();
+          }
 
           // Remove from arrays
           selectedLocations.splice(locationIndex, 1);
@@ -2729,7 +3043,13 @@
 
         // Make updateFileDisplay globally accessible
         window.updateFileDisplay = function () {
-          if (selectedFiles.length === 0) {
+          // Count existing documents (elements with data-document-id attribute)
+          const existingDocuments = filesList.querySelectorAll('[data-document-id]');
+          const existingCount = existingDocuments.length;
+          const newFilesCount = selectedFiles.length;
+          const totalCount = existingCount + newFilesCount;
+
+          if (totalCount === 0) {
             selectedFilesDiv.classList.add("hidden");
             documentsCount.classList.remove("bg-blue-50", "text-blue-700");
             documentsCount.classList.add("bg-gray-100", "text-gray-600");
@@ -2739,12 +3059,13 @@
             documentsCount.classList.add("bg-blue-50", "text-blue-700");
           }
 
-          docsCount.textContent = selectedFiles.length;
+          docsCount.textContent = totalCount;
 
-          // Clear existing list
-          filesList.innerHTML = "";
+          // Clear only new files from the list (keep existing documents)
+          const newFileElements = filesList.querySelectorAll('div:not([data-document-id])');
+          newFileElements.forEach(el => el.remove());
 
-          // Add files to list
+          // Re-add new files to the list (after existing documents)
           selectedFiles.forEach((file, index) => {
             const fileDiv = document.createElement("div");
             fileDiv.className =
@@ -2946,6 +3267,10 @@
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
+          // Check if we're in edit mode (declare at the beginning)
+          const form = document.getElementById('projectForm');
+          const isEditMode = form && form.dataset.projectId;
+
           // Show loading overlay
           const loadingOverlay = document.getElementById("loadingOverlay");
           loadingOverlay.classList.remove("hidden");
@@ -3059,27 +3384,25 @@
               return;
             }
 
-            // Validate NACOSTI Certificate requirement for Research & Learning theme
-            if (data.themes && data.themes.includes("RESEARCH_LEARNING")) {
-              const hasNacostiCert = selectedFiles.some(file =>
-                file.name.toLowerCase().includes("nacosti") ||
-                file.name.toLowerCase().includes("certificate") ||
-                file.name.toLowerCase().includes("nacosti certificate")
-              );
-
-              if (!hasNacostiCert) {
+            // Validate required date fields for edit mode
+            if (isEditMode) {
+              if (!data.start_date) {
                 await showAlert(
-                  "For Research & Learning projects, you must upload a NACOSTI Certificate (National Commission for Science, Technology and Innovation).",
-                  "Required Document Missing",
+                  "Start date is required for updating the project.",
+                  "Validation Error",
                   "warning"
                 );
-
-                // Scroll to supporting documents section
-                document.querySelector(".supporting-documents").scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-
+                // Hide loading overlay and re-enable submit button
+                loadingOverlay.classList.add("hidden");
+                enableSubmitButton();
+                return;
+              }
+              if (!data.end_date) {
+                await showAlert(
+                  "End date is required for updating the project.",
+                  "Validation Error",
+                  "warning"
+                );
                 // Hide loading overlay and re-enable submit button
                 loadingOverlay.classList.add("hidden");
                 enableSubmitButton();
@@ -3100,17 +3423,11 @@
               return;
             }
 
-            // Get current user for partner field
-            const currentUser = JSON.parse(
-              localStorage.getItem("user") || "{}"
-            );
-
-            // Create project object as expected by backend
+            // Create project object as expected by backend (isEditMode already declared)
             const projectData = {
               title: data.title,
-              partner: currentUser.email || data.contact_person_mail, // Use current user email or fallback
-              startDate: data.start_date,
-              endDate: data.end_date,
+              startDate: data.start_date || null,
+              endDate: data.end_date || null,
               activityType: data.activity_type,
               budget: parseFloat(data.budget) || 0,
               objectives: data.objectives,
@@ -3128,7 +3445,11 @@
               contactPersonName: data.contact_person_name,
               contactPersonRole: data.contact_person_role,
               contactPersonEmail: data.contact_person_mail,
-              projectCategory: "IMPLEMENTING", // Default category for new projects
+              projectCategory: "IMPLEMENTING", // Required for both create and update
+              // Only include partner for new projects
+              ...(isEditMode ? {} : {
+                partner: currentUser.email || data.contact_person_mail
+              })
             };
 
             console.log("Project data object to send:", projectData);
@@ -3245,21 +3566,35 @@
               token ? "Token found" : "No token"
             );
 
-            // Check if we're in edit mode
-            const form = document.getElementById('projectForm');
-            const isEditMode = form && form.dataset.projectId;
+            // Use the already declared isEditMode and method variables
             const method = isEditMode ? 'PUT' : 'POST';
             const url = isEditMode 
               ? `${window.BASE_URL}/api/projects/${form.dataset.projectId}`
               : `${window.BASE_URL}/api/projects`;
 
-            const response = await fetch(url, {
-              method: method,
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              body: finalFormData,
-            });
+            let response;
+            if (isEditMode) {
+              // For updates, send JSON data only (no files)
+              console.log("Sending JSON update request...");
+              response = await fetch(url, {
+                method: method,
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(projectData),
+              });
+            } else {
+              // For creates, send FormData with files
+              console.log("Sending FormData create request...");
+              response = await fetch(url, {
+                method: method,
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                body: finalFormData,
+              });
+            }
 
             console.log("Response status:", response.status);
             console.log(
