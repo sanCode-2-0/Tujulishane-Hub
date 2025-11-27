@@ -15,6 +15,7 @@ import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.ProjectCategory;
 import com.tujulishanehub.backend.services.ProjectService;
 import com.tujulishanehub.backend.services.ProjectCollaboratorService;
 import com.tujulishanehub.backend.services.UserService;
@@ -111,6 +112,14 @@ public class ProjectController {
             // Get authenticated user email
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
+
+            // Check if priority project is being created by non-admin
+            if (request.getProjectCategory() == ProjectCategory.PRIORITY) {
+                User currentUser = userService.findByEmail(userEmail).orElse(null);
+                if (currentUser == null || !currentUser.getRole().name().startsWith("SUPER_ADMIN")) {
+                    throw new RuntimeException("Only admin users can create priority projects");
+                }
+            }
 
             // Save project as usual
             Project createdProject = projectService.createProjectFromRequest(request, userEmail);

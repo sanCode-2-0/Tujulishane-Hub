@@ -772,7 +772,8 @@
 			{ code: 'CH', name: 'Child Health', icon: 'fas fa-child', color: 'green' },
 			{ code: 'A', name: 'AIDS/HIV', icon: 'fas fa-ribbon', color: 'gray' },
 			{ code: 'AS', name: 'Adolescent Sexuality', icon: 'fas fa-venus-mars', color: 'purple' },
-			{ code: 'MERL', name: 'M&E, Research, Learning', icon: 'fas fa-search', color: 'yellow' },
+			{ code: 'MONITORING_EVALUATION', name: 'Monitoring & Evaluation', icon: 'fas fa-chart-line', color: 'teal' },
+			{ code: 'RESEARCH_LEARNING', name: 'Research & Learning', icon: 'fas fa-search', color: 'cyan' },
 		];
 
 		// --- 4. KPI Definitions ---
@@ -874,11 +875,11 @@
 		// --- 6. ApexCharts Initialization ---
 
 		// Bar Chart Data (Project Status by Area)
-		var barCategories = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MERL"];
-		var activeData = [15, 20, 18, 12, 5, 25, 9, 7];
-		var pendingData = [8, 10, 7, 5, 3, 15, 4, 3];
-		var stalledData = [3, 4, 2, 1, 1, 5, 2, 1];
-		var completedData = [30, 45, 35, 25, 10, 50, 20, 15];
+		var barCategories = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
+		var activeData = [15, 20, 18, 12, 5, 25, 9, 7, 6];
+		var pendingData = [8, 10, 7, 5, 3, 15, 4, 3, 2];
+		var stalledData = [3, 4, 2, 1, 1, 5, 2, 1, 1];
+		var completedData = [30, 45, 35, 25, 10, 50, 20, 15, 10];
 
 		var barOptions = {
 			chart: {
@@ -904,9 +905,9 @@
 		};
 
 		// Donut Chart Data (Resource Distribution)
-		var donutSeriesData = [8, 14, 27, 21, 3, 2, 17, 8];
-		var donutLabels = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MERL"];
-		var donutColors = ["#EF4444", "#3B82F6", "#EC4899", "#6366F1", "#10B981", "#6B7280", "#9333ea", "#F59E0B"];
+		var donutSeriesData = [8, 14, 27, 21, 3, 2, 17, 8, 5];
+		var donutLabels = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
+		var donutColors = ["#EF4444", "#3B82F6", "#EC4899", "#6366F1", "#10B981", "#6B7280", "#9333ea", "#14B8A6", "#06B6D4"];
 
 		var donutOptions = {
 			chart: { type: "donut", height: 350 },

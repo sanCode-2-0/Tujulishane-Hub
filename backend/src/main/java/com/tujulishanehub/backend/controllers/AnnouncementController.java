@@ -38,10 +38,10 @@ public class AnnouncementController {
     private UserService userService;
     
     /**
-     * Create new announcement (Partners only)
+     * Create new announcement (Admins only)
      */
     @PostMapping
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Announcement>> createAnnouncement(
             @Valid @RequestBody AnnouncementRequest request) {
         try {

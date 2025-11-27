@@ -110,6 +110,45 @@
 								<p class="text-neutral-text dark:text-gray-300">Manage your projects, users, organizations, and more from this central hub.</p>
 							</div>
 						</div>
+						<!-- Dashboard Counters -->
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+							<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm font-medium text-neutral-text dark:text-gray-300">Partners</p>
+										<p class="text-2xl font-bold text-neutral-text dark:text-white" id="partners-count">0</p>
+									</div>
+									<span class="material-symbols-outlined text-primary text-3xl">group</span>
+								</div>
+							</div>
+							<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm font-medium text-neutral-text dark:text-gray-300">Thematic Areas</p>
+										<p class="text-2xl font-bold text-neutral-text dark:text-white" id="thematic-areas-count">0</p>
+									</div>
+									<span class="material-symbols-outlined text-primary text-3xl">category</span>
+								</div>
+							</div>
+							<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm font-medium text-neutral-text dark:text-gray-300">Counties</p>
+										<p class="text-2xl font-bold text-neutral-text dark:text-white" id="counties-count">0</p>
+									</div>
+									<span class="material-symbols-outlined text-primary text-3xl">location_on</span>
+								</div>
+							</div>
+							<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm font-medium text-neutral-text dark:text-gray-300">Total Budget</p>
+										<p class="text-2xl font-bold text-neutral-text dark:text-white" id="budget-count">0</p>
+									</div>
+									<span class="material-symbols-outlined text-primary text-3xl">attach_money</span>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div id="tab-projects" class="tab-section" style="display:none;">
 						<!-- Projects Card -->
@@ -128,26 +167,28 @@
 									<thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800">
 										<tr>
 											<th class="px-6 py-3" scope="col">Title</th>
-											<th class="px-6 py-3" scope="col">Partner</th>
+											<th class="px-6 py-3" scope="col">Partner Name</th>
 											<th class="px-6 py-3" scope="col">Project No</th>
 											<th class="px-6 py-3" scope="col">Category</th>
 											<th class="px-6 py-3" scope="col">Status</th>
 											<th class="px-6 py-3" scope="col">Start Date</th>
 											<th class="px-6 py-3" scope="col">End Date</th>
 											<th class="px-6 py-3" scope="col">Budget</th>
+											<th class="px-6 py-3" scope="col">Locations</th>
 											<th class="px-6 py-3" scope="col">Created At</th>
 											<th class="px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
 										</tr>
 										<tr class="filter-row bg-gray-100 dark:bg-gray-700">
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Title" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="0"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Partner" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="1"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Partner Name" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="1"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Project No" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="2"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Category" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="3"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Status" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="4"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Start Date" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="5"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter End Date" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="6"></th>
 											<th class="px-6 py-2"><input type="text" placeholder="Filter Budget" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="7"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="8"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Locations" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="8"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At" class="filter-input w-full px-2 py-1 text-xs border rounded" data-column="9"></th>
 											<th class="px-6 py-2"></th>
 										</tr>
 									</thead>
@@ -267,6 +308,10 @@
 							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
 								<h3 class="text-lg font-bold text-neutral-text dark:text-white">Announcements</h3>
 								<div class="flex items-center gap-2">
+									<button id="create-announcement-btn" class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-primary text-white pl-3 pr-2 text-sm font-medium hover:bg-primary/90">
+										<span class="material-symbols-outlined text-base">add</span>
+										<span>Create Announcement</span>
+									</button>
 									<button class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-background-light dark:bg-gray-800 pl-3 pr-2 text-sm font-medium text-neutral-text dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">
 										<span class="material-symbols-outlined text-base">file_download</span>
 										<span>Export CSV</span>
@@ -309,6 +354,41 @@
 									<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" href="#">Next</a></li>
 								</ul>
 							</nav>
+						</div>
+						<!-- Create Announcement Modal -->
+						<div id="create-announcement-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+							<div class="flex items-center justify-center min-h-screen p-4">
+								<div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-md w-full">
+									<div class="p-6">
+										<h3 class="text-lg font-bold text-neutral-text dark:text-white mb-4">Create Announcement</h3>
+										<form id="create-announcement-form">
+											<div class="mb-4">
+												<label class="block text-sm font-medium text-neutral-text dark:text-gray-300 mb-2">Title</label>
+												<input type="text" id="announcement-title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-neutral-text dark:text-gray-200" required>
+											</div>
+											<div class="mb-4">
+												<label class="block text-sm font-medium text-neutral-text dark:text-gray-300 mb-2">Content</label>
+												<textarea id="announcement-content" rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-neutral-text dark:text-gray-200" required></textarea>
+											</div>
+											<div class="mb-4">
+												<label class="block text-sm font-medium text-neutral-text dark:text-gray-300 mb-2">Deadline (optional)</label>
+												<input type="date" id="announcement-deadline" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-neutral-text dark:text-gray-200">
+											</div>
+											<div class="mb-4">
+												<label class="block text-sm font-medium text-neutral-text dark:text-gray-300 mb-2">Collaboration Type</label>
+												<select id="announcement-collaboration-type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-neutral-text dark:text-gray-200">
+													<option value="OPEN">Open</option>
+													<option value="INVITATION_ONLY">Invitation Only</option>
+												</select>
+											</div>
+											<div class="flex justify-end gap-2">
+												<button type="button" id="cancel-announcement-btn" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Cancel</button>
+												<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg">Create</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div id="tab-collaboration" class="tab-section" style="display:none;">
@@ -664,6 +744,10 @@ function renderTable(tabId, data, columns) {
       if (col === 'size' && value) {
         value = formatFileSize(value);
       }
+      // Format locations
+      if (col === 'locations' && Array.isArray(value)) {
+        value = value.map(loc => loc.county).join(', ');
+      }
       td.textContent = value;
       row.appendChild(td);
     });
@@ -697,7 +781,7 @@ async function fetchProjects() {
       console.error('Projects data not array:', projects);
       return;
     }
-    renderTable('tab-projects', projects, ['title', 'partner', 'projectNo', 'projectCategory', 'status', 'startDate', 'endDate', 'budget', 'createdAt']);
+    renderTable('tab-projects', projects, ['title', 'partnerName', 'projectNo', 'projectCategory', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt']);
     // Add column-wise search functionality
     const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
     filterInputs.forEach(input => {
@@ -725,7 +809,7 @@ async function fetchProjects() {
       });
     }
     function exportTableToCSV(filename) {
-      const headers = ['Title', 'Partner', 'Project No', 'Category', 'Status', 'Start Date', 'End Date', 'Budget', 'Created At'];
+      const headers = ['Title', 'Partner Name', 'Project No', 'Category', 'Status', 'Start Date', 'End Date', 'Budget', 'Locations', 'Created At'];
       const rows = document.querySelectorAll('#tab-projects tbody tr:not([style*="display: none"])');
       let csv = headers.join(',') + '\n';
       rows.forEach(row => {
@@ -1159,6 +1243,46 @@ async function fetchProjectCollaborators() {
   }
 }
 
+async function fetchDashboardStats() {
+  try {
+    // Fetch projects for thematic areas, counties, budget
+    const projectsResponse = await apiFetch('/api/projects');
+    const projectsData = await projectsResponse.json();
+    const projects = projectsData.data?.projects || projectsData.data?.content || projectsData.data || [];
+
+    // Fetch users for partners count
+    const usersResponse = await apiFetch('/api/auth/admin/users');
+    const usersData = await usersResponse.json();
+    const users = usersData.data?.users || usersData.data?.content || usersData.data || [];
+
+    // Calculate stats
+    const partnersCount = users.filter(user => user.role === 'PARTNER').length;
+    const thematicAreas = new Set();
+    const counties = new Set();
+    let totalBudget = 0;
+
+    projects.forEach(project => {
+      if (project.themes) {
+        project.themes.forEach(theme => thematicAreas.add(theme.code));
+      }
+      if (project.locations) {
+        project.locations.forEach(location => counties.add(location.county));
+      }
+      if (project.budget) {
+        totalBudget += parseFloat(project.budget) || 0;
+      }
+    });
+
+    // Update counters
+    document.getElementById('partners-count').textContent = partnersCount;
+    document.getElementById('thematic-areas-count').textContent = thematicAreas.size;
+    document.getElementById('counties-count').textContent = counties.size;
+    document.getElementById('budget-count').textContent = 'KES ' + totalBudget.toLocaleString();
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+  }
+}
+
 async function fetchProjectDocuments() {
   try {
     const response = await apiFetch('/api/project-documents');
@@ -1352,7 +1476,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 		if (tabSections[tab]) {
 			tabSections[tab].style.display = '';
-			if (tab === 'projects') fetchProjects();
+			if (tab === 'dashboard') fetchDashboardStats();
+			else if (tab === 'projects') fetchProjects();
 			else if (tab === 'users') fetchUsers();
 			else if (tab === 'organizations') fetchOrganizations();
 			else if (tab === 'announcements') fetchAnnouncements();
@@ -1376,6 +1501,52 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 	// Show first tab by default
 	showTab(tabs[0].key);
+
+	// Announcement modal handlers
+	const createAnnouncementBtn = document.getElementById('create-announcement-btn');
+	const createAnnouncementModal = document.getElementById('create-announcement-modal');
+	const cancelAnnouncementBtn = document.getElementById('cancel-announcement-btn');
+	const createAnnouncementForm = document.getElementById('create-announcement-form');
+
+	createAnnouncementBtn.addEventListener('click', () => {
+		createAnnouncementModal.classList.remove('hidden');
+	});
+
+	cancelAnnouncementBtn.addEventListener('click', () => {
+		createAnnouncementModal.classList.add('hidden');
+		createAnnouncementForm.reset();
+	});
+
+	createAnnouncementForm.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const title = document.getElementById('announcement-title').value;
+		const content = document.getElementById('announcement-content').value;
+		const deadline = document.getElementById('announcement-deadline').value;
+		const collaborationType = document.getElementById('announcement-collaboration-type').value;
+
+		try {
+			const response = await apiFetch('/api/announcements', {
+				method: 'POST',
+				body: JSON.stringify({
+					title,
+					content,
+					deadline: deadline || null,
+					collaborationType
+				})
+			});
+			if (response.ok) {
+				alert('Announcement created successfully!');
+				createAnnouncementModal.classList.add('hidden');
+				createAnnouncementForm.reset();
+				fetchAnnouncements(); // Refresh the table
+			} else {
+				alert('Failed to create announcement');
+			}
+		} catch (error) {
+			console.error('Error creating announcement:', error);
+			alert('Error creating announcement');
+		}
+	});
 });
 </script>
 </body>

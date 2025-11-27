@@ -14,6 +14,7 @@ public class ProjectResponse {
     private Long id;
     private String projectNo;
     private String partner;
+    private String partnerName;
     private String title;
     private ProjectCategory projectCategory;
     private LocalDate startDate;
@@ -58,6 +59,14 @@ public class ProjectResponse {
 
     public void setPartner(String partner) {
         this.partner = partner;
+    }
+
+    public String getPartnerName() {
+        return partnerName;
+    }
+
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
     }
 
     public String getTitle() {

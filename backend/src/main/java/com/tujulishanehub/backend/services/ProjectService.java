@@ -5,6 +5,7 @@ import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.ProjectLocation;
 import com.tujulishanehub.backend.models.ProjectTheme;
 import com.tujulishanehub.backend.models.ProjectThemeAssignment;
+import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.repositories.ProjectRepository;
 import com.tujulishanehub.backend.payload.ProjectCreateRequest;
 import com.tujulishanehub.backend.payload.ProjectLocationDto;
@@ -461,6 +462,11 @@ public class ProjectService {
             response.setId(project.getId());
             response.setProjectNo(project.getProjectNo());
             response.setPartner(project.getPartner());
+            // Set partner name
+            Optional<User> partnerUser = userService.findByEmail(project.getPartner());
+            if (partnerUser.isPresent()) {
+                response.setPartnerName(partnerUser.get().getName());
+            }
             response.setTitle(project.getTitle());
             response.setProjectCategory(project.getProjectCategory());
             response.setStartDate(project.getStartDate());
