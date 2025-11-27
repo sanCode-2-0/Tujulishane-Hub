@@ -1558,6 +1558,10 @@
             themeContainer.classList.add("border-gray-200");
             themeValidationError.classList.add("hidden");
           }
+
+          // Update file upload section based on theme selection
+          // Note: new-priority.html doesn't have a separate supporting documents step,
+          // but we can still validate NACOSTI requirement during submission
         }
 
         themeCheckboxes.forEach((checkbox) => {
@@ -1986,6 +1990,34 @@
                 block: "center",
               });
               return;
+            }
+
+            // Validate NACOSTI Certificate requirement for Research & Learning theme
+            if (data.themes && data.themes.includes("RESEARCH_LEARNING")) {
+              const hasNacostiCert = selectedFiles.some(file =>
+                file.name.toLowerCase().includes("nacosti") ||
+                file.name.toLowerCase().includes("certificate") ||
+                file.name.toLowerCase().includes("nacosti certificate")
+              );
+
+              if (!hasNacostiCert) {
+                await showAlert(
+                  "For Research & Learning projects, you must upload a NACOSTI Certificate (National Commission for Science, Technology and Innovation).",
+                  "Required Document Missing",
+                  "warning"
+                );
+
+                // Scroll to the bottom of the form where files would be uploaded
+                window.scrollTo({
+                  top: document.body.scrollHeight,
+                  behavior: "smooth",
+                });
+
+                // Hide loading overlay and re-enable submit button
+                loadingOverlay.classList.add("hidden");
+                enableSubmitButton();
+                return;
+              }
             }
 
             if (!data.locations || data.locations.length === 0) {

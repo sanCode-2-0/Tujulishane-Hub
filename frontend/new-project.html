@@ -782,7 +782,7 @@
               <div class="flex items-center justify-between mb-4">
                 <label class="block text-lg font-semibold text-gray-800">
                   Supporting Documents
-                  <span class="font-light text-sm ml-1">(optional)</span>
+                  <span class="font-light text-sm ml-1" id="documentsRequiredText">(optional)</span>
                 </label>
                 <div
                   id="documentsCount"
@@ -791,6 +791,23 @@
                   <i class="fas fa-file mr-1"></i>
                   <span id="docsCount">0</span> files
                 </div>
+              </div>
+
+              <!-- Conditional Required Documents for Research Theme -->
+              <div id="researchRequiredDocs" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h4 class="text-sm font-semibold text-amber-800 mb-2 flex items-center">
+                  <i class="fas fa-exclamation-triangle mr-2"></i>
+                  Required Documents for Research & Learning Projects
+                </h4>
+                <ul class="text-sm text-amber-700 space-y-1">
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle mr-2 text-amber-600"></i>
+                    NACOSTI Certificate (National Commission for Science, Technology and Innovation)
+                  </li>
+                </ul>
+                <p class="text-xs text-amber-600 mt-2">
+                  These documents are mandatory when "Research and Learning" theme is selected.
+                </p>
               </div>
 
               <p class="text-sm text-gray-600 mb-4">
@@ -2436,6 +2453,22 @@
             themeContainer.classList.add("border-gray-200");
             themeValidationError.classList.add("hidden");
           }
+
+          // Update supporting documents section based on theme selection
+          const researchRequiredDocs = document.getElementById("researchRequiredDocs");
+          const documentsRequiredText = document.getElementById("documentsRequiredText");
+
+          if (selectedThemes.includes("RESEARCH_LEARNING")) {
+            researchRequiredDocs.classList.remove("hidden");
+            documentsRequiredText.textContent = "(NACOSTI Certificate required)";
+            documentsRequiredText.classList.add("text-amber-600", "font-medium");
+            documentsRequiredText.classList.remove("font-light");
+          } else {
+            researchRequiredDocs.classList.add("hidden");
+            documentsRequiredText.textContent = "(optional)";
+            documentsRequiredText.classList.remove("text-amber-600", "font-medium");
+            documentsRequiredText.classList.add("font-light");
+          }
         }
 
         themeCheckboxes.forEach((checkbox) => {
@@ -2893,6 +2926,34 @@
               loadingOverlay.classList.add("hidden");
               enableSubmitButton();
               return;
+            }
+
+            // Validate NACOSTI Certificate requirement for Research & Learning theme
+            if (data.themes && data.themes.includes("RESEARCH_LEARNING")) {
+              const hasNacostiCert = selectedFiles.some(file =>
+                file.name.toLowerCase().includes("nacosti") ||
+                file.name.toLowerCase().includes("certificate") ||
+                file.name.toLowerCase().includes("nacosti certificate")
+              );
+
+              if (!hasNacostiCert) {
+                await showAlert(
+                  "For Research & Learning projects, you must upload a NACOSTI Certificate (National Commission for Science, Technology and Innovation).",
+                  "Required Document Missing",
+                  "warning"
+                );
+
+                // Scroll to supporting documents section
+                document.querySelector(".supporting-documents").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+
+                // Hide loading overlay and re-enable submit button
+                loadingOverlay.classList.add("hidden");
+                enableSubmitButton();
+                return;
+              }
             }
 
             if (!data.locations || data.locations.length === 0) {
