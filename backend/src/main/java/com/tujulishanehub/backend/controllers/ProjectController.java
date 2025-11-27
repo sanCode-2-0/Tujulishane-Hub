@@ -333,6 +333,7 @@ public class ProjectController {
      * Delete project
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Object>> deleteProject(@PathVariable Long id) {
         try {
             projectService.deleteProject(id);

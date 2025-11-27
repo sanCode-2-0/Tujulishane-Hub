@@ -905,19 +905,150 @@
       const DRAFT_KEY = "projectFormDraft";
       const DRAFT_EXPIRY_DAYS = 7; // Keep draft for 7 days
 
+      // Initialize edit mode
+      async function initializeEditMode(projectId) {
+        try {
+          // Update page title
+          const titleElement = document.querySelector('h2.text-2xl');
+          if (titleElement) {
+            titleElement.textContent = 'Edit Project';
+          }
+
+          // Update progress text
+          const progressText = document.getElementById('progressText');
+          if (progressText) {
+            progressText.textContent = 'Loading project data...';
+          }
+
+          // Fetch project data
+          const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+          const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+
+          const response = await fetch(`${API_BASE}/api/projects/${projectId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch project data');
+          }
+
+          const data = await response.json();
+          const project = data.data;
+
+          // Initialize form components
+          initializeCountyDropdown("countySelect", "subCountySelect");
+          initializeMap();
+          initializeThemeSelection();
+          initializeFileUpload();
+          initializeFormProgress();
+          initializeBudgetFormatting();
+
+          // Pre-fill form with project data
+          await prefillFormWithProjectData(project);
+
+          // Update progress text back to normal
+          if (progressText) {
+            progressText.textContent = 'Step 1 of 6: Project Location';
+          }
+
+        } catch (error) {
+          console.error('Error initializing edit mode:', error);
+          alert('Failed to load project data for editing. Redirecting to project list.');
+          window.location.href = 'projects.html';
+        }
+      }
+
+      // Pre-fill form with project data
+      async function prefillFormWithProjectData(project) {
+        // Basic Information
+        if (project.title) document.getElementById('title').value = project.title;
+        if (project.startDate) document.getElementById('starttime_period').value = project.startDate.split('T')[0];
+        if (project.endDate) document.getElementById('endtime_period').value = project.endDate.split('T')[0];
+        if (project.activityType) document.getElementById('activity_type').value = project.activityType;
+
+        // Contact Information
+        if (project.contactPersonName) document.getElementById('contact_person_name').value = project.contactPersonName;
+        if (project.contactPersonRole) document.getElementById('contact_person_role').value = project.contactPersonRole;
+        if (project.contactPersonEmail) document.getElementById('contact_person_email').value = project.contactPersonEmail;
+
+        // Budget & Objectives
+        if (project.budget) document.getElementById('budget').value = project.budget;
+        if (project.objectives) document.getElementById('objectives').value = project.objectives;
+
+        // Themes
+        if (project.themes && project.themes.length > 0) {
+          project.themes.forEach(theme => {
+            const themeId = theme.id || theme.code || theme.name;
+            const checkbox = document.querySelector(`input[name="themes"][value="${themeId}"]`);
+            if (checkbox) {
+              checkbox.checked = true;
+            }
+          });
+          updateThemeDisplay();
+        }
+
+        // Locations
+        if (project.locations && project.locations.length > 0) {
+          // Clear existing locations
+          const locationsContainer = document.getElementById('locationsContainer');
+          if (locationsContainer) {
+            locationsContainer.innerHTML = '';
+          }
+
+          // Add locations
+          project.locations.forEach((location, index) => {
+            if (index === 0) {
+              // First location - update existing fields
+              document.getElementById('countySelect').value = location.county || '';
+              document.getElementById('subCountySelect').value = location.subCounty || '';
+              // Trigger sub-county update
+              document.getElementById('countySelect').dispatchEvent(new Event('change'));
+              
+              // Set map location if coordinates exist
+              if (location.latitude && location.longitude) {
+                // This would need to be implemented based on the map initialization
+              }
+            } else {
+              // Additional locations - add new location entries
+              // This would need to be implemented based on the location management code
+            }
+          });
+        }
+
+        // Store project ID for form submission
+        const form = document.getElementById('projectForm');
+        if (form) {
+          form.dataset.projectId = project.id;
+        }
+      }
+
       // Initialize everything when DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
-        initializeCountyDropdown("countySelect", "subCountySelect");
-        initializeMap();
-        initializeThemeSelection();
-        initializeFileUpload();
-        initializeFormProgress();
-        initializeBudgetFormatting();
+        // Check if we're in edit mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const editProjectId = urlParams.get('edit');
+        
+        if (editProjectId) {
+          // We're in edit mode
+          initializeEditMode(editProjectId);
+        } else {
+          // Normal create mode
+          initializeCountyDropdown("countySelect", "subCountySelect");
+          initializeMap();
+          initializeThemeSelection();
+          initializeFileUpload();
+          initializeFormProgress();
+          initializeBudgetFormatting();
 
-        // Restore draft after a short delay to ensure all initializations are complete
-        setTimeout(() => {
-          restoreFormDraft();
-        }, 500);
+          // Restore draft after a short delay to ensure all initializations are complete
+          setTimeout(() => {
+            restoreFormDraft();
+          }, 500);
+        }
       });
 
       // Save form data to localStorage
@@ -3114,8 +3245,16 @@
               token ? "Token found" : "No token"
             );
 
-            const response = await fetch(`${window.BASE_URL}/api/projects`, {
-              method: "POST",
+            // Check if we're in edit mode
+            const form = document.getElementById('projectForm');
+            const isEditMode = form && form.dataset.projectId;
+            const method = isEditMode ? 'PUT' : 'POST';
+            const url = isEditMode 
+              ? `${window.BASE_URL}/api/projects/${form.dataset.projectId}`
+              : `${window.BASE_URL}/api/projects`;
+
+            const response = await fetch(url, {
+              method: method,
               headers: {
                 Authorization: `Bearer ${token}`,
               },
@@ -3130,7 +3269,7 @@
 
             if (response.ok) {
               const result = await response.json();
-              console.log("Project created successfully!", result);
+              console.log(`Project ${isEditMode ? 'updated' : 'created'} successfully!`, result);
 
               // Clear the draft from localStorage after successful submission
               clearFormDraft();
@@ -3143,24 +3282,30 @@
               const projectNumber = result.data?.projectNo || result.projectNo || 'N/A';
               
               // Show success message with project number and copy option
+              const successMessage = isEditMode 
+                ? 'Your project has been updated successfully!'
+                : 'Your project has been created successfully!';
+              
               const projectNumberHtml = `
                 <div class="text-center">
-                  <p class="text-lg mb-4">Your project has been created successfully!</p>
-                  <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Your Project Number:</p>
-                    <p class="text-2xl font-bold text-blue-700" id="projectNumberDisplay">${projectNumber}</p>
-                  </div>
-                  <button onclick="navigator.clipboard.writeText('${projectNumber}').then(() => alert('Project number copied to clipboard!'))" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                    <i class="fas fa-copy mr-2"></i>Copy Project Number
-                  </button>
-                  <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
+                  <p class="text-lg mb-4">${successMessage}</p>
+                  ${!isEditMode ? `
+                    <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+                      <p class="text-sm text-gray-600 mb-2">Your Project Number:</p>
+                      <p class="text-2xl font-bold text-blue-700" id="projectNumberDisplay">${projectNumber}</p>
+                    </div>
+                    <button onclick="navigator.clipboard.writeText('${projectNumber}').then(() => alert('Project number copied to clipboard!'))" 
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                      <i class="fas fa-copy mr-2"></i>Copy Project Number
+                    </button>
+                    <p class="text-sm text-gray-600 mt-4">⚠️ Please save this project number for future reference.</p>
+                  ` : ''}
                 </div>
               `;
               
               await showAlert(
                 projectNumberHtml,
-                "Project Created Successfully!",
+                `Project ${isEditMode ? 'Updated' : 'Created'} Successfully!`,
                 "success"
               );
               window.location.href = "projects.html";
@@ -3214,8 +3359,9 @@
               loadingOverlay.classList.add("hidden");
               enableSubmitButton();
 
+              const action = isEditMode ? 'update' : 'create';
               await showAlert(
-                "Failed to create project: " + errorMessage,
+                `Failed to ${action} project: ` + errorMessage,
                 "Error",
                 "error"
               );
