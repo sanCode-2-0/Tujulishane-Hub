@@ -626,7 +626,7 @@ public class ProjectService {
                         "- Status: Active\n\n" +
                         "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         project.getContactPersonName() != null ? project.getContactPersonName() : "User",
                         project.getTitle(),
                         project.getProjectNo() != null ? project.getProjectNo() : "N/A",
@@ -676,7 +676,7 @@ public class ProjectService {
                         "If you have any questions or would like to resubmit your project with corrections, " +
                         "please contact the MOH administrator or update your project accordingly.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         project.getContactPersonName() != null ? project.getContactPersonName() : "User",
                         project.getTitle(),
                         project.getProjectNo() != null ? project.getProjectNo() : "N/A",
@@ -757,7 +757,7 @@ public class ProjectService {
                         "- Reviewer Comments: %s\n\n" +
                         "%s\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         project.getContactPersonName() != null ? project.getContactPersonName() : "User",
                         project.getTitle(),
                         project.getProjectNo() != null ? project.getProjectNo() : "N/A",
@@ -828,7 +828,7 @@ public class ProjectService {
                         "- Status: Active\n\n" +
                         "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         project.getContactPersonName() != null ? project.getContactPersonName() : "User",
                         project.getTitle(),
                         project.getProjectNo() != null ? project.getProjectNo() : "N/A",
@@ -878,7 +878,7 @@ public class ProjectService {
                         "- Rejection Reason: %s\n\n" +
                         "Please address the issues mentioned and resubmit your project for review.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         project.getContactPersonName() != null ? project.getContactPersonName() : "User",
                         project.getTitle(),
                         project.getProjectNo() != null ? project.getProjectNo() : "N/A",

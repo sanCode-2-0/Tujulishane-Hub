@@ -102,16 +102,16 @@ public class UserService {
         
         // Send OTP via email
         String accountType = role == User.Role.DONOR ? "Donor" : "Partner";
-        String subject = "Tujulishane Hub - " + accountType + " Account Email Verification";
+        String subject = "RMCAH Hub - " + accountType + " Account Email Verification";
         String body = String.format(
             "Hello %s,\n\n" +
-            "Thank you for registering as a %s with Tujulishane Hub!\n\n" +
+            "Thank you for registering as a %s with RMCAH Hub!\n\n" +
             "Your verification OTP is: %s\n\n" +
             "This OTP will expire in 10 minutes.\n\n" +
             "Please note: Your account is pending approval by the MOH administrator. " +
             "You will receive another email once your account is approved.\n\n" +
             "Best regards,\n" +
-            "Tujulishane Hub Team",
+            "RMCAH Hub Team",
             name, accountType.toLowerCase(), otp
         );
         emailService.sendEmail(email, subject, body);
@@ -224,14 +224,14 @@ public class UserService {
         userRepository.save(user);
         
         // Send OTP via email
-        String subject = "Tujulishane Hub - Login OTP";
+        String subject = "RMCAH Hub - Login OTP";
         String body = String.format(
             "Hello %s,\n\n" +
             "Your login OTP is: %s\n\n" +
             "This OTP will expire in 10 minutes.\n\n" +
             "If you did not request this, please ignore this email.\n\n" +
             "Best regards,\n" +
-            "Tujulishane Hub Team",
+            "RMCAH Hub Team",
             user.getName(), otp
         );
         emailService.sendEmail(email, subject, body);
@@ -498,7 +498,7 @@ public class UserService {
                         "\n" +
                         "You can now view your donor details in the Donor Management section.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         partner.getName(),
                         donor.getName(),
                         donor.getName(),
@@ -523,7 +523,7 @@ public class UserService {
                         "\n" +
                         "You can now manage this partnership through the Donor Management portal.\n\n" +
                         "Best regards,\n" +
-                        "Tujulishane Hub Team",
+                        "RMCAH Hub Team",
                         donor.getName(),
                         partner.getName(),
                         partner.getEmail()
@@ -567,7 +567,7 @@ public class UserService {
                             "Your partnership with the donor organization %s has been ended.\n\n" +
                             "If you have any questions about this change, please contact the administrator.\n\n" +
                             "Best regards,\n" +
-                            "Tujulishane Hub Team",
+                            "RMCAH Hub Team",
                             partner.getName(),
                             donor.getName()
                         );
@@ -586,7 +586,7 @@ public class UserService {
                             "Name: %s\n" +
                             "Email: %s\n\n" +
                             "Best regards,\n" +
-                            "Tujulishane Hub Team",
+                            "RMCAH Hub Team",
                             donor.getName(),
                             partner.getName(),
                             partner.getName(),
