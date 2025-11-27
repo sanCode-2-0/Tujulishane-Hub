@@ -20,6 +20,7 @@ public class ProjectResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private String activityType;
+    private String county;
     private List<ProjectThemeDto> themes;
     private List<ProjectLocationDto> locations;
     private String contactPersonName;
@@ -107,6 +108,14 @@ public class ProjectResponse {
 
     public void setActivityType(String activityType) {
         this.activityType = activityType;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
     }
 
     public List<ProjectThemeDto> getThemes() {

@@ -472,6 +472,7 @@ public class ProjectService {
             response.setStartDate(project.getStartDate());
             response.setEndDate(project.getEndDate());
             response.setActivityType(project.getActivityType());
+            response.setCounty(project.getCounty());
             response.setContactPersonName(project.getContactPersonName());
             response.setContactPersonRole(project.getContactPersonRole());
             response.setContactPersonEmail(project.getContactPersonEmail());
