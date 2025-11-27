@@ -109,6 +109,17 @@ public class ProjectController {
             logger.debug("Controller: Full request data - title: {}, themes: {}, locations: {}, partner: {}",
                 request.getTitle(), request.getThemes(), request.getLocations(), request.getPartner());
 
+            // Log files info
+            if (files != null && !files.isEmpty()) {
+                logger.info("Controller: Received {} supporting documents", files.size());
+                for (MultipartFile file : files) {
+                    logger.info("Controller: File - name: {}, size: {}, type: {}", 
+                        file.getOriginalFilename(), file.getSize(), file.getContentType());
+                }
+            } else {
+                logger.info("Controller: No supporting documents received");
+            }
+
             // Get authenticated user email
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
@@ -126,7 +137,9 @@ public class ProjectController {
 
             // Save files as blobs
             if (files != null) {
+                logger.info("Controller: Processing {} files for project {}", files.size(), createdProject.getId());
                 for (MultipartFile file : files) {
+                    logger.info("Controller: Saving file: {}", file.getOriginalFilename());
                     ProjectDocument doc = new ProjectDocument();
                     doc.setFileName(file.getOriginalFilename());
                     doc.setFileType(file.getContentType());
@@ -142,7 +155,10 @@ public class ProjectController {
                     doc.setCreatedAt(now);
                     
                     projectDocumentRepository.save(doc);
+                    logger.info("Controller: Successfully saved document: {} for project {}", 
+                        file.getOriginalFilename(), createdProject.getId());
                 }
+                logger.info("Controller: All documents saved for project {}", createdProject.getId());
             }
             logger.debug("Controller: Request validation passed, user authenticated");
             logger.debug("Controller: Authenticated user: {}", userEmail);
@@ -272,61 +288,111 @@ public class ProjectController {
     /**
      * Update project (Owner, Admin, or Collaborator with EDITOR/CO_OWNER role)
      */
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
-            @PathVariable Long id, 
-            @Valid @RequestBody ProjectUpdateRequest request) {
-        
+            @PathVariable Long id,
+            @RequestPart("project") String projectJson,
+            @RequestPart(value = "supporting_documents", required = false) List<MultipartFile> files) {
+
         try {
-            // Get authenticated user
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            // Parse the JSON string to ProjectUpdateRequest
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            ProjectUpdateRequest request = objectMapper.readValue(projectJson, ProjectUpdateRequest.class);
+
+            // Log brief info to console
+            logger.info("Controller: Updating project: {}", request.getTitle());
+            logger.debug("Controller: Full request data - title: {}, themes: {}, locations: {}",
+                request.getTitle(), request.getThemes(), request.getLocations());
+
+            // Log files info
+            if (files != null && !files.isEmpty()) {
+                logger.info("Controller: Received {} supporting documents for update", files.size());
+                for (MultipartFile file : files) {
+                    logger.info("Controller: File - name: {}, size: {}, type: {}",
+                        file.getOriginalFilename(), file.getSize(), file.getContentType());
+                }
+            } else {
+                logger.info("Controller: No supporting documents received for update");
+            }
+
+            // Get authenticated user email
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
-            
+
             // Check if user is admin, super admin, owner, or collaborator with edit permission
             boolean isAdmin = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") ||
                                    a.getAuthority().equals("ROLE_SUPER_ADMIN") ||
                                    a.getAuthority().equals("ROLE_SUPER_ADMIN_REVIEWER") ||
                                    a.getAuthority().equals("ROLE_SUPER_ADMIN_APPROVER"));
             boolean isOwner = projectService.isProjectOwner(id, userEmail);
             boolean canEdit = projectCollaboratorService.canEditProject(id, userEmail);
-            
+
             if (!isAdmin && !isOwner && !canEdit) {
                 logger.warn("User {} attempted to edit project {} without permission", userEmail, id);
                 ApiResponse<ProjectResponse> response = new ApiResponse<>(
-                    HttpStatus.FORBIDDEN.value(), 
-                    "You don't have permission to edit this project", 
+                    HttpStatus.FORBIDDEN.value(),
+                    "You don't have permission to edit this project",
                     null
                 );
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
-            
+
             // Update the project with tracking
             Project updatedProject = projectService.updateProject(id, request, userEmail);
+
+            // Save files as blobs if provided
+            if (files != null) {
+                logger.info("Controller: Processing {} files for project update {}", files.size(), id);
+                for (MultipartFile file : files) {
+                    logger.info("Controller: Saving file: {}", file.getOriginalFilename());
+                    ProjectDocument doc = new ProjectDocument();
+                    doc.setFileName(file.getOriginalFilename());
+                    doc.setFileType(file.getContentType());
+                    doc.setFileSize(file.getSize()); // Store file size
+                    doc.setData(file.getBytes());
+                    doc.setProject(updatedProject);
+
+                    // Set additional fields
+                    User currentUser = userService.findByEmail(userEmail).orElse(null);
+                    doc.setUploadedBy(currentUser);
+                    LocalDateTime now = LocalDateTime.now();
+                    doc.setUploadDate(now);
+                    doc.setCreatedAt(now);
+
+                    projectDocumentRepository.save(doc);
+                    logger.info("Controller: Successfully saved document: {} for project {}",
+                        file.getOriginalFilename(), id);
+                }
+                logger.info("Controller: All documents saved for project update {}", id);
+            }
+
             ProjectResponse projectResponse = projectService.toProjectResponse(updatedProject);
-            
+
             ApiResponse<ProjectResponse> response = new ApiResponse<>(
-                HttpStatus.OK.value(), 
-                "Project updated successfully", 
+                HttpStatus.OK.value(),
+                "Project updated successfully",
                 projectResponse
             );
             return ResponseEntity.ok(response);
-            
+
         } catch (RuntimeException e) {
             logger.error("Error updating project {}: {}", id, e.getMessage());
             ApiResponse<ProjectResponse> response = new ApiResponse<>(
-                HttpStatus.NOT_FOUND.value(), 
-                e.getMessage(), 
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            
+
         } catch (Exception e) {
             logger.error("Error updating project {}: {}", id, e.getMessage(), e);
             ApiResponse<ProjectResponse> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                "Failed to update project: " + e.getMessage(), 
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to update project: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

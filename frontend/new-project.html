@@ -1171,9 +1171,6 @@
 
         // Add existing documents to the list
         documents.forEach((doc) => {
-
-        // Add existing documents to the list
-        documents.forEach((doc) => {
           const fileDiv = document.createElement("div");
           fileDiv.className = "flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200";
           fileDiv.dataset.documentId = doc.id;
@@ -3424,6 +3421,19 @@
             }
 
             // Create project object as expected by backend (isEditMode already declared)
+            
+            // Get current user data
+            const userStr = localStorage.getItem('currentUser') || localStorage.getItem('user');
+            let currentUser = null;
+            if (userStr) {
+              try {
+                currentUser = JSON.parse(userStr);
+              } catch (e) {
+                console.warn('Failed to parse user data from localStorage:', e);
+                currentUser = null;
+              }
+            }
+            
             const projectData = {
               title: data.title,
               startDate: data.start_date || null,
@@ -3448,7 +3458,7 @@
               projectCategory: "IMPLEMENTING", // Required for both create and update
               // Only include partner for new projects
               ...(isEditMode ? {} : {
-                partner: currentUser.email || data.contact_person_mail
+                partner: (currentUser && currentUser.email) || data.contact_person_mail
               })
             };
 
@@ -3573,28 +3583,15 @@
               : `${window.BASE_URL}/api/projects`;
 
             let response;
-            if (isEditMode) {
-              // For updates, send JSON data only (no files)
-              console.log("Sending JSON update request...");
-              response = await fetch(url, {
-                method: method,
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(projectData),
-              });
-            } else {
-              // For creates, send FormData with files
-              console.log("Sending FormData create request...");
-              response = await fetch(url, {
-                method: method,
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                body: finalFormData,
-              });
-            }
+            // Send FormData with project data and files
+            console.log("Sending FormData request...");
+            response = await fetch(url, {
+              method: method,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: finalFormData,
+            });
 
             console.log("Response status:", response.status);
             console.log(

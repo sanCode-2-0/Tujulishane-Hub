@@ -345,7 +345,7 @@
                     <div class="mb-6">
                         <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" data-twe-tab-active>
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div
                                     class="inline-block max-w-7xl mx-auto min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
@@ -473,7 +473,7 @@
                         </div>
                         <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
                                     <div class="p-6 border-b border-gray-200 bg-gray-50">
@@ -601,7 +601,7 @@
                         </div>
                         <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
                                     <div class="p-6 border-b border-gray-200 bg-gray-50">
@@ -1635,8 +1635,9 @@
                             function refreshProjectTables(statuses = ['active', 'pending', 'stalled', 'completed']) {
                                 const userRole = localStorage.getItem('userRole');
                                 const isPartner = userRole === 'PARTNER';
+                                const isDonor = userRole === 'DONOR';
 
-                                if (isMyProjectsView() || isPartner) {
+                                if (isMyProjectsView() || isPartner || isDonor) {
                                     loadMyProjects();
                                     return;
                                 }
@@ -1659,7 +1660,7 @@
 
                             function reloadAfterAction(statuses = ['active', 'pending', 'stalled', 'completed']) {
                                 const userRole = localStorage.getItem('userRole');
-                                if (userRole !== 'PARTNER') {
+                                if (userRole !== 'PARTNER' && userRole !== 'DONOR') {
                                     loadProjectStats();
                                 }
                                 refreshProjectTables(statuses);
@@ -1772,8 +1773,9 @@
                             document.addEventListener('DOMContentLoaded', () => {
                                 const userRole = localStorage.getItem('userRole');
                                 const isPartner = userRole === 'PARTNER';
+                                const isDonor = userRole === 'DONOR';
 
-                                if (!isPartner) {
+                                if (!isPartner && !isDonor) {
                                     loadProjectStats();
                                 }
 
@@ -3216,11 +3218,8 @@
                                     <div class="flex justify-between">
                                         <dt class="text-gray-500">Partner:</dt>
                                         <dd class="text-gray-900">
-                                            ${project.partner ? `
-                                                <a class="text-blue-600 hover:text-blue-800 underline flex items-center gap-1" href="mailto:${project.partner}" title="Send email to ${project.partner}">
-                                                    <i class="fas fa-envelope text-xs"></i>
-                                                    ${project.partner}
-                                                </a>
+                                            ${project.partnerName ? `
+                                                ${project.partnerName}
                                             ` : 'N/A'}
                                         </dd>
                                     </div>
