@@ -338,9 +338,16 @@ public class ProjectController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
-    public ResponseEntity<ApiResponse<Object>> deleteProject(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Object>> deleteProject(@PathVariable String id) {
         try {
-            projectService.deleteProject(id);
+            // Try to parse as Long first (database ID)
+            try {
+                Long projectId = Long.parseLong(id);
+                projectService.deleteProject(projectId);
+            } catch (NumberFormatException e) {
+                // If not a valid Long, treat as project number
+                projectService.deleteProjectByProjectNumber(id);
+            }
             
             ApiResponse<Object> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 

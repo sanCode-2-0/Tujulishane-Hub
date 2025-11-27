@@ -3311,9 +3311,22 @@
                     // Reload the page to refresh the project list
                     window.location.reload();
                 } else if (response.status === 404) {
-                    alert('Project not found. It may have already been deleted or never existed.');
-                    // Reload the page to refresh the project list
-                    window.location.reload();
+                    // Project not found on server - remove it from the UI
+                    const projectRow = document.querySelector(`button[onclick*="deleteProject(${projectId})"]`);
+                    if (projectRow) {
+                        // Find the table row (tr) containing this button
+                        const row = projectRow.closest('tr');
+                        if (row) {
+                            row.remove();
+                            alert('Project was not found on the server and has been removed from the list.');
+                        } else {
+                            alert('Project not found. It may have already been deleted or never existed.');
+                            window.location.reload();
+                        }
+                    } else {
+                        alert('Project not found. It may have already been deleted or never existed.');
+                        window.location.reload();
+                    }
                 } else {
                     const errorData = await response.json();
                     alert('Failed to delete project: ' + (errorData.message || 'Unknown error'));

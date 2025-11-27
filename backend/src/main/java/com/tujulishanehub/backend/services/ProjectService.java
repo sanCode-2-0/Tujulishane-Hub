@@ -152,11 +152,45 @@ public class ProjectService {
      */
     public void deleteProject(Long id) {
         logger.info("Deleting project with ID: {}", id);
-        if (!projectRepository.existsById(id)) {
-            throw new RuntimeException("Project not found with ID: " + id);
+        
+        // First try to find by ID
+        if (projectRepository.existsById(id)) {
+            projectRepository.deleteById(id);
+            logger.info("Project deleted successfully by ID: {}", id);
+            return;
         }
-        projectRepository.deleteById(id);
-        logger.info("Project deleted successfully: {}", id);
+        
+        // If not found by ID, this might be a project number - try to find by project number
+        logger.info("Project with ID {} not found, trying to find by project number", id);
+        
+        // Convert ID to string to search as project number
+        String projectNumber = String.valueOf(id);
+        Optional<Project> projectByNumber = projectRepository.findByProjectNo(projectNumber);
+        
+        if (projectByNumber.isPresent()) {
+            Project project = projectByNumber.get();
+            projectRepository.deleteById(project.getId());
+            logger.info("Project deleted successfully by project number: {} (ID: {})", projectNumber, project.getId());
+            return;
+        }
+        
+        // If still not found, throw exception
+        throw new RuntimeException("Project not found with ID or project number: " + id);
+    }
+    
+    /**
+     * Delete project by project number
+     */
+    public void deleteProjectByProjectNumber(String projectNumber) {
+        logger.info("Deleting project with project number: {}", projectNumber);
+        
+        Optional<Project> project = projectRepository.findByProjectNo(projectNumber);
+        if (!project.isPresent()) {
+            throw new RuntimeException("Project not found with project number: " + projectNumber);
+        }
+        
+        projectRepository.deleteById(project.get().getId());
+        logger.info("Project deleted successfully by project number: {} (ID: {})", projectNumber, project.get().getId());
     }
     
     /**
