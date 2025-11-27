@@ -76,6 +76,14 @@ public class ProjectCollaboratorService {
     }
     
     /**
+     * Get all collaborators across all projects (for admin)
+     */
+    public List<ProjectCollaborator> getAllCollaborators() {
+        logger.info("Fetching all collaborators");
+        return collaboratorRepository.findAll();
+    }
+    
+    /**
      * Check if user is a collaborator on a project
      */
     public boolean isCollaborator(Long projectId, String userEmail) {

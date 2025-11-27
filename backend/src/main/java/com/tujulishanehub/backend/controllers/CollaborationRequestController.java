@@ -169,7 +169,7 @@ public class CollaborationRequestController {
      * Get pending collaboration requests (MOH only)
      */
     @GetMapping("/admin/pending")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<List<CollaborationRequest>>> getPendingRequests() {
         try {
             List<CollaborationRequest> requests = collaborationRequestService.getPendingRequests();
@@ -196,7 +196,7 @@ public class CollaborationRequestController {
      * Get all collaboration requests (MOH only)
      */
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<List<CollaborationRequest>>> getAllRequests() {
         try {
             List<CollaborationRequest> requests = collaborationRequestService.getAllRequests();

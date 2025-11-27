@@ -60,7 +60,7 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
     /**
      * Find reports submitted for review
      */
-    @Query("SELECT r FROM ProjectReport r WHERE r.reportStatus IN ('SUBMITTED', 'UNDER_REVIEW') ORDER BY r.submittedAt ASC")
+    @Query("SELECT r FROM ProjectReport r LEFT JOIN FETCH r.project WHERE r.reportStatus IN ('SUBMITTED', 'UNDER_REVIEW') ORDER BY r.submittedAt ASC")
     List<ProjectReport> findReportsForReview();
     
     /**

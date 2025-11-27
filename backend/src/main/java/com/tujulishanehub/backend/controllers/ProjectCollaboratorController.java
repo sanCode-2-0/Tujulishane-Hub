@@ -268,4 +268,29 @@ public class ProjectCollaboratorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    /**
+     * Get all project collaborators (Admin only)
+     */
+    @GetMapping("/admin/collaborators")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<List<ProjectCollaborator>>> getAllCollaborators() {
+        try {
+            List<ProjectCollaborator> collaborators = collaboratorService.getAllCollaborators();
+            ApiResponse<List<ProjectCollaborator>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "All collaborators retrieved successfully",
+                collaborators
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving all collaborators: {}", e.getMessage(), e);
+            ApiResponse<List<ProjectCollaborator>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve collaborators: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }
