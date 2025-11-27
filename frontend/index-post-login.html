@@ -422,12 +422,27 @@
                 <i class="far fa-chart-line text-indigo-400 text-lg"></i>
               </div>
               <h3 class="text-xl ml-3 font-medium uppercase text-black">
-                MERL - Monitoring, Evaluation, Research and Learning
+                Monitoring and Evaluation
               </h3>
             </div>
             <hr class="my-2">
             <p class="text-lg text-gray-600">
-              Monitoring, Evaluation, Research and Learning initiatives.
+              Programs focused on monitoring and evaluating project outcomes.
+            </p>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between">
+            <div class="flex items-center">
+              <div class="text-left rounded-lg h-9 w-9 bg-gray-100/70 shadow-md flex items-center text-white justify-center mb-2">
+                <i class="far fa-search text-teal-400 text-lg"></i>
+              </div>
+              <h3 class="text-xl ml-3 font-medium uppercase text-black">
+                Research and Learning
+              </h3>
+            </div>
+            <hr class="my-2">
+            <p class="text-lg text-gray-600">
+              Research initiatives and learning programs.
             </p>
           </div>
         </div>
@@ -2519,11 +2534,17 @@
           icon: "far fa-bullhorn",
           color: "text-cyan-400",
         },
-        MERL: {
-          name: "MERL - Monitoring, Evaluation, Research and Learning",
-          description: "Monitoring, Evaluation, Research and Learning initiatives.",
+        MONITORING_EVALUATION: {
+          name: "Monitoring and Evaluation",
+          description: "Programs focused on monitoring and evaluating project outcomes.",
           icon: "far fa-chart-line",
           color: "text-indigo-400",
+        },
+        RESEARCH_LEARNING: {
+          name: "Research and Learning",
+          description: "Research initiatives and learning programs.",
+          icon: "far fa-search",
+          color: "text-teal-400",
         },
       };
 
@@ -2716,8 +2737,8 @@
             const locations =
               data.projectsWithCoordinates || data.totalProjects || 0;
 
-            // Projects is the total number of projects
-            const projects = data.totalProjects || 0;
+            // Projects is the total number of active projects
+            const projects = activeCount || 0;
 
             // Calculate total active status count
             let activeCount = 0;
@@ -2745,7 +2766,10 @@
                 ) {
                   const allProjects = projectsData.data.projects;
                   totalBudget = allProjects.reduce((sum, project) => {
-                    return sum + (project.budget || 0);
+                    if (project.status?.toLowerCase() === 'active') {
+                      return sum + (project.budget || 0);
+                    }
+                    return sum;
                   }, 0);
                   console.log(
                     "[DEBUG] Total budget calculated from",
