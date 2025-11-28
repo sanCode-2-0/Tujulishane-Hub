@@ -32,4 +32,15 @@ public class MessageService {
         message.setAnnouncement(announcement);
         return messageRepository.save(message);
     }
+    
+    public Message updateMessage(Long messageId, String newMessageText) {
+        Message message = messageRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Message not found"));
+        message.setMessage(newMessageText);
+        return messageRepository.save(message);
+    }
+    
+    public void deleteMessage(Long messageId) {
+        Message message = messageRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Message not found"));
+        messageRepository.delete(message);
+    }
 }

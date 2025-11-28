@@ -281,4 +281,93 @@ public class AnnouncementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    @PutMapping("/{announcementId}/messages/{messageId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Message>> updateMessage(
+            @PathVariable Long announcementId,
+            @PathVariable Long messageId,
+            @Valid @RequestBody MessageRequest request) {
+        try {
+            Announcement announcement = announcementService.getAnnouncementById(announcementId).orElse(null);
+            if (announcement == null) {
+                ApiResponse<Message> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Announcement not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            Message updatedMessage = messageService.updateMessage(messageId, request.getMessage());
+            
+            ApiResponse<Message> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Message updated successfully",
+                updatedMessage
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (RuntimeException e) {
+            logger.error("Error updating message: {}", e.getMessage());
+            ApiResponse<Message> response = new ApiResponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            logger.error("Error updating message: {}", e.getMessage(), e);
+            ApiResponse<Message> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to update message",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @DeleteMapping("/{announcementId}/messages/{messageId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> deleteMessage(
+            @PathVariable Long announcementId,
+            @PathVariable Long messageId) {
+        try {
+            Announcement announcement = announcementService.getAnnouncementById(announcementId).orElse(null);
+            if (announcement == null) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Announcement not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            messageService.deleteMessage(messageId);
+            
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Message deleted successfully",
+                null
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (RuntimeException e) {
+            logger.error("Error deleting message: {}", e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            logger.error("Error deleting message: {}", e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to delete message",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }
