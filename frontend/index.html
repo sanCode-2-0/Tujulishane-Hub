@@ -5,54 +5,57 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMNCAH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Tailwind CSS (with custom config using inline script) -->
+
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <script src="styles/main.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Mapbox CSS -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <!-- Mapbox JS -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Backend URL Configuration - Centralized in config.js -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="kenya-locations.js"></script>
+
+    <!-- Optional: Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#1e40af',   // Custom Blue
-                        secondary: '#f59e0b', // Custom Amber
-                        accent: '#10b981',    // Custom Green
-                        dark: '#1f2937',      // Gray-800
+                        primary: "#272E28",
+                        secondary: "#f59e0b",
+                        accent: "#00474C",
+                        button: "#14B04C",
+                        button_two: "#3482FF",
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
+                        sans: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
     </script>
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-    <script src="./config.js"></script>
-    <script src="./set-base-url.js"></script>
-    <!-- Modal Utilities -->
-    <script src="./modal-utils.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-
-    <!-- Auto-redirect for logged-in users -->
-    <script src="auto-redirect.js"></script>
-
-    <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         .fade-slide-enter {
             opacity: 0;
@@ -76,598 +79,412 @@
             transition: all 0.3s ease;
         }
     </style>
-
 </head>
 
-<body class="text-gray-800 ">
-    <div class="relative h-screen bg-fixed bg-cover p-4 bg-center" id="heroSection">
-        <div class="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
+<body class="text-gray-800 overflow-x-hidden">
+    <!-- Nav Start -->
+    <div class="" id="nav-placeholder"></div>
+    <!-- Nav End -->
 
-        <div class="relative z-10 flex justify-center items-center h-full">
+    <section class="relative z-0 overflow-hidden" id="top">
+        <div class="w-full overflow-hidden">
+            <div x-data="{
+						activeSlide: 0,
+						media: [
+						{ type: 'image', src: 'resources/images/main-1.jpg' },
+						{ type: 'image', src: 'resources/images/main-2.jpg' },
+						{ type: 'image', src: 'resources/images/main-3.jpg' }
+						]
+					}" x-init="setInterval(() => { activeSlide = (activeSlide + 1) % media.length }, 7000)"
+                class="relative w-full min-h-[75vh] md:h-[50vh] flex flex-col justify-end">
+                <!-- Background Image Carousel with Zoom + Fade -->
+                <template x-for="(item, index) in media" :key="index">
+                    <div class="absolute inset-0 transition-all duration-1000 ease-in-out overflow-hidden" :class="{
+										'opacity-100 z-0': activeSlide === index,
+										'opacity-0 z-0 pointer-events-none': activeSlide !== index
+									}">
+                        <img :src="item.src" alt="Slide Image"
+                            class="w-full h-full object-cover object-center transition-transform duration-[7000ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                            :class="activeSlide === index ? 'scale-105' : 'scale-100'" />
+                    </div>
+                </template>
 
-            <div
-                class="flex flex-col w-full rounded-xl bg-white/90 backdrop-blur-xl shadow-lg max-w-3xl p-4 mx-auto items-center justify-center rounded-xl">
-                <div class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                    <img src="resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
-                    <img src="resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
-                </div>
-                <p class="mt-1 text-sm uppercase opacity-70">
-                    RMNCAH Coordination Hub
-                </p>
-                <!--Tabs navigation-->
-                <ul class="flex list-none w-full flex-row flex-wrap border-b-0 ps-0" role="tablist" data-twe-nav-ref>
-                    <li role="presentation" class="flex-grow basis-0 text-center">
-                        <a href="#tabs-home02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
-                            data-twe-toggle="pill" data-twe-target="#tabs-home02" data-twe-nav-active role="tab"
-                            aria-controls="tabs-home02" aria-selected="true">Login</a>
-                    </li>
-                    <li role="presentation" class="flex-grow basis-0 text-center">
-                        <a href="#tabs-profile02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
-                            data-twe-toggle="pill" data-twe-target="#tabs-profile02" role="tab"
-                            aria-controls="tabs-profile02" aria-selected="false">Become a Member</a>
-                    </li>
-                </ul>
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
 
-                <!--Tabs content-->
-                <div class="mb-6 w-full">
-                    <div class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                        id="tabs-home02" role="tabpanel" aria-labelledby="tabs-home-tab02" data-twe-tab-active>
-                        <div id="loginCard"
-                            class="py-8 w-full mb-4 space-y-4 transition-all duration-500 ease-in-out rounded-xl">
-                            <h2 class="text-sm uppercase text-left font-normal opacity-70 text-gray-700">
-                                Log in to your account
-                            </h2>
-                            <input id="loginEmail" type="email" required placeholder="Email"
-                                class="w-full px-4 py-2 border text-sm rounded-md focus:ring-2 focus:ring-blue-500">
-                            <div class="flex w-full">
-                                <button type="button" onclick="requestOtp()" id="loginBtn"
-                                    class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
-                                    <span id="loginBtnText">Get OTP</span>
-                                    <span id="loginBtnSpinner" class="hidden">
-                                        <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4">
-                                            </circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        Sending...
-                                    </span>
-                                </button>
+                <!-- Bottom Content Section -->
+                <div class="relative z-20 w-full pt-16 sm:pt-0">
+                    <div class="mx-4 md:mx-8 text-white px-4">
+                        <a href="#" class="text-xs font-semibold uppercase tracking-wide mb-2 block">
+                            Ministry of Health
+                        </a>
+                        <h1 class="text-xl sm:text-4xl font-semibold mb-4">
+                            <span class="tracking-wide">RMNCAH</span> Co-ordination Hub
+                        </h1>
+                        <p class="text-sm sm:text-base mb-6 max-w-4xl">
+                            Discover and engage with impactful projects driving change
+                            across Kenya. Use the filters to find projects that align with
+                            your interests and make a difference.
+                        </p>
+                    </div>
+
+                    <!-- Search and Stats Section -->
+                    <div class="backdrop-blur-md bg-black/30 mx-8 rounded-t-2xl border-t border-black/20">
+                        <div class="px-4 py-4 flex flex-col items-center justify-between gap-4">
+                            <!-- Icon Buttons / Stats -->
+                            <div
+                                class="flex justify-between text-white text-xl lg:text-3xl w-full flex-wrap text-center gap-y-6">
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-tasks text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalProjectsCount" class="font-bold tracking-wider">
+                                            8
+                                        </span>
+                                        <span class="font-thin">Projects</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalCountiesCount" class="font-bold tracking-wider">7</span>
+                                        <span class="font-thin">Counties</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-handshake text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalStakeholdersCount" class="font-bold tracking-wider">10</span>
+                                        <span class="font-thin">Stakeholders</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                        id="tabs-profile02" role="tabpanel" aria-labelledby="tabs-profile-tab02">
-                        <!-- Register Card -->
-                        <div id="registerCard" class=" top-0 left-0 z-10 w-full py-8 rounded-xl">
-                            <form id="registerForm" class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <div id="formTabs" class="md:col-span-2 mb-4 flex border-b">
-                                    <button type="button" id="tab1"
-                                        class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none">
-                                        Step 1: Account Details
-                                    </button>
-                                    <button type="button" id="tab2"
-                                        class="px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent focus:outline-none">
-                                        Step 2: Supporting Documents
-                                    </button>
+                </div>
+                <!-- end bottom section -->
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <img src="https://images.unsplash.com/photo-1551190822-a9333d879b1f" class="rounded-lg shadow-lg">
+
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">What is the RMNCAH Coordination Hub?</h3>
+                <p class="leading-relaxed">
+                    The RMNCAH Coordination Hub is a national digital platform providing real-time visibility into
+                    program activities across Kenya. It maps who is working where and on what, helping reduce
+                    fragmentation, avoid duplication, and improve alignment of partner efforts.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section (alternating layout) -->
+    <section id="features" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">Key Features</h3>
+                <ul class="space-y-4 text-lg">
+                    <li>✔ Interactive dashboard with national RMNCAH visibility</li>
+                    <li>✔ Geospatial mapping of partners and interventions</li>
+                    <li>✔ Real-time updates and collaboration tools</li>
+                    <li>✔ Supports coordinated planning & resource allocation</li>
+                    <li>✔ Enhances transparency and strengthens decision-making</li>
+                </ul>
+            </div>
+
+            <img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb" class="rounded-lg shadow-lg">
+        </div>
+    </section>
+
+    <!-- Another Alternating Section -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <div class="flex">
+                <img src="resources/images/log2.png" class="rounded-lg ">
+                <img src="resources/images/gov.png" class="rounded-lg ">
+            </div>
+
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">Why It Matters</h3>
+                <p class="leading-relaxed">
+                    By improving coordination between partners, counties, and the Ministry of Health, the Hub ensures
+                    RMNCAH programs truly reach the communities that need them most. It accelerates decision-making,
+                    enhances transparency, and supports a more effective health system.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-6">
+            <h3 class="text-3xl font-bold text-primary text-center mb-10">Frequently Asked Questions</h3>
+
+            <div id="accordionFaqExample">
+                <!-- ITEM 1 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingOne">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-target="#faq-collapseOne" aria-expanded="true"
+                            aria-controls="faq-collapseOne">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
                                 </div>
-
-                                <div id="step1Content" class="md:col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div>
-                                        <label class="block mb-1 text-sm font-medium">Full Name</label>
-                                        <input type="text" id="regName" placeholder="John Doe"
-                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                    </div>
-                                    <div>
-                                        <label class="block mb-1 text-sm font-medium">Email Address</label>
-                                        <input type="email" id="regEmail" placeholder="email@example.com"
-                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                    </div>
-                                    <div>
-                                        <label class="block mb-1 text-sm font-medium">Organization</label>
-                                        <input type="text" id="regOrganization" placeholder="Company or School"
-                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                    </div>
-                                    <div>
-                                        <label class="block mb-1 text-sm font-medium">Account Type</label>
-                                        <select id="regAccountType"
-                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                            <option value="PARTNER">Partner Organization</option>
-                                            <option value="DONOR">Donor Organization</option>
-                                        </select>
-                                    </div>
-                                    <div id="parentDonorSection" class="hidden md:col-span-2">
-                                        <label class="block mb-1 text-sm font-medium">Parent Donor ID (Optional)</label>
-                                        <input type="number" id="regParentDonorId"
-                                            placeholder="Enter donor ID if linking to existing donor"
-                                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                                        <p class="text-sm text-gray-600 mt-1">Leave empty if this is a standalone
-                                            partner account</p>
-                                    </div>
-
-                                    <div class="md:col-span-2 mt-6">
-                                        <button type="button" id="nextStepBtn"
-                                            class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700 w-full md:w-auto">
-                                            Next : <span class="font-medium ml-1"> Supporting Documents</span> &rarr;
-                                        </button>
-                                    </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What is RMNCAH Coordination Hub?
+                                    </h4>
                                 </div>
-
-                                <div id="step2Content" class="md:col-span-2 hidden">
-                                    <div class="supporting-documents bg-white p-4 rounded-xl">
-                                        <div class="flex items-center justify-between mb-4">
-                                            <label class="block text-sm font-semibold text-gray-800">
-                                                Supporting Documents <span
-                                                    class="font-light text-sm ml-1">(optional)</span>
-                                            </label>
-                                            <div id="documentsCount"
-                                                class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
-                                                <i class="fas fa-file mr-1"></i>
-                                                <span id="docsCount">0</span> files
-                                            </div>
-                                        </div>
-
-                                        <p class="text-sm text-gray-600 mb-4">
-                                            Upload relevant documents to support your project proposal
-                                            (PDF, DOC, DOCX, XLS, XLSX - Max 10MB each)
-                                        </p>
-
-                                        <div class="file-upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
-                                            id="fileUploadArea">
-                                            <div class="upload-icon text-gray-400 mb-4">
-                                                <i class="fas fa-cloud-upload-alt text-4xl"></i>
-                                            </div>
-                                            <div class="upload-text">
-                                                <p class="text-lg font-medium text-gray-700 mb-2">
-                                                    Drop files here or click to browse
-                                                </p>
-                                                <p class="text-sm text-gray-500">
-                                                    Supported formats: PDF, DOC, DOCX, XLS, XLSX
-                                                </p>
-                                                <p class="text-xs text-gray-400 mt-1">
-                                                    Maximum file size: 10MB per file
-                                                </p>
-                                            </div>
-                                            <input type="file" id="documentFiles" name="documents" multiple
-                                                accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" />
-                                        </div>
-
-                                        <div id="selectedFiles" class="mt-4 space-y-2 hidden">
-                                            <h4 class="text-sm font-medium text-gray-700 mb-3">Selected Files:</h4>
-                                            <div id="filesList" class="space-y-2">
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden"
-                                            id="fileUploadError">
-                                            <div class="flex items-center">
-                                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                                                <span class="text-red-700 text-sm" id="fileErrorMessage"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </button>
+                    </h2>
+                    <div id="faq-collapseOne" class="!visible border-0" data-twe-collapse-item data-twe-collapse-show
+                        aria-labelledby="faq-headingOne" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
                                     <div
-                                        class="md:col-span-2 grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 flex flex-wrap justify-between">
-                                        <button type="button" id="prevStepBtn"
-                                            class="px-6 py-2 lg:col-span-2 font-bold text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
-                                            &larr; Previous Step
-                                        </button>
-                                        <button type="submit" id="registerBtn"
-                                            class="px-6 py-2 font-bold text-white lg:col-span-3 bg-blue-600 rounded hover:bg-blue-700">
-                                            <span id="registerBtnText">Create Account</span>
-                                            <span id="registerBtnSpinner" class="hidden">...Creating...</span>
-                                        </button>
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
                                     </div>
                                 </div>
-                            </form>
+                                <div class="flex-grow p-2 px-6">
+                                    <p class="text-gray-700 text-base">
+                                        The RMNCAH Coordination Hub is an official Ministry
+                                        of Health digital platform designed to enhance
+                                        visibility, coordination, and accountability among
+                                        stakeholders implementing projects in Reproductive,
+                                        Maternal, Newborn, Child, and Adolescent Health
+                                        (RMNCAH). It enables partners and donors to
+                                        register, submit projects, collaborate, and align
+                                        efforts with national health priorities.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col  w-full max-w-lg p-4 mx-auto items-center justify-center ">
 
-                </div>
-
-
-            </div>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const step1Content = document.getElementById('step1Content');
-            const step2Content = document.getElementById('step2Content');
-            const nextBtn = document.getElementById('nextStepBtn');
-            const prevBtn = document.getElementById('prevStepBtn');
-            const tab1 = document.getElementById('tab1');
-            const tab2 = document.getElementById('tab2');
-
-            function showStep1() {
-                step1Content.classList.remove('hidden');
-                step2Content.classList.add('hidden');
-                tab1.classList.add('border-blue-600', 'text-blue-600');
-                tab1.classList.remove('border-transparent', 'text-gray-500');
-                tab2.classList.add('border-transparent', 'text-gray-500');
-                tab2.classList.remove('border-blue-600', 'text-blue-600');
-            }
-
-            function showStep2() {
-                // You might want to run client-side validation for Step 1 here first
-                // if (validateStep1() === false) { return; }
-
-                step1Content.classList.add('hidden');
-                step2Content.classList.remove('hidden');
-                tab2.classList.add('border-blue-600', 'text-blue-600');
-                tab2.classList.remove('border-transparent', 'text-gray-500');
-                tab1.classList.add('border-transparent', 'text-gray-500');
-                tab1.classList.remove('border-blue-600', 'text-blue-600');
-            }
-
-            // Event Listeners
-            nextBtn.addEventListener('click', showStep2);
-            prevBtn.addEventListener('click', showStep1);
-            tab1.addEventListener('click', showStep1);
-            tab2.addEventListener('click', showStep2);
-
-            // Form submission handler
-            const registerForm = document.getElementById('registerForm');
-            if (registerForm) {
-                registerForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    await validateBeforeSubmit();
-                });
-            }
-
-            // Initial state: Show Step 1
-            showStep1();
-        });
-
-        // NOTE: You will need to integrate your existing 'validateBeforeSubmit()' and 
-        // any 'regAccountType' change listeners with this new structure.
-    </script>
-    <script>
-        const images = [
-            'resources/images/main-1.jpg',
-            'resources/images/main-2.jpg',
-            'resources/images/main-3.jpg'
-        ];
-
-        const randomImage = images[Math.floor(Math.random() * images.length)];
-        document.getElementById('heroSection').style.backgroundImage = `url('${randomImage}')`;
-    </script>
-
-
-    <script>
-        // Global state for selected files (accessible by validateBeforeSubmit)
-        window.selectedFiles = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // DOM Element References
-            const fileUploadArea = document.getElementById('fileUploadArea');
-            const documentFilesInput = document.getElementById('documentFiles');
-            const docsCountSpan = document.getElementById('docsCount');
-            const selectedFilesDiv = document.getElementById('selectedFiles');
-            const filesListDiv = document.getElementById('filesList');
-            const fileUploadErrorDiv = document.getElementById('fileUploadError');
-            const fileErrorMessageSpan = document.getElementById('fileErrorMessage');
-
-            // Use the global selectedFiles array
-            const MAX_FILE_SIZE_MB = 10;
-            const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-            const SUPPORTED_MIMES = [
-                'application/pdf',
-                'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            ];
-
-            /**
-             * Shows the error message div with the specified message.
-             * @param {string} message - The error message to display.
-             */
-            const showFileError = (message) => {
-                fileErrorMessageSpan.textContent = message;
-                fileUploadErrorDiv.classList.remove('hidden');
-                // Optionally hide after a delay
-                setTimeout(() => {
-                    fileUploadErrorDiv.classList.add('hidden');
-                }, 5000);
-            };
-
-            /**
-             * Updates the file count display and the visibility of the file list.
-             */
-            const updateFileCount = () => {
-                docsCountSpan.textContent = window.selectedFiles.length;
-                if (window.selectedFiles.length > 0) {
-                    selectedFilesDiv.classList.remove('hidden');
-                } else {
-                    selectedFilesDiv.classList.add('hidden');
-                }
-            };
-
-            /**
-             * Renders the list of currently selected files.
-             */
-            const renderFilesList = () => {
-                filesListDiv.innerHTML = ''; // Clear existing list
-                window.selectedFiles.forEach((file, index) => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200';
-
-                    // Convert size to human-readable format
-                    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-                    const fileName = file.name;
-
-                    fileItem.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-file-alt text-blue-500 mr-3"></i>
-                    <div>
-                        <p class="text-sm font-medium text-gray-800 truncate max-w-xs" title="${fileName}">
-                            ${fileName}
-                        </p>
-                        <p class="text-xs text-gray-500">${fileSize} MB</p>
+                <!-- ITEM 2 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingTwo">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                            data-twe-target="#faq-collapseTwo" aria-expanded="false" aria-controls="faq-collapseTwo">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
+                                </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why should I use the RMNCAH Coordination Hub?
+                                    </h4>
+                                </div>
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </button>
+                    </h2>
+                    <div id="faq-collapseTwo" class="!visible hidden border-0" data-twe-collapse-item
+                        aria-labelledby="faq-headingTwo" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
+                                    <div
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
+                                    </div>
+                                </div>
+                                <div class="flex-grow p-2 px-6">
+                                    <p class="text-gray-700 text-base">
+                                        The platform streamlines coordination between the
+                                        Ministry of Health, implementing partners, and
+                                        donors. It ensures transparency in project
+                                        implementation, minimizes duplication of efforts,
+                                        and provides an up-to-date view of ongoing
+                                        initiatives through interactive maps and project
+                                        dashboards.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="button" data-file-index="${index}" class="remove-file-btn text-red-500 hover:text-red-700 transition duration-150">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-                    filesListDiv.appendChild(fileItem);
-                });
+                <!-- ITEM 3 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingTwo">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                            data-twe-target="#faq-collapseThree" aria-expanded="false" aria-controls="faq-collapseTwo">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
+                                </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How can I create an account on the RMNCAH
+                                        Coordination Hub?
+                                    </h4>
+                                </div>
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </button>
+                    </h2>
+                    <div id="faq-collapseThree" class="!visible hidden border-0" data-twe-collapse-item
+                        aria-labelledby="faq-headingTwo" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
+                                    <div
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
+                                    </div>
+                                </div>
+                                <div class="flex-grow p-2 px-6">
+                                    <ol class="list-decimal text-base gap-4">
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Visit the
+                                            <a href="/frontend/index.html" class="underline font-medium">RMNCAH
+                                                Coordination Hub
+                                                registration page.</a>
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Select your account type (Partner, Donor, or MOH
+                                            Official).
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Fill in the registration form with accurate
+                                            organizational details.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Upload the required documents (if applicable).
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Submit for review. Once submitted, your account
+                                            will undergo a two-step approval process by the
+                                            MOH reviewer and admin. You will receive an email
+                                            notification once your account is approved.
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex mt-10 justify-center">
+                <a href="faq.html"
+                    class="flex items-center justify-center justify-end py-1 px-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                    MORE FAQ
+                </a>
+            </div>
+        </div>
+    </section>
 
-                updateFileCount();
-            };
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold mb-4">Contact Us</h3>
+            <p class="mb-6">For inquiries or access requests, reach out to the RMNCAH Coordination Hub team.</p>
+            <button class="bg-indigo-700 text-white font-semibold px-8 py-3 rounded shadow hover:bg-indigo-800">
+                Send Message
+            </button>
+        </div>
+    </section>
 
-            /**
-             * Handles file removal from the list.
-             * @param {Event} e - The click event.
-             */
-            const handleRemoveFile = (e) => {
-                const removeButton = e.target.closest('.remove-file-btn');
-                if (removeButton) {
-                    const indexToRemove = parseInt(removeButton.dataset.fileIndex);
-                    if (!isNaN(indexToRemove) && indexToRemove >= 0) {
-                        window.selectedFiles.splice(indexToRemove, 1);
-                        // Re-render the list and update the input to reflect the change
-                        // Note: The hidden input cannot be easily updated with a FileList, 
-                        // but the `selectedFiles` array now holds the source of truth for submission.
-                        renderFilesList();
-                    }
-                }
-            };
+    <!--Footer container-->
+    <footer class="flex flex-col items-center text-center text-surface">
+        <div class="">
+            <!-- Social media icons container -->
+            <div class="flex items-center justify-center mb-6 space-x-2">
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                        </svg>
+                    </span>
+                </a>
 
-            /**
-             * Processes files added from either the file input or drag-and-drop.
-             * @param {FileList} files - The FileList object from the event.
-             */
-            const processFiles = (files) => {
-                fileUploadErrorDiv.classList.add('hidden'); // Clear previous errors
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <i class="fab fa-facebook-f"></i>
+                </a>
 
-                // Loop through the new files
-                Array.from(files).forEach(file => {
-                    // Basic Validation: Size and Type
-                    if (file.size > MAX_FILE_SIZE_BYTES) {
-                        showFileError(`File "${file.name}" is too large (>${MAX_FILE_SIZE_MB}MB) and was skipped.`);
-                        return;
-                    }
-                    // Check if the file's MIME type is supported
-                    if (!SUPPORTED_MIMES.includes(file.type)) {
-                        showFileError(`File type for "${file.name}" is not supported and was skipped.`);
-                        return;
-                    }
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                        </svg>
+                    </span>
+                </a>
 
-                    // Check for duplicates by name (simple check)
-                    if (window.selectedFiles.some(existingFile => existingFile.name === file.name)) {
-                        showFileError(`File "${file.name}" is already selected.`);
-                        return;
-                    }
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z" />
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </div>
 
-                    // Add valid file to the state
-                    window.selectedFiles.push(file);
-                });
-
-                // Update the UI
-                renderFilesList();
-            };
-
-            // --- Event Listeners ---
-
-            // 1. Click-to-Browse
-            fileUploadArea.addEventListener('click', () => {
-                documentFilesInput.click(); // Programmatically click the hidden file input
-            });
-
-            // 2. File Selection (when the user selects files via browse)
-            documentFilesInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    processFiles(e.target.files);
-                }
-                // Reset the file input value so selecting the same file again triggers 'change'
-                e.target.value = '';
-            });
-
-            // 3. Remove File Button Listener (using event delegation)
-            filesListDiv.addEventListener('click', handleRemoveFile);
-
-
-            /* --- Optional: Drag-and-Drop Implementation --- */
-
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false); // For safety
-            });
-
-            // Add visual cue on dragover
-            ['dragenter', 'dragover'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.add('border-blue-500', 'bg-blue-100');
-                }, false);
-            });
-
-            // Remove visual cue on dragleave/drop
-            ['dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.remove('border-blue-500', 'bg-blue-100');
-                }, false);
-            });
-
-            // Handle dropped files
-            fileUploadArea.addEventListener('drop', handleDrop, false);
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                processFiles(files);
-            }
-        });
-    </script>
-    <script>
-        async function requestOtp() {
-            const email = document.getElementById("loginEmail").value;
-            if (!email) {
-                await showAlert("Please enter your email", "Validation Error", "warning");
-                return;
-            }
-
-            // Show loading state
-            const btn = document.getElementById("loginBtn");
-            const btnText = document.getElementById("loginBtnText");
-            const btnSpinner = document.getElementById("loginBtnSpinner");
-
-            btn.disabled = true;
-            btn.classList.add("opacity-75", "cursor-not-allowed");
-            btnText.classList.add("hidden");
-            btnSpinner.classList.remove("hidden");
-
-            // Request OTP from backend
-            try {
-                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-                const res = await fetch(`${apiBase}/api/auth/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Login failed");
-
-                await showAlert("OTP sent to your email. Please check your inbox.", "Success", "success");
-                localStorage.setItem("pendingEmail", email);
-                localStorage.setItem("isLogin", "true");
-                window.location.href = "otp.html";
-            } catch (err) {
-                await showAlert(err.message || "Failed to send OTP", "Error", "error");
-
-                // Reset button state on error
-                btn.disabled = false;
-                btn.classList.remove("opacity-75", "cursor-not-allowed");
-                btnText.classList.remove("hidden");
-                btnSpinner.classList.add("hidden");
-            }
-        }
-    </script>
-    <script>
-        async function validateBeforeSubmit() {
-            const name = document.getElementById("regName").value;
-            const email = document.getElementById("regEmail").value;
-            const organization = document.getElementById("regOrganization").value;
-            const accountType = document.getElementById("regAccountType").value;
-            const parentDonorId = document.getElementById("regParentDonorId").value;
-
-            // Basic validation
-            if (!name || !email) {
-                await showAlert("Please fill in all required fields (Name and Email)", "Validation Error", "warning");
-                return false;
-            }
-
-            // Show loading state
-            const btn = document.getElementById("registerBtn");
-            const btnText = document.getElementById("registerBtnText");
-            const btnSpinner = document.getElementById("registerBtnSpinner");
-
-            btn.disabled = true;
-            btn.classList.add("opacity-75", "cursor-not-allowed");
-            btnText.classList.add("hidden");
-            btnSpinner.classList.remove("hidden");
-
-            try {
-                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com"
-                    : "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
-
-                console.log("API BASE", apiBase);
-
-                // Create FormData to support file uploads
-                const formData = new FormData();
-                formData.append("name", name);
-                formData.append("email", email);
-                if (organization) {
-                    formData.append("organization", organization);
-                }
-                formData.append("accountType", accountType);
-
-                if (accountType === "PARTNER" && parentDonorId) {
-                    formData.append("parentDonorId", parentDonorId);
-                }
-
-                // Add supporting documents if any (OPTIONAL)
-                if (window.selectedFiles && window.selectedFiles.length > 0) {
-                    console.log(`Adding ${window.selectedFiles.length} supporting documents to registration`);
-                    window.selectedFiles.forEach((file, index) => {
-                        formData.append("documents", file);
-                    });
-                } else {
-                    console.log("No supporting documents selected (this is optional)");
-                }
-
-                const res = await fetch(`${apiBase}/api/auth/register`, {
-                    method: "POST",
-                    body: formData
-                    // Note: Don't set Content-Type header - browser will set it automatically with boundary
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Registration failed");
-
-                await showAlert("Registration successful! Check your email for the OTP.", "Success", "success");
-                localStorage.setItem("pendingEmail", email);
-                window.location.href = "otp.html";
-            } catch (err) {
-                console.error("Registration error:", err);
-                await showAlert(err.message, "Error", "error");
-
-                // Reset button state on error
-                btn.disabled = false;
-                btn.classList.remove("opacity-75", "cursor-not-allowed");
-                btnText.classList.remove("hidden");
-                btnSpinner.classList.add("hidden");
-            }
-        }
-
-    </script>
-
-
-
-    </div>
+        <!--Copyright section-->
+        <div class="w-full p-4 text-xs text-center bg-black/5">
+            © 2025 Copyright:
+            <a href=""> RMNCAH Hub </a>
+        </div>
+    </footer>
+    <!-- Removed script that sets localStorage with undefined 'data' to fix ReferenceError. This should only be set after login. -->
 
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <!-- Leaflet JS -->
-
+    <script src="styles/effects.js"></script>
+    <script src="styles/loadNavg.js"></script>
+    <script src="styles/authnav.js"></script>
 
 </body>
 
