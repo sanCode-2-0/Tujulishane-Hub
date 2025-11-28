@@ -978,7 +978,10 @@
                                 let html = `<button class="px-2 py-1 text-xs text-white bg-indigo-500 rounded hover:bg-indigo-600" onclick="viewProjectDetails(${project.id})">View</button> `;
 
                                 if (isPartner) {
-                                    html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button>`;
+                                    if (status === 'pending') {
+                                        html += `<button class="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600" onclick="editProject(${project.id})">Edit</button> `;
+                                        html += `<button class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600" onclick="deleteProject(${project.id})">Delete</button>`;
+                                    }
                                     return html;
                                 }
 

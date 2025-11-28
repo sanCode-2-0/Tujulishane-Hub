@@ -878,6 +878,11 @@
         const locationsData = selectedLocations.map((loc) => ({
           latitude: loc.lat,
           longitude: loc.lng,
+          county: loc.county || null,
+          subCounty: loc.subCounty || null,
+          mapsAddress: loc.name
+            ? `${loc.name}, ${loc.county || ''}`.trim()
+            : `${loc.lat},${loc.lng}`,
         }));
         document.getElementById("project_locations").value =
           JSON.stringify(locationsData);

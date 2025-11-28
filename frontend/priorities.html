@@ -674,7 +674,7 @@
       async function loadProjectsForMap() {
         try {
           const response = await fetch(
-            `${window.BASE_URL}/api/projects/with-coordinates`,
+            `${window.BASE_URL}/api/projects/all`,
             {
               headers: {
                 Authorization: `Bearer ${authManager.getToken()}`,
@@ -684,7 +684,7 @@
 
           if (response.ok) {
             const data = await response.json();
-            console.log("Raw API response (with-coordinates):", data);
+            console.log("Raw API response (all projects):", data);
             // Handle API response structure: { status: 200, data: [...], message: "..." }
             let projectsData = [];
             if (data.status === 200 && data.data) {
@@ -693,8 +693,8 @@
               projectsData = data;
             }
 
-            console.log("Loaded projects for map:", projectsData.length);
-            console.log("Projects data (with coordinates):", projectsData);
+            console.log("Loaded all projects:", projectsData.length);
+            console.log("All projects data:", projectsData);
 
             // Log each project's coordinates
             projectsData.forEach((project, idx) => {
@@ -709,8 +709,7 @@
             // Filter to show only priority projects posted by admin accounts
             // Check both isPriority field and projectCategory field, and creator role
             const priorityProjects = projectsData.filter(project => 
-              (project.isPriority === true || project.projectCategory === 'PRIORITY') &&
-              (project.createdByRole === 'SUPER_ADMIN_REVIEWER' || project.createdByRole === 'SUPER_ADMIN_APPROVER')
+              (project.isPriority === true || project.projectCategory === 'PRIORITY')
             );
             console.log(`Filtered to ${priorityProjects.length} priority projects out of ${projectsData.length} total projects`);
             
