@@ -11,7 +11,8 @@ public enum ProjectTheme {
     CH("Child Health", "CH"),
     AH("Adolescent Health", "AH"),
     ADV_SBC("Advocacy and SBC", "ADV_SBC"),
-    MERL("MERL - Monitoring, Evaluation, Research and Learning", "MERL");
+    MONITORING_EVALUATION("Monitoring and Evaluation", "MONITORING_EVALUATION"),
+    RESEARCH_LEARNING("Research and Learning", "RESEARCH_LEARNING");
     
     private final String displayName;
     private final String code;

@@ -73,7 +73,8 @@ export function getThematicAreaName(code) {
     CH: "Child Health",
     AH: "Adolescent Health",
     ADV_SBC: "Advocacy and SBC",
-    MERL: "MERL - Monitoring, Evaluation, Research and Learning",
+    MONITORING_EVALUATION: "Monitoring and Evaluation",
+    RESEARCH_LEARNING: "Research and Learning",
   };
   return areas[code] || code;
 }
@@ -87,7 +88,8 @@ export const THEMATIC_AREAS = [
   { code: "CH", name: "Child Health" },
   { code: "AH", name: "Adolescent Health" },
   { code: "ADV_SBC", name: "Advocacy and SBC" },
-  { code: "MERL", name: "MERL - Monitoring, Evaluation, Research and Learning" },
+  { code: "MONITORING_EVALUATION", name: "Monitoring and Evaluation" },
+  { code: "RESEARCH_LEARNING", name: "Research and Learning" },
 ];
 
 // Check if user can review a project

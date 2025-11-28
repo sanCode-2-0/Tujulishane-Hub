@@ -49,6 +49,9 @@ public class Project {
     @Column(name = "activity_type")
     private String activityType;
     
+    @Column
+    private String county;
+    
     // Multiple themes relationship
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

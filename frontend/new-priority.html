@@ -463,16 +463,39 @@
                   <input
                     type="checkbox"
                     name="themes"
-                    value="MERL"
+                    value="MONITORING_EVALUATION"
                     class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3"
                   />
                   <div class="flex-1">
                     <span
                       class="font-medium text-gray-800 group-hover:text-blue-800"
-                      >MERL</span
+                      >Monitoring and Evaluation</span
                     >
                     <p class="text-xs text-gray-500 mt-1">
-                      Monitoring, evaluation, research and learning
+                      Monitoring and evaluation activities
+                    </p>
+                  </div>
+                  <div class="checkmark hidden text-green-500 ml-2">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </label>
+
+                <label
+                  class="theme-option flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200 group"
+                >
+                  <input
+                    type="checkbox"
+                    name="themes"
+                    value="RESEARCH_LEARNING"
+                    class="theme-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 mr-3"
+                  />
+                  <div class="flex-1">
+                    <span
+                      class="font-medium text-gray-800 group-hover:text-blue-800"
+                      >Research and Learning</span
+                    >
+                    <p class="text-xs text-gray-500 mt-1">
+                      Research and learning initiatives
                     </p>
                   </div>
                   <div class="checkmark hidden text-green-500 ml-2">
@@ -1535,6 +1558,10 @@
             themeContainer.classList.add("border-gray-200");
             themeValidationError.classList.add("hidden");
           }
+
+          // Update file upload section based on theme selection
+          // Note: new-priority.html doesn't have a separate supporting documents step,
+          // but we can still validate NACOSTI requirement during submission
         }
 
         themeCheckboxes.forEach((checkbox) => {
@@ -1963,6 +1990,34 @@
                 block: "center",
               });
               return;
+            }
+
+            // Validate NACOSTI Certificate requirement for Research & Learning theme
+            if (data.themes && data.themes.includes("RESEARCH_LEARNING")) {
+              const hasNacostiCert = selectedFiles.some(file =>
+                file.name.toLowerCase().includes("nacosti") ||
+                file.name.toLowerCase().includes("certificate") ||
+                file.name.toLowerCase().includes("nacosti certificate")
+              );
+
+              if (!hasNacostiCert) {
+                await showAlert(
+                  "For Research & Learning projects, you must upload a NACOSTI Certificate (National Commission for Science, Technology and Innovation).",
+                  "Required Document Missing",
+                  "warning"
+                );
+
+                // Scroll to the bottom of the form where files would be uploaded
+                window.scrollTo({
+                  top: document.body.scrollHeight,
+                  behavior: "smooth",
+                });
+
+                // Hide loading overlay and re-enable submit button
+                loadingOverlay.classList.add("hidden");
+                enableSubmitButton();
+                return;
+              }
             }
 
             if (!data.locations || data.locations.length === 0) {

@@ -345,7 +345,7 @@
                     <div class="mb-6">
                         <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" data-twe-tab-active>
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div
                                     class="inline-block max-w-7xl mx-auto min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
@@ -381,34 +381,84 @@
                                                             #</th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Project No</th>
+                                                            <div>Project No</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 1, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Title</th>
+                                                            <div>Title</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 2, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Category</th>
+                                                            <div>Category</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 3, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Themes</th>
+                                                            <div>Themes</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 4, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Locations</th>
+                                                            <div>Locations</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 5, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Status</th>
+                                                            <div>Status</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 6, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Start Date</th>
+                                                            <div>Start Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 7, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            End Date</th>
+                                                            <div>End Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 8, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Contact Person</th>
+                                                            <div>Contact Person</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 9, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Budget (KES)</th>
+                                                            <div>Budget (KES)</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-active', 10, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
                                                             Actions</th>
@@ -423,7 +473,7 @@
                         </div>
                         <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
                                     <div class="p-6 border-b border-gray-200 bg-gray-50">
@@ -459,34 +509,84 @@
                                                             #</th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Project No</th>
+                                                            <div>Project No</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 1, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Title</th>
+                                                            <div>Title</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 2, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Category</th>
+                                                            <div>Category</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 3, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Themes</th>
+                                                            <div>Themes</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 4, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Locations</th>
+                                                            <div>Locations</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 5, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Status</th>
+                                                            <div>Status</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 6, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Start Date</th>
+                                                            <div>Start Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 7, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            End Date</th>
+                                                            <div>End Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 8, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Contact Person</th>
+                                                            <div>Contact Person</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 9, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Budget (KES)</th>
+                                                            <div>Budget (KES)</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-pending', 10, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
                                                             Actions</th>
@@ -501,7 +601,7 @@
                         </div>
                         <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
                             id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                            <div class="mx-auto overflow-x-hidden">
+                            <div class="mx-auto">
                                 <div class="inline-block min-w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                                     <!-- Search and Filter Controls -->
                                     <div class="p-6 border-b border-gray-200 bg-gray-50">
@@ -536,34 +636,84 @@
                                                             #</th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Project No</th>
+                                                            <div>Project No</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 1, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Title</th>
+                                                            <div>Title</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 2, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Category</th>
+                                                            <div>Category</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 3, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Themes</th>
+                                                            <div>Themes</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 4, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Locations</th>
+                                                            <div>Locations</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 5, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Status</th>
+                                                            <div>Status</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 6, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Start Date</th>
+                                                            <div>Start Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 7, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            End Date</th>
+                                                            <div>End Date</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 8, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Contact Person</th>
+                                                            <div>Contact Person</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 9, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                            Budget (KES)</th>
+                                                            <div>Budget (KES)</div>
+                                                            <input type="text" 
+                                                                   class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                                   placeholder="Filter..." 
+                                                                   oninput="filterColumn('tbody-stalled', 10, this.value)">
+                                                        </th>
                                                         <th
                                                             class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
                                                             Actions</th>
@@ -611,34 +761,84 @@
                                                     #</th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Project No</th>
+                                                    <div>Project No</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 1, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Title</th>
+                                                    <div>Title</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 2, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Category</th>
+                                                    <div>Category</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 3, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Themes</th>
+                                                    <div>Themes</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 4, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Locations</th>
+                                                    <div>Locations</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 5, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Status</th>
+                                                    <div>Status</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 6, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Start Date</th>
+                                                    <div>Start Date</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 7, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    End Date</th>
+                                                    <div>End Date</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 8, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Contact Person</th>
+                                                    <div>Contact Person</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 9, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
-                                                    Budget (KES)</th>
+                                                    <div>Budget (KES)</div>
+                                                    <input type="text" 
+                                                           class="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="Filter..." 
+                                                           oninput="filterColumn('tbody-completed', 10, this.value)">
+                                                </th>
                                                 <th
                                                     class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase border-b border-gray-200">
                                                     Actions</th>
@@ -1187,11 +1387,24 @@
                                                                 title="View Details">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button onclick="openReviewModal(project)"
-                                                                class="text-white bg-blue-600 hover:bg-green-600 px-2 py-1 rounded transition"
-                                                                title="Review Project">
-                                                                <i class="fas fa-check-circle"></i>
-                                                            </button>
+                                                            ${(() => {
+                                                                const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                                                                if (userRole === 'SUPER_ADMIN_REVIEWER' || userRole === 'SUPER_ADMIN_APPROVER') {
+                                                                    return `
+                                                                        <button onclick="editProject(${project.id})"
+                                                                            class="text-blue-600 hover:text-blue-800 px-2 py-1 rounded border border-blue-300 hover:bg-blue-50 transition"
+                                                                            title="Edit Project">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </button>
+                                                                        <button onclick="deleteProject(${project.id})"
+                                                                            class="text-red-600 hover:text-red-800 px-2 py-1 rounded border border-red-300 hover:bg-red-50 transition"
+                                                                            title="Delete Project">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    `;
+                                                                }
+                                                                return '';
+                                                            })()}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -1376,11 +1589,6 @@
                                                             title="View Details">
                                                             <i class="fas fa-eye"></i>
                                                         </button>
-                                                        <button onclick="openReviewModal(project)"
-                                                            class="text-white bg-blue-600 hover:bg-green-600 px-2 py-1 rounded transition"
-                                                            title="Review Project">
-                                                            <i class="fas fa-check-circle"></i>
-                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1427,8 +1635,9 @@
                             function refreshProjectTables(statuses = ['active', 'pending', 'stalled', 'completed']) {
                                 const userRole = localStorage.getItem('userRole');
                                 const isPartner = userRole === 'PARTNER';
+                                const isDonor = userRole === 'DONOR';
 
-                                if (isMyProjectsView() || isPartner) {
+                                if (isMyProjectsView() || isPartner || isDonor) {
                                     loadMyProjects();
                                     return;
                                 }
@@ -1451,7 +1660,7 @@
 
                             function reloadAfterAction(statuses = ['active', 'pending', 'stalled', 'completed']) {
                                 const userRole = localStorage.getItem('userRole');
-                                if (userRole !== 'PARTNER') {
+                                if (userRole !== 'PARTNER' && userRole !== 'DONOR') {
                                     loadProjectStats();
                                 }
                                 refreshProjectTables(statuses);
@@ -1564,8 +1773,9 @@
                             document.addEventListener('DOMContentLoaded', () => {
                                 const userRole = localStorage.getItem('userRole');
                                 const isPartner = userRole === 'PARTNER';
+                                const isDonor = userRole === 'DONOR';
 
-                                if (!isPartner) {
+                                if (!isPartner && !isDonor) {
                                     loadProjectStats();
                                 }
 
@@ -2224,6 +2434,18 @@
 
             const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
+            // Get all column filter inputs for this tbody
+            const columnFilters = [];
+            for (let i = 1; i <= 10; i++) { // Columns 1-10 (skip # column at index 0)
+                const filterInput = document.querySelector(`input[oninput*="filterColumn('${tbodyId}', ${i},"`);
+                if (filterInput) {
+                    columnFilters.push({
+                        index: i,
+                        value: filterInput.value.toLowerCase().trim()
+                    });
+                }
+            }
+
             const rows = tbody.querySelectorAll('tr');
             let visibleCount = 0;
 
@@ -2238,28 +2460,133 @@
 
                 if (cells.length < 7) return; // Not a data row
 
-                // Get cell texts
-                const projectNo = cells[1].textContent.toLowerCase();
-                const title = cells[2].textContent.toLowerCase();
-                const category = cells[3].textContent.toLowerCase();
-                const themes = cells[4].textContent.toLowerCase();
-                const locations = cells[5].textContent.toLowerCase();
-                const status = cells[6].textContent.toLowerCase();
-                const contact = cells[9].textContent.toLowerCase();
-                const budget = cells[10].textContent.toLowerCase();
+                // Check global search term
+                let matchesGlobalSearch = true;
+                if (searchTerm) {
+                    const projectNo = cells[1].textContent.toLowerCase();
+                    const title = cells[2].textContent.toLowerCase();
+                    const category = cells[3].textContent.toLowerCase();
+                    const themes = cells[4].textContent.toLowerCase();
+                    const locations = cells[5].textContent.toLowerCase();
+                    const status = cells[6].textContent.toLowerCase();
+                    const contact = cells[9].textContent.toLowerCase();
+                    const budget = cells[10].textContent.toLowerCase();
 
-                // Check search term
-                const matchesSearch = !searchTerm ||
-                    projectNo.includes(searchTerm) ||
-                    title.includes(searchTerm) ||
-                    category.includes(searchTerm) ||
-                    themes.includes(searchTerm) ||
-                    locations.includes(searchTerm) ||
-                    contact.includes(searchTerm) ||
-                    budget.includes(searchTerm);
+                    matchesGlobalSearch = projectNo.includes(searchTerm) ||
+                        title.includes(searchTerm) ||
+                        category.includes(searchTerm) ||
+                        themes.includes(searchTerm) ||
+                        locations.includes(searchTerm) ||
+                        contact.includes(searchTerm) ||
+                        budget.includes(searchTerm);
+                }
 
-                // Show/hide row
-                if (matchesSearch) {
+                // Check column filters
+                let matchesColumnFilters = true;
+                for (const filter of columnFilters) {
+                    if (filter.value && cells[filter.index]) {
+                        const cellText = cells[filter.index].textContent.toLowerCase();
+                        if (!cellText.includes(filter.value)) {
+                            matchesColumnFilters = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Show/hide row based on both global search and column filters
+                if (matchesGlobalSearch && matchesColumnFilters) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show empty message if no rows visible
+            const messageRow = tbody.querySelector('tr td[colspan]');
+            if (messageRow) {
+                messageRow.parentElement.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+
+        // Filter table by specific column
+        function filterColumn(tbodyId, columnIndex, filterValue) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const filterTerm = filterValue.toLowerCase().trim();
+
+            // Get search input for this tbody (global search)
+            const searchInput = document.getElementById(`project-search-${tbodyId.replace('tbody-', '')}`);
+            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            // Get all other column filter inputs for this tbody
+            const columnFilters = [];
+            for (let i = 1; i <= 10; i++) { // Columns 1-10 (skip # column at index 0)
+                if (i !== columnIndex) { // Skip the current column being filtered
+                    const filterInput = document.querySelector(`input[oninput*="filterColumn('${tbodyId}', ${i},"`);
+                    if (filterInput) {
+                        columnFilters.push({
+                            index: i,
+                            value: filterInput.value.toLowerCase().trim()
+                        });
+                    }
+                }
+            }
+
+            const rows = tbody.querySelectorAll('tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+
+                // Skip if it's the empty message row (has colspan)
+                if (cells.length === 1 && cells[0].hasAttribute('colspan')) {
+                    row.style.display = 'none'; // Hide message initially
+                    return;
+                }
+
+                if (cells.length < columnIndex + 1) return; // Not a data row or column doesn't exist
+
+                // Check global search term
+                let matchesGlobalSearch = true;
+                if (searchTerm) {
+                    const projectNo = cells[1].textContent.toLowerCase();
+                    const title = cells[2].textContent.toLowerCase();
+                    const category = cells[3].textContent.toLowerCase();
+                    const themes = cells[4].textContent.toLowerCase();
+                    const locations = cells[5].textContent.toLowerCase();
+                    const status = cells[6].textContent.toLowerCase();
+                    const contact = cells[9].textContent.toLowerCase();
+                    const budget = cells[10].textContent.toLowerCase();
+
+                    matchesGlobalSearch = projectNo.includes(searchTerm) ||
+                        title.includes(searchTerm) ||
+                        category.includes(searchTerm) ||
+                        themes.includes(searchTerm) ||
+                        locations.includes(searchTerm) ||
+                        contact.includes(searchTerm) ||
+                        budget.includes(searchTerm);
+                }
+
+                // Check current column filter
+                const cellText = cells[columnIndex].textContent.toLowerCase();
+                const matchesCurrentFilter = !filterTerm || cellText.includes(filterTerm);
+
+                // Check other column filters
+                let matchesOtherFilters = true;
+                for (const filter of columnFilters) {
+                    if (filter.value && cells[filter.index]) {
+                        const otherCellText = cells[filter.index].textContent.toLowerCase();
+                        if (!otherCellText.includes(filter.value)) {
+                            matchesOtherFilters = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Show/hide row based on all filters
+                if (matchesGlobalSearch && matchesCurrentFilter && matchesOtherFilters) {
                     row.style.display = '';
                     visibleCount++;
                 } else {
@@ -2891,11 +3218,8 @@
                                     <div class="flex justify-between">
                                         <dt class="text-gray-500">Partner:</dt>
                                         <dd class="text-gray-900">
-                                            ${project.partner ? `
-                                                <a class="text-blue-600 hover:text-blue-800 underline flex items-center gap-1" href="mailto:${project.partner}" title="Send email to ${project.partner}">
-                                                    <i class="fas fa-envelope text-xs"></i>
-                                                    ${project.partner}
-                                                </a>
+                                            ${project.partnerName ? `
+                                                ${project.partnerName}
                                             ` : 'N/A'}
                                         </dd>
                                     </div>
@@ -2955,6 +3279,61 @@
         window.closeProjectDetailsModal = function () {
             const modal = document.getElementById('projectDetailsModal');
             modal.classList.add('hidden');
+        };
+
+        // Edit Project Function
+        window.editProject = function (projectId) {
+            // Navigate to new-project.html with edit mode and project ID
+            window.location.href = `new-project.html?edit=${projectId}`;
+        };
+
+        // Delete Project Function
+        window.deleteProject = async function (projectId) {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+
+                const response = await fetch(`${API_BASE}/api/projects/${projectId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Project deleted successfully!');
+                    // Reload the page to refresh the project list
+                    window.location.reload();
+                } else if (response.status === 404) {
+                    // Project not found on server - remove it from the UI
+                    const projectRow = document.querySelector(`button[onclick*="deleteProject(${projectId})"]`);
+                    if (projectRow) {
+                        // Find the table row (tr) containing this button
+                        const row = projectRow.closest('tr');
+                        if (row) {
+                            row.remove();
+                            alert('Project was not found on the server and has been removed from the list.');
+                        } else {
+                            alert('Project not found. It may have already been deleted or never existed.');
+                            window.location.reload();
+                        }
+                    } else {
+                        alert('Project not found. It may have already been deleted or never existed.');
+                        window.location.reload();
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert('Failed to delete project: ' + (errorData.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Error deleting project. Please try again.');
+            }
         };
 
         // View Project Document Function

@@ -77,7 +77,8 @@ function getThematicAreaName(code) {
     CH: "Child Health",
     AH: "Adolescent Health",
     ADV_SBC: "Advocacy and SBC",
-    MERL: "MERL - Monitoring, Evaluation, Research and Learning",
+    MONITORING_EVALUATION: "Monitoring and Evaluation",
+    RESEARCH_LEARNING: "Research and Learning",
   };
   return areas[code] || code;
 }

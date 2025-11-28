@@ -422,12 +422,27 @@
                 <i class="far fa-chart-line text-indigo-400 text-lg"></i>
               </div>
               <h3 class="text-xl ml-3 font-medium uppercase text-black">
-                MERL - Monitoring, Evaluation, Research and Learning
+                Monitoring and Evaluation
               </h3>
             </div>
             <hr class="my-2">
             <p class="text-lg text-gray-600">
-              Monitoring, Evaluation, Research and Learning initiatives.
+              Programs focused on monitoring and evaluating project outcomes.
+            </p>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl shadow hover:shadow-md transition p-6 flex flex-col justify-between">
+            <div class="flex items-center">
+              <div class="text-left rounded-lg h-9 w-9 bg-gray-100/70 shadow-md flex items-center text-white justify-center mb-2">
+                <i class="far fa-search text-teal-400 text-lg"></i>
+              </div>
+              <h3 class="text-xl ml-3 font-medium uppercase text-black">
+                Research and Learning
+              </h3>
+            </div>
+            <hr class="my-2">
+            <p class="text-lg text-gray-600">
+              Research initiatives and learning programs.
             </p>
           </div>
         </div>
@@ -618,7 +633,8 @@
                   <option value="CH">Child Health</option>
                   <option value="AH">Adolescent Health</option>
                   <option value="ADV_SBC">Advocacy and SBC</option>
-                  <option value="MERL">MERL - Monitoring, Evaluation, Research and Learning</option>
+                  <option value="MONITORING_EVALUATION">Monitoring and Evaluation</option>
+                  <option value="RESEARCH_LEARNING">Research and Learning</option>
                 </select>
               </div>
 
@@ -2051,8 +2067,8 @@
               : "an unspecified region";
           })()}</strong>,
 					this project ${
-            project.partner
-              ? `is supported by <strong>${project.partner}</strong>`
+            project.partnerName
+              ? `is supported by <strong>${project.partnerName}</strong>`
               : "has partners to be announced"
           } 
 					with an estimated budget of <strong>${
@@ -2519,11 +2535,17 @@
           icon: "far fa-bullhorn",
           color: "text-cyan-400",
         },
-        MERL: {
-          name: "MERL - Monitoring, Evaluation, Research and Learning",
-          description: "Monitoring, Evaluation, Research and Learning initiatives.",
+        MONITORING_EVALUATION: {
+          name: "Monitoring and Evaluation",
+          description: "Programs focused on monitoring and evaluating project outcomes.",
           icon: "far fa-chart-line",
           color: "text-indigo-400",
+        },
+        RESEARCH_LEARNING: {
+          name: "Research and Learning",
+          description: "Research initiatives and learning programs.",
+          icon: "far fa-search",
+          color: "text-teal-400",
         },
       };
 
@@ -2709,28 +2731,12 @@
           if (stats.data) {
             const data = stats.data;
 
-            // Calculate regions/counties from countyCounts
-            const regions = data.countyCounts ? data.countyCounts.length : 0;
-
-            // Locations is the number of projects with coordinates
-            const locations =
-              data.projectsWithCoordinates || data.totalProjects || 0;
-
-            // Projects is the total number of projects
-            const projects = data.totalProjects || 0;
-
-            // Calculate total active status count
-            let activeCount = 0;
-            if (data.statusCounts) {
-              data.statusCounts.forEach(([status, count]) => {
-                if (status === "active" || status === "ACTIVE") {
-                  activeCount += count;
-                }
-              });
-            }
-
-            // Calculate total budget by fetching all projects
+            // Calculate total budget and active projects by fetching all projects
             let totalBudget = 0;
+            let activeProjects = [];
+            let regions = 0;
+            let locations = 0;
+            let projects = 0;
             try {
               const projectsResponse = await authManager.apiCall(
                 "/api/projects?page=0&size=1000&sortBy=id&sortDir=desc",
@@ -2744,22 +2750,41 @@
                   projectsData.data.projects
                 ) {
                   const allProjects = projectsData.data.projects;
-                  totalBudget = allProjects.reduce((sum, project) => {
+                  activeProjects = allProjects.filter(p => p.status?.toLowerCase() === 'active');
+                  projects = activeProjects.length;
+                  console.log("[DEBUG] Active projects count:", projects);
+                  console.log("[DEBUG] Active projects sample:", activeProjects.slice(0, 3));
+                  totalBudget = activeProjects.reduce((sum, project) => {
                     return sum + (project.budget || 0);
                   }, 0);
+                  // Calculate unique counties from active projects
+                  const countySet = new Set();
+                  activeProjects.forEach(p => {
+                    console.log("[DEBUG] Project county:", p.county, "for project:", p.id);
+                    if (p.county) countySet.add(p.county);
+                  });
+                  regions = countySet.size;
+                  console.log("[DEBUG] Unique counties set:", Array.from(countySet));
+                  console.log("[DEBUG] Regions count:", regions);
+                  // Calculate projects with coordinates from statistics API
+                  locations = data.projectsWithCoordinates || locations;
                   console.log(
-                    "[DEBUG] Total budget calculated from",
-                    allProjects.length,
-                    "projects:",
-                    totalBudget
+                    "[DEBUG] Active projects:", projects,
+                    "Regions:", regions,
+                    "Locations:", locations,
+                    "Total budget:", totalBudget
                   );
                 }
               }
             } catch (budgetError) {
               console.error(
-                "Error fetching projects for budget calculation:",
+                "Error fetching projects for statistics calculation:",
                 budgetError
               );
+              // Fallback to API stats
+              regions = data.countyCounts ? data.countyCounts.length : 0;
+              locations = data.projectsWithCoordinates || data.totalProjects || 0;
+              projects = 0;
               totalBudget = 0;
             }
 
@@ -2768,7 +2793,7 @@
               locations: locations,
               projects: projects,
               regions: regions,
-              users: data.totalStakeholders || activeCount || projects, // Use stakeholders for animated users count
+              users: data.totalStakeholders || projects || 0, // Use stakeholders for animated users count
               amount: totalBudget, // Use actual total budget instead of estimate
             };
 
@@ -2806,7 +2831,7 @@
           console.log("[DEBUG] Current user for statistics:", user);
           console.log("[DEBUG] User role:", user?.role);
 
-          if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+          if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN" && user.role !== "SUPER_ADMIN_REVIEWER" && user.role !== "SUPER_ADMIN_APPROVER")) {
             console.log(
               "[DEBUG] User is not admin, using estimated stakeholders count. Role:",
               user?.role
@@ -2877,38 +2902,19 @@
                 usersData.data.slice(0, 3)
               );
 
-              // Calculate stakeholders as partners + donors
-              // Stakeholders = PARTNER role users + users from DONOR_AGENCY organizations
+              // Calculate stakeholders as users with PARTNER or DONOR roles
               const stakeholders = usersData.data.filter((user) => {
-                const isPartner = user.role === "PARTNER";
-                const isFromDonorAgency =
-                  user.organization &&
-                  (user.organization.organizationType === "DONOR_AGENCY" ||
-                    user.organization.type === "DONOR_AGENCY");
-                return isPartner || isFromDonorAgency;
+                return user.role === "PARTNER" || user.role === "DONOR";
               }).length;
               console.log("[DEBUG] Stakeholders calculation:", {
                 totalUsers,
                 stakeholders,
                 partnerCount: usersData.data.filter((u) => u.role === "PARTNER")
                   .length,
-                donorAgencyUsersCount: usersData.data.filter((u) => {
-                  const org = u.organization;
-                  return (
-                    org &&
-                    (org.organizationType === "DONOR_AGENCY" ||
-                      org.type === "DONOR_AGENCY")
-                  );
-                }).length,
+                donorCount: usersData.data.filter((u) => u.role === "DONOR")
+                  .length,
                 filteredStakeholders: usersData.data
-                  .filter((user) => {
-                    const isPartner = user.role === "PARTNER";
-                    const isFromDonorAgency =
-                      user.organization &&
-                      (user.organization.organizationType === "DONOR_AGENCY" ||
-                        user.organization.type === "DONOR_AGENCY");
-                    return isPartner || isFromDonorAgency;
-                  })
+                  .filter((user) => user.role === "PARTNER" || user.role === "DONOR")
                   .map((u) => ({
                     id: u.id,
                     role: u.role,
@@ -3217,6 +3223,9 @@
       function updateStatisticsDisplay(stats) {
         console.log("📊 Updating statistics display with:", stats);
 
+        // Use calculated statsData instead of API stats
+        const calculatedStats = window.statsData || {};
+
         // Update hero section statistics
         const totalProjectsElement =
           document.getElementById("totalProjectsCount");
@@ -3237,7 +3246,7 @@
         }
 
         if (totalProjectsElement) {
-          const projectCount = stats.totalProjects || 0;
+          const projectCount = calculatedStats.projects || 0;
           totalProjectsElement.textContent = projectCount;
           console.log("✅ Updated total projects count:", projectCount);
         } else {
@@ -3245,14 +3254,15 @@
         }
 
         if (totalCountiesElement) {
-          totalCountiesElement.textContent = countiesCount;
-          console.log("✅ Updated total counties count:", countiesCount);
+          const counties = calculatedStats.regions || countiesCount;
+          totalCountiesElement.textContent = counties;
+          console.log("✅ Updated total counties count:", counties);
         } else {
           console.warn("⚠️ totalCountiesElement not found");
         }
 
         if (totalStakeholdersElement) {
-          const stakeholdersCount = stats.totalStakeholders || 0;
+          const stakeholdersCount = calculatedStats.users || stats.totalStakeholders || 0;
           totalStakeholdersElement.textContent = stakeholdersCount;
           console.log(
             "✅ Updated total stakeholders count:",
@@ -3263,9 +3273,9 @@
         }
 
         console.log("📊 Hero statistics updated:", {
-          projects: stats.totalProjects,
-          counties: countiesCount,
-          stakeholders: stats.totalStakeholders,
+          projects: calculatedStats.projects,
+          counties: calculatedStats.regions,
+          stakeholders: calculatedStats.users,
         });
 
         // Update Alpine.js countdownStats component
@@ -3275,13 +3285,13 @@
           );
 
           if (statsComponent) {
-            // Update targets with real data
+            // Update targets with calculated data
             statsComponent.targets = {
-              locations: stats.coordinatesCoveragePercentage || 0,
-              projects: stats.totalProjects || 0,
-              regions: Object.keys(stats.countyCounts || {}).length || 0,
-              users: stats.totalStakeholders || 0,
-              amount: stats.totalBudget || 0, // This would need to be calculated from projects
+              locations: calculatedStats.locations || 0,
+              projects: calculatedStats.projects || 0,
+              regions: calculatedStats.regions || 0,
+              users: calculatedStats.users || 0,
+              amount: calculatedStats.amount || 0,
             };
 
             // Reset the animation values
@@ -3307,9 +3317,9 @@
         }
 
         console.log("Hero statistics updated:", {
-          projects: stats.totalProjects,
-          counties: Object.keys(stats.countyCounts || {}).length,
-          stakeholders: stats.totalStakeholders,
+          projects: calculatedStats.projects,
+          counties: calculatedStats.regions,
+          stakeholders: calculatedStats.users,
         });
       }
 
@@ -3429,8 +3439,8 @@
                   }</p>
                   <p><strong>Budget:</strong> ${budget}</p>
                   <p><strong>Partner:</strong> ${
-                    project.partner && project.partner !== "TBD"
-                      ? project.partner
+                    project.partnerName && project.partnerName !== "TBD"
+                      ? project.partnerName
                       : "Partner information pending"
                   }</p>
                   <p><strong>Status:</strong>
@@ -3589,7 +3599,8 @@
           AH: "bg-purple-100 text-purple-800",
           AYPSRH: "bg-indigo-100 text-indigo-800",
           ADV_SBC: "bg-yellow-100 text-yellow-800",
-          MERL: "bg-teal-100 text-teal-800",
+          MONITORING_EVALUATION: "bg-teal-100 text-teal-800",
+          RESEARCH_LEARNING: "bg-cyan-100 text-cyan-800",
         };
         return classes[theme] || "bg-gray-100 text-gray-800";
       }
