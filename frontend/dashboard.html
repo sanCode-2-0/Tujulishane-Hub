@@ -114,7 +114,7 @@
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
 							<div class="p-10">
-								<h3 class="text-3xl font-semibold text-purple-900 mb-3 tracking-tight">
+								<h3 class="text-3xl font-semibold  mb-3 tracking-tight">
 									Welcome to RMNCAH Dashboard
 								</h3>
 								<p class="text-gray-600 text-base leading-relaxed max-w-2xl">
@@ -124,7 +124,7 @@
 						</div>
 
 						<!-- Counters -->
-						<div class="grid grid-cols-1 md:grid-cols-3 gap-8 ">
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
 
 							<!-- Card -->
 							<div
@@ -161,8 +161,18 @@
 								</div>
 							</div>
 
+							<div
+								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
+								<div class="flex items-center justify-between">
+									<div>
+										<p class="text-sm text-gray-500">Total Budget</p>
+										<p id="budget-count" class="text-4xl font-semibold text-gray-900 mt-1">0</p>
+									</div>
+								</div>
+							</div>
+
 						</div>
-						<div class="min-h-screen py-10">
+						<!-- <div class="min-h-screen py-10">
 							<div class="max-w-7xl mx-auto ">
 
 								<div id="kpi-container"
@@ -198,7 +208,7 @@
 								</div>
 
 							</div>
-						</div>
+						</div> -->
 
 					</div>
 
@@ -1109,7 +1119,7 @@
 		// --- 4. KPI Definitions ---
 		const kpis = [
 			{ title: "Total Projects", value: rand(100, 500), unit: "", color: "indigo", change: rand(5, 15), isPositive: true },
-			{ title: "Investment (KES)", value: 122, unit: "M", color: "green", change: rand(1, 5), isPositive: false, formatter: (val) => formatCurrency(val) },
+			{ title: "Investment (USD)", value: rand(10, 50), unit: "M", color: "green", change: rand(1, 5), isPositive: false, formatter: (val) => formatCurrency(val) },
 			{ title: "Beneficiaries Reached", value: rand(50000, 200000), unit: "", color: "yellow", change: rand(15, 30), isPositive: true, formatter: (val) => formatNumber(val) },
 			{ title: "Average Completion Rate", value: rand(60, 95), unit: "%", color: "red", change: 0, isPositive: false, formatter: (val) => val },
 		];
