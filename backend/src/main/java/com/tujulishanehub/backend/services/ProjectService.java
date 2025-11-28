@@ -6,6 +6,9 @@ import com.tujulishanehub.backend.models.ProjectLocation;
 import com.tujulishanehub.backend.models.ProjectTheme;
 import com.tujulishanehub.backend.models.ProjectThemeAssignment;
 import com.tujulishanehub.backend.models.User;
+import com.tujulishanehub.backend.models.ProjectCategory;
+import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.ApprovalWorkflowStatus;
 import com.tujulishanehub.backend.repositories.ProjectRepository;
 import com.tujulishanehub.backend.payload.ProjectCreateRequest;
 import com.tujulishanehub.backend.payload.ProjectLocationDto;
@@ -585,28 +588,22 @@ public class ProjectService {
             }
             
             project.setProjectCategory(request.getProjectCategory());
-            project.setStartDate(request.getStartDate());
-            project.setEndDate(request.getEndDate());
-            project.setActivityType(request.getActivityType());
-            project.setContactPersonName(request.getContactPersonName());
-            project.setContactPersonRole(request.getContactPersonRole());
-            project.setContactPersonEmail(request.getContactPersonEmail() != null ? request.getContactPersonEmail() : userEmail);
-            project.setObjectives(request.getObjectives());
-            project.setBudget(request.getBudget());
-
-            // Set status from request or default to "pending"
-            project.setStatus(request.getStatus() != null ? request.getStatus() : "pending");
             
-            // If status is "completed", set completedAt timestamp
-            if ("completed".equalsIgnoreCase(request.getStatus())) {
-                project.setCompletedAt(java.time.LocalDateTime.now());
+            // Special handling for PRIORITY projects created by super admins
+            if (project.getProjectCategory() == ProjectCategory.PRIORITY && currentUser != null && currentUser.isSuperAdmin()) {
+                project.setApprovalStatus(ApprovalStatus.APPROVED);
+                project.setApprovalWorkflowStatus(ApprovalWorkflowStatus.APPROVED);
+                project.setStatus("active");
+                logger.debug("Super admin creating PRIORITY project - set to immediately active and approved");
+            } else {
+                // CRITICAL: Ensure ALL projects go through approval workflow, regardless of who creates them
+                // Even super admins must have their projects reviewed and approved
+                project.setApprovalStatus(ApprovalStatus.PENDING);
+                project.setApprovalWorkflowStatus(ApprovalWorkflowStatus.PENDING_REVIEW);
+                logger.debug("Set approval status to PENDING and workflow status to PENDING_REVIEW for all new projects");
             }
             
-            // CRITICAL: Ensure ALL projects go through approval workflow, regardless of who creates them
-            // Even super admins must have their projects reviewed and approved
-            project.setApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
-            project.setApprovalWorkflowStatus(com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW);
-            logger.debug("Set approval status to PENDING and workflow status to PENDING_REVIEW for all new projects");
+            project.setStartDate(request.getStartDate());
 
             logger.debug("About to call replaceThemes with themes: {}", request.getThemes());
             replaceThemes(project, request.getThemes());

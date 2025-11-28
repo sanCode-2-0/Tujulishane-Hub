@@ -529,6 +529,33 @@ public class ProjectController {
     }
     
     /**
+     * Get all projects (for priority projects display)
+     */
+    @GetMapping("/all")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects() {
+        try {
+            List<Project> projects = projectRepository.findAll();
+            
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "All projects retrieved successfully", 
+                mapProjects(projects)
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving all projects: {}", e.getMessage(), e);
+            ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve projects: " + e.getMessage(), 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * Get projects within a geographic bounding box
      */
     @GetMapping("/in-bounds")
