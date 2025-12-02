@@ -126,6 +126,14 @@
 						<!-- Counters -->
 						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
 
+							<!-- Info Banner -->
+							<div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+								<div class="flex items-center gap-2 text-sm text-blue-700">
+									<span class="material-symbols-outlined text-base">info</span>
+									<span>Dashboard counters update automatically based on filters applied in Projects, Users, and Past Projects tabs</span>
+								</div>
+							</div>
+
 							<!-- Card -->
 							<div
 								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
@@ -213,6 +221,17 @@
 					</div>
 
 					<div id="tab-projects" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Projects</p>
+									<p id="tab-projects-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">folder</span>
+							</div>
+						</div>
 
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
@@ -321,6 +340,17 @@
 
 					<div id="tab-users" class="tab-section" style="display:none;">
 
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Users</p>
+									<p id="tab-users-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">people</span>
+							</div>
+						</div>
+
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
 
@@ -396,6 +426,17 @@
 					</div>
 
 					<div id="tab-organizations" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Organizations</p>
+									<p id="tab-organizations-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">business</span>
+							</div>
+						</div>
 
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
@@ -707,6 +748,17 @@
 
 
 					<div id="tab-pastprojects" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Past Projects</p>
+									<p id="tab-past-projects-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">history</span>
+							</div>
+						</div>
 
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
@@ -1343,6 +1395,178 @@
 			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 		}
 
+		// Global data storage for dashboard calculations
+		let originalData = {
+			projects: [],
+			users: [],
+			organizations: [],
+			pastProjects: [],
+			projectDocuments: [],
+			userDocuments: [],
+			projectReports: [],
+			collaborators: []
+		};
+
+		// Function to calculate dashboard stats from filtered data
+		function calculateDashboardStatsFromFilteredData() {
+			// Get filtered data from each tab
+			const filteredProjects = getFilteredData('tab-projects', originalData.projects);
+			const filteredUsers = getFilteredData('tab-users', originalData.users);
+			const filteredPastProjects = getFilteredData('tab-pastprojects', originalData.pastProjects);
+
+			// Calculate stats from filtered data
+			const partnersCount = filteredUsers.filter(user => user.role === 'PARTNER').length;
+
+			const thematicAreas = new Set();
+			const counties = new Set();
+			let totalBudget = 0;
+
+			// Include both current and past projects for thematic areas, counties, and budget
+			const allProjects = [...filteredProjects, ...filteredPastProjects];
+
+			allProjects.forEach(project => {
+				if (project.themes) {
+					project.themes.forEach(theme => thematicAreas.add(theme.code));
+				}
+				if (project.locations) {
+					project.locations.forEach(location => counties.add(location.county));
+				}
+				if (project.budget) {
+					totalBudget += parseFloat(project.budget) || 0;
+				}
+			});
+
+			// Update counters with animation
+			updateCounterWithAnimation('partners-count', partnersCount);
+			updateCounterWithAnimation('thematic-areas-count', thematicAreas.size);
+			updateCounterWithAnimation('counties-count', counties.size);
+			updateBudgetCounter(totalBudget);
+		}
+
+		// Function to update counter with animation
+		function updateCounterWithAnimation(elementId, newValue) {
+			const element = document.getElementById(elementId);
+			if (!element) return;
+
+			const currentValue = parseInt(element.textContent) || 0;
+			if (currentValue === newValue) return;
+
+			// Add highlight animation
+			element.style.transition = 'all 0.3s ease';
+			element.style.transform = 'scale(1.1)';
+			element.style.color = '#137fec';
+
+			setTimeout(() => {
+				element.textContent = newValue;
+				element.style.transform = 'scale(1)';
+				element.style.color = '';
+			}, 150);
+		}
+
+		// Function to update budget counter
+		function updateBudgetCounter(totalBudget) {
+			const element = document.getElementById('budget-count');
+			if (!element) return;
+
+			const currentValue = parseInt(element.textContent.replace(/[^\d]/g, '')) || 0;
+			if (currentValue === totalBudget) return;
+
+			// Add highlight animation
+			element.style.transition = 'all 0.3s ease';
+			element.style.transform = 'scale(1.1)';
+			element.style.color = '#137fec';
+
+			setTimeout(() => {
+				element.innerHTML = `<span class="font-normal" style="font-size:0.5em;">KES</span> ${totalBudget.toLocaleString()}`;
+				element.style.transform = 'scale(1)';
+				element.style.color = '';
+			}, 150);
+		}
+
+		// Function to update individual tab counters
+		function updateTabCounters() {
+			// Update Projects tab counter
+			const projectsFiltered = getFilteredData('tab-projects', originalData.projects);
+			updateCounterWithAnimation('tab-projects-count', projectsFiltered.length);
+
+			// Update Users tab counter
+			const usersFiltered = getFilteredData('tab-users', originalData.users);
+			updateCounterWithAnimation('tab-users-count', usersFiltered.length);
+
+			// Update Organizations tab counter
+			const organizationsFiltered = getFilteredData('tab-organizations', originalData.organizations);
+			updateCounterWithAnimation('tab-organizations-count', organizationsFiltered.length);
+
+			// Update Past Projects tab counter
+			const pastProjectsFiltered = getFilteredData('tab-pastprojects', originalData.pastProjects);
+			updateCounterWithAnimation('tab-past-projects-count', pastProjectsFiltered.length);
+		}
+
+		// Function to get filtered data from a table
+		function getFilteredData(tabId, originalDataArray) {
+			const tbody = document.querySelector(`#${tabId} tbody`);
+			if (!tbody) return originalDataArray;
+
+			const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row =>
+				row.style.display !== 'none' && !row.classList.contains('hidden')
+			);
+
+			// If no filters applied (all rows visible), return original data
+			const totalRows = tbody.querySelectorAll('tr').length;
+			if (visibleRows.length === totalRows) {
+				return originalDataArray;
+			}
+
+			// Map visible rows back to original data
+			const visibleIndices = visibleRows.map(row => {
+				const cells = row.querySelectorAll('td');
+				// Use a combination of visible cell data to identify the row in original data
+				return Array.from(cells).slice(0, -1).map(cell => cell.textContent.trim());
+			});
+
+			// Filter original data based on visible rows
+			return originalDataArray.filter(item => {
+				// Create a signature for each item to match against visible rows
+				const itemSignature = getDataColumns(tabId).map(col => {
+					let value = getNestedValue(item, col) || '';
+					// Apply same formatting as renderTable
+					if ((col.includes('Date') || col.includes('At')) && value) {
+						const date = new Date(value);
+						if (!isNaN(date)) {
+							value = date.toLocaleDateString('en-GB') + ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+						}
+					}
+					if (col === 'size' && value) {
+						value = formatFileSize(value);
+					}
+					if (col === 'locations' && Array.isArray(value)) {
+						value = value.map(loc => loc.county).join(', ');
+					}
+					return value;
+				});
+
+				// Check if this item's signature matches any visible row
+				return visibleIndices.some(visibleSig =>
+					visibleSig.every((val, idx) => val === itemSignature[idx])
+				);
+			});
+		}
+
+		// Function to get data columns for a tab
+		function getDataColumns(tabId) {
+			const columnMap = {
+				'tab-projects': ['title', 'partnerName', 'projectNo', 'projectCategory', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt'],
+				'tab-users': ['name', 'email', 'role', 'status', 'organization.name', 'createdAt'],
+				'tab-organizations': ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt'],
+				'tab-pastprojects': ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt'],
+				'tab-projectdocs': ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt'],
+				'tab-userdocs': ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt'],
+				'tab-projectreports': ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt'],
+				'tab-collaborators': ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']
+			};
+			return columnMap[tabId] || [];
+		}
+
 		async function fetchProjects() {
 			try {
 				const response = await apiFetch('/api/projects');
@@ -1353,11 +1577,21 @@
 					console.error('Projects data not array:', projects);
 					return;
 				}
+				// Store original data for filtering
+				originalData.projects = [...projects];
 				renderTable('tab-projects', projects, ['title', 'partnerName', 'projectNo', 'projectCategory', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					input.addEventListener('input', function() {
+						filterTable();
+						// Update dashboard counters when filters change
+						setTimeout(calculateDashboardStatsFromFilteredData, 100);
+						// Update individual tab counters
+						setTimeout(updateTabCounters, 100);
+					});
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-projects tbody tr');
@@ -1412,11 +1646,21 @@
 					console.error('Users data not array:', users);
 					return;
 				}
+				// Store original data for filtering
+				originalData.users = [...users];
 				renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization.name', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-users .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					input.addEventListener('input', function() {
+						filterTable();
+						// Update dashboard counters when filters change
+						setTimeout(calculateDashboardStatsFromFilteredData, 100);
+						// Update individual tab counters
+						setTimeout(updateTabCounters, 100);
+					});
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-users tbody tr');
@@ -1471,7 +1715,11 @@
 					console.error('Organizations data not array:', orgs);
 					return;
 				}
+				// Store original data for filtering
+				originalData.organizations = [...orgs];
 				renderTable('tab-organizations', orgs, ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-organizations .filter-input');
 				filterInputs.forEach(input => {
@@ -1490,6 +1738,8 @@
 						});
 						row.style.display = show ? '' : 'none';
 					});
+					// Update individual tab counters when filters change
+					setTimeout(updateTabCounters, 100);
 				}
 				// Add export functionality
 				const exportBtn = document.querySelector('#tab-organizations button');
@@ -1648,11 +1898,21 @@
 					console.error('Past projects data not array:', projects);
 					return;
 				}
+				// Store original data for filtering
+				originalData.pastProjects = [...projects];
 				renderTable('tab-pastprojects', projects, ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-pastprojects .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					input.addEventListener('input', function() {
+						filterTable();
+						// Update dashboard counters when filters change
+						setTimeout(calculateDashboardStatsFromFilteredData, 100);
+						// Update individual tab counters
+						setTimeout(updateTabCounters, 100);
+					});
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-pastprojects tbody tr');
@@ -1707,6 +1967,8 @@
 					console.error('Project reports data not array:', reports);
 					return;
 				}
+				// Store original data for filtering
+				originalData.projectReports = [...reports];
 				renderTable('tab-projectreports', reports, ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
@@ -1766,6 +2028,8 @@
 					console.error('Project collaborators data not array:', collaborators);
 					return;
 				}
+				// Store original data for filtering
+				originalData.collaborators = [...collaborators];
 				renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
@@ -1821,36 +2085,22 @@
 				const projectsResponse = await apiFetch('/api/projects');
 				const projectsData = await projectsResponse.json();
 				const projects = projectsData.data?.projects || projectsData.data?.content || projectsData.data || [];
+				originalData.projects = [...projects];
+
+				// Fetch past projects
+				const pastProjectsResponse = await apiFetch('/api/past-projects');
+				const pastProjectsData = await pastProjectsResponse.json();
+				const pastProjects = pastProjectsData.data?.pastProjects || pastProjectsData.data?.content || pastProjectsData.data || [];
+				originalData.pastProjects = [...pastProjects];
 
 				// Fetch users for partners count
 				const usersResponse = await apiFetch('/api/auth/admin/users');
 				const usersData = await usersResponse.json();
 				const users = usersData.data?.users || usersData.data?.content || usersData.data || [];
+				originalData.users = [...users];
 
-				// Calculate stats
-				const partnersCount = users.filter(user => user.role === 'PARTNER').length;
-				const thematicAreas = new Set();
-				const counties = new Set();
-				let totalBudget = 0;
-
-				projects.forEach(project => {
-					if (project.themes) {
-						project.themes.forEach(theme => thematicAreas.add(theme.code));
-					}
-					if (project.locations) {
-						project.locations.forEach(location => counties.add(location.county));
-					}
-					if (project.budget) {
-						totalBudget += parseFloat(project.budget) || 0;
-					}
-				});
-
-				// Update counters
-				document.getElementById('partners-count').textContent = partnersCount;
-				document.getElementById('thematic-areas-count').textContent = thematicAreas.size;
-				document.getElementById('counties-count').textContent = counties.size;
-				document.getElementById('budget-count').innerHTML =
-					`<span class="font-normal" style="font-size:0.5em;">KES</span> ${totalBudget.toLocaleString()}`;
+				// Calculate and update stats
+				calculateDashboardStatsFromFilteredData();
 
 			} catch (error) {
 				console.error('Error fetching dashboard stats:', error);
@@ -1867,6 +2117,8 @@
 					console.error('Project documents data not array:', documents);
 					return;
 				}
+				// Store original data for filtering
+				originalData.projectDocuments = [...documents];
 				renderTable('tab-projectdocs', documents, ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projectdocs .filter-input');
@@ -1926,6 +2178,8 @@
 					console.error('User documents data not array:', documents);
 					return;
 				}
+				// Store original data for filtering
+				originalData.userDocuments = [...documents];
 				renderTable('tab-userdocs', documents, ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-userdocs .filter-input');
