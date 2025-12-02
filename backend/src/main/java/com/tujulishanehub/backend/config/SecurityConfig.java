@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
                         // Removed hardcoded role restrictions - controllers handle authorization via @PreAuthorize
                         .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
+                        .requestMatchers("/api/general-announcements", "/api/general-announcements/{id}").permitAll()  // Allow public access to view general announcements
                         .requestMatchers("/api/organizations", "/api/organizations/**").permitAll()  // Allow public access to organizations
                         .requestMatchers("/h2-console/**").permitAll()
                         // Remove the hardcoded POST restriction - let @PreAuthorize in controllers handle it
