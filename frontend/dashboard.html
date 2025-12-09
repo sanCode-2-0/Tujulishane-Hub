@@ -52,14 +52,11 @@
 	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<link rel="stylesheet" href="styles/main.css">
+	<script defer src="styles/loadNav.js"></script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-neutral-text dark:text-gray-200">
 	<div class="relative flex h-auto min-h-screen w-full group/design-root">
-
-
-
-
 		<div class="md:flex md:min-h-screen">
 
 			<!-- SIDEBAR -->
@@ -88,7 +85,8 @@
 				</div>
 
 				<!-- MENU -->
-				<div class="px-4 py-4 md:py-4 md:block overflow-y-auto" :class="{ 'block': open, 'hidden': !open }">
+				<div class="px-4 py-4 w-full md:py-4 md:block overflow-y-auto"
+					:class="{ 'block': open, 'hidden': !open }">
 
 					<div class="grid gap-2" id="sidebar-tabs">
 						<!-- JS injects tabs here -->
@@ -102,8 +100,8 @@
 		<div class="layout-container flex h-full grow flex-col w-full">
 
 			<main class="flex-1 px-6 md:px-10 py-8">
-
 				<div class="layout-content-container flex flex-col mx-auto w-full">
+					<!-- <div class="absolute" id="nav-placeholder"></div> -->
 					<div class="layout-content-container flex flex-col mx-auto w-full" id="tab-content-container">
 						<!-- Tab content will be injected by JS -->
 					</div>

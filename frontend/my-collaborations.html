@@ -81,7 +81,641 @@
 
 </head>
 
-<body class="bg-gray-50">
+<body x-data="announcementsApp()" x-init="init()" class="text-gray-800">
+	<script>
+		window.announcementsApp = function announcementsApp() {
+			return {
+				announcements: [],
+				myProjects: [],
+				organizations: [],
+				myCollaborationRequests: [], // Track user's submitted requests
+				chatMessages: [],
+				sendingMessage: false,
+				newMessage: "",
+				searchText: "",
+				filterStatus: "",
+				sortOrder: "NEWEST",
+				activeSlide: 0,
+				media: [
+					{ type: 'image', src: 'resources/images/main-1.jpg' },
+					{ type: 'image', src: 'resources/images/main-2.jpg' },
+					{ type: 'image', src: 'resources/images/main-3.jpg' }
+				],
+				loading: true,
+				creating: false,
+				submitting: false,
+				showCreateModal: false,
+				showDetailsModal: false,
+				showRequestModal: false,
+				selectedAnnouncement: null,
+				userRole: null, // Will be set in init from user object
+				currentUser: null, // Store current user data including email
+				newAnnouncement: {
+					projectId: "",
+					title: "",
+					content: "",
+					deadline: "",
+				},
+				collaborationRequest: {
+					organizationId: "",
+					proposedContribution: "",
+				},
+
+				async init() {
+					// Wait for auth.js to load user data and get it directly
+					const user = await this.waitForAuth();
+
+					// Set user role and store user data from the returned user object
+					if (user && user.role) {
+						this.userRole = user.role;
+						this.currentUser = user; // Store full user object
+					} else {
+						// Fallback: try to read from localStorage
+						const userStr = localStorage.getItem("currentUser");
+						if (userStr) {
+							try {
+								const parsedUser = JSON.parse(userStr);
+								this.userRole = parsedUser.role;
+								this.currentUser = parsedUser;
+							} catch (e) {
+								console.error("Error parsing user data:", e);
+							}
+						}
+						// Final fallback to userRole if it exists
+						if (!this.userRole) {
+							this.userRole = localStorage.getItem("userRole");
+						}
+					}
+					console.log("🔍 User Role:", this.userRole); // Debug log
+					console.log("🔍 Current User:", this.currentUser); // Debug log
+
+					// Populate user dropdown in navigation
+					if (this.currentUser) {
+						console.log("👤 Populating user dropdown...");
+						this.populateUserDropdown(this.currentUser);
+					}
+
+					await this.loadAnnouncements();
+
+					// Always try to load projects if user is authenticated
+					// The backend will handle authorization
+					const token = localStorage.getItem("accessToken");
+					if (token) {
+						console.log("🔍 User authenticated, loading projects...");
+						await this.loadMyProjects();
+						await this.loadOrganizations();
+						// Load user's collaboration requests to prevent duplicates
+						await this.loadMyCollaborationRequests();
+					} else {
+						console.warn("⚠️ No access token found, skipping project load");
+					}
+				},
+
+				// Populate user dropdown with current user data
+				populateUserDropdown(user) {
+					try {
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+
+						if (userDisplayName)
+							userDisplayName.textContent = user.name || "User";
+						if (userNameDisplay)
+							userNameDisplay.textContent = user.name || "Loading...";
+						if (userEmailDisplay)
+							userEmailDisplay.textContent = user.email || "";
+						if (userRoleDisplay)
+							userRoleDisplay.textContent = user.role || "N/A";
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent = user.status || "N/A";
+							// Update status color based on status
+							userStatusDisplay.className =
+								user.status === "ACTIVE"
+									? "font-medium text-green-600"
+									: "font-medium text-gray-600";
+						}
+
+						// Show role-based navs
+						if (
+							user.role === "ADMIN" ||
+							user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+						) {
+							const adminNav = document.getElementById("adminNav");
+							if (adminNav) adminNav.classList.remove("hidden");
+						}
+						if (user.role === "DONOR") {
+							const donorNav = document.getElementById("donorNav");
+							if (donorNav) donorNav.classList.remove("hidden");
+						}
+
+						console.log("✅ User dropdown populated successfully!");
+					} catch (error) {
+						console.error("❌ Error populating user dropdown:", error);
+					}
+				},
+
+				async waitForAuth() {
+					// Wait for AuthManager to be available and initialized
+					let attempts = 0;
+					while (attempts < 50) {
+						// Max 5 seconds
+						if (
+							window.authManager &&
+							typeof window.authManager.getCurrentUser === "function"
+						) {
+							// Try to get current user and return it directly
+							try {
+								const user = await window.authManager.getCurrentUser();
+								return user; // Return the user object
+							} catch (e) {
+								// User not logged in or error
+								return null;
+							}
+						}
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						attempts++;
+					}
+					return null; // Timeout - no auth available
+				},
+
+				async loadAnnouncements() {
+					try {
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`
+						);
+						const data = await response.json();
+						if (data.status === 200) {
+							this.announcements = data.data;
+						}
+					} catch (error) {
+						console.error("Error loading announcements:", error);
+						await showAlert("Failed to load announcements", "Error", "error");
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async loadMyProjects() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						console.log(
+							"🔍 Loading my projects with token:",
+							token ? "Present" : "Missing"
+						);
+
+						const response = await fetch(
+							`${window.BASE_URL}/api/projects/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						console.log("🔍 My projects response status:", response.status);
+
+						if (!response.ok) {
+							console.error(
+								"❌ Failed to load projects. Status:",
+								response.status
+							);
+							if (response.status === 403) {
+								console.error(
+									"❌ 403 Forbidden - You may not have PARTNER role"
+								);
+							} else if (response.status === 401) {
+								console.error(
+									"❌ 401 Unauthorized - Token may be invalid or expired"
+								);
+							}
+							this.myProjects = [];
+							return;
+						}
+
+						const data = await response.json();
+						console.log("🔍 My projects response data:", data);
+
+						if (data.status === 200) {
+							this.myProjects = data.data || [];
+							console.log(
+								"✅ Loaded projects:",
+								this.myProjects.length,
+								"projects"
+							);
+							console.log("📋 Projects:", this.myProjects);
+						} else {
+							console.warn("⚠️ Unexpected response status:", data.status);
+							this.myProjects = [];
+						}
+					} catch (error) {
+						console.error("❌ Error loading projects:", error);
+						this.myProjects = [];
+					}
+				},
+
+				async loadOrganizations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/organizations`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							// Silently handle 403 - organizations endpoint may be restricted
+							this.organizations = []; // Set empty array
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.organizations = data.data;
+						}
+					} catch (error) {
+						// Silently handle errors - organizations are optional
+						this.organizations = []; // Set empty array on error
+					}
+				},
+
+				async loadMyCollaborationRequests() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/my-requests`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						if (!response.ok) {
+							console.warn(
+								"Could not load collaboration requests:",
+								response.status
+							);
+							this.myCollaborationRequests = [];
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.myCollaborationRequests = data.data || [];
+							console.log(
+								"✅ Loaded collaboration requests:",
+								this.myCollaborationRequests.length
+							);
+						} else {
+							this.myCollaborationRequests = [];
+						}
+					} catch (error) {
+						console.error("Error loading collaboration requests:", error);
+						this.myCollaborationRequests = [];
+					}
+				},
+
+				async createAnnouncement() {
+					this.creating = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(this.newAnnouncement),
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied. You may not have access to create announcements.",
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"You must be logged in to create announcements.",
+									"Authentication Required",
+									"warning"
+								);
+							} else {
+								await showAlert(
+									`Error: Server returned status ${response.status}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						const data = await response.json();
+
+						if (data.status === 201) {
+							await showAlert(
+								"Announcement created successfully!",
+								"Success",
+								"success"
+							);
+							this.showCreateModal = false;
+							this.newAnnouncement = {
+								projectId: "",
+								title: "",
+								content: "",
+								deadline: "",
+							};
+							await this.loadAnnouncements();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error creating announcement:", error);
+						await showAlert(
+							"Failed to create announcement. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.creating = false;
+					}
+				},
+
+				viewDetails(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showDetailsModal = true;
+					this.loadChatMessages(announcement.id);
+				},
+
+				requestCollaboration(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showRequestModal = true;
+					this.showDetailsModal = false;
+				},
+
+				async submitRequest() {
+					this.submitting = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+
+						// Prepare request payload - only include organizationId if it's not empty
+						const payload = {
+							proposedContribution:
+								this.collaborationRequest.proposedContribution,
+						};
+
+						// Only add organizationId if it's set (not empty string)
+						if (this.collaborationRequest.organizationId) {
+							payload.organizationId = parseInt(
+								this.collaborationRequest.organizationId
+							);
+						}
+
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(payload),
+							}
+						);
+
+						// Always try to parse JSON to get the error message
+						const data = await response.json();
+
+						// Check if response is OK
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied: " +
+									(data.message ||
+										"You may not have access to submit collaboration requests."),
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"Authentication required: " +
+									(data.message ||
+										"You must be logged in to submit a collaboration request."),
+									"Authentication Required",
+									"warning"
+								);
+							} else if (response.status === 400) {
+								await showAlert(
+									"Invalid request: " +
+									(data.message ||
+										"Please check your input and try again."),
+									"Invalid Request",
+									"error"
+								);
+							} else {
+								await showAlert(
+									`Error: ${data.message ||
+									"Server returned status " + response.status
+									}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						if (data.status === 201) {
+							await showAlert(
+								"Collaboration request submitted successfully! The Ministry of Health will review your request.",
+								"Success",
+								"success"
+							);
+							this.showRequestModal = false;
+							this.collaborationRequest = {
+								organizationId: "",
+								proposedContribution: "",
+							};
+							// Reload collaboration requests to update the UI
+							await this.loadMyCollaborationRequests();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error submitting request:", error);
+						await showAlert(
+							"Failed to submit collaboration request. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.submitting = false;
+					}
+				},
+
+				// Helper method to check if announcement was created by current user
+				isOwnAnnouncement(announcement) {
+					if (!this.currentUser || !announcement || !announcement.createdBy) {
+						console.log("🔍 isOwnAnnouncement: Missing data", {
+							hasCurrentUser: !!this.currentUser,
+							hasAnnouncement: !!announcement,
+							hasCreatedBy: !!(announcement && announcement.createdBy),
+						});
+						return false;
+					}
+					// Compare by email as it's unique
+					const isOwn =
+						this.currentUser.email === announcement.createdBy.email;
+					console.log("🔍 isOwnAnnouncement:", {
+						currentUserEmail: this.currentUser.email,
+						createdByEmail: announcement.createdBy.email,
+						isOwn: isOwn,
+					});
+					return isOwn;
+				},
+
+				// Helper method to check if user has already requested collaboration for this announcement
+				hasAlreadyRequested(announcement) {
+					if (!announcement || !this.myCollaborationRequests) {
+						return false;
+					}
+
+					const hasRequested = this.myCollaborationRequests.some(
+						(request) =>
+							request.announcement &&
+							request.announcement.id === announcement.id
+					);
+
+					console.log("🔍 hasAlreadyRequested:", {
+						announcementId: announcement.id,
+						totalRequests: this.myCollaborationRequests.length,
+						hasRequested: hasRequested,
+					});
+
+					return hasRequested;
+				},
+
+				isDeadlineImminent(deadline) {
+					if (!deadline) return false;
+					const now = new Date();
+					const deadlineDate = new Date(deadline);
+					const diffTime = deadlineDate - now;
+					const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+					return diffDays <= 7 && diffDays >= 0; // Imminent if within 7 days and not past
+				},
+
+				async loadChatMessages(announcementId) {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${announcementId}/messages`, {
+							headers: { Authorization: `Bearer ${token}` }
+						});
+						if (response.ok) {
+							const data = await response.json();
+							this.chatMessages = data.data || [];
+						}
+					} catch (error) {
+						console.error("Error loading chat messages:", error);
+					}
+				},
+
+				async sendMessage() {
+					if (!this.newMessage.trim()) return;
+					this.sendingMessage = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`
+							},
+							body: JSON.stringify({ message: this.newMessage })
+						});
+						if (response.ok) {
+							this.newMessage = "";
+							await this.loadChatMessages(this.selectedAnnouncement.id);
+						} else {
+							await showAlert("Failed to send message", "Error", "error");
+						}
+					} catch (error) {
+						console.error("Error sending message:", error);
+						await showAlert("Failed to send message", "Error", "error");
+					} finally {
+						this.sendingMessage = false;
+					}
+				},
+
+				async editMessage(msg) {
+					const newMessage = prompt("Edit message:", msg.message);
+					if (newMessage && newMessage.trim() && newMessage !== msg.message) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "PUT",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`
+								},
+								body: JSON.stringify({ message: newMessage })
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to edit message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error editing message:", error);
+							await showAlert("Failed to edit message", "Error", "error");
+						}
+					}
+				},
+
+				async deleteMessage(msg) {
+					if (confirm("Are you sure you want to delete this message?")) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "DELETE",
+								headers: {
+									Authorization: `Bearer ${token}`
+								}
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to delete message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error deleting message:", error);
+							await showAlert("Failed to delete message", "Error", "error");
+						}
+					}
+				},
+			};
+		};
+	</script>
 	<div class="" id="nav-placeholder"></div>
 	<div x-data="collaborationsApp()" x-init="init()">
 
@@ -254,15 +888,15 @@
 	<script src="styles/authnav.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
 	<script>
-			// Try to load a local config override (frontend/config.local.js) if present.
-			(function () {
-				try {
-					var s = document.createElement("script");
-					s.src = "./config.local.js";
-					s.async = false;
-					document.head.appendChild(s);
-				} catch (e) { }
-			})();
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
 	</script>
 	<script type="module">
 		// Use window.BASE_URL which is already set by config.js loaded via script tag
