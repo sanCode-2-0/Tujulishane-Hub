@@ -133,51 +133,55 @@
 								</div>
 							</div>
 
-							<!-- Card -->
+
+
 							<div
-								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
-								<div class="flex items-center justify-between">
-									<div>
-										<p class="text-sm text-gray-500">Partners</p>
-										<p id="partners-count" class="text-4xl font-semibold text-gray-900 mt-1">0</p>
-									</div>
-									<span class="material-symbols-outlined text-blue-600 text-5xl">group</span>
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-blue-100 text-[100px] pointer-events-none">group</span>
+
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Partners</p>
+									<p id="partners-count" class="text-3xl font-semibold text-gray-900 mt-2">120
+									</p>
+									<p class="text-xs text-blue-600 mt-3">↑ 15% last month</p>
 								</div>
 							</div>
 
 							<div
-								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
-								<div class="flex items-center justify-between">
-									<div>
-										<p class="text-sm text-gray-500">Thematic Areas</p>
-										<p id="thematic-areas-count" class="text-4xl font-semibold text-gray-900 mt-1">0
-										</p>
-									</div>
-									<span class="material-symbols-outlined text-blue-600 text-5xl">category</span>
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-indigo-100 text-[100px] pointer-events-none">category</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Thematic Areas</p>
+									<p id="thematic-areas-count" class="text-3xl font-semibold text-gray-900 mt-2">
+										8</p>
+									<p class="text-xs text-indigo-600 mt-3">Stable</p>
 								</div>
 							</div>
 
 							<div
-								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
-								<div class="flex items-center justify-between">
-									<div>
-										<p class="text-sm text-gray-500">Counties</p>
-										<p id="counties-count" class="text-4xl font-semibold text-gray-900 mt-1">0</p>
-									</div>
-									<span class="material-symbols-outlined text-blue-600 text-5xl">location_on</span>
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-red-100 text-[100px] pointer-events-none">location_on</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Counties</p>
+									<p id="counties-count" class="text-3xl font-semibold text-gray-900 mt-2">47</p>
+									<p class="text-xs text-red-600 mt-3">↓ 2 added this quarter</p>
 								</div>
 							</div>
 
 							<div
-								class="bg-white rounded-2xl border border-gray-200 p-8 shadow-md shadow-gray-100 hover:shadow-xl hover:scale-[1.01] transition">
-								<div class="flex items-center justify-between">
-									<div>
-										<p class="text-sm text-gray-500">Total Budget</p>
-										<p id="budget-count" class="text-4xl font-semibold text-gray-900 mt-1">0</p>
-									</div>
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-green-100 text-[100px] pointer-events-none">attach_money</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Total Budget</p>
+									<p id="budget-count" class="text-3xl font-semibold text-gray-900 mt-2">$2.5M
+									</p>
+									<p class="text-xs text-green-600 mt-3">Goal Reached</p>
 								</div>
 							</div>
-
 						</div>
 						<!-- <div class="min-h-screen py-10">
 							<div class="max-w-7xl mx-auto ">
@@ -1505,12 +1509,38 @@
 			element.style.transform = 'scale(1.1)';
 			element.style.color = '#137fec';
 
+			// Function to format the number
+			function formatNumber(number) {
+				let formattedNumber;
+				let suffix = '';
+
+				if (number >= 1e12) {
+					formattedNumber = (number / 1e12).toFixed(3);
+					suffix = 'Tr';
+				} else if (number >= 1e9) {
+					formattedNumber = (number / 1e9).toFixed(3);
+					suffix = 'Bn';
+				} else if (number >= 1e6) {
+					formattedNumber = (number / 1e6).toFixed(3);
+					suffix = 'Mn';
+				} else if (number >= 1e3) {
+					formattedNumber = (number / 1e3).toFixed(3);
+					suffix = 'k';
+				} else {
+					formattedNumber = number.toString();
+				}
+
+				// Return the formatted number with suffix inside a span
+				return `<span class="number">${formattedNumber}</span><span class="suffix font-normal text-lg">${suffix}</span>`;
+			}
+
 			setTimeout(() => {
-				element.innerHTML = `<span class="font-normal" style="font-size:0.5em;">KES</span> ${totalBudget.toLocaleString()}`;
+				element.innerHTML = `<span class="font-normal" style="font-size:0.5em;">KES</span> ${formatNumber(totalBudget)}`;
 				element.style.transform = 'scale(1)';
 				element.style.color = '';
 			}, 150);
 		}
+
 
 		// Function to update individual tab counters
 		function updateTabCounters() {
