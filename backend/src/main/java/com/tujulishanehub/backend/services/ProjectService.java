@@ -1165,7 +1165,8 @@ public class ProjectService {
     public List<Project> getProjectsAwaitingFinalApproval() {
         return projectRepository.findAll().stream()
             .filter(p -> p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_FINAL_APPROVAL ||
-                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REVIEWED)
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REVIEWED ||
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.REJECTED_BY_REVIEWER)
             .collect(Collectors.toList());
     }
     
