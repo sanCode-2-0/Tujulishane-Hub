@@ -82,6 +82,22 @@
 </head>
 
 <body class="text-gray-800 overflow-x-hidden">
+    <!-- Authentication Redirect Check -->
+    <script>
+        // Check if user is already logged in and redirect to index-post-login
+        (function () {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (token) {
+                // Verify token format (JWT should have 3 parts)
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                    console.log('[Auth] User is logged in, redirecting to index-post-login.html');
+                    window.location.href = 'index-post-login.html';
+                    return;
+                }
+            }
+        })();
+    </script>
     <!-- Nav Start -->
     <div class="" id="nav-placeholder"></div>
     <!-- Nav End -->
