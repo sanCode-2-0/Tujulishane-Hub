@@ -95,6 +95,28 @@
         .modern-table tbody tr:hover {
             background: #e0e7ef;
         }
+        
+        /* Custom map marker styles */
+        .custom-marker-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+        
+        .custom-marker-icon:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+        
+        .custom-marker-icon svg {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        /* Ensure markers are visible at all zoom levels */
+        .leaflet-marker-icon {
+            z-index: 1000 !important;
+        }
     </style>
 
 </head>
@@ -2565,9 +2587,36 @@
 
 
         const markers = [];
+        
+        // Create colorful SVG icons for markers
+        function createMarkerIcon(color, size = 32) {
+            return L.divIcon({
+                html: `
+                    <svg width="${size}" height="${size * 1.2}" viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 0C9.373 0 4 5.373 4 12c0 9 12 26 12 26s12-17 12-26c0-6.627-5.373-12-12-12z" 
+                              fill="${color}" stroke="#FFFFFF" stroke-width="2"/>
+                        <circle cx="16" cy="12" r="5" fill="#FFFFFF" opacity="0.9"/>
+                    </svg>
+                `,
+                className: 'custom-marker-icon',
+                iconSize: [size, size * 1.2],
+                iconAnchor: [size / 2, size * 1.2],
+                popupAnchor: [0, -size * 1.2]
+            });
+        }
+        
+        // Define colors for different project statuses
+        const markerColors = {
+            active: '#10B981',      // Green
+            pending: '#F59E0B',     // Amber/Orange
+            stalled: '#EF4444',     // Red
+            completed: '#06B6D4',   // Cyan
+            default: '#6B7280'      // Gray
+        };
+        
         const icons = {
-            default: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] })
+            default: (tag) => createMarkerIcon(markerColors[tag] || markerColors.default, 32),
+            selected: (tag) => createMarkerIcon(markerColors[tag] || markerColors.default, 48)
         };
 
         const bgColors = {

@@ -1063,16 +1063,6 @@
               const tag = project.status || "default";
               const statusColor = getStatusColor(tag);
 
-              // Create marker element
-              const el = document.createElement("div");
-              el.className = "marker";
-              el.style.backgroundColor = statusColor;
-              el.style.width = "20px";
-              el.style.height = "20px";
-              el.style.borderRadius = "50%";
-              el.style.border = "2px solid white";
-              el.style.cursor = "pointer";
-
               // Create popup
               const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
 							<div style="padding: 10px; min-width: 200px;">
@@ -1090,9 +1080,8 @@
                 }</p>
 							</div>
 						`);
-
               // Create marker
-              const marker = new mapboxgl.Marker(el)
+              const marker = new mapboxgl.Marker({color: statusColor})
                 .setLngLat([project.longitude, project.latitude])
                 .setPopup(popup)
                 .addTo(map);
