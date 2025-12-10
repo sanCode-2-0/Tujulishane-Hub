@@ -59,6 +59,7 @@
 	<!-- Optional: Google Font -->
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="src/utils/counter-utils.js"></script>
 	<style>
 		.fade-slide-enter {
 			opacity: 0;
@@ -1361,6 +1362,28 @@
 						<span>Refresh</span>
 					</button>
 				</div>
+				
+				<!-- Enhanced User Counters -->
+				<div id="user-counters-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+					<!-- Counters will be loaded dynamically -->
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+				</div>
+				
 				<div class="flex flex-col gap-2">
 					<ul class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-4" id="pills-tab" role="tablist"
 						data-twe-nav-ref>
@@ -1726,9 +1749,80 @@
 				document.getElementById("pendingCount").textContent = pending;
 				document.getElementById("rejectedCount").textContent = rejected;
 				document.getElementById("totalCount").textContent = allUsers.length;
+				
+				// Load enhanced counters
+				await loadEnhancedUserCounters();
 			} catch (error) {
 				console.error("Error loading user stats:", error);
 				showToast("Failed to load user statistics", "error");
+			}
+		}
+		
+		async function loadEnhancedUserCounters() {
+			try {
+				console.log("[DEBUG] Fetching user counts...");
+				// Use the apiCall function that already exists in members.html
+				const result = await apiCall("/api/auth/counts");
+				const counts = result.data || {};
+				console.log("[DEBUG] User counts:", counts);
+				
+				// Create counter cards with detailed user metrics
+				const countersContainer = document.getElementById('user-counters-grid');
+				if (countersContainer) {
+					const counters = [
+						{
+							title: 'Partners',
+							count: counts.partners || 0,
+							icon: 'fas fa-handshake',
+							color: 'blue'
+						},
+						{
+							title: 'Donors',
+							count: counts.donors || 0,
+							icon: 'fas fa-hand-holding-usd',
+							color: 'green'
+						},
+						{
+							title: 'Administrators',
+							count: (counts.admins || 0),
+							icon: 'fas fa-user-shield',
+							color: 'purple'
+						},
+						{
+							title: 'Active Users',
+							count: counts.active || 0,
+							icon: 'fas fa-user-check',
+							color: 'indigo'
+						}
+					];
+					
+					// Create only the cards, not the grid wrapper
+					countersContainer.innerHTML = counters.map(counter => createCounterCard(counter)).join('');
+				}
+			} catch (error) {
+				console.error("Error loading enhanced user counters:", error);
+				// Fallback to showing data from allUsers
+				const countersContainer = document.getElementById('user-counters-grid');
+				if (countersContainer && allUsers && allUsers.length > 0) {
+					const partners = allUsers.filter(u => u.role === 'PARTNER').length;
+					const donors = allUsers.filter(u => u.role === 'DONOR').length;
+					const admins = allUsers.filter(u => 
+						u.role === 'SUPER_ADMIN' || 
+						u.role === 'SUPER_ADMIN_APPROVER' || 
+						u.role === 'SUPER_ADMIN_REVIEWER'
+					).length;
+					const active = allUsers.filter(u => u.approvalStatus === 'APPROVED').length;
+					
+					const counters = [
+						{ title: 'Partners', count: partners, icon: 'fas fa-handshake', color: 'blue' },
+						{ title: 'Donors', count: donors, icon: 'fas fa-hand-holding-usd', color: 'green' },
+						{ title: 'Administrators', count: admins, icon: 'fas fa-user-shield', color: 'purple' },
+						{ title: 'Active Users', count: active, icon: 'fas fa-user-check', color: 'indigo' }
+					];
+					
+					// Create only the cards, not the grid wrapper
+					countersContainer.innerHTML = counters.map(counter => createCounterCard(counter)).join('');
+				}
 			}
 		}
 

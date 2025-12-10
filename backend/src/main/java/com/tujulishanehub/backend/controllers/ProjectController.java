@@ -1777,4 +1777,54 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    /**
+     * Get project counts summary
+     */
+    @GetMapping("/counts")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getProjectCounts(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String category) {
+        try {
+            Map<String, Object> counts = new HashMap<>();
+            
+            // Get total projects count
+            long totalProjects = projectRepository.count();
+            counts.put("total", totalProjects);
+            
+            // Count by approval status
+            long pendingCount = projectRepository.countByApprovalStatus(ApprovalStatus.PENDING);
+            long approvedCount = projectRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
+            long rejectedCount = projectRepository.countByApprovalStatus(ApprovalStatus.REJECTED);
+            
+            counts.put("pending", pendingCount);
+            counts.put("approved", approvedCount);
+            counts.put("rejected", rejectedCount);
+            counts.put("active", approvedCount); // Active = Approved
+            
+            // Count by category if needed
+            Map<String, Long> categoryCounts = new HashMap<>();
+            for (ProjectCategory cat : ProjectCategory.values()) {
+                long count = projectRepository.countByProjectCategory(cat);
+                categoryCounts.put(cat.name(), count);
+            }
+            counts.put("byCategory", categoryCounts);
+            
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Project counts retrieved successfully",
+                counts
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving project counts: {}", e.getMessage(), e);
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve project counts: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

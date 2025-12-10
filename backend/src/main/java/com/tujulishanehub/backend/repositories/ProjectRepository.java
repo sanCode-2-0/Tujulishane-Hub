@@ -2,6 +2,7 @@ package com.tujulishanehub.backend.repositories;
 
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.Project;
+import com.tujulishanehub.backend.models.ProjectCategory;
 import com.tujulishanehub.backend.models.ProjectTheme;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -88,6 +89,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     
     // Count projects by approval status
     long countByApprovalStatus(ApprovalStatus approvalStatus);
+    
+    // Count projects by category
+    long countByProjectCategory(ProjectCategory projectCategory);
     
     // Find recent projects (top 10)
     List<Project> findTop10ByOrderByCreatedAtDesc();

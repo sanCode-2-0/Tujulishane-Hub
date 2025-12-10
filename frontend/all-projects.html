@@ -93,6 +93,7 @@
     </script>
     <script src="auth.js"></script>
     <script src="styles/workflow-status-helper.js"></script>
+    <script src="src/utils/counter-utils.js"></script>
     <!-- Optional: Google Font -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
@@ -464,6 +465,36 @@
     <section class="bg-cyan-50/50">
       <div id="localMap" class="h-[450px] mt-20 sm:h-[550px] z-0 w-full"></div>
     </section>
+    
+    <!-- Project Counters Section -->
+    <section class="bg-white border-b border-gray-200">
+      <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="projects-counters">
+          <!-- Counters will be dynamically loaded here -->
+          <div class="bg-white rounded-lg shadow-md p-6 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+            <div class="h-8 bg-gray-300 rounded w-16 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+          <div class="bg-white rounded-lg shadow-md p-6 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+            <div class="h-8 bg-gray-300 rounded w-16 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+          <div class="bg-white rounded-lg shadow-md p-6 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+            <div class="h-8 bg-gray-300 rounded w-16 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+          <div class="bg-white rounded-lg shadow-md p-6 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+            <div class="h-8 bg-gray-300 rounded w-16 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <section class="bg-white">
       <div class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <!-- Status Filter Buttons -->
@@ -980,6 +1011,8 @@
 
         // Load projects with coordinates from backend
         await loadProjectsWithCoordinates();
+        // Load project counters
+        await loadProjectCounters();
         // Load statistics - this will trigger the stats animation
         await loadStatistics();
         console.log("[DEBUG] All data loaded successfully");
@@ -1108,6 +1141,49 @@
           highlightMarkers(currentFilter);
         } catch (err) {
           console.error("Error loading projects:", err);
+        }
+      }
+
+      async function loadProjectCounters() {
+        try {
+          console.log("[DEBUG] Fetching project counts...");
+          const counts = await fetchProjectCounts();
+          console.log("[DEBUG] Project counts:", counts);
+          
+          // Create counter cards
+          const countersContainer = document.getElementById('projects-counters');
+          if (countersContainer) {
+            const counters = [
+              {
+                title: 'Total Projects',
+                count: counts.total || 0,
+                icon: 'fas fa-folder',
+                color: 'blue'
+              },
+              {
+                title: 'Active Projects',
+                count: counts.active || 0,
+                icon: 'fas fa-check-circle',
+                color: 'green'
+              },
+              {
+                title: 'Pending Approval',
+                count: counts.pending || 0,
+                icon: 'fas fa-clock',
+                color: 'yellow'
+              },
+              {
+                title: 'Approved Projects',
+                count: counts.approved || 0,
+                icon: 'fas fa-thumbs-up',
+                color: 'purple'
+              }
+            ];
+            
+            countersContainer.innerHTML = createCounterGrid(counters);
+          }
+        } catch (err) {
+          console.error("Error loading project counters:", err);
         }
       }
 

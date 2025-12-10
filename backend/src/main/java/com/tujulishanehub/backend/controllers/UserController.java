@@ -1231,4 +1231,57 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    /**
+     * Get user counts summary
+     */
+    @GetMapping("/counts")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserCounts() {
+        try {
+            Map<String, Object> counts = new HashMap<>();
+            
+            // Get total users count
+            long totalUsers = userService.getAllUsersCount();
+            counts.put("total", totalUsers);
+            
+            // Count by role
+            long partnersCount = userService.getUsersByRole(User.Role.PARTNER).size();
+            long donorsCount = userService.getUsersByRole(User.Role.DONOR).size();
+            long superAdminsCount = userService.getUsersByRole(User.Role.SUPER_ADMIN).size();
+            long superAdminApproversCount = userService.getUsersByRole(User.Role.SUPER_ADMIN_APPROVER).size();
+            long superAdminReviewersCount = userService.getUsersByRole(User.Role.SUPER_ADMIN_REVIEWER).size();
+            
+            counts.put("partners", partnersCount);
+            counts.put("donors", donorsCount);
+            counts.put("admins", superAdminsCount + superAdminApproversCount + superAdminReviewersCount);
+            counts.put("superAdmins", superAdminsCount);
+            
+            // Count by approval status
+            long pendingCount = userService.getUsersByApprovalStatus(ApprovalStatus.PENDING).size();
+            long approvedCount = userService.getUsersByApprovalStatus(ApprovalStatus.APPROVED).size();
+            long rejectedCount = userService.getUsersByApprovalStatus(ApprovalStatus.REJECTED).size();
+            
+            counts.put("pending", pendingCount);
+            counts.put("approved", approvedCount);
+            counts.put("rejected", rejectedCount);
+            counts.put("active", approvedCount); // Active = Approved
+            
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "User counts retrieved successfully",
+                counts
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving user counts: {}", e.getMessage(), e);
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve user counts: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }
