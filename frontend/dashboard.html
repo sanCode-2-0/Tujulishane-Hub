@@ -332,6 +332,64 @@
 							</div>
 						</div>
 
+						<!-- Thematic Area Filter Section -->
+						<div class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-6">
+							<div class="p-6">
+								<div class="flex flex-wrap items-center gap-4">
+									<div class="flex items-center gap-2">
+										<span class="material-symbols-outlined text-gray-600">category</span>
+										<label class="text-sm font-semibold text-gray-700">Filter by Thematic Area:</label>
+									</div>
+									
+									<div class="flex-1 min-w-[300px]">
+										<style>
+											#thematic-area-filter {
+												min-height: 180px !important;
+												max-height: 300px !important;
+											}
+											#thematic-area-filter option {
+												padding: 10px 12px;
+												border-bottom: 1px solid #e5e7eb;
+												cursor: pointer;
+												transition: all 0.2s;
+											}
+											#thematic-area-filter option:hover {
+												background-color: #dbeafe;
+												color: #1e40af;
+											}
+											#thematic-area-filter option:checked {
+												background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+												color: white;
+												font-weight: 500;
+											}
+											#thematic-area-filter option:last-child {
+												border-bottom: none;
+											}
+										</style>
+										<select id="thematic-area-filter" multiple 
+											class="w-full px-3 py-2 text-sm border-2 border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition cursor-pointer shadow-sm hover:shadow-md">
+											<option value="" disabled>Loading thematic areas...</option>
+										</select>
+										<p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+											<span class="material-symbols-outlined text-sm">info</span>
+											<span>Click to select/deselect thematic areas (multiple selection supported)</span>
+										</p>
+									</div>
+									
+									<button id="clear-theme-filter" 
+										class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
+										<span class="material-symbols-outlined text-base">clear_all</span>
+										Clear Filter
+									</button>
+								</div>
+								
+								<!-- Selected Themes Display -->
+								<div id="selected-themes-container" class="mt-4 flex flex-wrap gap-2" style="display: none;">
+									<!-- Selected theme chips will be added here -->
+								</div>
+							</div>
+						</div>
+
 						<div
 							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
 
@@ -1739,31 +1797,18 @@
 				renderTable('tab-projects', projects, ['title', 'partnerName', 'projectNo', 'projectCategory', 'themes', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt']);
 				// Update individual tab counters after loading
 				setTimeout(updateTabCounters, 100);
+				
+				// Initialize thematic area filter
+				initThematicAreaFilter();
+				
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
 				filterInputs.forEach(input => {
 					input.addEventListener('input', function () {
-						filterTable();
-						// Update dashboard counters when filters change
-						setTimeout(calculateDashboardStatsFromFilteredData, 100);
-						// Update individual tab counters
-						setTimeout(updateTabCounters, 100);
+						applyAllFilters();
 					});
 				});
-				function filterTable() {
-					const rows = document.querySelectorAll('#tab-projects tbody tr');
-					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
-					rows.forEach(row => {
-						const cells = row.querySelectorAll('td');
-						let show = true;
-						filters.forEach((filter, index) => {
-							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
-								show = false;
-							}
-						});
-						row.style.display = show ? '' : 'none';
-					});
-				}
+				
 				// Add export functionality
 				const exportBtn = document.querySelector('#tab-projects button');
 				if (exportBtn) {
@@ -1790,6 +1835,175 @@
 				}
 			} catch (error) {
 				console.error('Error fetching projects:', error);
+			}
+		}
+
+		// Thematic Area Filter Functionality
+		let selectedThemes = [];
+		
+		async function initThematicAreaFilter() {
+			try {
+				// Fetch thematic areas from backend
+				const response = await apiFetch('/api/projects/thematic-areas');
+				if (!response.ok) throw new Error('Failed to fetch thematic areas');
+				const data = await response.json();
+				const themes = data.data || [];
+				
+				// Populate the select dropdown
+				const select = document.getElementById('thematic-area-filter');
+				select.innerHTML = '<option value="">All Thematic Areas</option>';
+				themes.forEach(theme => {
+					const option = document.createElement('option');
+					option.value = theme.code;
+					option.textContent = theme.displayName;
+					option.dataset.name = theme.name;
+					select.appendChild(option);
+				});
+				
+				// Load filter state from URL parameters
+				loadFilterStateFromURL();
+				
+				// Add event listener for filter changes
+				select.addEventListener('change', function() {
+					selectedThemes = Array.from(this.selectedOptions)
+						.map(opt => opt.value)
+						.filter(val => val !== '');
+					updateSelectedThemesDisplay();
+					applyAllFilters();
+					updateURLParameters();
+				});
+				
+				// Clear filter button
+				document.getElementById('clear-theme-filter').addEventListener('click', function() {
+					selectedThemes = [];
+					select.selectedIndex = -1;
+					updateSelectedThemesDisplay();
+					applyAllFilters();
+					updateURLParameters();
+				});
+				
+			} catch (error) {
+				console.error('Error initializing thematic area filter:', error);
+			}
+		}
+		
+		function updateSelectedThemesDisplay() {
+			const container = document.getElementById('selected-themes-container');
+			const select = document.getElementById('thematic-area-filter');
+			
+			if (selectedThemes.length === 0) {
+				container.style.display = 'none';
+				container.innerHTML = '';
+				return;
+			}
+			
+			container.style.display = 'flex';
+			container.innerHTML = selectedThemes.map(themeCode => {
+				const option = select.querySelector(`option[value="${themeCode}"]`);
+				const displayName = option ? option.textContent : themeCode;
+				return `
+					<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
+						<span>${displayName}</span>
+						<button onclick="removeThemeFilter('${themeCode}')" class="hover:bg-blue-200 rounded-full p-0.5 transition">
+							<span class="material-symbols-outlined text-sm">close</span>
+						</button>
+					</div>
+				`;
+			}).join('');
+		}
+		
+		function removeThemeFilter(themeCode) {
+			const select = document.getElementById('thematic-area-filter');
+			const option = select.querySelector(`option[value="${themeCode}"]`);
+			if (option) {
+				option.selected = false;
+			}
+			selectedThemes = selectedThemes.filter(t => t !== themeCode);
+			updateSelectedThemesDisplay();
+			applyAllFilters();
+			updateURLParameters();
+		}
+		
+		function applyAllFilters() {
+			const rows = document.querySelectorAll('#tab-projects tbody tr');
+			const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
+			const columnFilters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+			
+			rows.forEach(row => {
+				const cells = row.querySelectorAll('td');
+				let show = true;
+				
+				// Apply column filters
+				columnFilters.forEach((filter, index) => {
+					if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+						show = false;
+					}
+				});
+				
+				// Apply thematic area filter
+				if (show && selectedThemes.length > 0) {
+					const themesCell = cells[4]; // Themes column is index 4
+					if (themesCell) {
+						const projectThemes = themesCell.textContent.toLowerCase();
+						const hasMatchingTheme = selectedThemes.some(themeCode => {
+							const select = document.getElementById('thematic-area-filter');
+							const option = select.querySelector(`option[value="${themeCode}"]`);
+							if (option) {
+								const displayName = option.textContent.toLowerCase();
+								const themeName = option.dataset.name.toLowerCase();
+								return projectThemes.includes(displayName) || 
+								       projectThemes.includes(themeName) ||
+								       projectThemes.includes(themeCode.toLowerCase());
+							}
+							return false;
+						});
+						
+						if (!hasMatchingTheme) {
+							show = false;
+						}
+					}
+				}
+				
+				row.style.display = show ? '' : 'none';
+			});
+			
+			// Update counters after filtering
+			setTimeout(calculateDashboardStatsFromFilteredData, 100);
+			setTimeout(updateTabCounters, 100);
+		}
+		
+		function updateURLParameters() {
+			const url = new URL(window.location);
+			
+			if (selectedThemes.length > 0) {
+				url.searchParams.set('themes', selectedThemes.join(','));
+			} else {
+				url.searchParams.delete('themes');
+			}
+			
+			// Update URL without reloading page
+			window.history.replaceState({}, '', url);
+		}
+		
+		function loadFilterStateFromURL() {
+			const url = new URL(window.location);
+			const themesParam = url.searchParams.get('themes');
+			
+			if (themesParam) {
+				selectedThemes = themesParam.split(',').filter(t => t);
+				const select = document.getElementById('thematic-area-filter');
+				
+				// Select the options
+				selectedThemes.forEach(themeCode => {
+					const option = select.querySelector(`option[value="${themeCode}"]`);
+					if (option) {
+						option.selected = true;
+					}
+				});
+				
+				updateSelectedThemesDisplay();
+				// Apply filters after a short delay to ensure table is rendered
+				setTimeout(() => applyAllFilters(), 200);
 			}
 		}
 

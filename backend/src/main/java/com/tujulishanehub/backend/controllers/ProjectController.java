@@ -16,6 +16,7 @@ import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.ProjectCategory;
+import com.tujulishanehub.backend.models.ProjectTheme;
 import com.tujulishanehub.backend.services.ProjectService;
 import com.tujulishanehub.backend.services.ProjectCollaboratorService;
 import com.tujulishanehub.backend.services.UserService;
@@ -243,6 +244,41 @@ public class ProjectController {
             ApiResponse<Map<String, Object>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve projects: " + e.getMessage(), 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all available thematic areas
+     */
+    @GetMapping("/thematic-areas")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<ApiResponse<List<Map<String, String>>>> getThematicAreas() {
+        try {
+            List<Map<String, String>> themes = Arrays.stream(ProjectTheme.values())
+                .map(theme -> {
+                    Map<String, String> themeMap = new HashMap<>();
+                    themeMap.put("code", theme.getCode());
+                    themeMap.put("displayName", theme.getDisplayName());
+                    themeMap.put("name", theme.name());
+                    return themeMap;
+                })
+                .collect(Collectors.toList());
+            
+            ApiResponse<List<Map<String, String>>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Thematic areas retrieved successfully", 
+                themes
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving thematic areas: {}", e.getMessage(), e);
+            ApiResponse<List<Map<String, String>>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve thematic areas: " + e.getMessage(), 
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
