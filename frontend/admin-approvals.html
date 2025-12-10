@@ -217,13 +217,19 @@
 						const response = await fetch(
 							`${window.BASE_URL}/api/announcements`
 						);
+						
+						if (!response.ok) {
+							console.warn("Failed to load announcements:", response.status);
+							return; // Silently fail - announcements are not critical
+						}
+						
 						const data = await response.json();
 						if (data.status === 200) {
 							this.announcements = data.data;
 						}
 					} catch (error) {
 						console.error("Error loading announcements:", error);
-						await showAlert("Failed to load announcements", "Error", "error");
+						// Don't show alert - announcements are optional feature
 					} finally {
 						this.loading = false;
 					}
@@ -750,8 +756,14 @@
 						Projects in Your Thematic Area
 					</h2>
 					<p class="text-sm text-gray-600 mb-4">
-						Your thematic area:
-						<span class="font-semibold" x-text="userThematicArea"></span>
+						<span x-show="userThematicAreas.length > 0">
+							Your thematic areas:
+							<span class="font-semibold" x-text="userThematicAreas.join(', ')"></span>
+						</span>
+						<span x-show="userThematicAreas.length === 0">
+							Your thematic area:
+							<span class="font-semibold" x-text="userThematicArea"></span>
+						</span>
 					</p>
 
 					<template x-if="projectsForReview.length === 0">
@@ -1238,14 +1250,25 @@
 									<tr>
 										<td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.name"></td>
 										<td class="px-6 py-4 whitespace-nowrap" x-text="reviewer.email"></td>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-												x-text="reviewer.thematicArea || 'Not Assigned'"></span>
+										<td class="px-6 py-4">
+											<!-- Display multiple thematic areas -->
+											<div class="flex flex-wrap gap-1">
+												<template x-if="reviewer.thematicAreas && reviewer.thematicAreas.length > 0">
+													<template x-for="area in reviewer.thematicAreas" :key="area">
+														<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs" x-text="area"></span>
+													</template>
+												</template>
+												<template x-if="!reviewer.thematicAreas || reviewer.thematicAreas.length === 0">
+													<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+														<span x-text="reviewer.thematicArea || 'Not Assigned'"></span>
+													</span>
+												</template>
+											</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<button @click="openAssignThemeModal(reviewer)"
 												class="text-blue-600 hover:text-green-700">
-												<i class="fas fa-edit mr-1"></i> Assign Theme
+												<i class="fas fa-edit mr-1"></i> Manage Areas
 											</button>
 										</td>
 									</tr>
@@ -1736,6 +1759,7 @@
 				activeTab: "for-review",
 				userRole: "",
 				userThematicArea: "",
+				userThematicAreas: [], // NEW: Support for multiple thematic areas
 
 				// Projects data
 				projectsForReview: [],
@@ -1762,6 +1786,7 @@
 
 				selectedReviewer: null,
 				assignedTheme: "",
+				assignedThemes: [], // NEW: Support for multiple thematic areas
 
 				// Toast notification
 				toast: {
@@ -1816,7 +1841,12 @@
 							// Handle both response structures: data.data or direct data
 							const userData = data.data || data;
 							this.userRole = userData.role;
+							
+							// Support both legacy single thematic area and new multiple thematic areas
 							this.userThematicArea = userData.thematicArea || "Not Assigned";
+							this.userThematicAreas = userData.thematicAreas || [];
+							
+							console.log("User thematic areas:", this.userThematicAreas);
 
 							// Set initial tab based on role
 							if (this.userRole === "SUPER_ADMIN_REVIEWER") {
@@ -2080,7 +2110,16 @@
 
 				openAssignThemeModal(reviewer) {
 					this.selectedReviewer = reviewer;
-					this.assignedTheme = reviewer.thematicArea || "";
+					// Pre-populate with existing thematic areas (supports multiple)
+					if (reviewer.thematicAreas && Array.isArray(reviewer.thematicAreas)) {
+						// New many-to-many relationship
+						this.assignedThemes = [...reviewer.thematicAreas];
+					} else if (reviewer.thematicArea) {
+						// Legacy single thematic area
+						this.assignedThemes = [reviewer.thematicArea];
+					} else {
+						this.assignedThemes = [];
+					}
 					this.showAssignThemeModal = true;
 				},
 
@@ -2183,28 +2222,33 @@
 				},
 
 				async submitAssignTheme() {
-					if (!this.assignedTheme) {
-						this.showToast("Please select a thematic area", "error");
+					if (this.assignedThemes.length === 0) {
+						this.showToast("Please select at least one thematic area", "error");
 						return;
 					}
 
 					this.loading = true;
 					try {
+						// Use new endpoint that supports multiple thematic areas
 						await this.apiCall(
-							`/api/auth/admin/assign-thematic-area/${this.selectedReviewer.id}`,
+							`/api/auth/admin/assign-thematic-areas/${this.selectedReviewer.id}`,
 							"POST",
 							{
-								thematicArea: this.assignedTheme,
+								thematicAreas: this.assignedThemes,
 							}
 						);
 
-						this.showToast("Thematic area assigned successfully!", "success");
+						this.showToast(
+							`${this.assignedThemes.length} thematic area${this.assignedThemes.length > 1 ? 's' : ''} assigned successfully!`,
+							"success"
+						);
 						this.showAssignThemeModal = false;
+						this.assignedThemes = []; // Reset selection
 						await this.loadReviewers();
 					} catch (error) {
-						console.error("Error assigning theme:", error);
+						console.error("Error assigning themes:", error);
 						this.showToast(
-							error.message || "Failed to assign thematic area",
+							error.message || "Failed to assign thematic areas",
 							"error"
 						);
 					} finally {

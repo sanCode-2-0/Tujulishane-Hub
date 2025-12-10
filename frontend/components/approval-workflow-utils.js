@@ -93,12 +93,19 @@ export const THEMATIC_AREAS = [
 ];
 
 // Check if user can review a project
-export function canReviewProject(userRole, userThematicArea, projectThemes) {
+export function canReviewProject(userRole, userThematicArea, projectThemes, userThematicAreas = null) {
   if (userRole === "SUPER_ADMIN") return true;
   if (userRole !== "SUPER_ADMIN_REVIEWER") return false;
-  if (!userThematicArea) return false;
 
-  // Check if user's thematic area matches any of the project themes
+  // Support for multiple thematic areas (new many-to-many relationship)
+  if (userThematicAreas && Array.isArray(userThematicAreas) && userThematicAreas.length > 0) {
+    return projectThemes.some((theme) => 
+      userThematicAreas.includes(theme.code)
+    );
+  }
+
+  // Fallback to single thematic area (legacy)
+  if (!userThematicArea) return false;
   return projectThemes.some((theme) => theme.code === userThematicArea);
 }
 
@@ -337,6 +344,62 @@ export class ApprovalWorkflowAPI {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to assign thematic area");
+    }
+
+    return await response.json();
+  }
+
+  // NEW: Assign multiple thematic areas to a reviewer
+  async assignThematicAreas(userId, thematicAreas) {
+    const response = await fetch(
+      `${this.baseURL}/api/auth/admin/assign-thematic-areas/${userId}`,
+      {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ thematicAreas }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to assign thematic areas");
+    }
+
+    return await response.json();
+  }
+
+  // NEW: Add a single thematic area to a reviewer
+  async addThematicArea(userId, thematicArea) {
+    const response = await fetch(
+      `${this.baseURL}/api/auth/admin/add-thematic-area/${userId}`,
+      {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ thematicArea }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to add thematic area");
+    }
+
+    return await response.json();
+  }
+
+  // NEW: Remove a thematic area from a reviewer
+  async removeThematicArea(userId, thematicAreaCode) {
+    const response = await fetch(
+      `${this.baseURL}/api/auth/admin/remove-thematic-area/${userId}/${thematicAreaCode}`,
+      {
+        method: "DELETE",
+        headers: this.getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to remove thematic area");
     }
 
     return await response.json();

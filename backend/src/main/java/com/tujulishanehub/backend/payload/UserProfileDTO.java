@@ -5,6 +5,7 @@ import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.models.ProjectTheme;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserProfileDTO {
     private Long id;
@@ -17,7 +18,8 @@ public class UserProfileDTO {
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
     private String organizationName; // Just the name, not the full object
-    private ProjectTheme thematicArea; // Thematic area for SUPER_ADMIN_REVIEWER
+    private ProjectTheme thematicArea; // Legacy: Single thematic area for backward compatibility
+    private List<String> thematicAreas; // NEW: Multiple thematic areas for many-to-many support
 
     public UserProfileDTO(User user) {
         this.id = user.getId();
@@ -29,7 +31,8 @@ public class UserProfileDTO {
         this.approvalStatus = user.getApprovalStatus();
         this.createdAt = user.getCreatedAt();
         this.lastLogin = user.getLastLogin();
-        this.thematicArea = user.getThematicArea(); // Include thematic area
+        this.thematicArea = user.getThematicArea(); // Include legacy single thematic area
+        this.thematicAreas = user.getThematicAreasAsStrings(); // Include new multiple thematic areas
         if (user.getOrganization() != null) {
             this.organizationName = user.getOrganization().getName();
         }
@@ -47,4 +50,5 @@ public class UserProfileDTO {
     public LocalDateTime getLastLogin() { return lastLogin; }
     public String getOrganizationName() { return organizationName; }
     public ProjectTheme getThematicArea() { return thematicArea; }
+    public List<String> getThematicAreas() { return thematicAreas; }
 }

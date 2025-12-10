@@ -2,6 +2,7 @@ package com.tujulishanehub.backend.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Data
+@EqualsAndHashCode(exclude = {"thematicAreaAssignments", "parentDonor"})
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -80,10 +82,15 @@ public class User {
     @JoinColumn(name = "parent_donor_id")
     private User parentDonor;
     
-    // Thematic area assignment for SUPER_ADMIN_REVIEWER
+    // Legacy single thematic area assignment for backward compatibility
     @Enumerated(EnumType.STRING)
     @Column(name = "thematic_area")
     private ProjectTheme thematicArea;
+    
+    // Many-to-many relationship: Reviewers can be assigned to multiple thematic areas
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("user")
+    private java.util.Set<ReviewerThematicArea> thematicAreaAssignments = new java.util.HashSet<>();
     
     // Role enum - Five roles system with two-tier SUPER_ADMIN structure
     public enum Role {
@@ -248,6 +255,71 @@ public class User {
     
     public void setThematicArea(ProjectTheme thematicArea) {
         this.thematicArea = thematicArea;
+    }
+    
+    public java.util.Set<ReviewerThematicArea> getThematicAreaAssignments() {
+        return thematicAreaAssignments;
+    }
+    
+    public void setThematicAreaAssignments(java.util.Set<ReviewerThematicArea> thematicAreaAssignments) {
+        this.thematicAreaAssignments = thematicAreaAssignments;
+    }
+    
+    /**
+     * Get all thematic areas assigned to this reviewer
+     */
+    public java.util.List<ProjectTheme> getThematicAreas() {
+        return thematicAreaAssignments.stream()
+            .map(ReviewerThematicArea::getThematicArea)
+            .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Check if reviewer is assigned to a specific thematic area
+     */
+    public boolean hasThematicArea(ProjectTheme thematicArea) {
+        // Check new many-to-many relationship first
+        if (!thematicAreaAssignments.isEmpty()) {
+            return thematicAreaAssignments.stream()
+                .anyMatch(assignment -> assignment.getThematicArea() == thematicArea);
+        }
+        // Fallback to legacy single thematic area for backward compatibility
+        return this.thematicArea == thematicArea;
+    }
+    
+    /**
+     * Add a thematic area assignment to this reviewer
+     */
+    public void addThematicArea(ReviewerThematicArea assignment) {
+        thematicAreaAssignments.add(assignment);
+        assignment.setUser(this);
+    }
+    
+    /**
+     * Remove a thematic area assignment from this reviewer
+     */
+    public void removeThematicArea(ReviewerThematicArea assignment) {
+        thematicAreaAssignments.remove(assignment);
+        assignment.setUser(null);
+    }
+    
+    /**
+     * Get thematic areas as a list of strings for JSON serialization
+     * This provides backward-compatible API responses
+     */
+    @com.fasterxml.jackson.annotation.JsonProperty("thematicAreas")
+    public java.util.List<String> getThematicAreasAsStrings() {
+        // Return new many-to-many relationship if available
+        if (!thematicAreaAssignments.isEmpty()) {
+            return thematicAreaAssignments.stream()
+                .map(assignment -> assignment.getThematicArea().name())
+                .collect(java.util.stream.Collectors.toList());
+        }
+        // Fallback to legacy single thematic area
+        if (thematicArea != null) {
+            return java.util.Arrays.asList(thematicArea.name());
+        }
+        return java.util.Collections.emptyList();
     }
     
     public Organization getOrganization() {

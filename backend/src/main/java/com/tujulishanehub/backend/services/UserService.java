@@ -7,17 +7,21 @@ import com.tujulishanehub.backend.models.UserDocument;
 import com.tujulishanehub.backend.models.Announcement;
 import com.tujulishanehub.backend.models.CollaborationRequest;
 import com.tujulishanehub.backend.models.ProjectCollaborator;
+import com.tujulishanehub.backend.models.ReviewerThematicArea;
 import com.tujulishanehub.backend.repositories.UserRepository;
 import com.tujulishanehub.backend.repositories.UserDocumentRepository;
 import com.tujulishanehub.backend.repositories.AnnouncementRepository;
 import com.tujulishanehub.backend.repositories.CollaborationRequestRepository;
 import com.tujulishanehub.backend.repositories.ProjectCollaboratorRepository;
+import com.tujulishanehub.backend.repositories.ReviewerThematicAreaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Optional;
 import java.util.Random;
 
@@ -46,6 +50,12 @@ public class UserService {
 
     @Autowired
     private ProjectCollaboratorRepository projectCollaboratorRepository;
+    
+    @Autowired(required = false)
+    private ReviewerThematicAreaRepository reviewerThematicAreaRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     // Register user (name + email + optional organization). Create INACTIVE account and send OTP
     public User registerUser(String name, String email, Long organizationId) {
@@ -381,26 +391,131 @@ public class UserService {
     // ==================== TWO-TIER ADMIN MANAGEMENT ====================
     
     /**
-     * Assign thematic area to a reviewer
+     * Assign multiple thematic areas to a reviewer (NEW - supports many-to-many)
      */
-    public boolean assignThematicArea(Long userId, com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+    @Transactional
+    public boolean assignThematicAreas(Long userId, java.util.List<com.tujulishanehub.backend.models.ProjectTheme> thematicAreas, Long assignedById) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             
             // Validate user is a reviewer
             if (user.getRole() != User.Role.SUPER_ADMIN_REVIEWER) {
-                throw new IllegalArgumentException("User must be a SUPER_ADMIN_REVIEWER to have a thematic area assigned");
+                throw new IllegalArgumentException("User must be a SUPER_ADMIN_REVIEWER to have thematic areas assigned");
             }
             
-            user.setThematicArea(thematicArea);
+            // Check if repository is available (table exists)
+            if (reviewerThematicAreaRepository == null) {
+                throw new IllegalStateException("Reviewer thematic area feature not available. Please run database migration first.");
+            }
+            
+            // Clear existing assignments
+            reviewerThematicAreaRepository.deleteByUserId(userId);
+            user.getThematicAreaAssignments().clear();
+            
+            // Flush to ensure deletions are committed before inserts
+            entityManager.flush();
+            
+            // Add new assignments
+            for (com.tujulishanehub.backend.models.ProjectTheme thematicArea : thematicAreas) {
+                ReviewerThematicArea assignment = new ReviewerThematicArea(user, thematicArea, assignedById);
+                user.addThematicArea(assignment);
+                reviewerThematicAreaRepository.save(assignment);
+            }
+            
+            userRepository.save(user);
+            
+            // Send notification to user
+            String areasString = thematicAreas.stream()
+                .map(com.tujulishanehub.backend.models.ProjectTheme::getDisplayName)
+                .collect(java.util.stream.Collectors.joining(", "));
+            
+            emailService.sendEmail(user.getEmail(), 
+                "Thematic Areas Assigned", 
+                "You have been assigned to the following thematic areas: " + areasString + 
+                "\n\nYou can now review projects in these thematic areas.");
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Assign thematic area to a reviewer (LEGACY - backward compatible)
+     * @deprecated Use assignThematicAreas for multiple area support
+     */
+    @Deprecated
+    public boolean assignThematicArea(Long userId, com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        // Convert single area to list and use new method
+        return assignThematicAreas(userId, java.util.Arrays.asList(thematicArea), null);
+    }
+    
+    /**
+     * Add a single thematic area to a reviewer's existing assignments
+     */
+    @Transactional
+    public boolean addThematicArea(Long userId, com.tujulishanehub.backend.models.ProjectTheme thematicArea, Long assignedById) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            
+            // Validate user is a reviewer
+            if (user.getRole() != User.Role.SUPER_ADMIN_REVIEWER) {
+                throw new IllegalArgumentException("User must be a SUPER_ADMIN_REVIEWER to have thematic areas assigned");
+            }
+            
+            // Check if repository is available (table exists)
+            if (reviewerThematicAreaRepository == null) {
+                throw new IllegalStateException("Reviewer thematic area feature not available. Please run database migration first.");
+            }
+            
+            // Check if already assigned
+            if (reviewerThematicAreaRepository.existsByUserIdAndThematicArea(userId, thematicArea)) {
+                throw new IllegalArgumentException("Reviewer is already assigned to this thematic area");
+            }
+            
+            // Add new assignment
+            ReviewerThematicArea assignment = new ReviewerThematicArea(user, thematicArea, assignedById);
+            user.addThematicArea(assignment);
+            reviewerThematicAreaRepository.save(assignment);
             userRepository.save(user);
             
             // Send notification to user
             emailService.sendEmail(user.getEmail(), 
-                "Thematic Area Assigned", 
+                "New Thematic Area Assigned", 
                 "You have been assigned to the thematic area: " + thematicArea.getDisplayName() + 
                 "\n\nYou can now review projects in this thematic area.");
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Remove a thematic area from a reviewer
+     */
+    @Transactional
+    public boolean removeThematicArea(Long userId, com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
+        // Check if repository is available (table exists)
+        if (reviewerThematicAreaRepository == null) {
+            throw new IllegalStateException("Reviewer thematic area feature not available. Please run database migration first.");
+        }
+        
+        Optional<ReviewerThematicArea> assignmentOpt = reviewerThematicAreaRepository
+            .findByUserIdAndThematicArea(userId, thematicArea);
+        
+        if (assignmentOpt.isPresent()) {
+            ReviewerThematicArea assignment = assignmentOpt.get();
+            User user = assignment.getUser();
+            
+            user.removeThematicArea(assignment);
+            reviewerThematicAreaRepository.delete(assignment);
+            userRepository.save(user);
+            
+            // Send notification to user
+            emailService.sendEmail(user.getEmail(), 
+                "Thematic Area Removed", 
+                "You have been removed from the thematic area: " + thematicArea.getDisplayName());
             
             return true;
         }
@@ -444,12 +559,27 @@ public class UserService {
     }
     
     /**
-     * Get all reviewers by thematic area
+     * Get all reviewers by thematic area (supports many-to-many)
      */
     public java.util.List<User> getReviewersByThematicArea(com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
-        return userRepository.findByRole(User.Role.SUPER_ADMIN_REVIEWER).stream()
+        java.util.List<User> reviewers = new java.util.ArrayList<>();
+        
+        // Use new many-to-many relationship if available
+        if (reviewerThematicAreaRepository != null) {
+            reviewers.addAll(reviewerThematicAreaRepository.findReviewersByThematicArea(thematicArea));
+        }
+        
+        // Make effectively final for lambda usage
+        final java.util.List<User> existingReviewers = reviewers;
+        
+        // Also include reviewers with legacy single thematic area assignment (backward compatibility)
+        java.util.List<User> legacyReviewers = userRepository.findByRole(User.Role.SUPER_ADMIN_REVIEWER).stream()
             .filter(user -> user.getThematicArea() == thematicArea)
+            .filter(user -> !existingReviewers.contains(user)) // Avoid duplicates
             .collect(java.util.stream.Collectors.toList());
+        
+        reviewers.addAll(legacyReviewers);
+        return reviewers;
     }
     
     /**

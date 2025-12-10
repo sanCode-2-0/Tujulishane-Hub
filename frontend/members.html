@@ -1933,9 +1933,13 @@
 						}">
                           ${user.role}
                       </span>
-                      ${user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
-							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
-                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
                           </span>`
 							: ""
 						}
@@ -2003,9 +2007,13 @@
 						}">
                           ${user.role}
                       </span>
-                      ${user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
-							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
-                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
                           </span>`
 							: ""
 						}
@@ -2073,9 +2081,13 @@
 						}">
                           ${user.role}
                       </span>
-                      ${user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
-							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
-                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
                           </span>`
 							: ""
 						}
@@ -2141,9 +2153,13 @@
 						}">
                           ${user.role}
                       </span>
-                      ${user.role === "SUPER_ADMIN_REVIEWER" && user.thematicArea
-							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area">
-                              <i class="fas fa-tag mr-1"></i>${getThematicAreaDisplayName(user.thematicArea)}
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
                           </span>`
 							: ""
 						}
@@ -2389,13 +2405,19 @@
 					user.createdAt
 				);
 
-				// Show thematic area if exists
-				if (user.thematicArea) {
+				// Show thematic area(s) if exists
+				if (user.thematicAreas && user.thematicAreas.length > 0) {
 					document
 						.getElementById("thematicAreaDiv")
 						.classList.remove("hidden");
 					document.getElementById("viewUserThematicArea").textContent =
-						user.thematicArea;
+						user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ');
+				} else if (user.thematicArea) {
+					document
+						.getElementById("thematicAreaDiv")
+						.classList.remove("hidden");
+					document.getElementById("viewUserThematicArea").textContent =
+						getThematicAreaDisplayName(user.thematicArea);
 				} else {
 					document.getElementById("thematicAreaDiv").classList.add("hidden");
 				}

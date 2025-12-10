@@ -1089,6 +1089,7 @@ public class ProjectService {
     
     /**
      * Get projects that need review by a specific thematic area reviewer
+     * Now supports reviewers with multiple thematic areas
      */
     public List<Project> getProjectsForReviewer(com.tujulishanehub.backend.models.ProjectTheme thematicArea) {
         // Get all projects pending review
@@ -1105,6 +1106,29 @@ public class ProjectService {
                 }
                 return project.getThemes().stream()
                     .anyMatch(assignment -> assignment.getProjectTheme() == thematicArea);
+            })
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get projects that need review by a reviewer (supports multiple thematic areas)
+     */
+    public List<Project> getProjectsForReviewerUser(com.tujulishanehub.backend.models.User reviewer) {
+        // Get all projects pending review
+        List<Project> allPendingProjects = projectRepository.findAll().stream()
+            .filter(p -> p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW ||
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.UNDER_REVIEW)
+            .collect(Collectors.toList());
+        
+        // Filter by reviewer's thematic areas (supports multiple)
+        return allPendingProjects.stream()
+            .filter(project -> {
+                if (project.getThemes() == null || project.getThemes().isEmpty()) {
+                    return false;
+                }
+                // Check if any of the project's themes match any of the reviewer's thematic areas
+                return project.getThemes().stream()
+                    .anyMatch(assignment -> reviewer.hasThematicArea(assignment.getProjectTheme()));
             })
             .collect(Collectors.toList());
     }

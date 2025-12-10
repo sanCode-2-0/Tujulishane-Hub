@@ -1751,10 +1751,17 @@
                                     out.push(v);
                                 };
 
-                                pushVal(maybe.thematicArea || maybe.thematic_area || maybe.thematicAreaCode || maybe.thematic_area_code || maybe.theme || maybe.themeCode || maybe.theme_code || maybe.themesManaged || maybe.themes || maybe.thematicAreas || maybe.thematics || maybe.preference);
-                                for (const k of Object.keys(maybe || {})) {
-                                    if (/theme/i.test(k) || /thematic/i.test(k)) {
-                                        pushVal(maybe[k]);
+                                // Prioritize new many-to-many thematicAreas array
+                                if (Array.isArray(maybe.thematicAreas) && maybe.thematicAreas.length > 0) {
+                                    pushVal(maybe.thematicAreas);
+                                }
+                                // Fallback to other fields
+                                else {
+                                    pushVal(maybe.thematicArea || maybe.thematic_area || maybe.thematicAreaCode || maybe.thematic_area_code || maybe.theme || maybe.themeCode || maybe.theme_code || maybe.themesManaged || maybe.themes || maybe.thematics || maybe.preference);
+                                    for (const k of Object.keys(maybe || {})) {
+                                        if (/theme/i.test(k) || /thematic/i.test(k)) {
+                                            pushVal(maybe[k]);
+                                        }
                                     }
                                 }
 
@@ -1918,10 +1925,24 @@
                                                 if (userObj) {
                                                     // Support different shapes: userObj may be the API response wrapper ({status,message,data: {...}})
                                                     const maybe = userObj.data && typeof userObj.data === 'object' ? userObj.data : userObj;
-                                                    if (maybe.thematicArea) themeListRaw = [maybe.thematicArea];
-                                                    else if (Array.isArray(maybe.themes)) themeListRaw = maybe.themes;
-                                                    else if (Array.isArray(maybe.thematicAreas)) themeListRaw = maybe.thematicAreas;
-                                                    else if (maybe.themesManaged) themeListRaw = maybe.themesManaged;
+                                                    
+                                                    // Prioritize new many-to-many thematicAreas array
+                                                    if (Array.isArray(maybe.thematicAreas) && maybe.thematicAreas.length > 0) {
+                                                        themeListRaw = maybe.thematicAreas;
+                                                    }
+                                                    // Fallback to legacy single thematicArea
+                                                    else if (maybe.thematicArea) {
+                                                        themeListRaw = [maybe.thematicArea];
+                                                    }
+                                                    // Other fallbacks
+                                                    else if (Array.isArray(maybe.themes)) {
+                                                        themeListRaw = maybe.themes;
+                                                    }
+                                                    else if (maybe.themesManaged) {
+                                                        themeListRaw = maybe.themesManaged;
+                                                    }
+                                                    
+                                                    console.log('[Reviewer] Extracted thematic areas:', themeListRaw);
                                                 }
                                                 const themeNames = (themeListRaw || []).map(t => typeof t === 'string' ? t.toLowerCase() : ((t.name || t.code || '') + '').toLowerCase()).filter(Boolean);
 
@@ -2081,6 +2102,15 @@
                                                 </tr>
                                             `;
                                         });
+                                        
+                                        // Update the appropriate counter based on the status
+                                        const counterId = `count-${status}`;
+                                        const counterElement = document.getElementById(counterId);
+                                        if (counterElement) {
+                                            counterElement.textContent = projects.length;
+                                            console.log(`[Counter Update] ${status}: ${projects.length} projects`);
+                                        }
+                                        
                                         // Add empty state message if no projects
                                         if (tbody.innerHTML === '') {
                                             tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">No ${status} projects found</td></tr>`;

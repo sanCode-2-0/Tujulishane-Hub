@@ -986,13 +986,19 @@ public class ProjectController {
             User reviewer = userService.getUserByEmail(reviewerEmail);
             
             // Validate reviewer has thematic area assigned (unless legacy SUPER_ADMIN)
-            if (reviewer.getRole() == User.Role.SUPER_ADMIN_REVIEWER && reviewer.getThematicArea() == null) {
-                ApiResponse<Object> response = new ApiResponse<>(
-                    HttpStatus.FORBIDDEN.value(),
-                    "Reviewer must have a thematic area assigned",
-                    null
-                );
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            if (reviewer.getRole() == User.Role.SUPER_ADMIN_REVIEWER) {
+                // Check both new many-to-many and legacy single assignment
+                boolean hasAnyThematicArea = !reviewer.getThematicAreaAssignments().isEmpty() || 
+                                            reviewer.getThematicArea() != null;
+                
+                if (!hasAnyThematicArea) {
+                    ApiResponse<Object> response = new ApiResponse<>(
+                        HttpStatus.FORBIDDEN.value(),
+                        "Reviewer must have at least one thematic area assigned",
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
             }
             
             // Validate project belongs to reviewer's thematic area
@@ -1008,13 +1014,14 @@ public class ProjectController {
                 }
                 
                 Project project = projectOpt.get();
+                // Check if any of the project's themes match any of the reviewer's thematic areas
                 boolean hasMatchingTheme = project.getThemes().stream()
-                    .anyMatch(assignment -> assignment.getProjectTheme() == reviewer.getThematicArea());
+                    .anyMatch(assignment -> reviewer.hasThematicArea(assignment.getProjectTheme()));
                 
                 if (!hasMatchingTheme) {
                     ApiResponse<Object> response = new ApiResponse<>(
                         HttpStatus.FORBIDDEN.value(),
-                        "This project is not in your assigned thematic area",
+                        "This project is not in your assigned thematic areas",
                         null
                     );
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);

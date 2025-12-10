@@ -879,6 +879,186 @@ public class UserController {
         }
     }
     
+    /**
+     * Assign multiple thematic areas to a reviewer (NEW - supports many-to-many)
+     */
+    @PostMapping("/admin/assign-thematic-areas/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> assignThematicAreas(
+            @PathVariable Long userId,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            @SuppressWarnings("unchecked")
+            java.util.List<String> thematicAreaCodes = (java.util.List<String>) payload.get("thematicAreas");
+            
+            if (thematicAreaCodes == null || thematicAreaCodes.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "At least one thematic area is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Convert codes to ProjectTheme enums
+            java.util.List<com.tujulishanehub.backend.models.ProjectTheme> thematicAreas = 
+                new java.util.ArrayList<>();
+            for (String code : thematicAreaCodes) {
+                thematicAreas.add(com.tujulishanehub.backend.models.ProjectTheme.fromCode(code));
+            }
+            
+            // Get current user ID for audit trail
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String adminEmail = auth.getName();
+            User admin = userService.getUserByEmail(adminEmail);
+            
+            boolean success = userService.assignThematicAreas(userId, thematicAreas, admin.getId());
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Thematic areas assigned successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "User not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid input for assigning thematic areas: {}", e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error assigning thematic areas to user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to assign thematic areas",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Add a single thematic area to a reviewer's existing assignments
+     */
+    @PostMapping("/admin/add-thematic-area/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> addThematicArea(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String thematicAreaCode = payload.get("thematicArea");
+            if (thematicAreaCode == null || thematicAreaCode.isEmpty()) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Thematic area is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            com.tujulishanehub.backend.models.ProjectTheme thematicArea = 
+                com.tujulishanehub.backend.models.ProjectTheme.fromCode(thematicAreaCode);
+            
+            // Get current user ID for audit trail
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String adminEmail = auth.getName();
+            User admin = userService.getUserByEmail(adminEmail);
+            
+            boolean success = userService.addThematicArea(userId, thematicArea, admin.getId());
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Thematic area added successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "User not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid input for adding thematic area: {}", e.getMessage());
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error adding thematic area to user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to add thematic area",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Remove a thematic area from a reviewer
+     */
+    @DeleteMapping("/admin/remove-thematic-area/{userId}/{thematicAreaCode}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<Object>> removeThematicArea(
+            @PathVariable Long userId,
+            @PathVariable String thematicAreaCode) {
+        try {
+            com.tujulishanehub.backend.models.ProjectTheme thematicArea = 
+                com.tujulishanehub.backend.models.ProjectTheme.fromCode(thematicAreaCode);
+            
+            boolean success = userService.removeThematicArea(userId, thematicArea);
+            
+            if (success) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Thematic area removed successfully",
+                    null
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Assignment not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid thematic area code: {}", thematicAreaCode);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid thematic area code",
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Error removing thematic area from user {}: {}", userId, e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to remove thematic area",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
     // Donor-Partner Management Endpoints
     
     @GetMapping("/donors")
