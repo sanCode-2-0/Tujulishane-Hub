@@ -193,7 +193,7 @@
                 :class="activeTab === 'reviewers' ? 'border-b-2 border-button text-button' : 'text-gray-500'"
                 class="px-4 py-2 font-medium"
               >
-                Dismissed Projects
+                Manage Reviewers
               </button>
             </li>
           </ul>
@@ -384,7 +384,15 @@
         <!-- Reviewer Management (Approver/SUPER_ADMIN Only) -->
         <div x-show="activeTab === 'reviewers'" class="space-y-4">
           <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Manage Reviewers</h2>
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-xl font-bold">Manage Reviewers</h2>
+              <button
+                @click="openAddReviewerModal()"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 shadow-md"
+              >
+                <i class="fas fa-user-plus"></i> Add New Reviewer
+              </button>
+            </div>
 
             <!-- Thematic Area Filter -->
             <div class="mb-4">
@@ -708,6 +716,175 @@
           </div>
         </div>
       </div>
+
+      <!-- Add/Convert Reviewer Modal -->
+      <div
+        x-show="showAddReviewerModal"
+        class="fixed inset-0 z-50 overflow-y-auto backdrop-blur-md"
+        x-cloak
+      >
+        <div class="flex items-center justify-center min-h-screen px-4">
+          <div
+            class="fixed inset-0 bg-black opacity-50"
+            @click="closeAddReviewerModal()"
+          ></div>
+          <div class="relative bg-white rounded-lg p-8 max-w-2xl w-full">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold">Add New Reviewer</h3>
+              <button
+                @click="closeAddReviewerModal()"
+                class="text-gray-400 hover:text-gray-600"
+              >
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+
+            <!-- Option Selection Tabs -->
+            <div class="mb-6">
+              <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    @click="reviewerModalTab = 'convert'"
+                    :class="reviewerModalTab === 'convert' ? 'border-button text-button' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                  >
+                    Convert Existing User
+                  </button>
+                  <button
+                    @click="reviewerModalTab = 'create'"
+                    :class="reviewerModalTab === 'create' ? 'border-button text-button' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                  >
+                    Create New Reviewer
+                  </button>
+                </nav>
+              </div>
+            </div>
+
+            <!-- Convert Existing User Tab -->
+            <div x-show="reviewerModalTab === 'convert'" class="space-y-4">
+              <p class="text-sm text-gray-600 mb-4">
+                Select an existing user and convert them to a reviewer role.
+              </p>
+
+              <!-- User Selection Dropdown -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Select User <span class="text-red-500">*</span></label>
+                <select
+                  x-model.number="selectedUserToConvertId"
+                  class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-button"
+                >
+                  <option value="">-- Select a user --</option>
+                  <template x-for="user in userSearchResults" :key="user.id">
+                    <option :value="user.id" x-text="`${user.name} (${user.email}) - ${user.role}`"></option>
+                  </template>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Only users who are not already reviewers or approvers are shown</p>
+              </div>
+
+              <!-- Thematic Area Selection -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Assign Thematic Areas <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-2">
+                  <template x-for="theme in thematicAreaOptions" :key="theme.code">
+                    <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        :value="theme.code"
+                        x-model="selectedThematicAreas"
+                        class="rounded text-button focus:ring-button"
+                      />
+                      <span class="text-sm" x-text="theme.label"></span>
+                    </label>
+                  </template>
+                </div>
+              </div>
+
+              <div class="flex gap-2 justify-end pt-4 border-t">
+                <button
+                  @click="closeAddReviewerModal()"
+                  class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  @click="convertUserToReviewer()"
+                  :disabled="!selectedUserToConvert || selectedThematicAreas.length === 0"
+                  class="px-4 py-2 bg-button text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <i class="fas fa-user-check mr-2"></i> Convert to Reviewer
+                </button>
+              </div>
+            </div>
+
+            <!-- Create New Reviewer Tab -->
+            <div x-show="reviewerModalTab === 'create'" class="space-y-4">
+              <p class="text-sm text-gray-600 mb-4">
+                Create a new reviewer account. An invitation email will be sent to the provided email address.
+              </p>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Full Name <span class="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  x-model="newReviewerName"
+                  placeholder="Enter full name"
+                  class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-button"
+                  required
+                />
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Email Address <span class="text-red-500">*</span></label>
+                <input
+                  type="email"
+                  x-model="newReviewerEmail"
+                  @blur="validateEmail()"
+                  placeholder="reviewer@example.com"
+                  class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-button"
+                  :class="emailValidationError ? 'border-red-500' : ''"
+                  required
+                />
+                <p x-show="emailValidationError" class="text-red-500 text-xs mt-1" x-text="emailValidationError"></p>
+              </div>
+
+              <!-- Thematic Area Selection -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Assign Thematic Areas <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-2">
+                  <template x-for="theme in thematicAreaOptions" :key="theme.code">
+                    <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        :value="theme.code"
+                        x-model="selectedThematicAreas"
+                        class="rounded text-button focus:ring-button"
+                      />
+                      <span class="text-sm" x-text="theme.label"></span>
+                    </label>
+                  </template>
+                </div>
+              </div>
+
+              <div class="flex gap-2 justify-end pt-4 border-t">
+                <button
+                  @click="closeAddReviewerModal()"
+                  class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  @click="createNewReviewer()"
+                  :disabled="!newReviewerName.trim() || !newReviewerEmail.trim() || selectedThematicAreas.length === 0 || !!emailValidationError"
+                  class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <i class="fas fa-paper-plane mr-2"></i> Create & Send Invitation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- NAVIGATION LOADER DISABLED FOR DEBUGGING -->
@@ -738,6 +915,7 @@
           showFinalApprovalModal: false,
           showFinalRejectModal: false,
           showAssignThemeModal: false,
+          showAddReviewerModal: false,
 
           // Form data
           selectedProject: null,
@@ -749,6 +927,28 @@
           selectedReviewer: null,
           assignedTheme: "",
           assignedThemes: [], // NEW: Support for multiple thematic areas
+
+          // Add/Convert Reviewer Modal Data
+          reviewerModalTab: 'convert',
+          userSearchQuery: '',
+          userSearchResults: [],
+          selectedUserToConvert: null,
+          selectedUserToConvertId: '',
+          newReviewerName: '',
+          newReviewerEmail: '',
+          emailValidationError: '',
+          selectedThematicAreas: [],
+          thematicAreaOptions: [
+            { code: 'GBV', label: 'GBV - Gender-Based Violence' },
+            { code: 'AYPSRH', label: 'AYPSRH - Adolescent & Youth SRH' },
+            { code: 'MNH', label: 'MNH - Maternal & Newborn Health' },
+            { code: 'FP', label: 'FP - Family Planning' },
+            { code: 'CH', label: 'CH - Child Health' },
+            { code: 'AH', label: 'AH - Adolescent Health' },
+            { code: 'ADV_SBC', label: 'ADV_SBC - Advocacy & SBC' },
+            { code: 'MONITORING_EVALUATION', label: 'Monitoring & Evaluation' },
+            { code: 'RESEARCH_LEARNING', label: 'Research & Learning' }
+          ],
 
           // Toast notification
           toast: {
@@ -1121,6 +1321,136 @@
 
           viewProjectDetails(projectId) {
             window.location.href = `projects.html?id=${projectId}`;
+          },
+
+          async openAddReviewerModal() {
+            this.showAddReviewerModal = true;
+            this.reviewerModalTab = 'convert';
+            this.resetReviewerModalData();
+            await this.loadEligibleUsers();
+          },
+
+          closeAddReviewerModal() {
+            this.showAddReviewerModal = false;
+            this.resetReviewerModalData();
+          },
+
+          resetReviewerModalData() {
+            this.userSearchQuery = '';
+            this.userSearchResults = [];
+            this.selectedUserToConvert = null;
+            this.selectedUserToConvertId = '';
+            this.newReviewerName = '';
+            this.newReviewerEmail = '';
+            this.emailValidationError = '';
+            this.selectedThematicAreas = [];
+          },
+
+          async loadEligibleUsers() {
+            try {
+              const response = await this.apiCall('/api/auth/admin/users');
+              // Filter out users who are already reviewers or approvers
+              this.userSearchResults = (response.data || []).filter(
+                user => !['SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN'].includes(user.role)
+              );
+            } catch (error) {
+              console.error('Error loading eligible users:', error);
+              this.userSearchResults = [];
+              this.showToast('Failed to load users', 'error');
+            }
+          },
+
+          async convertUserToReviewer() {
+            if (!this.selectedUserToConvertId || this.selectedThematicAreas.length === 0) {
+              this.showToast('Please select a user and at least one thematic area', 'error');
+              return;
+            }
+
+            const selectedUser = this.userSearchResults.find(u => u.id === this.selectedUserToConvertId);
+            if (!selectedUser) {
+              this.showToast('Selected user not found', 'error');
+              return;
+            }
+
+            this.loading = true;
+            try {
+              // Convert user to reviewer role
+              await this.apiCall(
+                `/api/auth/admin/convert-to-reviewer/${this.selectedUserToConvertId}`,
+                'POST',
+                {
+                  thematicAreas: this.selectedThematicAreas
+                }
+              );
+
+              this.showToast(
+                `${selectedUser.name} successfully converted to reviewer!`,
+                'success'
+              );
+              this.closeAddReviewerModal();
+              await this.loadReviewers();
+            } catch (error) {
+              console.error('Error converting user to reviewer:', error);
+              this.showToast(
+                error.message || 'Failed to convert user to reviewer',
+                'error'
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          async createNewReviewer() {
+            if (!this.newReviewerName || !this.newReviewerEmail || this.selectedThematicAreas.length === 0) {
+              this.showToast('Please fill in all required fields', 'error');
+              return;
+            }
+
+            if (this.emailValidationError) {
+              this.showToast('Please provide a valid email address', 'error');
+              return;
+            }
+
+            this.loading = true;
+            try {
+              await this.apiCall(
+                '/api/auth/admin/create-reviewer',
+                'POST',
+                {
+                  name: this.newReviewerName,
+                  email: this.newReviewerEmail,
+                  thematicAreas: this.selectedThematicAreas
+                }
+              );
+
+              this.showToast(
+                `Reviewer created successfully! Invitation sent to ${this.newReviewerEmail}`,
+                'success'
+              );
+              this.closeAddReviewerModal();
+              await this.loadReviewers();
+            } catch (error) {
+              console.error('Error creating reviewer:', error);
+              this.showToast(
+                error.message || 'Failed to create reviewer',
+                'error'
+              );
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!this.newReviewerEmail) {
+              this.emailValidationError = '';
+              return;
+            }
+            if (!emailRegex.test(this.newReviewerEmail)) {
+              this.emailValidationError = 'Please enter a valid email address';
+            } else {
+              this.emailValidationError = '';
+            }
           },
 
           async apiCall(endpoint, method = "GET", body = null) {

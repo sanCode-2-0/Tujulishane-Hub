@@ -823,4 +823,167 @@ public class UserService {
         }
         return false;
     }
+    
+    /**
+     * Search users by name or email (for reviewer conversion)
+     */
+    public java.util.List<User> searchUsersByNameOrEmail(String query) {
+        java.util.List<User> allUsers = userRepository.findAll();
+        String lowerQuery = query.toLowerCase();
+        
+        return allUsers.stream()
+            .filter(user -> 
+                user.getName().toLowerCase().contains(lowerQuery) || 
+                user.getEmail().toLowerCase().contains(lowerQuery)
+            )
+            .limit(10)
+            .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Convert existing user to reviewer role with thematic areas
+     */
+    @Transactional
+    public User convertToReviewer(Long userId, java.util.List<String> thematicAreaCodes, Long convertedById) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            return null;
+        }
+        
+        User user = userOptional.get();
+        User.Role oldRole = user.getRole();
+        
+        // Update role to reviewer
+        user.setRole(User.Role.SUPER_ADMIN_REVIEWER);
+        
+        // Assign thematic areas
+        if (reviewerThematicAreaRepository != null) {
+            // Clear existing thematic areas
+            reviewerThematicAreaRepository.deleteByUserId(userId);
+            
+            // Add new thematic areas
+            for (String code : thematicAreaCodes) {
+                try {
+                    com.tujulishanehub.backend.models.ProjectTheme theme = 
+                        com.tujulishanehub.backend.models.ProjectTheme.valueOf(code);
+                    
+                    com.tujulishanehub.backend.models.ReviewerThematicArea reviewerTheme = 
+                        new com.tujulishanehub.backend.models.ReviewerThematicArea();
+                    reviewerTheme.setUser(user);
+                    reviewerTheme.setThematicArea(theme);
+                    reviewerThematicAreaRepository.save(reviewerTheme);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Invalid thematic area code: {}", code);
+                }
+            }
+        }
+        
+        User savedUser = userRepository.save(user);
+        
+        // Send notification email
+        String areasString = thematicAreaCodes.stream()
+            .map(code -> {
+                try {
+                    return com.tujulishanehub.backend.models.ProjectTheme.valueOf(code).getDisplayName();
+                } catch (IllegalArgumentException e) {
+                    return code;
+                }
+            })
+            .collect(java.util.stream.Collectors.joining(", "));
+        
+        String subject = "Role Updated - You Are Now a Reviewer";
+        String body = String.format(
+            "Dear %s,\n\n" +
+            "Your role has been updated from %s to REVIEWER.\n\n" +
+            "You have been assigned to review projects in the following thematic areas:\n" +
+            "%s\n\n" +
+            "You can now access the Review Requests page to review projects awaiting approval.\n\n" +
+            "Updated by MOH administrator.\n\n" +
+            "Best regards,\n" +
+            "RMCAH Hub Team",
+            user.getName(),
+            oldRole,
+            areasString
+        );
+        
+        emailService.sendEmail(user.getEmail(), subject, body);
+        logger.info("User {} converted to reviewer with thematic areas: {}", userId, areasString);
+        
+        return savedUser;
+    }
+    
+    /**
+     * Create new reviewer account and send invitation
+     */
+    @Transactional
+    public User createReviewer(String name, String email, java.util.List<String> thematicAreaCodes, Long createdById) {
+        // Create user with SUPER_ADMIN_REVIEWER role
+        User reviewer = new User();
+        reviewer.setName(name);
+        reviewer.setEmail(email);
+        reviewer.setRole(User.Role.SUPER_ADMIN_REVIEWER);
+        reviewer.setApprovalStatus(ApprovalStatus.APPROVED); // Auto-approve reviewers
+        reviewer.setStatus("ACTIVE");
+        reviewer.setEmailVerified(false);
+        reviewer.setApprovedBy(createdById);
+        reviewer.setApprovedAt(java.time.LocalDateTime.now());
+        
+        // Generate OTP for account activation
+        String otp = generateOtp();
+        reviewer.setOtp(otp);
+        reviewer.setOtpExpiry(java.time.LocalDateTime.now().plusHours(24)); // 24 hour expiry for invitations
+        
+        User savedReviewer = userRepository.save(reviewer);
+        
+        // Assign thematic areas
+        if (reviewerThematicAreaRepository != null) {
+            for (String code : thematicAreaCodes) {
+                try {
+                    com.tujulishanehub.backend.models.ProjectTheme theme = 
+                        com.tujulishanehub.backend.models.ProjectTheme.valueOf(code);
+                    
+                    com.tujulishanehub.backend.models.ReviewerThematicArea reviewerTheme = 
+                        new com.tujulishanehub.backend.models.ReviewerThematicArea();
+                    reviewerTheme.setUser(savedReviewer);
+                    reviewerTheme.setThematicArea(theme);
+                    reviewerThematicAreaRepository.save(reviewerTheme);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Invalid thematic area code: {}", code);
+                }
+            }
+        }
+        
+        // Send invitation email
+        String areasString = thematicAreaCodes.stream()
+            .map(code -> {
+                try {
+                    return com.tujulishanehub.backend.models.ProjectTheme.valueOf(code).getDisplayName();
+                } catch (IllegalArgumentException e) {
+                    return code;
+                }
+            })
+            .collect(java.util.stream.Collectors.joining(", "));
+        
+        String subject = "Invitation to Join RMCAH Hub as a Reviewer";
+        String body = String.format(
+            "Dear %s,\n\n" +
+            "You have been invited to join the RMCAH Hub as a Reviewer.\n\n" +
+            "You have been assigned to review projects in the following thematic areas:\n" +
+            "%s\n\n" +
+            "To activate your account, please use the following OTP:\n" +
+            "%s\n\n" +
+            "This OTP will expire in 24 hours.\n\n" +
+            "Once activated, you can access the Review Requests page to review projects awaiting approval.\n\n" +
+            "Best regards,\n" +
+            "RMCAH Hub Team",
+            name,
+            areasString,
+            otp
+        );
+        
+        emailService.sendEmail(email, subject, body);
+        logger.info("Reviewer created: {} with thematic areas: {}", email, areasString);
+        
+        return savedReviewer;
+    }
 }

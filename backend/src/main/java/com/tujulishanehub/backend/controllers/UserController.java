@@ -1471,4 +1471,178 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    /**
+     * Search users by name or email (for reviewer conversion)
+     */
+    @GetMapping("/admin/users/search")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<List<User>>> searchUsers(@RequestParam String query) {
+        try {
+            if (query == null || query.trim().length() < 2) {
+                ApiResponse<List<User>> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Search query must be at least 2 characters",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            List<User> users = userService.searchUsersByNameOrEmail(query.trim());
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Users found",
+                users
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error searching users: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to search users",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Convert existing user to reviewer role with thematic areas
+     */
+    @PostMapping("/admin/convert-to-reviewer/{userId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<User>> convertToReviewer(
+            @PathVariable Long userId,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            @SuppressWarnings("unchecked")
+            List<String> thematicAreaCodes = (List<String>) payload.get("thematicAreas");
+            
+            if (thematicAreaCodes == null || thematicAreaCodes.isEmpty()) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "At least one thematic area is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Get current user for audit trail
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            // Convert user to reviewer
+            User updatedUser = userService.convertToReviewer(userId, thematicAreaCodes, currentUser.getId());
+            
+            if (updatedUser != null) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "User successfully converted to reviewer",
+                    updatedUser
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "User not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Error converting user to reviewer: {}", e.getMessage(), e);
+            ApiResponse<User> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to convert user to reviewer: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Create new reviewer account and send invitation
+     */
+    @PostMapping("/admin/create-reviewer")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'SUPER_ADMIN_APPROVER')")
+    public ResponseEntity<ApiResponse<User>> createReviewer(@RequestBody Map<String, Object> payload) {
+        try {
+            String name = (String) payload.get("name");
+            String email = (String) payload.get("email");
+            @SuppressWarnings("unchecked")
+            List<String> thematicAreaCodes = (List<String>) payload.get("thematicAreas");
+            
+            if (name == null || name.trim().isEmpty()) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Name is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            if (email == null || email.trim().isEmpty()) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Email is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Validate email format
+            if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Invalid email format",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            if (thematicAreaCodes == null || thematicAreaCodes.isEmpty()) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "At least one thematic area is required",
+                    null
+                );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Check if user already exists
+            if (userService.findByEmail(email).isPresent()) {
+                ApiResponse<User> response = new ApiResponse<>(
+                    HttpStatus.CONFLICT.value(),
+                    "A user with this email already exists",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+            
+            // Get current user for audit trail
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            // Create reviewer account
+            User newReviewer = userService.createReviewer(name, email, thematicAreaCodes, currentUser.getId());
+            
+            ApiResponse<User> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Reviewer created successfully. Invitation email sent.",
+                newReviewer
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+        } catch (Exception e) {
+            logger.error("Error creating reviewer: {}", e.getMessage(), e);
+            ApiResponse<User> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to create reviewer: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }
