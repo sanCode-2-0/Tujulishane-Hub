@@ -1098,13 +1098,9 @@
 					// Create marker element
 					const el = document.createElement("div");
 					el.className = "marker";
-					el.style.backgroundColor = getStatusColor(project.status);
-					el.style.width = "30px";
-					el.style.height = "30px";
-					el.style.borderRadius = "50%";
-					el.style.border = "2px solid white";
+					el.innerHTML = `<i class="fas fa-map-marker-alt" style="font-size: 32px; color: ${getStatusColor(project.status)};"></i>`;
 					el.style.cursor = "pointer";
-					el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+					el.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.3))";
 
 					// Create popup — include location-specific info when available
 					const statusColor =
