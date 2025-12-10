@@ -3,6 +3,18 @@ package com.tujulishanehub.backend.models;
 /**
  * Enum representing the two-tier approval workflow status for projects
  * This supports the specialized SUPER_ADMIN approval process with thematic reviewers
+ * 
+ * STATUS VALUES:
+ * - PENDING_REVIEW: Project submitted, awaiting review by thematic area reviewer (HIDDEN from public)
+ * - UNDER_REVIEW: Project is currently being reviewed by thematic reviewer (HIDDEN from public)
+ * - REVIEWED: Thematic reviewer approved, awaiting final approval (HIDDEN from public)
+ * - PENDING_FINAL_APPROVAL: Ready for final approval by SUPER_ADMIN_APPROVER (HIDDEN from public)
+ * - APPROVED: Final approval granted - VISIBLE to all users
+ * - REJECTED_BY_REVIEWER: Rejected by thematic area reviewer (HIDDEN from public)
+ * - REJECTED_BY_APPROVER: Rejected by final approver (HIDDEN from public)
+ * 
+ * Note: Only APPROVED projects are visible to standard users (non-admins)
+ * MoH admins/reviewers can see all statuses
  */
 public enum ApprovalWorkflowStatus {
     PENDING_REVIEW,             // Project submitted, awaiting review by thematic area reviewer

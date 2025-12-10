@@ -47,8 +47,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/resources/**", "/static/**", "/frontend/**", "/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register", "/api/users/verify-otp", "/api/users/resend-otp").permitAll()  // Public user registration and OTP endpoints
-                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
-                        // Removed hardcoded role restrictions - controllers handle authorization via @PreAuthorize
+                        // Allow public GET access to specific project endpoints only (for guest/unauthenticated viewing)
+                        .requestMatchers(HttpMethod.GET, "/api/projects/thematic-areas", "/api/projects/{id}").permitAll()
+                        // All other /api/projects/** endpoints require authentication and use @PreAuthorize for role-based access
                         .requestMatchers("/api/announcements", "/api/announcements/{id}").permitAll()  // Allow public access to view announcements
                         .requestMatchers("/api/general-announcements", "/api/general-announcements/{id}").permitAll()  // Allow public access to view general announcements
                         .requestMatchers("/api/organizations", "/api/organizations/**").permitAll()  // Allow public access to organizations

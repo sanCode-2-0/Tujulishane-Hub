@@ -98,10 +98,10 @@ public class CollaborationRequestController {
     }
     
     /**
-     * Get my collaboration requests (Partners only)
+     * Get my collaboration requests (Partners and Reviewers)
      */
     @GetMapping("/my-requests")
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasAnyRole('PARTNER', 'DONOR', 'SUPER_ADMIN_REVIEWER')")
     public ResponseEntity<ApiResponse<List<CollaborationRequest>>> getMyCollaborationRequests() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

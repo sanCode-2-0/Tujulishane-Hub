@@ -206,6 +206,7 @@ public class ProjectController {
     
     /**
      * Get all projects with pagination
+     * Filters out rejected/inactive projects for non-admin users
      */
     @GetMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllProjects(
@@ -215,12 +216,27 @@ public class ProjectController {
             @RequestParam(defaultValue = "desc") String sortDir) {
         
         try {
+            // Get current user to determine filtering
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().contains("SUPER_ADMIN"));
+            
             Sort sort = sortDir.equalsIgnoreCase("desc") ? 
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
             
             Pageable pageable = PageRequest.of(page, size, sort);
         Page<Project> projectPage = projectService.getProjects(pageable);
+        
+        // Filter projects based on user role and approval status
         List<ProjectResponse> projectResponses = projectPage.getContent().stream()
+            .filter(project -> {
+                // Admin users see all projects
+                if (isAdmin) {
+                    return true;
+                }
+                // Non-admin users only see approved projects (not rejected or inactive)
+                return project.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED;
+            })
             .map(projectService::toProjectResponse)
             .collect(Collectors.toList());
 
@@ -513,11 +529,34 @@ public class ProjectController {
     
     /**
      * Get projects by status
+     * Role-based: MoH users see all projects, PARTNER/DONOR see only their own
      */
     @GetMapping("/status/{status}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjectsByStatus(@PathVariable String status) {
         try {
-            List<Project> projects = projectService.getProjectsByStatus(status);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            User currentUser = userService.getUserByEmail(userEmail);
+            
+            List<Project> projects;
+            
+            // Check if user is MoH (can see all projects)
+            boolean isMoH = currentUser != null && 
+                (currentUser.getRole() == User.Role.SUPER_ADMIN ||
+                 currentUser.getRole() == User.Role.SUPER_ADMIN_REVIEWER ||
+                 currentUser.getRole() == User.Role.SUPER_ADMIN_APPROVER);
+            
+            if (isMoH) {
+                // MoH users see all projects with this status
+                projects = projectService.getProjectsByStatus(status);
+            } else {
+                // PARTNER/DONOR users see only their own projects with this status
+                List<Project> userProjects = projectService.getProjectsByPartnerEmail(userEmail);
+                projects = userProjects.stream()
+                    .filter(p -> status.equalsIgnoreCase(p.getStatus()))
+                    .collect(java.util.stream.Collectors.toList());
+            }
             
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
@@ -566,12 +605,25 @@ public class ProjectController {
     
     /**
      * Get all projects (for priority projects display)
+     * Filters out rejected/inactive projects for non-admin users
      */
     @GetMapping("/all")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects() {
         try {
+            // Get current user to determine filtering
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().contains("SUPER_ADMIN"));
+            
             List<Project> projects = projectRepository.findAll();
+            
+            // Filter projects based on user role and approval status
+            if (!isAdmin) {
+                projects = projects.stream()
+                    .filter(project -> project.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED)
+                    .collect(Collectors.toList());
+            }
             
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
@@ -679,11 +731,53 @@ public class ProjectController {
     
     /**
      * Get project statistics
+     * Role-based: 
+     * - SUPER_ADMIN: all projects
+     * - SUPER_ADMIN_REVIEWER: projects in their thematic area
+     * - SUPER_ADMIN_APPROVER: projects pending final approval
+     * - PARTNER/DONOR: only their own projects
      */
     @GetMapping("/statistics")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getProjectStatistics() {
         try {
-            ProjectService.ProjectStatistics stats = projectService.getProjectStatistics();
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            User currentUser = userService.getUserByEmail(userEmail);
+            
+            ProjectService.ProjectStatistics stats;
+            
+            if (currentUser != null) {
+                switch (currentUser.getRole()) {
+                    case SUPER_ADMIN:
+                        // SUPER_ADMIN sees all project statistics
+                        stats = projectService.getProjectStatistics();
+                        break;
+                        
+                    case SUPER_ADMIN_REVIEWER:
+                        // SUPER_ADMIN_REVIEWER sees statistics for their thematic area
+                        if (currentUser.getThematicArea() != null) {
+                            stats = projectService.getProjectStatisticsByThematicArea(currentUser.getThematicArea());
+                        } else {
+                            // Reviewer without thematic area sees all (should not happen)
+                            stats = projectService.getProjectStatistics();
+                        }
+                        break;
+                        
+                    case SUPER_ADMIN_APPROVER:
+                        // SUPER_ADMIN_APPROVER sees statistics for projects pending final approval
+                        stats = projectService.getProjectStatisticsForApprover();
+                        break;
+                        
+                    default:
+                        // PARTNER/DONOR users see only their own project statistics
+                        stats = projectService.getProjectStatisticsByPartner(userEmail);
+                        break;
+                }
+            } else {
+                // No user found, return empty statistics
+                stats = projectService.getProjectStatisticsByPartner(userEmail);
+            }
             
             Map<String, Object> data = new HashMap<>();
             data.put("totalProjects", stats.getTotalProjects());
@@ -1132,14 +1226,34 @@ public class ProjectController {
     
     /**
      * Get user's own projects (Authenticated users)
+     * PARTNER/DONOR: Returns projects they created
+     * SUPER_ADMIN_REVIEWER: Returns projects in their thematic area
      */
     @GetMapping("/my-projects")
-    @PreAuthorize("hasRole('PARTNER')")
+    @PreAuthorize("hasAnyRole('PARTNER', 'DONOR', 'SUPER_ADMIN_REVIEWER', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> getMyProjects() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = auth.getName();
-            List<Project> projects = projectService.getProjectsByPartnerEmail(userEmail);
+            User currentUser = userService.getUserByEmail(userEmail);
+            
+            List<Project> projects;
+            
+            if (currentUser != null && currentUser.getRole() == User.Role.SUPER_ADMIN_REVIEWER) {
+                // Reviewers see projects in their thematic area
+                if (currentUser.getThematicArea() != null) {
+                    projects = projectService.getProjectsForReviewer(currentUser.getThematicArea());
+                } else {
+                    // Reviewer without thematic area sees nothing
+                    projects = new java.util.ArrayList<>();
+                }
+            } else if (currentUser != null && currentUser.getRole() == User.Role.SUPER_ADMIN) {
+                // Super admins see all projects
+                projects = projectService.getAllProjects();
+            } else {
+                // PARTNER/DONOR see their own projects
+                projects = projectService.getProjectsByPartnerEmail(userEmail);
+            }
             
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
@@ -1780,35 +1894,81 @@ public class ProjectController {
     
     /**
      * Get project counts summary
+     * Role-based: MoH users see all projects, PARTNER/DONOR users see only their own
      */
     @GetMapping("/counts")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getProjectCounts(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String category) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            User currentUser = userService.getUserByEmail(userEmail);
+            
             Map<String, Object> counts = new HashMap<>();
             
-            // Get total projects count
-            long totalProjects = projectRepository.count();
-            counts.put("total", totalProjects);
+            // Check if user is MoH (can see all counts)
+            boolean isMoH = currentUser != null && 
+                (currentUser.getRole() == User.Role.SUPER_ADMIN ||
+                 currentUser.getRole() == User.Role.SUPER_ADMIN_REVIEWER ||
+                 currentUser.getRole() == User.Role.SUPER_ADMIN_APPROVER);
             
-            // Count by approval status
-            long pendingCount = projectRepository.countByApprovalStatus(ApprovalStatus.PENDING);
-            long approvedCount = projectRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
-            long rejectedCount = projectRepository.countByApprovalStatus(ApprovalStatus.REJECTED);
-            
-            counts.put("pending", pendingCount);
-            counts.put("approved", approvedCount);
-            counts.put("rejected", rejectedCount);
-            counts.put("active", approvedCount); // Active = Approved
-            
-            // Count by category if needed
-            Map<String, Long> categoryCounts = new HashMap<>();
-            for (ProjectCategory cat : ProjectCategory.values()) {
-                long count = projectRepository.countByProjectCategory(cat);
-                categoryCounts.put(cat.name(), count);
+            if (isMoH) {
+                // MoH users see all project counts
+                long totalProjects = projectRepository.count();
+                counts.put("total", totalProjects);
+                
+                // Count by approval status
+                long pendingCount = projectRepository.countByApprovalStatus(ApprovalStatus.PENDING);
+                long approvedCount = projectRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
+                long rejectedCount = projectRepository.countByApprovalStatus(ApprovalStatus.REJECTED);
+                
+                counts.put("pending", pendingCount);
+                counts.put("approved", approvedCount);
+                counts.put("rejected", rejectedCount);
+                counts.put("active", approvedCount);
+                
+                // Count by category
+                Map<String, Long> categoryCounts = new HashMap<>();
+                for (ProjectCategory cat : ProjectCategory.values()) {
+                    long count = projectRepository.countByProjectCategory(cat);
+                    categoryCounts.put(cat.name(), count);
+                }
+                counts.put("byCategory", categoryCounts);
+            } else {
+                // PARTNER/DONOR users see only their own project counts
+                List<Project> userProjects = projectService.getProjectsByPartnerEmail(userEmail);
+                
+                long totalProjects = userProjects.size();
+                counts.put("total", totalProjects);
+                
+                // Count by approval status for user's projects
+                long pendingCount = userProjects.stream()
+                    .filter(p -> p.getApprovalStatus() == ApprovalStatus.PENDING)
+                    .count();
+                long approvedCount = userProjects.stream()
+                    .filter(p -> p.getApprovalStatus() == ApprovalStatus.APPROVED)
+                    .count();
+                long rejectedCount = userProjects.stream()
+                    .filter(p -> p.getApprovalStatus() == ApprovalStatus.REJECTED)
+                    .count();
+                
+                counts.put("pending", pendingCount);
+                counts.put("approved", approvedCount);
+                counts.put("rejected", rejectedCount);
+                counts.put("active", approvedCount);
+                
+                // Count by category for user's projects
+                Map<String, Long> categoryCounts = new HashMap<>();
+                for (ProjectCategory cat : ProjectCategory.values()) {
+                    long count = userProjects.stream()
+                        .filter(p -> p.getProjectCategory() == cat)
+                        .count();
+                    categoryCounts.put(cat.name(), count);
+                }
+                counts.put("byCategory", categoryCounts);
             }
-            counts.put("byCategory", categoryCounts);
             
             ApiResponse<Map<String, Object>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),

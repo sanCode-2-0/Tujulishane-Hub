@@ -1582,7 +1582,13 @@
                             // Fetch and display project statistics
                             async function loadProjectStats() {
                                 try {
-                                    const res = await fetch(`${API_BASE}/projects/statistics`);
+                                    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                                    const res = await fetch(`${API_BASE}/projects/statistics`, {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`,
+                                            'Content-Type': 'application/json'
+                                        }
+                                    });
                                     console.log('[API] GET /projects/statistics response:', res);
                                     if (!res.ok) throw new Error('HTTP ' + res.status);
                                     const data = await res.json();
@@ -1885,7 +1891,13 @@
                                         return;
                                     }
 
-                                    const res = await fetch(`${API_BASE}/projects/status/${status}`);
+                                    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+                                    const res = await fetch(`${API_BASE}/projects/status/${status}`, {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`,
+                                            'Content-Type': 'application/json'
+                                        }
+                                    });
                                     console.log(`[API] GET /projects/status/${status} response:`, res);
                                     if (!res.ok) throw new Error('HTTP ' + res.status);
                                     const data = await res.json();

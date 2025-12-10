@@ -25,8 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -287,6 +290,153 @@ public class ProjectService {
         List<Object[]> countyCounts = projectRepository.countProjectsByCounty();
         long totalProjects = projectRepository.count();
         long projectsWithCoordinates = projectRepository.findProjectsWithCoordinates().size();
+        
+        return new ProjectStatistics(statusCounts, countyCounts, totalProjects, projectsWithCoordinates);
+    }
+    
+    /**
+     * Get project statistics for a specific partner (PARTNER/DONOR users)
+     */
+    public ProjectStatistics getProjectStatisticsByPartner(String partnerEmail) {
+        List<Project> userProjects = getProjectsByPartnerEmail(partnerEmail);
+        
+        // Calculate status counts for user's projects
+        Map<String, Long> statusCountsMap = new HashMap<>();
+        userProjects.forEach(p -> {
+            String status = p.getStatus() != null ? p.getStatus().toLowerCase() : "unknown";
+            statusCountsMap.put(status, statusCountsMap.getOrDefault(status, 0L) + 1);
+        });
+        
+        // Convert to Object[] format expected by ProjectStatistics
+        List<Object[]> statusCounts = new ArrayList<>();
+        statusCountsMap.forEach((status, count) -> {
+            statusCounts.add(new Object[]{status, count});
+        });
+        
+        // Calculate county counts for user's projects
+        Map<String, Long> countyCountsMap = new HashMap<>();
+        userProjects.forEach(p -> {
+            if (p.getLocations() != null) {
+                p.getLocations().forEach(loc -> {
+                    String county = loc.getCounty() != null ? loc.getCounty() : "unknown";
+                    countyCountsMap.put(county, countyCountsMap.getOrDefault(county, 0L) + 1);
+                });
+            }
+        });
+        
+        // Convert to Object[] format
+        List<Object[]> countyCounts = new ArrayList<>();
+        countyCountsMap.forEach((county, count) -> {
+            countyCounts.add(new Object[]{county, count});
+        });
+        
+        long totalProjects = userProjects.size();
+        long projectsWithCoordinates = userProjects.stream()
+            .filter(p -> p.getLocations() != null && p.getLocations().stream()
+                .anyMatch(loc -> loc.getLatitude() != null && loc.getLongitude() != null))
+            .count();
+        
+        return new ProjectStatistics(statusCounts, countyCounts, totalProjects, projectsWithCoordinates);
+    }
+    
+    /**
+     * Get project statistics for a thematic area reviewer (SUPER_ADMIN_REVIEWER)
+     * Shows only projects in their assigned thematic area
+     */
+    public ProjectStatistics getProjectStatisticsByThematicArea(ProjectTheme thematicArea) {
+        // Get all projects matching the thematic area
+        List<Project> thematicProjects = projectRepository.findAll().stream()
+            .filter(project -> {
+                if (project.getThemes() == null || project.getThemes().isEmpty()) {
+                    return false;
+                }
+                return project.getThemes().stream()
+                    .anyMatch(assignment -> assignment.getProjectTheme() == thematicArea);
+            })
+            .collect(Collectors.toList());
+        
+        // Calculate status counts for thematic projects
+        Map<String, Long> statusCountsMap = new HashMap<>();
+        thematicProjects.forEach(p -> {
+            String status = p.getStatus() != null ? p.getStatus().toLowerCase() : "unknown";
+            statusCountsMap.put(status, statusCountsMap.getOrDefault(status, 0L) + 1);
+        });
+        
+        // Convert to Object[] format expected by ProjectStatistics
+        List<Object[]> statusCounts = new ArrayList<>();
+        statusCountsMap.forEach((status, count) -> {
+            statusCounts.add(new Object[]{status, count});
+        });
+        
+        // Calculate county counts for thematic projects
+        Map<String, Long> countyCountsMap = new HashMap<>();
+        thematicProjects.forEach(p -> {
+            if (p.getLocations() != null) {
+                p.getLocations().forEach(loc -> {
+                    String county = loc.getCounty() != null ? loc.getCounty() : "unknown";
+                    countyCountsMap.put(county, countyCountsMap.getOrDefault(county, 0L) + 1);
+                });
+            }
+        });
+        
+        // Convert to Object[] format
+        List<Object[]> countyCounts = new ArrayList<>();
+        countyCountsMap.forEach((county, count) -> {
+            countyCounts.add(new Object[]{county, count});
+        });
+        
+        long totalProjects = thematicProjects.size();
+        long projectsWithCoordinates = thematicProjects.stream()
+            .filter(p -> p.getLocations() != null && p.getLocations().stream()
+                .anyMatch(loc -> loc.getLatitude() != null && loc.getLongitude() != null))
+            .count();
+        
+        return new ProjectStatistics(statusCounts, countyCounts, totalProjects, projectsWithCoordinates);
+    }
+    
+    /**
+     * Get project statistics for final approver (SUPER_ADMIN_APPROVER)
+     * Shows only projects pending final approval or reviewed
+     */
+    public ProjectStatistics getProjectStatisticsForApprover() {
+        // Get all projects awaiting final approval
+        List<Project> approverProjects = getProjectsAwaitingFinalApproval();
+        
+        // Calculate status counts for approver projects
+        Map<String, Long> statusCountsMap = new HashMap<>();
+        approverProjects.forEach(p -> {
+            String status = p.getStatus() != null ? p.getStatus().toLowerCase() : "unknown";
+            statusCountsMap.put(status, statusCountsMap.getOrDefault(status, 0L) + 1);
+        });
+        
+        // Convert to Object[] format expected by ProjectStatistics
+        List<Object[]> statusCounts = new ArrayList<>();
+        statusCountsMap.forEach((status, count) -> {
+            statusCounts.add(new Object[]{status, count});
+        });
+        
+        // Calculate county counts for approver projects
+        Map<String, Long> countyCountsMap = new HashMap<>();
+        approverProjects.forEach(p -> {
+            if (p.getLocations() != null) {
+                p.getLocations().forEach(loc -> {
+                    String county = loc.getCounty() != null ? loc.getCounty() : "unknown";
+                    countyCountsMap.put(county, countyCountsMap.getOrDefault(county, 0L) + 1);
+                });
+            }
+        });
+        
+        // Convert to Object[] format
+        List<Object[]> countyCounts = new ArrayList<>();
+        countyCountsMap.forEach((county, count) -> {
+            countyCounts.add(new Object[]{county, count});
+        });
+        
+        long totalProjects = approverProjects.size();
+        long projectsWithCoordinates = approverProjects.stream()
+            .filter(p -> p.getLocations() != null && p.getLocations().stream()
+                .anyMatch(loc -> loc.getLatitude() != null && loc.getLongitude() != null))
+            .count();
         
         return new ProjectStatistics(statusCounts, countyCounts, totalProjects, projectsWithCoordinates);
     }
