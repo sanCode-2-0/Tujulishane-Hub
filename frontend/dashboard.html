@@ -1698,21 +1698,25 @@
 
 		// Function to update individual tab counters
 		function updateTabCounters() {
-			// Update Projects tab counter
-			const projectsFiltered = getFilteredData('tab-projects', originalData.projects);
-			updateCounterWithAnimation('tab-projects-count', projectsFiltered.length);
+			// Update Projects tab counter - count visible rows directly
+			const projectRows = document.querySelectorAll('#tab-projects tbody tr');
+			const visibleProjects = Array.from(projectRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-projects-count', visibleProjects);
 
 			// Update Users tab counter
-			const usersFiltered = getFilteredData('tab-users', originalData.users);
-			updateCounterWithAnimation('tab-users-count', usersFiltered.length);
+			const userRows = document.querySelectorAll('#tab-users tbody tr');
+			const visibleUsers = Array.from(userRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-users-count', visibleUsers);
 
 			// Update Organizations tab counter
-			const organizationsFiltered = getFilteredData('tab-organizations', originalData.organizations);
-			updateCounterWithAnimation('tab-organizations-count', organizationsFiltered.length);
+			const orgRows = document.querySelectorAll('#tab-organizations tbody tr');
+			const visibleOrgs = Array.from(orgRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-organizations-count', visibleOrgs);
 
 			// Update Past Projects tab counter
-			const pastProjectsFiltered = getFilteredData('tab-pastprojects', originalData.pastProjects);
-			updateCounterWithAnimation('tab-past-projects-count', pastProjectsFiltered.length);
+			const pastProjectRows = document.querySelectorAll('#tab-pastprojects tbody tr');
+			const visiblePastProjects = Array.from(pastProjectRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-past-projects-count', visiblePastProjects);
 		}
 
 		// Function to get filtered data from a table
