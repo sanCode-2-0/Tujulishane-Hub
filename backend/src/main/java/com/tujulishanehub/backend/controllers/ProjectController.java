@@ -1177,15 +1177,23 @@ public class ProjectController {
             // Legacy SUPER_ADMIN can see all projects
             if (reviewer.getRole() == User.Role.SUPER_ADMIN) {
                 projects = projectService.getProjectsByApprovalStatus(com.tujulishanehub.backend.models.ApprovalStatus.PENDING);
-            } else if (reviewer.getThematicArea() != null) {
-                projects = projectService.getProjectsForReviewer(reviewer.getThematicArea());
             } else {
-                ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
-                    HttpStatus.FORBIDDEN.value(),
-                    "Reviewer must have a thematic area assigned",
-                    null
-                );
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                // Check for many-to-many thematic areas (new system)
+                if (reviewer.getThematicAreas() != null && !reviewer.getThematicAreas().isEmpty()) {
+                    // getThematicAreas() already returns List<ProjectTheme>
+                    List<com.tujulishanehub.backend.models.ProjectTheme> thematicAreas = reviewer.getThematicAreas();
+                    projects = projectService.getProjectsForReviewerWithThematicAreas(thematicAreas);
+                } else if (reviewer.getThematicArea() != null) {
+                    // Legacy single thematic area support
+                    projects = projectService.getProjectsForReviewer(reviewer.getThematicArea());
+                } else {
+                    ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
+                        HttpStatus.FORBIDDEN.value(),
+                        "Reviewer must have a thematic area assigned",
+                        null
+                    );
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
             }
             
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
@@ -1247,8 +1255,13 @@ public class ProjectController {
             List<Project> projects;
             
             if (currentUser != null && currentUser.getRole() == User.Role.SUPER_ADMIN_REVIEWER) {
-                // Reviewers see projects in their thematic area
-                if (currentUser.getThematicArea() != null) {
+                // Reviewers see projects in their thematic area(s)
+                if (currentUser.getThematicAreas() != null && !currentUser.getThematicAreas().isEmpty()) {
+                    // getThematicAreas() already returns List<ProjectTheme>
+                    List<com.tujulishanehub.backend.models.ProjectTheme> thematicAreas = currentUser.getThematicAreas();
+                    projects = projectService.getProjectsForReviewerWithThematicAreas(thematicAreas);
+                } else if (currentUser.getThematicArea() != null) {
+                    // Legacy single thematic area support
                     projects = projectService.getProjectsForReviewer(currentUser.getThematicArea());
                 } else {
                     // Reviewer without thematic area sees nothing

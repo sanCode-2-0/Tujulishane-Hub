@@ -1111,6 +1111,32 @@ public class ProjectService {
     }
     
     /**
+     * Get projects for reviewer with multiple thematic areas (many-to-many)
+     */
+    public List<Project> getProjectsForReviewerWithThematicAreas(List<com.tujulishanehub.backend.models.ProjectTheme> thematicAreas) {
+        if (thematicAreas == null || thematicAreas.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+        
+        // Get all projects pending review
+        List<Project> allPendingProjects = projectRepository.findAll().stream()
+            .filter(p -> p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.PENDING_REVIEW ||
+                        p.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.UNDER_REVIEW)
+            .collect(Collectors.toList());
+        
+        // Filter by thematic areas - check if any of the project's themes match any of the reviewer's thematic areas
+        return allPendingProjects.stream()
+            .filter(project -> {
+                if (project.getThemes() == null || project.getThemes().isEmpty()) {
+                    return false;
+                }
+                return project.getThemes().stream()
+                    .anyMatch(assignment -> thematicAreas.contains(assignment.getProjectTheme()));
+            })
+            .collect(Collectors.toList());
+    }
+    
+    /**
      * Get projects that need review by a reviewer (supports multiple thematic areas)
      */
     public List<Project> getProjectsForReviewerUser(com.tujulishanehub.backend.models.User reviewer) {
