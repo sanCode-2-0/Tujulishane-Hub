@@ -562,6 +562,38 @@ public class UserController {
     }
     
     /**
+     * Get available partners for collaboration (Authenticated users only)
+     * Returns all active, approved partners that can be added as collaborators
+     */
+    @GetMapping("/partners/available")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<User>>> getAvailablePartners() {
+        try {
+            List<User> partners = userService.getUsersByRole(User.Role.PARTNER);
+            // Filter to only return active and approved partners
+            List<User> availablePartners = partners.stream()
+                .filter(p -> "ACTIVE".equals(p.getStatus()) && 
+                            ApprovalStatus.APPROVED.equals(p.getApprovalStatus()))
+                .collect(java.util.stream.Collectors.toList());
+            
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Available partners retrieved successfully", 
+                availablePartners
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error retrieving available partners: {}", e.getMessage(), e);
+            ApiResponse<List<User>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to retrieve available partners", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * Get current user profile
      */
     @GetMapping("/profile")
@@ -865,31 +897,6 @@ public class UserController {
             ApiResponse<List<User>> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve donors", 
-                null
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-    
-    /**
-     * Get available partners for linking (approved partners not linked to any donor)
-     */
-    @GetMapping("/partners/available")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_APPROVER') or hasRole('DONOR')")
-    public ResponseEntity<ApiResponse<List<User>>> getAvailablePartners() {
-        try {
-            List<User> availablePartners = userService.getAvailablePartners();
-            ApiResponse<List<User>> response = new ApiResponse<>(
-                HttpStatus.OK.value(), 
-                "Available partners retrieved successfully", 
-                availablePartners
-            );
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error retrieving available partners: {}", e.getMessage(), e);
-            ApiResponse<List<User>> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                "Error retrieving available partners", 
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

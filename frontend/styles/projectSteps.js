@@ -1,5 +1,5 @@
 let currentStep = 1;
-const totalSteps = 6;
+const totalSteps = 7;
 
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
@@ -22,6 +22,7 @@ function showStep(step) {
     "Contact Information",
     "Budget & Objectives",
     "Supporting Documents",
+    "Project Collaborators",
   ];
 
   progressText.textContent = `Step ${step} of ${totalSteps}: ${

@@ -701,9 +701,9 @@
 			<div class="mb-8">
 				<h2 class="text-2xl font-semibold text-blue-900 mb-4">Project Submission Form</h2>
 				<div class="w-full bg-gray-200 rounded-full h-2.5">
-					<div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 16.6%"></div>
+					<div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 14.28%"></div>
 				</div>
-				<p id="progressText" class="text-sm text-gray-600 mt-2">Step 1 of 6: Project Location</p>
+				<p id="progressText" class="text-sm text-gray-600 mt-2">Step 1 of 7: Project Location</p>
 			</div>
 
 			<!-- Form Sections -->
@@ -1153,6 +1153,78 @@
 					</div>
 				</div>
 
+				<!-- Step 7: Collaborators (Optional) -->
+				<div class="form-step hidden" data-step="7">
+					<div class="mb-4">
+						<h2 class="text-xl font-bold text-gray-800 flex items-center">
+							<span
+								class="bg-blue-600 text-white rounded-md w-5 h-5 flex items-center justify-center text-sm font-bold mr-3">7</span>
+							Project Collaborators
+						</h2>
+						<p class="text-sm text-gray-600 mt-1">
+							Add collaborators who will have access to view and edit this project (optional)
+						</p>
+						<hr class="mt-4">
+					</div>
+
+					<!-- Collaborators Selection -->
+					<div class="bg-white rounded-lg border-2 border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-md">
+						<div class="mb-4">
+							<label class="block text-lg font-semibold text-gray-800 mb-2">
+								Select Collaborators
+							</label>
+							<p class="text-sm text-gray-600 mb-4">
+								Choose partners who can collaborate on this project. You can add multiple collaborators.
+							</p>
+
+							<!-- Search/Filter Input -->
+							<div class="mb-4">
+								<input type="text" id="collaboratorSearch" 
+									placeholder="Search by name or email..." 
+									class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+							</div>
+
+							<!-- Loading State -->
+							<div id="collaboratorsLoading" class="text-center py-8 hidden">
+								<i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
+								<p class="mt-3 text-gray-600">Loading available partners...</p>
+							</div>
+
+							<!-- Error State -->
+							<div id="collaboratorsError" class="p-4 bg-red-50 border border-red-200 rounded-lg hidden">
+								<div class="flex items-center">
+									<i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+									<span class="text-red-700 text-sm" id="collaboratorsErrorMessage"></span>
+								</div>
+							</div>
+
+							<!-- Available Collaborators List -->
+							<div id="availableCollaboratorsList" class="space-y-2 max-h-96 overflow-y-auto">
+								<!-- Will be populated dynamically -->
+							</div>
+
+							<!-- Empty State -->
+							<div id="noCollaboratorsMessage" class="text-center py-8 text-gray-500 hidden">
+								<i class="fas fa-users text-4xl mb-2"></i>
+								<p>No available partners found</p>
+							</div>
+						</div>
+
+						<!-- Selected Collaborators -->
+						<div id="selectedCollaboratorsSection" class="mt-6 pt-6 border-t border-gray-200 hidden">
+							<h3 class="text-md font-semibold text-gray-800 mb-3">
+								Selected Collaborators (<span id="selectedCollaboratorsCount">0</span>)
+							</h3>
+							<div id="selectedCollaboratorsList" class="space-y-2">
+								<!-- Will be populated dynamically -->
+							</div>
+						</div>
+					</div>
+
+					<!-- Hidden input to store selected collaborator emails -->
+					<input type="hidden" id="selected_collaborators" name="selected_collaborators" value="[]" />
+				</div>
+
 				<!-- Navigation Buttons -->
 				<div class="flex justify-between mt-10">
 					<button type="button" id="prevBtn"
@@ -1182,6 +1254,7 @@
 			initializeFileUpload();
 			initializeFormProgress();
 			initializeBudgetFormatting();
+			initializeCollaborators();
 		});
 
 		// Map initialization
@@ -2063,10 +2136,182 @@
 			});
 		}
 
+		// Collaborators management
+		let availablePartners = [];
+		let selectedCollaborators = [];
+
+		async function initializeCollaborators() {
+			try {
+				// Show loading state
+				const loadingEl = document.getElementById('collaboratorsLoading');
+				const errorEl = document.getElementById('collaboratorsError');
+				const listEl = document.getElementById('availableCollaboratorsList');
+				
+				loadingEl.classList.remove('hidden');
+				errorEl.classList.add('hidden');
+
+			// Fetch available partners
+			const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+			const response = await fetch(`${window.BASE_URL}/api/auth/partners/available`, {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});				if (!response.ok) {
+					throw new Error(`Failed to load partners: ${response.status} ${response.statusText}`);
+				}
+
+				const data = await response.json();
+				
+				if (data.status === 200 && data.data) {
+					availablePartners = data.data;
+					console.log('✅ Loaded available partners:', availablePartners.length);
+					displayAvailableCollaborators();
+				} else {
+					throw new Error(data.message || 'Failed to load partners');
+				}
+
+				loadingEl.classList.add('hidden');
+			} catch (error) {
+				console.error('❌ Error loading collaborators:', error);
+				
+				// Show error state
+				const loadingEl = document.getElementById('collaboratorsLoading');
+				const errorEl = document.getElementById('collaboratorsError');
+				const errorMessageEl = document.getElementById('collaboratorsErrorMessage');
+				
+				loadingEl.classList.add('hidden');
+				errorEl.classList.remove('hidden');
+				errorMessageEl.textContent = error.message || 'Failed to load available partners. You can skip this step and add collaborators later.';
+			}
+		}
+
+		function displayAvailableCollaborators(searchTerm = '') {
+			const listEl = document.getElementById('availableCollaboratorsList');
+			const noCollaboratorsEl = document.getElementById('noCollaboratorsMessage');
+			
+			// Filter partners by search term
+			const filteredPartners = availablePartners.filter(partner => {
+				const searchLower = searchTerm.toLowerCase();
+				return partner.name.toLowerCase().includes(searchLower) || 
+					   partner.email.toLowerCase().includes(searchLower);
+			});
+
+			// Filter out already selected collaborators
+			const availableToSelect = filteredPartners.filter(partner => 
+				!selectedCollaborators.find(sc => sc.email === partner.email)
+			);
+
+			if (availableToSelect.length === 0) {
+				listEl.classList.add('hidden');
+				noCollaboratorsEl.classList.remove('hidden');
+				return;
+			}
+
+			listEl.classList.remove('hidden');
+			noCollaboratorsEl.classList.add('hidden');
+
+			// Render available collaborators
+			listEl.innerHTML = availableToSelect.map(partner => `
+				<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer"
+					 onclick="selectCollaborator('${partner.email}')">
+					<div class="flex items-center space-x-3">
+						<div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+							${partner.name.charAt(0).toUpperCase()}
+						</div>
+						<div>
+							<p class="text-sm font-medium text-gray-800">${partner.name}</p>
+							<p class="text-xs text-gray-500">${partner.email}</p>
+							${partner.organization ? `<p class="text-xs text-gray-400">${partner.organization.name}</p>` : ''}
+						</div>
+					</div>
+					<button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+						<i class="fas fa-plus mr-1"></i> Add
+					</button>
+				</div>
+			`).join('');
+		}
+
+		function selectCollaborator(email) {
+			const partner = availablePartners.find(p => p.email === email);
+			if (!partner) return;
+
+			// Check if already selected
+			if (selectedCollaborators.find(sc => sc.email === email)) {
+				return;
+			}
+
+			// Add to selected list
+			selectedCollaborators.push(partner);
+			
+			// Update displays
+			displaySelectedCollaborators();
+			displayAvailableCollaborators(document.getElementById('collaboratorSearch').value);
+			updateCollaboratorsFormData();
+		}
+
+		function removeCollaborator(email) {
+			selectedCollaborators = selectedCollaborators.filter(sc => sc.email !== email);
+			displaySelectedCollaborators();
+			displayAvailableCollaborators(document.getElementById('collaboratorSearch').value);
+			updateCollaboratorsFormData();
+		}
+
+		function displaySelectedCollaborators() {
+			const sectionEl = document.getElementById('selectedCollaboratorsSection');
+			const listEl = document.getElementById('selectedCollaboratorsList');
+			const countEl = document.getElementById('selectedCollaboratorsCount');
+
+			if (selectedCollaborators.length === 0) {
+				sectionEl.classList.add('hidden');
+				return;
+			}
+
+			sectionEl.classList.remove('hidden');
+			countEl.textContent = selectedCollaborators.length;
+
+			listEl.innerHTML = selectedCollaborators.map(collab => `
+				<div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+					<div class="flex items-center space-x-3">
+						<div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+							${collab.name.charAt(0).toUpperCase()}
+						</div>
+						<div>
+							<p class="text-sm font-medium text-gray-800">${collab.name}</p>
+							<p class="text-xs text-gray-500">${collab.email}</p>
+							${collab.organization ? `<p class="text-xs text-gray-400">${collab.organization.name}</p>` : ''}
+						</div>
+					</div>
+					<button type="button" onclick="removeCollaborator('${collab.email}')" 
+						class="text-red-500 hover:text-red-700 transition-colors">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			`).join('');
+		}
+
+		function updateCollaboratorsFormData() {
+			const collaboratorEmails = selectedCollaborators.map(c => c.email);
+			document.getElementById('selected_collaborators').value = JSON.stringify(collaboratorEmails);
+		}
+
+		// Search functionality for collaborators
+		document.addEventListener('DOMContentLoaded', function() {
+			const searchInput = document.getElementById('collaboratorSearch');
+			if (searchInput) {
+				searchInput.addEventListener('input', function(e) {
+					displayAvailableCollaborators(e.target.value);
+				});
+			}
+		});
+
+		// Make functions globally available
+		window.selectCollaborator = selectCollaborator;
+		window.removeCollaborator = removeCollaborator;
+
 		// Add event listeners for county/sub-county dropdowns to zoom map
-		document
-			.getElementById("countySelect")
-			.addEventListener("change", function () {
+		const countySelect = document.getElementById("countySelect");
+		if (countySelect) {
+			countySelect.addEventListener("change", function () {
 				const selectedCounty = this.value;
 				if (
 					selectedCounty &&
@@ -2081,10 +2326,11 @@
 					});
 				}
 			});
+		}
 
-		document
-			.getElementById("subCountySelect")
-			.addEventListener("change", function () {
+		const subCountySelect = document.getElementById("subCountySelect");
+		if (subCountySelect) {
+			subCountySelect.addEventListener("change", function () {
 				const selectedSubCounty = this.value;
 				if (
 					selectedSubCounty &&
@@ -2099,10 +2345,11 @@
 					});
 				}
 			});
+		}
 
 		// Form submission
 		document
-			.getElementById("newProjectForm")
+			.getElementById("projectForm")
 			.addEventListener("submit", async function (e) {
 				e.preventDefault();
 
@@ -2251,8 +2498,55 @@
 					console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
 					if (response.ok) {
-						console.log("Project created successfully!");
-						alert("Project created successfully!");
+						console.log("✅ Project created successfully!");
+						
+						// Get the created project data
+						const projectResponse = await response.json();
+						const createdProject = projectResponse.data;
+						
+						// Add collaborators if any were selected
+						if (selectedCollaborators.length > 0 && createdProject && createdProject.id) {
+							console.log(`📝 Adding ${selectedCollaborators.length} collaborators to project ${createdProject.id}...`);
+							
+							// Add each collaborator
+							const collaboratorPromises = selectedCollaborators.map(async (collaborator) => {
+								try {
+									const collabResponse = await fetch(
+										`${window.BASE_URL}/api/projects/${createdProject.id}/collaborators?collaboratorEmail=${encodeURIComponent(collaborator.email)}&role=EDITOR`,
+										{
+											method: 'POST',
+											headers: {
+												'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('accessToken')}`
+											}
+										}
+									);
+									
+									if (!collabResponse.ok) {
+										console.warn(`⚠️ Failed to add collaborator ${collaborator.email}:`, await collabResponse.text());
+										return { success: false, email: collaborator.email };
+									}
+									
+									console.log(`✅ Successfully added collaborator: ${collaborator.email}`);
+									return { success: true, email: collaborator.email };
+								} catch (error) {
+									console.error(`❌ Error adding collaborator ${collaborator.email}:`, error);
+									return { success: false, email: collaborator.email };
+								}
+							});
+							
+							const results = await Promise.all(collaboratorPromises);
+							const failedCollaborators = results.filter(r => !r.success);
+							
+							if (failedCollaborators.length > 0) {
+								console.warn(`⚠️ ${failedCollaborators.length} collaborators could not be added`);
+								alert(`Project created successfully!\n\nNote: ${failedCollaborators.length} out of ${selectedCollaborators.length} collaborators could not be added. You can add them later from the project page.`);
+							} else {
+								alert("Project created successfully with all collaborators!");
+							}
+						} else {
+							alert("Project created successfully!");
+						}
+						
 						window.location.href = "index-post-login.html";
 					} else {
 						let errorMessage = "Unknown error";
