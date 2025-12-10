@@ -58,6 +58,21 @@
     ></script>
     <!-- Modal Utilities -->
     <script src="modal-utils.js"></script>
+    <style>
+      /* Larger popup close button for better accessibility */
+      .mapboxgl-popup-close-button {
+        font-size: 24px !important;
+        width: 32px !important;
+        height: 32px !important;
+        line-height: 32px !important;
+        padding: 0 !important;
+        color: #4b5563 !important;
+      }
+      .mapboxgl-popup-close-button:hover {
+        background-color: #f3f4f6 !important;
+        color: #1f2937 !important;
+      }
+    </style>
   </head>
 
   <body class="bg-gray-50">
@@ -102,34 +117,15 @@
               </p>
               <hr class="mt-4" />
             </div>
-            <!-- Location Selection -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label
-                  for="countySelect"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                  >County</label
-                >
-                <select
-                  id="countySelect"
-                  class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                >
-                  <option value="">All Counties</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  for="subCountySelect"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                  >Sub-County</label
-                >
-                <select
-                  id="subCountySelect"
-                  class="block w-full p-2 mt-1 text-black bg-white border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                >
-                  <option value="">All Sub-Counties</option>
-                </select>
-              </div>
+
+            <!-- Location Search -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Search for Location
+              </label>
+              <p class="text-xs text-gray-500 mb-2">
+                Use the search box below to find and add project locations. You can also click directly on the map.
+              </p>
             </div>
 
             <!-- Map Section -->
@@ -718,8 +714,8 @@
           }
         }
 
-        initializeCountyDropdown("countySelect", "subCountySelect");
         initializeMap();
+        initializeMapSearch();
         initializeThemeSelection();
         initializeFileUpload();
         initializeFormProgress();
@@ -1868,43 +1864,6 @@
           }
         });
       }
-
-      // Add event listeners for county/sub-county dropdowns to zoom map
-      document
-        .getElementById("countySelect")
-        .addEventListener("change", function () {
-          const selectedCounty = this.value;
-          if (
-            selectedCounty &&
-            window.countyCoordinates &&
-            window.countyCoordinates[selectedCounty] &&
-            map
-          ) {
-            const [lng, lat] = window.countyCoordinates[selectedCounty];
-            map.flyTo({
-              center: [lng, lat],
-              zoom: 9,
-            });
-          }
-        });
-
-      document
-        .getElementById("subCountySelect")
-        .addEventListener("change", function () {
-          const selectedSubCounty = this.value;
-          if (
-            selectedSubCounty &&
-            window.subCountyCoordinates &&
-            window.subCountyCoordinates[selectedSubCounty] &&
-            map
-          ) {
-            const [lng, lat] = window.subCountyCoordinates[selectedSubCounty];
-            map.flyTo({
-              center: [lng, lat],
-              zoom: 11,
-            });
-          }
-        });
 
       // Form submission
       document

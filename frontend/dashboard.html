@@ -1319,6 +1319,98 @@
 						</div>
 					</div>
 
+
+					<div id="tab-collaborators" class="tab-section" style="display:none;">
+						<!-- Individual Tab Counter -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Total Project Collaborators</p>
+									<p id="tab-collaborators-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">groups</span>
+							</div>
+						</div>
+
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">Project Collaborators</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">User Name</th>
+											<th class="px-6 py-3">Project Title</th>
+											<th class="px-6 py-3">Organization</th>
+											<th class="px-6 py-3">Role</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Added At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<!-- Filters -->
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter User Name"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="0"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="1"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Organization"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="2"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Role"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="3"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="4"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="5"></th>
+											<th></th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<!-- Empty state will be shown when no data -->
+										<tr id="collaborators-empty-state" style="display:none;">
+											<td colspan="7" class="px-6 py-12 text-center">
+												<div class="flex flex-col items-center justify-center">
+													<span class="material-symbols-outlined text-gray-300 text-6xl mb-4">group_off</span>
+													<p class="text-gray-500 text-lg font-medium">No Collaborators Found</p>
+													<p class="text-gray-400 text-sm mt-2">There are currently no project collaborators in the system.</p>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
 				</div>
 			</main>
 		</div>
@@ -1550,10 +1642,74 @@
 			data.forEach(item => {
 				const row = document.createElement('tr');
 				row.className = 'bg-white dark:bg-gray-900/50 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50';
-				columns.forEach(col => {
+				columns.forEach((col, index) => {
 					const td = document.createElement('td');
 					td.className = 'px-6 py-4';
 					let value = getNestedValue(item, col) || '';
+					
+					// Special handling for collaborators table
+					if (tabId === 'tab-collaborators') {
+						if (col === 'user.name') {
+							// Add user name with avatar
+							const userName = value || 'Unknown User';
+							const userEmail = getNestedValue(item, 'user.email') || '';
+							const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+							td.innerHTML = `
+								<div class="flex items-center gap-3">
+									<div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold">
+										${initials}
+									</div>
+									<div>
+										<div class="font-medium text-gray-900">${userName}</div>
+										<div class="text-xs text-gray-500">${userEmail}</div>
+									</div>
+								</div>
+							`;
+							row.appendChild(td);
+							return;
+						} else if (col === 'project.title') {
+							// Add project title with link
+							const projectTitle = value || 'Unknown Project';
+							const projectId = getNestedValue(item, 'project.id');
+							if (projectId) {
+								td.innerHTML = `
+									<a href="projects.html?id=${projectId}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">
+										${projectTitle}
+									</a>
+								`;
+							} else {
+								td.textContent = projectTitle;
+							}
+							row.appendChild(td);
+							return;
+						} else if (col === 'organization.name') {
+							const orgName = value || 'N/A';
+							td.textContent = orgName;
+							row.appendChild(td);
+							return;
+						} else if (col === 'role') {
+							// Format role with badge
+							const roleColors = {
+								'VIEWER': 'bg-blue-100 text-blue-800',
+								'EDITOR': 'bg-green-100 text-green-800',
+								'CO_OWNER': 'bg-purple-100 text-purple-800'
+							};
+							const colorClass = roleColors[value] || 'bg-gray-100 text-gray-800';
+							td.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-semibold ${colorClass}">${value}</span>`;
+							row.appendChild(td);
+							return;
+						} else if (col === 'isActive') {
+							// Format active status with badge
+							const isActive = value === true || value === 'true';
+							const badge = isActive 
+								? '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Active</span>'
+								: '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Inactive</span>';
+							td.innerHTML = badge;
+							row.appendChild(td);
+							return;
+						}
+					}
+					
 					// Format dates
 					if ((col.includes('Date') || col.includes('At')) && value) {
 						const date = new Date(value);
@@ -1576,9 +1732,28 @@
 					td.textContent = value;
 					row.appendChild(td);
 				});
+				
+				// Add action buttons
 				const actionTd = document.createElement('td');
 				actionTd.className = 'px-6 py-4 text-right';
-				actionTd.innerHTML = '';
+				
+				if (tabId === 'tab-collaborators') {
+					const projectId = getNestedValue(item, 'project.id');
+					const userId = getNestedValue(item, 'user.id');
+					actionTd.innerHTML = `
+						<div class="flex items-center justify-end gap-2">
+							${projectId ? `<a href="projects.html?id=${projectId}" class="text-blue-600 hover:text-blue-800" title="View Project">
+								<span class="material-symbols-outlined text-lg">visibility</span>
+							</a>` : ''}
+							${userId ? `<a href="profile.html?id=${userId}" class="text-green-600 hover:text-green-800" title="View User Profile">
+								<span class="material-symbols-outlined text-lg">person</span>
+							</a>` : ''}
+						</div>
+					`;
+				} else {
+					actionTd.innerHTML = '';
+				}
+				
 				row.appendChild(actionTd);
 				tbody.appendChild(row);
 			});
@@ -2417,28 +2592,60 @@
 					console.error('Project collaborators data not array:', collaborators);
 					return;
 				}
-				// Store original data for filtering
-				originalData.collaborators = [...collaborators];
-				renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
-				// Add column-wise search functionality
-				const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
-				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
-				});
-				function filterTable() {
-					const rows = document.querySelectorAll('#tab-collaborators tbody tr');
-					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
-					rows.forEach(row => {
-						const cells = row.querySelectorAll('td');
-						let show = true;
-						filters.forEach((filter, index) => {
-							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
-								show = false;
-							}
-						});
-						row.style.display = show ? '' : 'none';
-					});
+				
+				// Update the counter
+				const counterEl = document.getElementById('tab-collaborators-count');
+				if (counterEl) {
+					counterEl.textContent = collaborators.length;
 				}
+				
+				// Handle empty state
+				const emptyState = document.getElementById('collaborators-empty-state');
+				const tbody = document.querySelector('#tab-collaborators tbody');
+				
+				if (collaborators.length === 0) {
+					if (emptyState) {
+						emptyState.style.display = '';
+					}
+				} else {
+					if (emptyState) {
+						emptyState.style.display = 'none';
+					}
+					
+					// Store original data for filtering
+					originalData.collaborators = [...collaborators];
+					renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
+					
+					// Add column-wise search functionality
+					const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
+					filterInputs.forEach(input => {
+						input.addEventListener('input', filterTable);
+					});
+					
+					function filterTable() {
+						const rows = document.querySelectorAll('#tab-collaborators tbody tr:not(#collaborators-empty-state)');
+						const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+						let visibleCount = 0;
+						
+						rows.forEach(row => {
+							const cells = row.querySelectorAll('td');
+							let show = true;
+							filters.forEach((filter, index) => {
+								if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+									show = false;
+								}
+							});
+							row.style.display = show ? '' : 'none';
+							if (show) visibleCount++;
+						});
+						
+						// Show/hide empty state based on filtered results
+						if (emptyState) {
+							emptyState.style.display = visibleCount === 0 ? '' : 'none';
+						}
+					}
+				}
+				
 				// Add export functionality
 				const exportBtn = document.querySelector('#tab-collaborators button');
 				if (exportBtn) {
@@ -2446,9 +2653,10 @@
 						exportTableToCSV('projectcollaborators.csv');
 					});
 				}
+				
 				function exportTableToCSV(filename) {
 					const headers = ['User', 'Project', 'Organization', 'Role', 'Status', 'Date Added'];
-					const rows = document.querySelectorAll('#tab-collaborators tbody tr:not([style*="display: none"])');
+					const rows = document.querySelectorAll('#tab-collaborators tbody tr:not([style*="display: none"]):not(#collaborators-empty-state)');
 					let csv = headers.join(',') + '\n';
 					rows.forEach(row => {
 						const cells = row.querySelectorAll('td');
@@ -2465,6 +2673,15 @@
 				}
 			} catch (error) {
 				console.error('Error fetching project collaborators:', error);
+				// Show error state
+				const counterEl = document.getElementById('tab-collaborators-count');
+				if (counterEl) {
+					counterEl.textContent = '0';
+				}
+				const emptyState = document.getElementById('collaborators-empty-state');
+				if (emptyState) {
+					emptyState.style.display = '';
+				}
 			}
 		}
 

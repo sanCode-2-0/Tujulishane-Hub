@@ -2428,6 +2428,59 @@
                                 showAlert('Submit report for project ' + id, 'Submit Report', 'info');
                             }
 
+                            // Function to auto-fill search based on URL parameter
+                            async function autoFillSearchFromURL() {
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const projectId = urlParams.get('id');
+                                
+                                if (!projectId) return;
+                                
+                                try {
+                                    // Fetch project details
+                                    const token = localStorage.getItem('accessToken');
+                                    const headers = {
+                                        'Authorization': `Bearer ${token}`,
+                                        'Content-Type': 'application/json'
+                                    };
+                                    
+                                    const response = await fetch(`${API_BASE}/projects/${projectId}`, {
+                                        headers: headers
+                                    });
+                                    
+                                    if (!response.ok) {
+                                        console.warn('Failed to fetch project details for auto-fill');
+                                        return;
+                                    }
+                                    
+                                    const data = await response.json();
+                                    const project = data.data || data;
+                                    
+                                    if (project && project.title) {
+                                        // Fill all search input fields with project title
+                                        const searchInputs = [
+                                            'project-search-active',
+                                            'project-search-pending',
+                                            'project-search-stalled',
+                                            'project-search-completed'
+                                        ];
+                                        
+                                        searchInputs.forEach(inputId => {
+                                            const input = document.getElementById(inputId);
+                                            if (input) {
+                                                input.value = project.title;
+                                                // Trigger filter for each table
+                                                const tbodyId = inputId.replace('project-search-', 'tbody-');
+                                                filterProjectTables(tbodyId);
+                                            }
+                                        });
+                                        
+                                        console.log(`Auto-filled search with project: ${project.title}`);
+                                    }
+                                } catch (error) {
+                                    console.error('Error auto-filling search:', error);
+                                }
+                            }
+
                             // On page load: choose between global view and "My Projects" view
                             document.addEventListener('DOMContentLoaded', () => {
                                 const userRole = localStorage.getItem('userRole');
@@ -2497,6 +2550,11 @@
                                 }
 
                                 refreshProjectTables();
+                                
+                                // Auto-fill search after a short delay to ensure tables are loaded
+                                setTimeout(() => {
+                                    autoFillSearchFromURL();
+                                }, 1000);
                             });
 
                             // React to hash changes so linking to #my-projects works without reload
