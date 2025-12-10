@@ -27,6 +27,8 @@
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Session Configuration -->
+    <script src="./session-config.js"></script>
     <!-- Modal Utilities -->
     <script src="./modal-utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -119,8 +121,28 @@
                             <h2 class="text-sm uppercase text-left font-normal opacity-70 text-gray-700">
                                 Log in to your account
                             </h2>
+                            
+                            <!-- Session Expiration Message -->
+                            <div id="sessionMessage" class="hidden p-3 rounded-md text-sm">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle mr-2 mt-0.5"></i>
+                                    <span id="sessionMessageText"></span>
+                                </div>
+                            </div>
+                            
                             <input id="loginEmail" type="email" required placeholder="Email"
                                 class="w-full px-4 py-2 border text-sm rounded-md focus:ring-2 focus:ring-blue-500">
+                            
+                            <!-- Remember Me Checkbox -->
+                            <div class="flex items-center">
+                                <input id="rememberMe" type="checkbox" 
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="rememberMe" class="ml-2 text-sm text-gray-700 cursor-pointer">
+                                    Remember me for 30 days
+                                    <span class="text-xs text-gray-500 block">Keep me logged in on this device</span>
+                                </label>
+                            </div>
+                            
                             <div class="flex w-full">
                                 <button type="button" onclick="requestOtp()" id="loginBtn"
                                     class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
@@ -541,6 +563,11 @@
                 return;
             }
 
+            // Save Remember Me preference
+            const rememberMe = document.getElementById("rememberMe").checked;
+            localStorage.setItem("rememberMe", rememberMe.toString());
+            console.log("Remember Me preference saved:", rememberMe);
+
             // Show loading state
             const btn = document.getElementById("loginBtn");
             const btnText = document.getElementById("loginBtnText");
@@ -658,6 +685,30 @@
             }
         }
 
+    </script>
+    
+    <!-- Session Expiration Message Display -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for session expiration message
+            const sessionExpiredMessage = sessionStorage.getItem('sessionExpiredMessage');
+            const logoutMessage = sessionStorage.getItem('logoutMessage');
+            
+            const messageContainer = document.getElementById('sessionMessage');
+            const messageText = document.getElementById('sessionMessageText');
+            
+            if (sessionExpiredMessage) {
+                messageContainer.classList.remove('hidden', 'bg-blue-50', 'text-blue-800', 'border-blue-200');
+                messageContainer.classList.add('bg-amber-50', 'text-amber-800', 'border', 'border-amber-200');
+                messageText.textContent = sessionExpiredMessage;
+                sessionStorage.removeItem('sessionExpiredMessage');
+            } else if (logoutMessage) {
+                messageContainer.classList.remove('hidden', 'bg-amber-50', 'text-amber-800');
+                messageContainer.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
+                messageText.textContent = logoutMessage;
+                sessionStorage.removeItem('logoutMessage');
+            }
+        });
     </script>
 
 

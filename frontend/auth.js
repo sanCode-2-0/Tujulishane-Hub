@@ -36,12 +36,19 @@ class AuthManager {
   /**
    * Store JWT token
    * @param {string} token - JWT token to store
+   * @param {boolean} rememberMe - Whether to enable Remember Me
    */
-  setToken(token) {
+  setToken(token, rememberMe = false) {
     console.log("[auth.js] setToken: storing token", token);
     localStorage.setItem(this.tokenKey, token);
     const stored = localStorage.getItem(this.tokenKey);
     console.log("[auth.js] setToken: token in localStorage now =", stored);
+    
+    // Initialize session manager if available
+    if (window.sessionManager) {
+      window.sessionManager.extendSession(rememberMe);
+      window.sessionManager.init();
+    }
   }
 
   /**
@@ -50,6 +57,19 @@ class AuthManager {
   removeToken() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
+    
+    // Clean up session data if SESSION_CONFIG is available
+    if (window.SESSION_CONFIG) {
+      localStorage.removeItem(window.SESSION_CONFIG.KEYS.LOGIN_TIME);
+      localStorage.removeItem(window.SESSION_CONFIG.KEYS.LAST_ACTIVITY);
+      localStorage.removeItem(window.SESSION_CONFIG.KEYS.SESSION_TIMEOUT);
+      localStorage.removeItem(window.SESSION_CONFIG.KEYS.REMEMBER_ME);
+    }
+    
+    // Clean up session manager if available
+    if (window.sessionManager) {
+      window.sessionManager.cleanup();
+    }
   }
 
   /**
@@ -180,30 +200,37 @@ class AuthManager {
           const errorText = await response.clone().text();
           console.log(`[auth.js] apiCall: Error response body:`, errorText);
           // Attach the raw error text to the Response object
-          response.errorText = errorText;
-        } catch (e) {
-          console.log("[auth.js] apiCall: Could not read error response body");
-        }
-      }
-
-      return response;
-    } catch (error) {
-      console.error("[auth.js] apiCall: Network or other error:", error);
-      throw error;
-    }
-  }
-
   /**
    * Logout user and clear session data
+   * @param {string} message - Optional logout message
    */
-  logout() {
+  logout(message = null) {
+    // Store logout message in sessionStorage if provided
+    if (message) {
+      sessionStorage.setItem('logoutMessage', message);
+    }
+    
     this.removeToken();
+    
     // Redirect to frontend index in a way that works when the site is served
     // from a repo subpath (e.g. GitHub Pages: /<owner>/<repo>/frontend)
     const frontendSegment = "/frontend";
     const pathname = window.location.pathname;
     const idx = pathname.indexOf(frontendSegment);
     if (idx !== -1) {
+      // build origin + up to /frontend then append index.html
+      window.location.href =
+        window.location.origin +
+        pathname.slice(0, idx + frontendSegment.length) +
+        "/index.html";
+    } else {
+      // fallback: go to index.html in the current directory (or site root)
+      const baseDir = pathname.endsWith("/")
+        ? pathname
+        : pathname.substring(0, pathname.lastIndexOf("/") + 1);
+      window.location.href = window.location.origin + baseDir + "index.html";
+    }
+  } if (idx !== -1) {
       // build origin + up to /frontend then append index.html
       window.location.href =
         window.location.origin +

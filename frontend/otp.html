@@ -8,6 +8,8 @@
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <!-- Session Configuration -->
+    <script src="./session-config.js"></script>
 
     <!-- Tailwind CDN for quick demo (replace with your compiled Tailwind in production) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -217,9 +219,13 @@
             throw new Error(data.message || "OTP verification failed");
           }
 
-          // Store the real JWT
+          // Get Remember Me preference from localStorage
+          const rememberMe = localStorage.getItem("rememberMe") === "true";
+          console.log("Remember Me preference:", rememberMe);
+
+          // Store the real JWT with Remember Me preference
           if (window.authManager && window.authManager.setToken) {
-            window.authManager.setToken(data.data.token);
+            window.authManager.setToken(data.data.token, rememberMe);
             try {
               await window.authManager.getCurrentUser();
             } catch (e) {
@@ -227,10 +233,18 @@
             }
           } else {
             localStorage.setItem("accessToken", data.data.token);
+            // Set login time for session management
+            if (window.SESSION_CONFIG) {
+              localStorage.setItem(window.SESSION_CONFIG.KEYS.LOGIN_TIME, Date.now().toString());
+              localStorage.setItem(window.SESSION_CONFIG.KEYS.REMEMBER_ME, rememberMe.toString());
+            }
           }
 
+          // Clean up temporary storage
           localStorage.removeItem("isLogin");
           localStorage.removeItem("pendingEmail");
+          localStorage.removeItem("rememberMe");
+          
           showMessage("Login successful! Redirecting...", "success");
           setTimeout(() => {
             window.location.href = "index-post-login.html";
