@@ -13,6 +13,7 @@ import com.tujulishanehub.backend.payload.ProjectResponse;
 import com.tujulishanehub.backend.payload.ApiResponse;
 import com.tujulishanehub.backend.models.Project;
 import com.tujulishanehub.backend.models.PastProject;
+import com.tujulishanehub.backend.models.ProjectLocation;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.models.ApprovalStatus;
 import com.tujulishanehub.backend.models.ProjectCategory;
@@ -48,10 +49,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Arrays;
 
@@ -327,7 +331,7 @@ public class ProjectController {
             
             if (project.isPresent()) {
                 ApiResponse<ProjectResponse> response = new ApiResponse<>(
-                    HttpStatus.OK.value(), 
+                    HttpStatus.OK.value(),
                     "Project found", 
                     projectService.toProjectResponse(project.get())
                 );
@@ -346,6 +350,70 @@ public class ProjectController {
             ApiResponse<ProjectResponse> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "Failed to retrieve project: " + e.getMessage(), 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get public statistics (no authentication required)
+     */
+    @GetMapping("/public/statistics")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getPublicStatistics() {
+        try {
+            Map<String, Object> stats = new HashMap<>();
+            
+            // Get total approved projects count
+            long totalProjects = projectRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
+            stats.put("totalProjects", totalProjects);
+            
+            // Get unique counties count
+            List<Project> approvedProjects = projectRepository.findByApprovalStatus(ApprovalStatus.APPROVED);
+            Set<String> uniqueCounties = new HashSet<>();
+            for (Project project : approvedProjects) {
+                if (project.getLocations() != null && !project.getLocations().isEmpty()) {
+                    for (ProjectLocation location : project.getLocations()) {
+                        if (location.getCounty() != null && !location.getCounty().trim().isEmpty()) {
+                            uniqueCounties.add(location.getCounty());
+                        }
+                    }
+                }
+            }
+            stats.put("totalCounties", uniqueCounties.size());
+            
+            // Get unique partners/stakeholders count  
+            Set<String> uniquePartners = new HashSet<>();
+            for (Project project : approvedProjects) {
+                if (project.getPartner() != null && !project.getPartner().trim().isEmpty()) {
+                    uniquePartners.add(project.getPartner());
+                }
+            }
+            stats.put("totalStakeholders", uniquePartners.size());
+            
+            // Get counts by category (manual count from approved projects)
+            Map<String, Long> categoryCount = new HashMap<>();
+            for (ProjectCategory category : ProjectCategory.values()) {
+                long count = approvedProjects.stream()
+                    .filter(p -> p.getProjectCategory() == category)
+                    .count();
+                categoryCount.put(category.name(), count);
+            }
+            stats.put("byCategory", categoryCount);
+            
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Public statistics retrieved successfully",
+                stats
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving public statistics: {}", e.getMessage(), e);
+            ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve statistics: " + e.getMessage(),
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

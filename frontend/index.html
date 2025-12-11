@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="styles/main.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
         integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
@@ -154,7 +153,7 @@
                                     <i class="fad fa-tasks text-lg lg:text-2xl"></i>
                                     <div class="mt-2">
                                         <span id="totalProjectsCount" class="font-bold tracking-wider">
-                                            8
+                                            0
                                         </span>
                                         <span class="font-thin">Projects</span>
                                     </div>
@@ -162,14 +161,14 @@
                                 <div class="flex flex-col items-center w-1/2 sm:w-auto">
                                     <i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
                                     <div class="mt-2">
-                                        <span id="totalCountiesCount" class="font-bold tracking-wider">7</span>
+                                        <span id="totalCountiesCount" class="font-bold tracking-wider">0</span>
                                         <span class="font-thin">Counties</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-center w-1/2 sm:w-auto">
                                     <i class="fad fa-handshake text-lg lg:text-2xl"></i>
                                     <div class="mt-2">
-                                        <span id="totalStakeholdersCount" class="font-bold tracking-wider">10</span>
+                                        <span id="totalStakeholdersCount" class="font-bold tracking-wider">0</span>
                                         <span class="font-thin">Stakeholders</span>
                                     </div>
                                 </div>
@@ -502,6 +501,84 @@
     <script src="styles/effects.js"></script>
     <script src="styles/loadNavg.js"></script>
     <script src="styles/authnav.js"></script>
+
+    <!-- Load Real Statistics -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Fetch project statistics from public endpoint (no authentication required)
+                const statsResponse = await fetch(`${window.BASE_URL}/api/projects/public/statistics`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    const stats = statsData.data || {};
+                    
+                    // Update total projects count
+                    const projectsCountElement = document.getElementById('totalProjectsCount');
+                    if (projectsCountElement) {
+                        animateCounter(projectsCountElement, stats.totalProjects || 0);
+                    }
+                    
+                    // Update counties count
+                    const countiesCountElement = document.getElementById('totalCountiesCount');
+                    if (countiesCountElement) {
+                        animateCounter(countiesCountElement, stats.totalCounties || 0);
+                    }
+                    
+                    // Update stakeholders count
+                    const stakeholdersCountElement = document.getElementById('totalStakeholdersCount');
+                    if (stakeholdersCountElement) {
+                        animateCounter(stakeholdersCountElement, stats.totalStakeholders || 0);
+                    }
+                    
+                    console.log('📊 Statistics loaded:', stats);
+                } else {
+                    console.warn('⚠️ Failed to fetch project statistics:', statsResponse.status);
+                    // Set dash on error
+                    document.getElementById('totalProjectsCount').textContent = '—';
+                    document.getElementById('totalCountiesCount').textContent = '—';
+                    document.getElementById('totalStakeholdersCount').textContent = '—';
+                }
+            } catch (error) {
+                console.error('❌ Error loading statistics:', error);
+                // Set dash on error
+                document.getElementById('totalProjectsCount').textContent = '—';
+                document.getElementById('totalCountiesCount').textContent = '—';
+                document.getElementById('totalStakeholdersCount').textContent = '—';
+            }
+        });
+        
+        // Animate counter from 0 to target value
+        function animateCounter(element, targetValue) {
+            const duration = 1500; // 1.5 seconds
+            const startValue = 0;
+            const startTime = performance.now();
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function (easeOutCubic)
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * easeProgress);
+                element.textContent = currentValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = targetValue;
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+    </script>
 
 </body>
 

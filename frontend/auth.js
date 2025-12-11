@@ -200,6 +200,18 @@ class AuthManager {
           const errorText = await response.clone().text();
           console.log(`[auth.js] apiCall: Error response body:`, errorText);
           // Attach the raw error text to the Response object
+        } catch (parseError) {
+          console.warn("[auth.js] apiCall: Could not read error response body:", parseError);
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error("[auth.js] apiCall: Network or fetch error:", error);
+      throw error;
+    }
+  }
+
   /**
    * Logout user and clear session data
    * @param {string} message - Optional logout message
@@ -218,19 +230,6 @@ class AuthManager {
     const pathname = window.location.pathname;
     const idx = pathname.indexOf(frontendSegment);
     if (idx !== -1) {
-      // build origin + up to /frontend then append index.html
-      window.location.href =
-        window.location.origin +
-        pathname.slice(0, idx + frontendSegment.length) +
-        "/index.html";
-    } else {
-      // fallback: go to index.html in the current directory (or site root)
-      const baseDir = pathname.endsWith("/")
-        ? pathname
-        : pathname.substring(0, pathname.lastIndexOf("/") + 1);
-      window.location.href = window.location.origin + baseDir + "index.html";
-    }
-  } if (idx !== -1) {
       // build origin + up to /frontend then append index.html
       window.location.href =
         window.location.origin +
