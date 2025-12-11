@@ -37,16 +37,16 @@ public class Project {
     private String title;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "project_category")
+    @Column(name = "project_category", nullable = false)
     private ProjectCategory projectCategory;
     
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
     @Column(name = "end_date")
     private LocalDate endDate;
     
-    @Column(name = "activity_type")
+    @Column(name = "activity_type", nullable = false, columnDefinition = "TEXT")
     private String activityType;
     
     @Column
@@ -64,19 +64,19 @@ public class Project {
     @EqualsAndHashCode.Exclude
     private Set<ProjectLocation> locations = new HashSet<>();
     
-    @Column(name = "contact_person_name")
+    @Column(name = "contact_person_name", nullable = false)
     private String contactPersonName;
     
-    @Column(name = "contact_person_role")
+    @Column(name = "contact_person_role", nullable = false)
     private String contactPersonRole;
     
     @Column(name = "contact_person_email")
     private String contactPersonEmail;
     
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String objectives;
     
-    @Column(precision = 15, scale = 2)
+    @Column(precision = 15, scale = 2, nullable = false)
     private java.math.BigDecimal budget;
     
         // Supporting documents (files as blobs) - LAZY loading to avoid performance issues

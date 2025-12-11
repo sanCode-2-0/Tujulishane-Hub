@@ -38,7 +38,10 @@ public class ProjectLocation {
     private String mapsAddress;
 
     // Geographic coordinates
+    @Column(nullable = false)
     private Double latitude;
+    
+    @Column(nullable = false)
     private Double longitude;
 
     @Column(name = "created_at", updatable = false)

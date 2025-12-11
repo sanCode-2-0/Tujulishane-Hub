@@ -38,6 +38,8 @@
 	<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Form Validation Script -->
+	<script src="src/utils/form-validation.js"></script>
 	<style>
 		/* Larger popup close button for better accessibility */
 		.mapboxgl-popup-close-button {
@@ -816,7 +818,8 @@
 					<div class="mb-6">
 						<label for="title" class="block text-sm font-medium text-gray-700">Project Title
 							*</label>
-						<input required type="text" id="title" name="title"
+						<input required type="text" id="title" name="title" minlength="5" maxlength="200"
+							placeholder="Enter a descriptive project title"
 							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
 					</div>
 
@@ -841,7 +844,8 @@
 						<label for="activity_type" class="block text-sm font-medium text-gray-700">Activity Type
 							(Description)
 							*</label>
-						<textarea required id="activity_type" name="activity_type" rows="3"
+						<textarea required id="activity_type" name="activity_type" rows="3" minlength="10" maxlength="1000"
+							placeholder="Describe the type of activities this project will undertake"
 							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
 					</div>
 				</div>
@@ -1065,16 +1069,17 @@
 					</div>
 					<div>
 						<label for="budget" class="block text-sm font-medium text-gray-700">Amount *</label>
-						<input required type="text" id="budget" name="budget" placeholder="1,000,000"
+						<input required type="text" id="budget" name="budget" placeholder="1,000,000" min="0.01"
 							class="block w-full p-2 mt-1 numbers-only text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
 					</div>
-
 					<!-- Objectives -->
 					<div>
 						<label for="objectives" class="block text-sm font-medium text-gray-700">Project
 							Objectives *</label>
-						<textarea required id="objectives" name="objectives" rows="3"
+						<textarea required id="objectives" name="objectives" rows="3" minlength="20" maxlength="2000"
+							placeholder="Describe the main objectives and expected outcomes of this project"
 							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+					</div>s="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
 					</div>
 				</div>
 
@@ -1255,6 +1260,7 @@
 			initializeFormProgress();
 			initializeBudgetFormatting();
 			initializeCollaborators();
+			initializeRealTimeValidation();
 		});
 
 		// Map initialization
@@ -2308,6 +2314,46 @@
 		window.selectCollaborator = selectCollaborator;
 		window.removeCollaborator = removeCollaborator;
 
+		// Initialize real-time validation
+		function initializeRealTimeValidation() {
+			const validator = new FormValidator('projectForm');
+			
+			// Add real-time validation for all input fields
+			const formFields = document.querySelectorAll('#projectForm input, #projectForm textarea, #projectForm select');
+			
+			formFields.forEach(field => {
+				// Validate on blur (when user leaves field)
+				field.addEventListener('blur', function() {
+					validator.validateField(this);
+				});
+				
+				// Clear error on focus (when user enters field)
+				field.addEventListener('focus', function() {
+					validator.clearFieldError(this);
+				});
+			});
+			
+			// Validate date range when dates change
+			const startDateInput = document.getElementById('starttime_period');
+			const endDateInput = document.getElementById('endtime_period');
+			
+			if (startDateInput && endDateInput) {
+				startDateInput.addEventListener('change', () => validator.validateDateRange());
+				endDateInput.addEventListener('change', () => validator.validateDateRange());
+			}
+			
+			// Validate budget and currency together
+			const budgetInput = document.getElementById('budget');
+			const currencySelect = document.getElementById('currency');
+			
+			if (budgetInput && currencySelect) {
+				budgetInput.addEventListener('blur', () => validator.validateBudget());
+				currencySelect.addEventListener('change', () => validator.validateBudget());
+			}
+			
+			console.log('✅ Real-time validation initialized');
+		}
+
 		// Add event listeners for county/sub-county dropdowns to zoom map
 		const countySelect = document.getElementById("countySelect");
 		if (countySelect) {
@@ -2352,6 +2398,22 @@
 			.getElementById("projectForm")
 			.addEventListener("submit", async function (e) {
 				e.preventDefault();
+
+				// Initialize form validator
+				const validator = new FormValidator('projectForm');
+				
+				// Validate all fields before submission
+				console.log("🔍 Running form validation...");
+				const isValid = validator.validateAll();
+				
+				if (!isValid) {
+					console.error("❌ Form validation failed:", validator.getErrors());
+					validator.showErrorSummary();
+					validator.scrollToFirstError();
+					return;
+				}
+				
+				console.log("✅ Form validation passed");
 
 				// Don't use FormData(this) to avoid including empty file inputs
 				// Instead, collect form data manually

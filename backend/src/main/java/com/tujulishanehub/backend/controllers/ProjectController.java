@@ -44,8 +44,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +106,19 @@ public class ProjectController {
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             ProjectCreateRequest request = objectMapper.readValue(projectJson, ProjectCreateRequest.class);
+
+            // Validate request fields before processing
+            List<String> validationErrors = validateProjectRequest(request);
+            if (!validationErrors.isEmpty()) {
+                String errorMessage = "Validation failed: " + String.join(", ", validationErrors);
+                logger.warn("Controller: Validation errors: {}", errorMessage);
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    errorMessage,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
 
             // Log brief info to console
             logger.info("Controller: Creating new project: {}", request.getTitle());
@@ -1990,6 +2005,7 @@ public class ProjectController {
                 counts.put("byCategory", categoryCounts);
             }
             
+            
             ApiResponse<Map<String, Object>> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Project counts retrieved successfully",
@@ -2007,4 +2023,105 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    /**
+     * Validate ProjectCreateRequest fields
+     * Returns list of validation error messages
+     */
+    private List<String> validateProjectRequest(ProjectCreateRequest request) {
+        List<String> errors = new ArrayList<>();
+        
+        // Validate title
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            errors.add("Project title is required");
+        } else if (request.getTitle().trim().length() < 5) {
+            errors.add("Project title must be at least 5 characters long");
+        } else if (request.getTitle().trim().length() > 200) {
+            errors.add("Project title must not exceed 200 characters");
+        }
+        
+        // Validate partner
+        if (request.getPartner() == null || request.getPartner().trim().isEmpty()) {
+            errors.add("Partner is required");
+        }
+        
+        // Validate themes
+        if (request.getThemes() == null || request.getThemes().isEmpty()) {
+            errors.add("At least one project theme is required");
+        }
+        
+        // Validate project category
+        if (request.getProjectCategory() == null) {
+            errors.add("Project category is required");
+        }
+        
+        // Validate start date
+        if (request.getStartDate() == null) {
+            errors.add("Start date is required");
+        }
+        
+        // Validate end date is after start date (if provided)
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            if (request.getEndDate().isBefore(request.getStartDate()) || 
+                request.getEndDate().isEqual(request.getStartDate())) {
+                errors.add("End date must be after start date");
+            }
+        }
+        
+        // Validate activity type
+        if (request.getActivityType() == null || request.getActivityType().trim().isEmpty()) {
+            errors.add("Activity type is required");
+        } else if (request.getActivityType().trim().length() < 10) {
+            errors.add("Activity type must be at least 10 characters long");
+        }
+        
+        // Validate locations
+        if (request.getLocations() == null || request.getLocations().isEmpty()) {
+            errors.add("At least one location is required");
+        } else {
+            // Validate each location
+            for (int i = 0; i < request.getLocations().size(); i++) {
+                ProjectCreateRequest.LocationRequest loc = request.getLocations().get(i);
+                if (loc.getCounty() == null || loc.getCounty().trim().isEmpty()) {
+                    errors.add("County is required for location " + (i + 1));
+                }
+                if (loc.getLatitude() == null || loc.getLongitude() == null) {
+                    errors.add("Latitude and longitude are required for location " + (i + 1));
+                }
+            }
+        }
+        
+        // Validate contact person information
+        if (request.getContactPersonName() == null || request.getContactPersonName().trim().isEmpty()) {
+            errors.add("Contact person name is required");
+        }
+        
+        if (request.getContactPersonRole() == null || request.getContactPersonRole().trim().isEmpty()) {
+            errors.add("Contact person role is required");
+        }
+        
+        if (request.getContactPersonEmail() != null && !request.getContactPersonEmail().trim().isEmpty()) {
+            // Validate email format if provided
+            if (!request.getContactPersonEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                errors.add("Contact person email is not valid");
+            }
+        }
+        
+        // Validate objectives
+        if (request.getObjectives() == null || request.getObjectives().trim().isEmpty()) {
+            errors.add("Project objectives are required");
+        } else if (request.getObjectives().trim().length() < 20) {
+            errors.add("Project objectives must be at least 20 characters long");
+        }
+        
+        // Validate budget
+        if (request.getBudget() == null) {
+            errors.add("Budget is required");
+        } else if (request.getBudget().compareTo(BigDecimal.ZERO) <= 0) {
+            errors.add("Budget must be greater than 0");
+        }
+        
+        return errors;
+    }
 }
+
