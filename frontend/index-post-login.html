@@ -2340,9 +2340,8 @@
 		// Load project statistics from API
 		async function loadProjectStatistics() {
 			try {
-				const response = await authManager.apiCall(
-					"/api/projects/statistics",
-					"GET"
+				const response = await fetch(
+					`${window.BASE_URL}/api/projects/public/statistics`
 				);
 				if (!response || !response.ok) {
 					console.error("Failed to fetch statistics, using defaults");
@@ -2357,25 +2356,13 @@
 				if (stats.data) {
 					const data = stats.data;
 
-					// Calculate regions/counties from countyCounts
-					const regions = data.countyCounts ? data.countyCounts.length : 0;
-
-					// Locations is the number of projects with coordinates
-					const locations =
-						data.projectsWithCoordinates || data.totalProjects || 0;
-
-					// Projects is the total number of projects
+					// Use data from public statistics endpoint
 					const projects = data.totalProjects || 0;
+					const regions = data.totalCounties || 0;
+					const stakeholders = data.totalStakeholders || 0;
 
-					// Calculate total active status count
-					let activeCount = 0;
-					if (data.statusCounts) {
-						data.statusCounts.forEach(([status, count]) => {
-							if (status === "active" || status === "ACTIVE") {
-								activeCount += count;
-							}
-						});
-					}
+					// For locations, we'll use totalProjects as a fallback
+					const locations = projects;
 
 					// Calculate total budget by fetching all projects
 					let totalBudget = 0;
@@ -2416,7 +2403,7 @@
 						locations: locations,
 						projects: projects,
 						regions: regions,
-						users: data.totalStakeholders || activeCount || projects, // Use stakeholders for animated users count
+						users: stakeholders, // Use stakeholders count from public API
 						amount: totalBudget, // Use actual total budget instead of estimate
 					};
 
@@ -2879,15 +2866,8 @@
 				"totalStakeholdersCount"
 			);
 
-			// Calculate counties count - handle both array and object formats
-			let countiesCount = 0;
-			if (stats.countyCounts) {
-				if (Array.isArray(stats.countyCounts)) {
-					countiesCount = stats.countyCounts.length;
-				} else if (typeof stats.countyCounts === "object") {
-					countiesCount = Object.keys(stats.countyCounts).length;
-				}
-			}
+			// Get counties count from public statistics endpoint (totalCounties)
+			const countiesCount = stats.totalCounties || 0;
 
 			if (totalProjectsElement) {
 				const projectCount = stats.totalProjects || 0;
