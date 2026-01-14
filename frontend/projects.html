@@ -1513,8 +1513,8 @@
                         <!-- Scripts already included in <head> -->
                         <script>
                             let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                                ? 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api'
-                                : 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com/api';
+                                ? 'http://localhost:8080/api'
+                                : 'http://localhost:8080/api';
 
                             const rejectModalEl = document.getElementById('rejectProjectModal');
                             const rejectReasonSelect = document.getElementById('rejectReasonSelect');
@@ -3592,7 +3592,7 @@
 
                 try {
                     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                    const response = await fetch(`${window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com'}/api/projects`, {
+                    const response = await fetch(`${window.BASE_URL || 'http://localhost:8080'}/api/projects`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -3909,7 +3909,7 @@
             content.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading project details...</p>';
 
             try {
-                const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+                const API_BASE = window.BASE_URL || 'http://localhost:8080';
                 const headers = {
                     'Content-Type': 'application/json',
                     Authorization: 'Bearer ' + (localStorage.getItem('accessToken') || '')
@@ -4071,7 +4071,7 @@
 
             try {
                 const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-                const API_BASE = window.BASE_URL || 'https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com';
+                const API_BASE = window.BASE_URL || 'http://localhost:8080';
 
                 const response = await fetch(`${API_BASE}/api/projects/${projectId}`, {
                     method: 'DELETE',

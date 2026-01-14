@@ -7,7 +7,7 @@
       "❌ BASE_URL not found! Make sure config.js is loaded before set-base-url.js"
     );
     window.BASE_URL =
-      "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+      "http://localhost:8080";
     console.warn("⚠️ Using emergency fallback URL:", window.BASE_URL);
   } else {
     console.log("✓ BASE_URL loaded from config.js:", window.BASE_URL);

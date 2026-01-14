@@ -15,7 +15,7 @@ class AuthManager {
     // Use the centralized BASE_URL from config.js (loaded via window.BASE_URL)
     this.baseUrl =
       window.BASE_URL ||
-      "https://tujulishane-hub-backend-52b7e709d99f.herokuapp.com";
+      "http://localhost:8080";
     this.tokenKey = AUTH_CONFIG.TOKEN_KEY;
     this.userKey = AUTH_CONFIG.USER_KEY;
 
