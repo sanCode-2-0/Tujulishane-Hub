@@ -25,7 +25,7 @@ To create the first SUPER_ADMIN user, use the special bootstrap endpoint. This s
 **Step 2:** Run the following `curl` command to create the SUPER_ADMIN user:
 
 ```bash
-curl -X POST https://api-tujulishane-hub.onrender.com/api/auth/bootstrap/super-admin \
+curl -X POST https://api-tujulishane-hub.onrender.comapi/auth/bootstrap/super-admin \
     -H "Content-Type: application/json" \
     -d '{
         "email": "admin@moh.gov.ke",
