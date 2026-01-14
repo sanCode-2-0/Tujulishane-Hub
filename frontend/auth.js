@@ -132,21 +132,27 @@ class AuthManager {
    * Make authenticated API call
    * @param {string} endpoint - API endpoint (e.g., '/api/projects')
    * @param {string} method - HTTP method ('GET', 'POST', 'PUT', 'DELETE')
-   * @param {Object} data - Request body data (for POST/PUT)
-   * @param {Object} headers - Additional headers
+   * @param {Object} data - Request body data (for POST/PUT) or FormData object
+   * @param {Object} options - Additional options { isFormData: true, headers: {...} }
    * @returns {Promise<Response>} Fetch response
    */
-  async apiCall(endpoint, method = "GET", data = null, headers = {}) {
+  async apiCall(endpoint, method = "GET", data = null, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
     const token = this.getToken();
+    const isFormData = options.isFormData || false;
+    const additionalHeaders = options.headers || {};
 
     const config = {
       method,
       headers: {
-        "Content-Type": "application/json",
-        ...headers,
+        ...additionalHeaders,
       },
     };
+
+    // Only set Content-Type for non-FormData requests
+    if (!isFormData) {
+      config.headers["Content-Type"] = "application/json";
+    }
 
     // Add authorization header if token exists
     if (token) {
@@ -155,7 +161,12 @@ class AuthManager {
 
     // Add body for POST/PUT requests
     if (data && (method === "POST" || method === "PUT")) {
-      config.body = JSON.stringify(data);
+      if (isFormData) {
+        // FormData should not be stringified, and Content-Type should not be set
+        config.body = data;
+      } else {
+        config.body = JSON.stringify(data);
+      }
     }
 
     try {

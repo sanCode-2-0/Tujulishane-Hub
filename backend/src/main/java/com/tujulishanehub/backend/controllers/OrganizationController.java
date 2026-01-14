@@ -246,6 +246,114 @@ public class OrganizationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    /**
+     * Update organization with optional logo upload
+     */
+    @PostMapping("/{id}/update-with-logo")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Organization>> updateOrganizationWithLogo(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("organizationType") String organizationType,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "contactEmail", required = false) String contactEmail,
+            @RequestParam(value = "contactPhone", required = false) String contactPhone,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "websiteUrl", required = false) String websiteUrl,
+            @RequestParam(value = "registrationNumber", required = false) String registrationNumber,
+            @RequestParam(value = "logo", required = false) org.springframework.web.multipart.MultipartFile logoFile) {
+        
+        try {
+            // Create organization details object
+            Organization organizationDetails = new Organization();
+            organizationDetails.setName(name);
+            organizationDetails.setOrganizationType(Organization.OrganizationType.valueOf(organizationType));
+            organizationDetails.setDescription(description);
+            organizationDetails.setContactEmail(contactEmail);
+            organizationDetails.setContactPhone(contactPhone);
+            organizationDetails.setAddress(address);
+            organizationDetails.setWebsiteUrl(websiteUrl);
+            organizationDetails.setRegistrationNumber(registrationNumber);
+            
+            // Handle logo file if provided
+            if (logoFile != null && !logoFile.isEmpty()) {
+                organizationDetails.setLogoData(logoFile.getBytes());
+                organizationDetails.setLogoContentType(logoFile.getContentType());
+                logger.info("Logo file received: {} bytes, content type: {}", logoFile.getSize(), logoFile.getContentType());
+            }
+            
+            Organization updatedOrganization = organizationService.updateOrganization(id, organizationDetails);
+            
+            ApiResponse<Organization> response = new ApiResponse<>(
+                HttpStatus.OK.value(), 
+                "Organization updated successfully", 
+                updatedOrganization
+            );
+            return ResponseEntity.ok(response);
+            
+        } catch (RuntimeException e) {
+            logger.error("Error updating organization with logo: {}", e.getMessage());
+            ApiResponse<Organization> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(), 
+                e.getMessage(), 
+                null
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            logger.error("Unexpected error updating organization with logo: {}", e.getMessage(), e);
+            ApiResponse<Organization> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                "Failed to update organization", 
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get organization logo as image
+     */
+    @GetMapping("/{id}/logo")
+    public ResponseEntity<?> getOrganizationLogo(@PathVariable Long id) {
+        try {
+            Organization organization = organizationService.getOrganizationById(id).orElse(null);
+            
+            if (organization == null) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Organization not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (organization.getLogoData() == null || organization.getLogoData().length == 0) {
+                ApiResponse<Object> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Logo not found",
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            String contentType = organization.getLogoContentType() != null ? 
+                organization.getLogoContentType() : "image/jpeg";
+            
+            return ResponseEntity.ok()
+                .header("Content-Type", contentType)
+                .header("Content-Length", String.valueOf(organization.getLogoData().length))
+                .body(organization.getLogoData());
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving organization logo: {}", e.getMessage(), e);
+            ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve logo",
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
     
     // ==================== ADMIN ENDPOINTS ====================
     

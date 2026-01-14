@@ -563,9 +563,9 @@
                 return;
             }
 
-            // Save Remember Me preference
+            // Save Remember Me preference using temporary key (will be moved to session key during OTP verification)
             const rememberMe = document.getElementById("rememberMe").checked;
-            localStorage.setItem("rememberMe", rememberMe.toString());
+            localStorage.setItem("tempRememberMe", rememberMe.toString());
             console.log("Remember Me preference saved:", rememberMe);
 
             // Show loading state

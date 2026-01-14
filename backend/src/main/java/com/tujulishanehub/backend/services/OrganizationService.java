@@ -179,6 +179,13 @@ public class OrganizationService {
         existingOrganization.setWebsiteUrl(organizationDetails.getWebsiteUrl());
         existingOrganization.setRegistrationNumber(organizationDetails.getRegistrationNumber());
         
+        // Update logo if provided
+        if (organizationDetails.getLogoData() != null && organizationDetails.getLogoData().length > 0) {
+            existingOrganization.setLogoData(organizationDetails.getLogoData());
+            existingOrganization.setLogoContentType(organizationDetails.getLogoContentType());
+            logger.info("Logo updated for organization: {}", id);
+        }
+        
         return organizationRepository.save(existingOrganization);
     }
     

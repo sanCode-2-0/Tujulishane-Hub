@@ -2754,7 +2754,7 @@
 
                 if (!token) {
                     console.error('[Documents] No authentication token found');
-                    return null;
+                    return []; // Return empty array instead of null for better UX
                 }
 
                 const response = await fetch(`${window.BASE_URL}/api/projects/${projectId}/documents`, {
@@ -2774,8 +2774,12 @@
                     if (data.status === 200 && data.data) {
                         console.log(`[Documents] Found ${data.data.length} documents for project ${projectId}`);
                         return data.data;
+                    } else if (data.status === 200 && (!data.data || data.data.length === 0)) {
+                        console.log(`[Documents] No documents found for project ${projectId}`);
+                        return []; // Return empty array for no documents
                     } else {
                         console.log(`[Documents] API returned non-200 status or no data:`, data);
+                        return []; // Return empty array on unexpected response
                     }
                 } else {
                     // Server error (500, etc)
@@ -2786,30 +2790,16 @@
                     } catch (e) {
                         // Can't parse error response
                     }
-                    return null; // Return null to indicate server error
+                    return []; // Return empty array instead of null
                 }
-                return [];
             } catch (error) {
                 console.error('[Documents] Error fetching documents:', error);
-                return null; // Return null to indicate error
+                return []; // Return empty array on error for better UX
             }
         }
 
         // Render documents as downloadable links
         function renderDocuments(documents, projectId) {
-            // Handle server error (null)
-            if (documents === null) {
-                return `<div class="p-3 bg-amber-50 border border-amber-200 rounded">
-                    <p class="text-sm text-amber-800 flex items-center">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        Unable to load documents at this time. The server encountered an error.
-                    </p>
-                    <p class="text-xs text-amber-600 mt-1">
-                        This project may have documents, but they cannot be retrieved right now.
-                    </p>
-                </div>`;
-            }
-
             // Handle no documents (empty array)
             if (!documents || documents.length === 0) {
                 return '<p class="text-sm text-gray-500 italic">No supporting documents available</p>';

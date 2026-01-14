@@ -321,11 +321,17 @@ class SessionManager {
 
   /**
    * Extend session (called on login with remember me)
+   * Must set REMEMBER_ME BEFORE calling setLoginTime so getSessionTimeout() uses correct value
    */
   extendSession(rememberMe = false) {
+    // Set Remember Me FIRST before calculating session timeout
     localStorage.setItem(SESSION_CONFIG.KEYS.REMEMBER_ME, rememberMe.toString());
+    console.log('[session-manager.js] Remember Me set to:', rememberMe);
+    
+    // Now set login time which will use the correct timeout based on Remember Me
     this.setLoginTime();
     console.log('[session-manager.js] Session extended, Remember Me:', rememberMe);
+    console.log('[session-manager.js] Session timeout set to:', getSessionTimeout() / 1000 / 60, 'minutes');
   }
 
   /**

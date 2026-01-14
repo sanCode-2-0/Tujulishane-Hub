@@ -100,6 +100,32 @@
 			transform: translateY(20px);
 			transition: all 0.3s ease;
 		}
+
+		/* Mapbox marker styling */
+		.marker {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 40px;
+			height: 40px;
+			background-color: white;
+			border-radius: 50%;
+			cursor: pointer;
+			opacity: 1;
+			transition: all 0.3s ease;
+			z-index: 1;
+		}
+
+		.marker:hover {
+			transform: scale(1.2);
+			z-index: 10;
+			opacity: 1;
+		}
+
+		.marker i {
+			font-size: 24px !important;
+			line-height: 1;
+		}
 	</style>
 </head>
 
@@ -1053,8 +1079,8 @@
 				},
 			];
 			projects = sampleProjects;
-			updateMapWithProjects(sampleProjects);
-			highlightMarkers("all");
+			addMarkersToMap(sampleProjects);
+			initializeMapSearch();
 		}
 
 		// Add markers to Mapbox map (supports multiple locations per project)
@@ -1104,9 +1130,13 @@
 					// Create marker element
 					const el = document.createElement("div");
 					el.className = "marker";
-					el.innerHTML = `<i class="fas fa-map-marker-alt" style="font-size: 32px; color: ${getStatusColor(project.status)};"></i>`;
+					const color = getStatusColor(project.status);
+					el.innerHTML = `<i class="fas fa-map-marker-alt" style="font-size: 24px; color: ${color};"></i>`;
 					el.style.cursor = "pointer";
 					el.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.3))";
+					el.style.display = "flex";
+					el.style.alignItems = "center";
+					el.style.justifyContent = "center";
 
 					// Create popup — include location-specific info when available
 					const statusColor =
@@ -1715,15 +1745,15 @@
 						}
 						return locationParts.length > 0
 							? locationParts.join(", ")
-							: "an unspecified region";
+							: "location not specified";
 					})()}</strong>,
-					this project ${project.partner
+					this project ${project.partner && project.partner !== 'UNSPECIFIED' && project.partner !== 'TO_BE_ANNOUNCED'
 						? `is supported by <strong>${project.partner}</strong>`
-						: "has partners to be announced"
+						: "has implementation partners"
 					} 
-					with an estimated budget of <strong>${project.budget
+					with an estimated budget of <strong>${project.budget && project.budget !== 0 && project.budget !== 'N/A'
 						? "KES " + Number(project.budget).toLocaleString()
-						: "N/A"
+						: "not yet finalized"
 					}</strong>.
 				</p>
 

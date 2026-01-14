@@ -46,6 +46,12 @@ public class Organization {
     @Column(name = "registration_number")
     private String registrationNumber;
     
+    @Column(name = "logo_data", columnDefinition = "LONGBLOB")
+    private byte[] logoData;
+    
+    @Column(name = "logo_content_type")
+    private String logoContentType;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;

@@ -219,8 +219,8 @@
             throw new Error(data.message || "OTP verification failed");
           }
 
-          // Get Remember Me preference from localStorage
-          const rememberMe = localStorage.getItem("rememberMe") === "true";
+          // Get Remember Me preference from temporary storage
+          const rememberMe = localStorage.getItem("tempRememberMe") === "true";
           console.log("Remember Me preference:", rememberMe);
 
           // Store the real JWT with Remember Me preference
@@ -240,10 +240,10 @@
             }
           }
 
-          // Clean up temporary storage
+          // Clean up temporary storage (but NOT the session Remember Me key which was set by extendSession)
           localStorage.removeItem("isLogin");
           localStorage.removeItem("pendingEmail");
-          localStorage.removeItem("rememberMe");
+          localStorage.removeItem("tempRememberMe");
           
           showMessage("Login successful! Redirecting...", "success");
           setTimeout(() => {
