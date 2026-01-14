@@ -4,8 +4,8 @@
 const API_BASE =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
-    ? "http://localhost:8080"
-    : "http://localhost:8080";
+    ? "https://api-tujulishane-hub.onrender.com/"
+    : "https://api-tujulishane-hub.onrender.com/";
 
 document.addEventListener("DOMContentLoaded", () => {
   const projectList = document.getElementById("projectList");

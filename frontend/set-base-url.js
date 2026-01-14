@@ -7,7 +7,7 @@
       "❌ BASE_URL not found! Make sure config.js is loaded before set-base-url.js"
     );
     window.BASE_URL =
-      "http://localhost:8080";
+      "https://api-tujulishane-hub.onrender.com/";
     console.warn("⚠️ Using emergency fallback URL:", window.BASE_URL);
   } else {
     console.log("✓ BASE_URL loaded from config.js:", window.BASE_URL);

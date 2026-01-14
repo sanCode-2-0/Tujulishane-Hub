@@ -581,8 +581,8 @@
             // Request OTP from backend
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
+                    ? "https://api-tujulishane-hub.onrender.com/"
+                    : "https://api-tujulishane-hub.onrender.com/";
                 const res = await fetch(`${apiBase}/api/auth/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -633,8 +633,8 @@
 
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
+                    ? "https://api-tujulishane-hub.onrender.com/"
+                    : "https://api-tujulishane-hub.onrender.com/";
 
                 console.log("API BASE", apiBase);
 
