@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     List<User> findByApprovalStatus(ApprovalStatus approvalStatus);
     List<User> findByRole(User.Role role);
+    List<User> findByParentDonorId(Long parentDonorId);
+    List<User> findByRoleAndParentDonorIsNull(User.Role role);
 }

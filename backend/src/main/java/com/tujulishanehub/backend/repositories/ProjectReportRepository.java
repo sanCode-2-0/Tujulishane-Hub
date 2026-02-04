@@ -60,7 +60,7 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
     /**
      * Find reports submitted for review
      */
-    @Query("SELECT r FROM ProjectReport r WHERE r.reportStatus IN ('SUBMITTED', 'UNDER_REVIEW') ORDER BY r.submittedAt ASC")
+    @Query("SELECT r FROM ProjectReport r LEFT JOIN FETCH r.project WHERE r.reportStatus IN ('SUBMITTED', 'UNDER_REVIEW') ORDER BY r.submittedAt ASC")
     List<ProjectReport> findReportsForReview();
     
     /**
@@ -110,7 +110,7 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
     /**
      * Find reports by project theme (through project relationship)
      */
-    @Query("SELECT r FROM ProjectReport r JOIN r.project p WHERE p.projectTheme = :projectTheme AND r.reportStatus = 'PUBLISHED'")
+    @Query("SELECT DISTINCT r FROM ProjectReport r JOIN r.project p JOIN p.themes pta WHERE pta.projectTheme = :projectTheme AND r.reportStatus = 'PUBLISHED'")
     List<ProjectReport> findPublishedReportsByProjectTheme(@Param("projectTheme") String projectTheme);
     
     /**
@@ -194,4 +194,10 @@ public interface ProjectReportRepository extends JpaRepository<ProjectReport, Lo
      */
     @Query("SELECT COUNT(r) > 0 FROM ProjectReport r WHERE r.project.id = :projectId AND r.reportStatus = 'PUBLISHED'")
     boolean hasPublishedReports(@Param("projectId") Long projectId);
+    
+    /**
+     * Find all reports with relationships for admin dashboard
+     */
+    @Query("SELECT r FROM ProjectReport r LEFT JOIN FETCH r.project p ORDER BY r.createdAt DESC")
+    List<ProjectReport> findAllWithRelationships();
 }

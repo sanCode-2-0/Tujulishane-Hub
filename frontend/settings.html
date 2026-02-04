@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<title>User Settings</title>
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#137fec",
+						"background-light": "#f6f7f8",
+					},
+					fontFamily: {
+						display: ["Manrope", "sans-serif"],
+					},
+					borderRadius: {
+						DEFAULT: "0.25rem",
+						lg: "0.5rem",
+						xl: "0.75rem",
+						full: "9999px",
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Mapbox CSS -->
+	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+	<!-- Mapbox JS -->
+	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+	<!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+	<script src="./config.js"></script>
+	<script src="./set-base-url.js"></script>
+
+	<!-- Modal Utilities -->
+	<script src="./modal-utils.js"></script>
+
+	<!-- Authentication utilities -->
+	<script type="module">
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+
+		// Use window.BASE_URL which is already set by config.js loaded via script tag
+		const BASE_URL = window.BASE_URL;
+		console.log(
+			"[settings.html] Using BASE_URL:",
+			BASE_URL,
+			"- Environment:",
+			window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+		);
+	</script>
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#272E28",
+						secondary: "#f59e0b",
+						accent: "#00474C",
+						button: "#14B04C",
+						button_two: "#3482FF",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
+
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+	</style>
+</head>
+
+<body class="bg-background-light font-display text-slate-800">
+	<div class="" id="nav-placeholder"></div>
+	<!-- Nav End -->
+	<div class="mt-20 relative flex min-h-screen w-full flex-col group/design-root">
+		<div class="layout-container flex h-full grow flex-col">
+			<main class="flex-1 p-4 sm:p-6 lg:p-8">
+				<div class="mx-auto flex max-w-6xl flex-col gap-8">
+					<div class="w-full">
+						<div class="rounded-xl border border-slate-200 bg-white">
+							<div class="p-6 border-b border-slate-200">
+								<h2 class="text-2xl font-bold text-blue-900">
+									Account Settings
+								</h2>
+								<p class="mt-1 text-slate-500">
+									Manage your account preferences and security settings.
+								</p>
+							</div>
+							<form class="p-6 space-y-6">
+								<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+									<label class="flex flex-col">
+										<p class="text-base font-medium pb-2 text-slate-800">
+											Email Address
+										</p>
+										<input id="settingsEmail"
+											class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 bg-white focus:border-primary h-12 px-4 text-base font-normal"
+											type="email" value="" />
+									</label>
+								</div>
+								<div class="flex justify-end pt-4">
+									<button type="submit"
+										class="inline-flex items-center justify-center rounded-lg bg-blue-900 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-blue-900/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
+										Update Settings
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="w-full">
+						<div class="rounded-xl border border-slate-200 bg-white">
+							<div class="p-6 border-b border-slate-200">
+								<h2 class="text-2xl font-bold text-blue-900">
+									Notification Preferences
+								</h2>
+								<p class="mt-1 text-slate-500">
+									Choose how you want to be notified about updates.
+								</p>
+							</div>
+							<div class="p-6 space-y-4">
+								<label class="flex flex-wrap w-full items-center">
+									<input id="emailNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">Email notifications for project
+										updates</span>r
+								</label>
+								<label class="flex flex-wrap w-full items-center">
+									<input id="smsNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">SMS notifications for important
+										alerts</span>
+								</label>
+								<label class="flex flex-wrap w-full items-center">
+									<input id="pushNotifications" type="checkbox"
+										class="rounded h-4 w-4 border-slate-300 text-primary focus:ring-primary" />
+									<span class="ml-3 text-sm text-slate-800">Push notifications in browser</span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+	<script src="auth.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", async function () {
+			if (!authManager.isAuthenticated()) {
+				window.location.href = "index.html";
+				return;
+			}
+			try {
+				const user = await authManager.getCurrentUser();
+				if (user) {
+					document.getElementById("settingsEmail").value = user.email || "";
+					// Load notification preferences from localStorage or user data
+					loadNotificationPreferences();
+				}
+			} catch (error) {
+				console.error("Failed to load user settings:", error);
+				await showAlert(
+					"Failed to load settings. Please try logging in again.",
+					"Error",
+					"error"
+				);
+				authManager.logout();
+			}
+
+			// Handle form submission
+			const form = document.querySelector("form");
+			form.addEventListener("submit", async function (e) {
+				e.preventDefault();
+
+				const email = document.getElementById("settingsEmail").value;
+
+				try {
+					// Update email if changed
+					if (email !== (await authManager.getCurrentUser()).email) {
+						await updateEmail(email);
+					}
+
+					// Save notification preferences
+					saveNotificationPreferences();
+
+					await showAlert(
+						"Settings updated successfully!",
+						"Success",
+						"success"
+					);
+				} catch (error) {
+					console.error("Failed to update settings:", error);
+					await showAlert(
+						"Failed to update settings. Please try again.",
+						"Error",
+						"error"
+					);
+				}
+			});
+		});
+
+		function loadNotificationPreferences() {
+			const emailNotif =
+				localStorage.getItem("emailNotifications") === "true";
+			const smsNotif = localStorage.getItem("smsNotifications") === "true";
+			const pushNotif = localStorage.getItem("pushNotifications") === "true";
+
+			document.getElementById("emailNotifications").checked = emailNotif;
+			document.getElementById("smsNotifications").checked = smsNotif;
+			document.getElementById("pushNotifications").checked = pushNotif;
+		}
+
+		function saveNotificationPreferences() {
+			const emailNotif =
+				document.getElementById("emailNotifications").checked;
+			const smsNotif = document.getElementById("smsNotifications").checked;
+			const pushNotif = document.getElementById("pushNotifications").checked;
+
+			localStorage.setItem("emailNotifications", emailNotif);
+			localStorage.setItem("smsNotifications", smsNotif);
+			localStorage.setItem("pushNotifications", pushNotif);
+		}
+
+		async function updateEmail(newEmail) {
+			// Implement email update API call
+			const response = await fetch(
+				`${window.BASE_URL}/api/auth/update-email`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
+					},
+					body: JSON.stringify({ email: newEmail }),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error("Failed to update email");
+			}
+
+			return response.json();
+		}
+	</script>
+	<script>
+		// Populate user dropdown with data from authManager
+		document.addEventListener("DOMContentLoaded", function () {
+			(async function () {
+				let user = authManager.getCachedUser();
+				if (!user) {
+					try {
+						await authManager.getCurrentUser();
+						user = authManager.getCachedUser();
+					} catch (err) {
+						console.error("[ERROR] Could not fetch user profile:", err);
+					}
+				}
+				// Wait a bit for authManager to initialize
+				setTimeout(() => {
+					const user = authManager.getCachedUser();
+					console.log("[DEBUG] Loading user data for dropdown:", user);
+
+					if (user) {
+						// Update user display name in button
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						if (userDisplayName) {
+							userDisplayName.textContent = user.name || user.email || "User";
+						}
+
+						// Update user name in dropdown
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						if (userNameDisplay) {
+							userNameDisplay.textContent = user.name || "User";
+						}
+
+						// Update email
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						if (userEmailDisplay) {
+							userEmailDisplay.textContent = user.email || "";
+						}
+
+						// Update role
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						if (userRoleDisplay) {
+							userRoleDisplay.textContent = user.role || "USER";
+						}
+
+						// Update status
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent =
+								user.approvalStatus || "PENDING";
+						}
+
+						// Show admin nav if user is admin
+						console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+						if (
+							user.role === "ADMIN" ||
+							user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+						) {
+							console.log(
+								"[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+							);
+
+							const adminNavItems = document.querySelectorAll("#adminNav");
+							adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+							// Show admin collaboration menu item
+							const adminCollabItem =
+								document.getElementById("admin-collab-item");
+							if (adminCollabItem) {
+								adminCollabItem.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+								);
+							}
+
+							const adminCollabMobile = document.getElementById(
+								"admin-collab-mobile"
+							);
+							if (adminCollabMobile) {
+								adminCollabMobile.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+								);
+							}
+
+							// Load pending requests count
+							loadPendingRequestsCount();
+						} else if (user.role === "DONOR") {
+							const donorNavItems = document.querySelectorAll("#donorNav");
+							donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+						}
+					} else {
+						console.warn("[DEBUG] No user data found in cache");
+					}
+				}, 500);
+			})();
+		});
+	</script>
+</body>
+
+</html>

@@ -9,45 +9,52 @@
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Tailwind CSS (with custom config using inline script) -->
+
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Mapbox CSS -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <!-- Mapbox JS -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Backend URL Configuration - Centralized in config.js -->
+    <script src="./config.js"></script>
+    <script src="./set-base-url.js"></script>
+    <!-- Modal Utilities -->
+    <script src="./modal-utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="kenya-locations.js"></script>
+
+    <!-- Optional: Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#1e40af',   // Custom Blue
-                        secondary: '#f59e0b', // Custom Amber
-                        accent: '#10b981',    // Custom Green
-                        dark: '#1f2937',      // Gray-800
+                        primary: "#272E28",
+                        secondary: "#f59e0b",
+                        accent: "#00474C",
+                        button: "#14B04C",
+                        button_two: "#3482FF",
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
+                        sans: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
     </script>
-    <link rel="stylesheet" href="styles/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-
-    <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         .fade-slide-enter {
             opacity: 0;
@@ -71,368 +78,507 @@
             transition: all 0.3s ease;
         }
     </style>
-
 </head>
 
-<body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
+<body class="text-gray-800 overflow-x-hidden">
+    <!-- Authentication Redirect Check -->
+    <script>
+        // Check if user is already logged in and redirect to index-post-login
+        (function () {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (token) {
+                // Verify token format (JWT should have 3 parts)
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                    console.log('[Auth] User is logged in, redirecting to index-post-login.html');
+                    window.location.href = 'index-post-login.html';
+                    return;
+                }
+            }
+        })();
+    </script>
+    <!-- Nav Start -->
+    <div class="" id="nav-placeholder"></div>
+    <!-- Nav End -->
 
+    <section class="relative z-0 overflow-hidden" id="top">
+        <div class="w-full overflow-hidden">
+            <div x-data="{
+						activeSlide: 0,
+						media: [
+						{ type: 'image', src: 'resources/images/main-1.jpg' },
+						{ type: 'image', src: 'resources/images/main-2.jpg' },
+						{ type: 'image', src: 'resources/images/main-3.jpg' }
+						]
+					}" x-init="setInterval(() => { activeSlide = (activeSlide + 1) % media.length }, 7000)"
+                class="relative w-full min-h-[75vh] md:h-[50vh] flex flex-col justify-end">
+                <!-- Background Image Carousel with Zoom + Fade -->
+                <template x-for="(item, index) in media" :key="index">
+                    <div class="absolute inset-0 transition-all duration-1000 ease-in-out overflow-hidden" :class="{
+										'opacity-100 z-0': activeSlide === index,
+										'opacity-0 z-0 pointer-events-none': activeSlide !== index
+									}">
+                        <img :src="item.src" alt="Slide Image"
+                            class="w-full h-full object-cover object-center transition-transform duration-[7000ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                            :class="activeSlide === index ? 'scale-105' : 'scale-100'" />
+                    </div>
+                </template>
 
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
-            </button>
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
 
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
+                <!-- Bottom Content Section -->
+                <div class="relative z-20 w-full pt-16 sm:pt-0">
+                    <div class="mx-4 md:mx-8 text-white px-4">
+                        <a href="#" class="text-xs font-semibold uppercase tracking-wide mb-2 block">
+                            Ministry of Health
+                        </a>
+                        <h1 class="text-xl sm:text-4xl font-semibold mb-4">
+                            <span class="tracking-wide">RMNCAH</span> Co-ordination Hub
+                        </h1>
+                        <p class="text-sm sm:text-base mb-6 max-w-4xl">
+                            Discover and engage with impactful projects driving change
+                            across Kenya. Use the filters to find projects that align with
+                            your interests and make a difference.
+                        </p>
+                    </div>
 
-            </ul>
-        </div>
-
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
-
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
-
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
+                    <!-- Search and Stats Section -->
+                    <div class="backdrop-blur-md bg-black/30 mx-8 rounded-t-2xl border-t border-black/20">
+                        <div class="px-4 py-4 flex flex-col items-center justify-between gap-4">
+                            <!-- Icon Buttons / Stats -->
+                            <div
+                                class="flex justify-between text-white text-xl lg:text-3xl w-full flex-wrap text-center gap-y-6">
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-tasks text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalProjectsCount" class="font-bold tracking-wider">
+                                            0
+                                        </span>
+                                        <span class="font-thin">Projects</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalCountiesCount" class="font-bold tracking-wider">0</span>
+                                        <span class="font-thin">Counties</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center w-1/2 sm:w-auto">
+                                    <i class="fad fa-handshake text-lg lg:text-2xl"></i>
+                                    <div class="mt-2">
+                                        <span id="totalStakeholdersCount" class="font-bold tracking-wider">0</span>
+                                        <span class="font-thin">Stakeholders</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end bottom section -->
             </div>
         </div>
-    </nav>
+    </section>
 
-    <div class="">
-        <div class="relative w-full max-w-4xl mx-auto">
-            <!-- Login Card -->
+    <section id="about" class="py-20">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <img src="resources/images/why.jpg" class="rounded-lg shadow-lg">
 
-            <div class="flex flex-col items-center justify-center min-h-screen py-10">
-                <!-- Logo -->
-                <a href="/frontend/index.html"
-                    class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                    <img src="/frontend/resources/images/moh.jpg" class="object-contain h-12" alt="Site Logo">
-                    <img src="/frontend/resources/images/log2.jpg" class="object-contain h-12" alt="Site Logo">
-                </a>
-                <p class="mt-1 text-sm opacity-70">
-                    RMNCAH Coordination Hub
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">What is the RMNCAH Coordination Hub?</h3>
+                <p class="leading-relaxed">
+                    The RMNCAH Coordination Hub is a national digital platform providing real-time visibility into
+                    program activities across Kenya. It maps who is working where and on what, helping reduce
+                    fragmentation, avoid duplication, and improve alignment of partner efforts.
                 </p>
-                <div id="loginCard"
-                    class="max-w-md p-8 mx-auto mt-4 space-y-4 transition-all duration-500 ease-in-out bg-white shadow-lg rounded-xl">
-                    <h2 class="text-2xl font-semibold text-center text-gray-700">Welcome Back</h2>
-                    <input id="loginEmail" type="email" required placeholder="Email"
-                        class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500">
-                    <div class="flex">
-                        <button type="button" onclick="requestOtp()"
-                            class="w-full py-2 text-center text-white transition bg-blue-600 rounded-md hover:bg-blue-700">
-                            Get OTP
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section (alternating layout) -->
+    <section id="features" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">Key Features</h3>
+                <ul class="space-y-4 text-lg">
+                    <li>✔ Interactive dashboard with national RMNCAH visibility</li>
+                    <li>✔ Geospatial mapping of partners and interventions</li>
+                    <li>✔ Real-time updates and collaboration tools</li>
+                    <li>✔ Supports coordinated planning & resource allocation</li>
+                    <li>✔ Enhances transparency and strengthens decision-making</li>
+                </ul>
+            </div>
+
+            <img src="resources/images/tw.jpg" class="rounded-lg shadow-lg">
+        </div>
+    </section>
+
+    <!-- Another Alternating Section -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-6 items-center grid md:grid-cols-2 gap-12">
+            <div class="flex justify-center flex-wrap">
+                <img src="resources/images/logo.png" class="rounded-lg h-[4rem] lg:h-[5rem]">
+                <img src="resources/images/moh.png" class="rounded-lg h-[4rem] lg:h-[5rem]">
+            </div>
+
+            <div class="flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">Why It Matters</h3>
+                <p class="leading-relaxed">
+                    By improving coordination between partners, counties, and the Ministry of Health, the Hub ensures
+                    RMNCAH programs truly reach the communities that need them most. It accelerates decision-making,
+                    enhances transparency, and supports a more effective health system.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-6">
+            <h3 class="text-3xl font-bold text-primary text-center mb-10">Frequently Asked Questions</h3>
+
+            <div id="accordionFaqExample">
+                <!-- ITEM 1 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingOne">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-target="#faq-collapseOne" aria-expanded="true"
+                            aria-controls="faq-collapseOne">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
+                                </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        What is RMNCAH Coordination Hub?
+                                    </h4>
+                                </div>
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
                         </button>
+                    </h2>
+                    <div id="faq-collapseOne" class="!visible border-0" data-twe-collapse-item data-twe-collapse-show
+                        aria-labelledby="faq-headingOne" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
+                                    <div
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
+                                    </div>
+                                </div>
+                                <div class="flex-grow p-2 px-6">
+                                    <p class="text-gray-700 text-base">
+                                        The RMNCAH Coordination Hub is an official Ministry
+                                        of Health digital platform designed to enhance
+                                        visibility, coordination, and accountability among
+                                        stakeholders implementing projects in Reproductive,
+                                        Maternal, Newborn, Child, and Adolescent Health
+                                        (RMNCAH). It enables partners and donors to
+                                        register, submit projects, collaborate, and align
+                                        efforts with national health priorities.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="loginErrorMsg" class="hidden mt-2 text-center text-red-600 text-sm"></div>
-                    <div class="pt-4 text-center">
-                        <button onclick="showRegister()" class="text-blue-600 hover:underline">Create a new
-                            account
+                </div>
+
+                <!-- ITEM 2 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingTwo">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                            data-twe-target="#faq-collapseTwo" aria-expanded="false" aria-controls="faq-collapseTwo">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
+                                </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        Why should I use the RMNCAH Coordination Hub?
+                                    </h4>
+                                </div>
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
                         </button>
+                    </h2>
+                    <div id="faq-collapseTwo" class="!visible hidden border-0" data-twe-collapse-item
+                        aria-labelledby="faq-headingTwo" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
+                                    <div
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
+                                    </div>
+                                </div>
+                                <div class="flex-grow p-2 px-6">
+                                    <p class="text-gray-700 text-base">
+                                        The platform streamlines coordination between the
+                                        Ministry of Health, implementing partners, and
+                                        donors. It ensures transparency in project
+                                        implementation, minimizes duplication of efforts,
+                                        and provides an up-to-date view of ongoing
+                                        initiatives through interactive maps and project
+                                        dashboards.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ITEM 3 -->
+                <div class="rounded-none border border-e-0 border-s-0 border-t-0 border-neutral-200">
+                    <h2 class="mb-0" id="faq-headingTwo">
+                        <button
+                            class="group relative flex w-full items-center justify-between border-0 px-5 py-4 text-left text-base text-neutral-800 transition hover:z-[2] focus:z-[3] focus:outline-none dark:bg-body-dark dark:text-white [&:not([data-twe-collapse-collapsed])]:bg-green-800/5 [&:not([data-twe-collapse-collapsed])]:text-primary"
+                            type="button" data-twe-collapse-init data-twe-collapse-collapsed
+                            data-twe-target="#faq-collapseThree" aria-expanded="false" aria-controls="faq-collapseTwo">
+                            <div class="flex items-center w-full">
+                                <div
+                                    class="hidden sm:flex items-center justify-center h-10 w-10 p-3 mr-3 rounded-xl bg-blue-700 text-white border-4 border-white text-lg font-semibold">
+                                    Q
+                                </div>
+                                <div class="w-full flex items-center p-3 px-6 rounded-md">
+                                    <h4 class="text-md leading-6 font-medium text-gray-900">
+                                        How can I create an account on the RMNCAH
+                                        Coordination Hub?
+                                    </h4>
+                                </div>
+                            </div>
+                            <span
+                                class="ms-auto h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 group-[&:not([data-twe-collapse-collapsed])]:rotate-180">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </button>
+                    </h2>
+                    <div id="faq-collapseThree" class="!visible hidden border-0" data-twe-collapse-item
+                        aria-labelledby="faq-headingTwo" data-twe-parent="#accordionFaqExample">
+                        <div class="px-5 py-4 bg-blue-70 rounded-md mt-2">
+                            <div class="flex flex-col items-start">
+                                <div class="flex w-full justify-end">
+                                    <div
+                                        class="flex items-center justify-center justify-end py-1 px-3 ml-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                                        ANSWER
+                                    </div>
+                                </div>
+                                <div class="flex-grow p-2 px-6">
+                                    <ol class="list-decimal text-base gap-4">
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Visit the
+                                            <a href="/frontend/index.html" class="underline font-medium">RMNCAH
+                                                Coordination Hub
+                                                registration page.</a>
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Select your account type (Partner, Donor, or MOH
+                                            Official).
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Fill in the registration form with accurate
+                                            organizational details.
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Upload the required documents (if applicable).
+                                        </li>
+                                        <li class="px-2 lg:py-2 lg:px-4">
+                                            Submit for review. Once submitted, your account
+                                            will undergo a two-step approval process by the
+                                            MOH reviewer and admin. You will receive an email
+                                            notification once your account is approved.
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Register Card -->
-            <div id="registerCard"
-                class="absolute top-0 left-0 z-10 hidden w-full max-w-4xl p-8 mx-auto mt-32 bg-white shadow-lg rounded-xl">
-                <h2 class="mb-6 text-2xl font-semibold text-center text-gray-700">Create Account</h2>
-
-                <form id="registerForm" onsubmit="return validateBeforeSubmit()"
-                    class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Full Name</label>
-                        <input type="text" placeholder="John Doe" class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Email Address</label>
-                        <input type="email" placeholder="email@example.com"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Organization</label>
-                        <input type="text" placeholder="Company or School"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm font-medium">Role / Title</label>
-                        <input type="text" placeholder="e.g. Marketing Manager"
-                            class="w-full px-4 py-2 border rounded-md bg-gray-50">
-                    </div>
-
-
-                    <div class="grid grid-cols-2 gap-4 mt-6 space-x-4 md:col-span-2">
-                        <button type="submit"
-                            class="px-6 py-2 font-bold text-white bg-blue-600 rounded hover:bg-blue-700">Create
-                            Account</button>
-                        <button type="button" onclick="hideRegister()"
-                            class="px-6 py-2 text-blue-600 rounded bg-gray-50 hover:underline">Already have an
-                            account?</button>
-                    </div>
-                </form>
+            <div class="flex mt-10 justify-center">
+                <a href="faq.html"
+                    class="flex items-center justify-center justify-end py-1 px-3 rounded-sm bg-blue-700 text-white text-xs font-medium">
+                    MORE FAQ
+                </a>
             </div>
         </div>
-    </div>
-    <script>
-        async function requestOtp() {
-            const email = document.getElementById("loginEmail").value;
-            if (!email) return alert("Please enter your email");
+    </section>
 
-            try {
-                // Hide any previous error
-                const errorMsg = document.getElementById("loginErrorMsg");
-                if (errorMsg) {
-                    errorMsg.classList.add("hidden");
-                    errorMsg.innerHTML = "";
-                }
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold mb-4">Contact Us</h3>
+            <p class="mb-6">For inquiries or access requests, reach out to the RMNCAH Coordination Hub team.</p>
+            <a href="mailto:advocacy@familyhealth.go.ke"
+                class="bg-indigo-700 text-white font-semibold px-8 py-3 rounded shadow hover:bg-indigo-800">
+                Send Message
+            </a>
+        </div>
+    </section>
 
-                const res = await fetch("https://api-tujulishane-hub.onrender.com/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
-                });
+    <!--Footer container-->
+    <footer class="flex flex-col items-center text-center text-surface">
+        <div class="">
+            <!-- Social media icons container -->
+            <div class="flex items-center justify-center mb-6 space-x-2">
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                        </svg>
+                    </span>
+                </a>
 
-                const data = await res.json();
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <i class="fab fa-facebook-f"></i>
+                </a>
 
-                if (!res.ok) {
-                    // Handle specific error cases
-                    if (res.status === 404) {
-                        // User not found - show visible message and button
-                        if (errorMsg) {
-                            errorMsg.innerHTML = `User not found. This email is not registered.<br><button id='createAccountBtn' class='mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700'>Create a new account</button>`;
-                            errorMsg.classList.remove("hidden");
-                            // Add click handler for the button
-                            setTimeout(() => {
-                                const btn = document.getElementById('createAccountBtn');
-                                if (btn) {
-                                    btn.onclick = function() {
-                                        const registerEmailInput = document.querySelector("#registerForm input[type=email]");
-                                        if (registerEmailInput) {
-                                            registerEmailInput.value = email;
-                                        }
-                                        showRegister();
-                                        errorMsg.classList.add("hidden");
-                                    };
-                                }
-                            }, 10);
-                        }
-                        return;
-                    } else {
-                        // Other errors
-                        throw new Error(data.message || "Failed to send OTP");
-                    }
-                }
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                        </svg>
+                    </span>
+                </a>
 
-                alert("OTP sent to your email!");
+                <a href="#!" type="button"
+                    class="p-3 font-medium leading-normal uppercase transition duration-150 ease-in-out bg-transparent rounded-full text-surface hover:bg-neutral-100 focus:outline-none focus:ring-0"
+                    data-twe-ripple-init>
+                    <span class="mx-auto [&>svg]:h-4 [&>svg]:w-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z" />
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </div>
 
-                // Save email for next step and mark as login flow
-                localStorage.setItem("pendingEmail", email);
-                localStorage.setItem("isLogin", "true");
-
-                // Go to OTP page
-                window.location.href = "otp.html";
-            } catch (err) {
-                const errorMsg = document.getElementById("loginErrorMsg");
-                if (errorMsg) {
-                    errorMsg.textContent = err.message;
-                    errorMsg.classList.remove("hidden");
-                } else {
-                    alert(err.message);
-                }
-            }
-        }
-    </script>
-    <script>
-        async function validateBeforeSubmit() {
-            const name = document.querySelector("#registerForm input[placeholder='John Doe']").value;
-            const email = document.querySelector("#registerForm input[type=email]").value;
-            const org = document.querySelector("#registerForm input[placeholder='Company or School']").value;
-            const role = document.querySelector("#registerForm input[placeholder='e.g. Marketing Manager']").value;
-
-            try {
-                // For now, just send name and email as the API expects
-                // TODO: Later add organization selection/creation functionality
-                const res = await fetch("https://api-tujulishane-hub.onrender.com/api/auth/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Registration failed");
-
-                alert("Account created! Check your email for OTP.");
-                localStorage.setItem("pendingEmail", email);
-                window.location.href = "otp.html";
-            } catch (err) {
-                alert(err.message);
-            }
-
-            return false;
-        }
-
-    </script>
-    <script>
-        const passwordInput = document.getElementById("password");
-        const confirmInput = document.getElementById("confirm_password");
-        const strengthBar = document.getElementById("strengthBar");
-        const strengthMsg = document.getElementById("passwordStrength");
-        const matchMsg = document.getElementById("passwordMatch");
-
-        // Only add event listeners if the elements exist (for forms that have password fields)
-        if (passwordInput && strengthMsg && strengthBar) {
-            passwordInput.addEventListener("input", () => {
-                const password = passwordInput.value;
-                const result = checkPasswordStrength(password);
-                strengthMsg.textContent = result.message;
-                strengthMsg.className = "text-sm mt-1 " + result.textClass;
-
-                // Update bar
-                strengthBar.className = `h-full ${result.barColor}`;
-                strengthBar.style.width = result.percent + "%";
-            });
-        }
-
-        if (confirmInput && passwordInput && matchMsg) {
-            confirmInput.addEventListener("input", () => {
-                if (confirmInput.value !== passwordInput.value) {
-                    matchMsg.textContent = "Passwords do not match.";
-                    matchMsg.className = "text-sm mt-1 text-red-600";
-                } else {
-                    matchMsg.textContent = "";
-                }
-            });
-        }
-
-        function checkPasswordStrength(password) {
-            const minLength = 8;
-            const hasUpper = /[A-Z]/.test(password);
-            const hasLower = /[a-z]/.test(password);
-            const hasNumber = /[0-9]/.test(password);
-            const hasSymbol = /[^A-Za-z0-9]/.test(password);
-
-            let score = 0;
-            if (password.length >= minLength) score += 1;
-            if (hasUpper) score += 1;
-            if (hasLower) score += 1;
-            if (hasNumber) score += 1;
-            if (hasSymbol) score += 1;
-
-            const levels = [
-                { percent: 0, barColor: "bg-transparent", textClass: "text-gray-600", message: "" },
-                { percent: 25, barColor: "bg-red-500", textClass: "text-red-600", message: "Weak password" },
-                { percent: 50, barColor: "bg-yellow-500", textClass: "text-yellow-600", message: "Could be stronger" },
-                { percent: 75, barColor: "bg-blue-500", textClass: "text-blue-600", message: "Almost there" },
-                { percent: 100, barColor: "bg-green-500", textClass: "text-green-600", message: "Strong password" },
-            ];
-
-            return levels[score];
-        }
-
-        function togglePassword(id, button) {
-            const input = document.getElementById(id);
-            const isHidden = input.type === "password";
-            input.type = isHidden ? "text" : "password";
-        }
-    </script>
-
-    <script>
-        function validateBeforeSubmit() {
-            // Only validate passwords if password elements exist
-            if (!passwordInput || !confirmInput) {
-                return true; // Allow submit if no password fields
-            }
-            
-            const password = passwordInput.value;
-            const confirm = confirmInput.value;
-            const result = checkPasswordStrength(password);
-
-            if (result.textClass !== "text-green-600") {
-                alert("Please use a stronger password.");
-                return false;
-            }
-
-            if (password !== confirm) {
-                alert("Passwords do not match.");
-                return false;
-            }
-
-            return true; // allow submit
-        }
-    </script>
-
-    <script>
-        function showRegister() {
-            const login = document.getElementById("loginCard");
-            const register = document.getElementById("registerCard");
-
-            login.classList.add('fade-slide-leave');
-            login.classList.add('fade-slide-leave-active');
-            setTimeout(() => {
-                login.style.display = "none";
-                login.classList.remove('fade-slide-leave', 'fade-slide-leave-active');
-
-                register.style.display = "block";
-                register.classList.add('fade-slide-enter');
-                requestAnimationFrame(() => {
-                    register.classList.add('fade-slide-enter-active');
-                });
-
-                setTimeout(() => {
-                    register.classList.remove('fade-slide-enter', 'fade-slide-enter-active');
-                }, 400);
-            }, 300);
-        }
-
-        function hideRegister() {
-            const login = document.getElementById("loginCard");
-            const register = document.getElementById("registerCard");
-
-            register.classList.add('fade-slide-leave');
-            register.classList.add('fade-slide-leave-active');
-            setTimeout(() => {
-                register.style.display = "none";
-                register.classList.remove('fade-slide-leave', 'fade-slide-leave-active');
-
-                login.style.display = "block";
-                login.classList.add('fade-slide-enter');
-                requestAnimationFrame(() => {
-                    login.classList.add('fade-slide-enter-active');
-                });
-
-                setTimeout(() => {
-                    login.classList.remove('fade-slide-enter', 'fade-slide-enter-active');
-                }, 400);
-            }, 300);
-        }
-    </script>
-
-    </div>
+        <!--Copyright section-->
+        <div class="w-full p-4 text-xs text-center bg-black/5">
+            © 2025 Copyright:
+            <a href=""> RMNCAH Hub </a>
+        </div>
+    </footer>
+    <!-- Removed script that sets localStorage with undefined 'data' to fix ReferenceError. This should only be set after login. -->
 
     <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <!-- Leaflet JS -->
+    <script src="styles/effects.js"></script>
+    <script src="styles/loadNavg.js"></script>
+    <script src="styles/authnav.js"></script>
 
+    <!-- Load Real Statistics -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Fetch project statistics from public endpoint (no authentication required)
+                const statsResponse = await fetch(`${window.BASE_URL}/api/projects/public/statistics`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    const stats = statsData.data || {};
+                    
+                    // Update total projects count
+                    const projectsCountElement = document.getElementById('totalProjectsCount');
+                    if (projectsCountElement) {
+                        animateCounter(projectsCountElement, stats.totalProjects || 0);
+                    }
+                    
+                    // Update counties count
+                    const countiesCountElement = document.getElementById('totalCountiesCount');
+                    if (countiesCountElement) {
+                        animateCounter(countiesCountElement, stats.totalCounties || 0);
+                    }
+                    
+                    // Update stakeholders count
+                    const stakeholdersCountElement = document.getElementById('totalStakeholdersCount');
+                    if (stakeholdersCountElement) {
+                        animateCounter(stakeholdersCountElement, stats.totalStakeholders || 0);
+                    }
+                    
+                    console.log('📊 Statistics loaded:', stats);
+                } else {
+                    console.warn('⚠️ Failed to fetch project statistics:', statsResponse.status);
+                    // Set dash on error
+                    document.getElementById('totalProjectsCount').textContent = '—';
+                    document.getElementById('totalCountiesCount').textContent = '—';
+                    document.getElementById('totalStakeholdersCount').textContent = '—';
+                }
+            } catch (error) {
+                console.error('❌ Error loading statistics:', error);
+                // Set dash on error
+                document.getElementById('totalProjectsCount').textContent = '—';
+                document.getElementById('totalCountiesCount').textContent = '—';
+                document.getElementById('totalStakeholdersCount').textContent = '—';
+            }
+        });
+        
+        // Animate counter from 0 to target value
+        function animateCounter(element, targetValue) {
+            const duration = 1500; // 1.5 seconds
+            const startValue = 0;
+            const startTime = performance.now();
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function (easeOutCubic)
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * easeProgress);
+                element.textContent = currentValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = targetValue;
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+    </script>
 
 </body>
 

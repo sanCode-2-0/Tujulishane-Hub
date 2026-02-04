@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMNCAH</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Tailwind CSS (with custom config using inline script) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1e40af", // Custom Blue
+            secondary: "#f59e0b", // Custom Amber
+            accent: "#10b981", // Custom Green
+            dark: "#1f2937", // Gray-800
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="styles/main.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+  <script src="styles/main.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Mapbox CSS -->
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+  <!-- Mapbox JS -->
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- Authentication utilities -->
+  <script type="module">
+    // Try to load a local config override (frontend/config.local.js) if present.
+    (function () {
+      try {
+        var s = document.createElement("script");
+        s.src = "./config.local.js";
+        s.async = false;
+        document.head.appendChild(s);
+      } catch (e) { }
+    })();
+
+    // Use window.BASE_URL which is already set by config.js loaded via script tag
+    const BASE_URL = window.BASE_URL;
+    console.log(
+      "[donor-management.html] Using BASE_URL:",
+      BASE_URL,
+      "- Environment:",
+      window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+    );
+  </script>
+  <!-- Backend URL Configuration -->
+  <script src="./config.js"></script>
+  <script src="./set-base-url.js"></script>
+  <!-- Modal Utilities -->
+  <script src="./modal-utils.js"></script>
+  <script src="auth.js"></script>
+  <!-- Optional: Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#272E28",
+            secondary: "#f59e0b",
+            accent: "#00474C",
+            button: "#14B04C",
+            button_two: "#3482FF",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .fade-slide-enter {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .fade-slide-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.4s ease;
+    }
+
+    .fade-slide-leave {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .fade-slide-leave-active {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+
+<body x-data="manageDonorsApp()" x-init="init()" class="text-gray-800">
+  <script>
+    window.manageDonorsApp = function manageDonorsApp() {
+      return {
+        announcements: [],
+        myProjects: [],
+        organizations: [],
+        myCollaborationRequests: [], // Track user's submitted requests
+        chatMessages: [],
+        sendingMessage: false,
+        newMessage: "",
+        searchText: "",
+        filterStatus: "",
+        sortOrder: "NEWEST",
+        activeSlide: 0,
+        media: [
+          { type: 'image', src: 'resources/images/main-1.jpg' },
+          { type: 'image', src: 'resources/images/main-2.jpg' },
+          { type: 'image', src: 'resources/images/main-3.jpg' }
+        ],
+        loading: true,
+        creating: false,
+        submitting: false,
+        showCreateModal: false,
+        showDetailsModal: false,
+        showRequestModal: false,
+        selectedAnnouncement: null,
+        userRole: null, // Will be set in init from user object
+        currentUser: null, // Store current user data including email
+        newAnnouncement: {
+          projectId: "",
+          title: "",
+          content: "",
+          deadline: "",
+        },
+        collaborationRequest: {
+          organizationId: "",
+          proposedContribution: "",
+        },
+
+        async init() {
+          // Wait for auth.js to load user data and get it directly
+          const user = await this.waitForAuth();
+
+          // Set user role and store user data from the returned user object
+          if (user && user.role) {
+            this.userRole = user.role;
+            this.currentUser = user; // Store full user object
+          } else {
+            // Fallback: try to read from localStorage
+            const userStr = localStorage.getItem("currentUser");
+            if (userStr) {
+              try {
+                const parsedUser = JSON.parse(userStr);
+                this.userRole = parsedUser.role;
+                this.currentUser = parsedUser;
+              } catch (e) {
+                console.error("Error parsing user data:", e);
+              }
+            }
+            // Final fallback to userRole if it exists
+            if (!this.userRole) {
+              this.userRole = localStorage.getItem("userRole");
+            }
+          }
+          console.log("🔍 User Role:", this.userRole); // Debug log
+          console.log("🔍 Current User:", this.currentUser); // Debug log
+
+          // Populate user dropdown in navigation
+          if (this.currentUser) {
+            console.log("👤 Populating user dropdown...");
+            this.populateUserDropdown(this.currentUser);
+          }
+
+          await this.loadAnnouncements();
+
+          // Always try to load projects if user is authenticated
+          // The backend will handle authorization
+          const token = localStorage.getItem("accessToken");
+          if (token) {
+            console.log("🔍 User authenticated, loading projects...");
+            await this.loadMyProjects();
+            await this.loadOrganizations();
+            // Load user's collaboration requests to prevent duplicates
+            await this.loadMyCollaborationRequests();
+          } else {
+            console.warn("⚠️ No access token found, skipping project load");
+          }
+        },
+
+        // Populate user dropdown with current user data
+        populateUserDropdown(user) {
+          try {
+            const userDisplayName =
+              document.getElementById("userDisplayName");
+            const userNameDisplay =
+              document.getElementById("userNameDisplay");
+            const userEmailDisplay =
+              document.getElementById("userEmailDisplay");
+            const userRoleDisplay =
+              document.getElementById("userRoleDisplay");
+            const userStatusDisplay =
+              document.getElementById("userStatusDisplay");
+
+            if (userDisplayName)
+              userDisplayName.textContent = user.name || "User";
+            if (userNameDisplay)
+              userNameDisplay.textContent = user.name || "Loading...";
+            if (userEmailDisplay)
+              userEmailDisplay.textContent = user.email || "";
+            if (userRoleDisplay)
+              userRoleDisplay.textContent = user.role || "N/A";
+            if (userStatusDisplay) {
+              userStatusDisplay.textContent = user.status || "N/A";
+              // Update status color based on status
+              userStatusDisplay.className =
+                user.status === "ACTIVE"
+                  ? "font-medium text-green-600"
+                  : "font-medium text-gray-600";
+            }
+
+            // Show role-based navs
+            if (
+              user.role === "ADMIN" ||
+              user.role === "SUPER_ADMIN" ||
+              user.role === "SUPER_ADMIN_REVIEWER" ||
+              user.role === "SUPER_ADMIN_APPROVER" ||
+              user.role === "SUPER_ADMIN_REVIEWER" ||
+              user.role === "SUPER_ADMIN_APPROVER"
+            ) {
+              const adminNav = document.getElementById("adminNav");
+              if (adminNav) adminNav.classList.remove("hidden");
+            }
+            if (user.role === "DONOR") {
+              const donorNav = document.getElementById("donorNav");
+              if (donorNav) donorNav.classList.remove("hidden");
+            }
+
+            console.log("✅ User dropdown populated successfully!");
+          } catch (error) {
+            console.error("❌ Error populating user dropdown:", error);
+          }
+        },
+
+        async waitForAuth() {
+          // Wait for AuthManager to be available and initialized
+          let attempts = 0;
+          while (attempts < 50) {
+            // Max 5 seconds
+            if (
+              window.authManager &&
+              typeof window.authManager.getCurrentUser === "function"
+            ) {
+              // Try to get current user and return it directly
+              try {
+                const user = await window.authManager.getCurrentUser();
+                return user; // Return the user object
+              } catch (e) {
+                // User not logged in or error
+                return null;
+              }
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            attempts++;
+          }
+          return null; // Timeout - no auth available
+        },
+
+        async loadAnnouncements() {
+          try {
+            const response = await fetch(
+              `${window.BASE_URL}/api/announcements`
+            );
+            const data = await response.json();
+            if (data.status === 200) {
+              this.announcements = data.data;
+            }
+          } catch (error) {
+            console.error("Error loading announcements:", error);
+            await showAlert("Failed to load announcements", "Error", "error");
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async loadMyProjects() {
+          try {
+            const token = localStorage.getItem("accessToken");
+            console.log(
+              "🔍 Loading my projects with token:",
+              token ? "Present" : "Missing"
+            );
+
+            const response = await fetch(
+              `${window.BASE_URL}/api/projects/my-projects`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            console.log("🔍 My projects response status:", response.status);
+
+            if (!response.ok) {
+              console.error(
+                "❌ Failed to load projects. Status:",
+                response.status
+              );
+              if (response.status === 403) {
+                console.error(
+                  "❌ 403 Forbidden - You may not have PARTNER role"
+                );
+              } else if (response.status === 401) {
+                console.error(
+                  "❌ 401 Unauthorized - Token may be invalid or expired"
+                );
+              }
+              this.myProjects = [];
+              return;
+            }
+
+            const data = await response.json();
+            console.log("🔍 My projects response data:", data);
+
+            if (data.status === 200) {
+              this.myProjects = data.data || [];
+              console.log(
+                "✅ Loaded projects:",
+                this.myProjects.length,
+                "projects"
+              );
+              console.log("📋 Projects:", this.myProjects);
+            } else {
+              console.warn("⚠️ Unexpected response status:", data.status);
+              this.myProjects = [];
+            }
+          } catch (error) {
+            console.error("❌ Error loading projects:", error);
+            this.myProjects = [];
+          }
+        },
+
+        async loadOrganizations() {
+          try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(
+              `${window.BASE_URL}/api/organizations`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            // Check if response is OK before parsing JSON
+            if (!response.ok) {
+              // Silently handle 403 - organizations endpoint may be restricted
+              this.organizations = []; // Set empty array
+              return;
+            }
+
+            const data = await response.json();
+            if (data.status === 200) {
+              this.organizations = data.data;
+            }
+          } catch (error) {
+            // Silently handle errors - organizations are optional
+            this.organizations = []; // Set empty array on error
+          }
+        },
+
+        async loadMyCollaborationRequests() {
+          try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(
+              `${window.BASE_URL}/api/collaboration-requests/my-requests`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            if (!response.ok) {
+              console.warn(
+                "Could not load collaboration requests:",
+                response.status
+              );
+              this.myCollaborationRequests = [];
+              return;
+            }
+
+            const data = await response.json();
+            if (data.status === 200) {
+              this.myCollaborationRequests = data.data || [];
+              console.log(
+                "✅ Loaded collaboration requests:",
+                this.myCollaborationRequests.length
+              );
+            } else {
+              this.myCollaborationRequests = [];
+            }
+          } catch (error) {
+            console.error("Error loading collaboration requests:", error);
+            this.myCollaborationRequests = [];
+          }
+        },
+
+        async createAnnouncement() {
+          this.creating = true;
+          try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(
+              `${window.BASE_URL}/api/announcements`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(this.newAnnouncement),
+              }
+            );
+
+            // Check if response is OK before parsing JSON
+            if (!response.ok) {
+              if (response.status === 403) {
+                await showAlert(
+                  "Permission denied. You may not have access to create announcements.",
+                  "Permission Denied",
+                  "error"
+                );
+              } else if (response.status === 401) {
+                await showAlert(
+                  "You must be logged in to create announcements.",
+                  "Authentication Required",
+                  "warning"
+                );
+              } else {
+                await showAlert(
+                  `Error: Server returned status ${response.status}`,
+                  "Error",
+                  "error"
+                );
+              }
+              return;
+            }
+
+            const data = await response.json();
+
+            if (data.status === 201) {
+              await showAlert(
+                "Announcement created successfully!",
+                "Success",
+                "success"
+              );
+              this.showCreateModal = false;
+              this.newAnnouncement = {
+                projectId: "",
+                title: "",
+                content: "",
+                deadline: "",
+              };
+              await this.loadAnnouncements();
+            } else {
+              await showAlert(
+                "Error: " + (data.message || "Unknown error occurred"),
+                "Error",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Error creating announcement:", error);
+            await showAlert(
+              "Failed to create announcement. Please try again.",
+              "Error",
+              "error"
+            );
+          } finally {
+            this.creating = false;
+          }
+        },
+
+        viewDetails(announcement) {
+          this.selectedAnnouncement = announcement;
+          this.showDetailsModal = true;
+          this.loadChatMessages(announcement.id);
+        },
+
+        requestCollaboration(announcement) {
+          this.selectedAnnouncement = announcement;
+          this.showRequestModal = true;
+          this.showDetailsModal = false;
+        },
+
+        async submitRequest() {
+          this.submitting = true;
+          try {
+            const token = localStorage.getItem("accessToken");
+
+            // Prepare request payload - only include organizationId if it's not empty
+            const payload = {
+              proposedContribution:
+                this.collaborationRequest.proposedContribution,
+            };
+
+            // Only add organizationId if it's set (not empty string)
+            if (this.collaborationRequest.organizationId) {
+              payload.organizationId = parseInt(
+                this.collaborationRequest.organizationId
+              );
+            }
+
+            const response = await fetch(
+              `${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+              }
+            );
+
+            // Always try to parse JSON to get the error message
+            const data = await response.json();
+
+            // Check if response is OK
+            if (!response.ok) {
+              if (response.status === 403) {
+                await showAlert(
+                  "Permission denied: " +
+                  (data.message ||
+                    "You may not have access to submit collaboration requests."),
+                  "Permission Denied",
+                  "error"
+                );
+              } else if (response.status === 401) {
+                await showAlert(
+                  "Authentication required: " +
+                  (data.message ||
+                    "You must be logged in to submit a collaboration request."),
+                  "Authentication Required",
+                  "warning"
+                );
+              } else if (response.status === 400) {
+                await showAlert(
+                  "Invalid request: " +
+                  (data.message ||
+                    "Please check your input and try again."),
+                  "Invalid Request",
+                  "error"
+                );
+              } else {
+                await showAlert(
+                  `Error: ${data.message ||
+                  "Server returned status " + response.status
+                  }`,
+                  "Error",
+                  "error"
+                );
+              }
+              return;
+            }
+
+            if (data.status === 201) {
+              await showAlert(
+                "Collaboration request submitted successfully! The Ministry of Health will review your request.",
+                "Success",
+                "success"
+              );
+              this.showRequestModal = false;
+              this.collaborationRequest = {
+                organizationId: "",
+                proposedContribution: "",
+              };
+              // Reload collaboration requests to update the UI
+              await this.loadMyCollaborationRequests();
+            } else {
+              await showAlert(
+                "Error: " + (data.message || "Unknown error occurred"),
+                "Error",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Error submitting request:", error);
+            await showAlert(
+              "Failed to submit collaboration request. Please try again.",
+              "Error",
+              "error"
+            );
+          } finally {
+            this.submitting = false;
+          }
+        },
+
+        // Helper method to check if announcement was created by current user
+        isOwnAnnouncement(announcement) {
+          if (!this.currentUser || !announcement || !announcement.createdBy) {
+            console.log("🔍 isOwnAnnouncement: Missing data", {
+              hasCurrentUser: !!this.currentUser,
+              hasAnnouncement: !!announcement,
+              hasCreatedBy: !!(announcement && announcement.createdBy),
+            });
+            return false;
+          }
+          // Compare by email as it's unique
+          const isOwn =
+            this.currentUser.email === announcement.createdBy.email;
+          console.log("🔍 isOwnAnnouncement:", {
+            currentUserEmail: this.currentUser.email,
+            createdByEmail: announcement.createdBy.email,
+            isOwn: isOwn,
+          });
+          return isOwn;
+        },
+
+        // Helper method to check if user has already requested collaboration for this announcement
+        hasAlreadyRequested(announcement) {
+          if (!announcement || !this.myCollaborationRequests) {
+            return false;
+          }
+
+          const hasRequested = this.myCollaborationRequests.some(
+            (request) =>
+              request.announcement &&
+              request.announcement.id === announcement.id
+          );
+
+          console.log("🔍 hasAlreadyRequested:", {
+            announcementId: announcement.id,
+            totalRequests: this.myCollaborationRequests.length,
+            hasRequested: hasRequested,
+          });
+
+          return hasRequested;
+        },
+
+        isDeadlineImminent(deadline) {
+          if (!deadline) return false;
+          const now = new Date();
+          const deadlineDate = new Date(deadline);
+          const diffTime = deadlineDate - now;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          return diffDays <= 7 && diffDays >= 0; // Imminent if within 7 days and not past
+        },
+
+        async loadChatMessages(announcementId) {
+          try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(`${window.BASE_URL}/api/announcements/${announcementId}/messages`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+              const data = await response.json();
+              this.chatMessages = data.data || [];
+            }
+          } catch (error) {
+            console.error("Error loading chat messages:", error);
+          }
+        },
+
+        async sendMessage() {
+          if (!this.newMessage.trim()) return;
+          this.sendingMessage = true;
+          try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({ message: this.newMessage })
+            });
+            if (response.ok) {
+              this.newMessage = "";
+              await this.loadChatMessages(this.selectedAnnouncement.id);
+            } else {
+              await showAlert("Failed to send message", "Error", "error");
+            }
+          } catch (error) {
+            console.error("Error sending message:", error);
+            await showAlert("Failed to send message", "Error", "error");
+          } finally {
+            this.sendingMessage = false;
+          }
+        },
+
+        async editMessage(msg) {
+          const newMessage = prompt("Edit message:", msg.message);
+          if (newMessage && newMessage.trim() && newMessage !== msg.message) {
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ message: newMessage })
+              });
+              if (response.ok) {
+                await this.loadChatMessages(this.selectedAnnouncement.id);
+              } else {
+                await showAlert("Failed to edit message", "Error", "error");
+              }
+            } catch (error) {
+              console.error("Error editing message:", error);
+              await showAlert("Failed to edit message", "Error", "error");
+            }
+          }
+        },
+
+        async deleteMessage(msg) {
+          if (confirm("Are you sure you want to delete this message?")) {
+            try {
+              const token = localStorage.getItem("accessToken");
+              const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              });
+              if (response.ok) {
+                await this.loadChatMessages(this.selectedAnnouncement.id);
+              } else {
+                await showAlert("Failed to delete message", "Error", "error");
+              }
+            } catch (error) {
+              console.error("Error deleting message:", error);
+              await showAlert("Failed to delete message", "Error", "error");
+            }
+          }
+        },
+      };
+    };
+  </script>
+  <div class="min-h-screen">
+    <div class="" id="nav-placeholder"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Navigation Tabs -->
+      <div class="mb-8">
+        <nav class="flex space-x-8" id="tabNavigation">
+          <!-- Tabs will be dynamically generated based on user role -->
+        </nav>
+      </div>
+
+      <!-- Donors List (ADMIN ONLY) -->
+      <div id="donorsSection" class="tab-content">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <!-- Admin Welcome Banner (Only visible to admins) -->
+            <div id="adminBanner"
+              class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mb-6 hidden">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-user-shield text-purple-600 text-3xl"></i>
+                </div>
+                <div class="ml-4 flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    Donor Organizations Management
+                  </h3>
+                  <p class="text-sm text-gray-700 mb-3">
+                    As a system administrator, you can view all donor
+                    organizations and manage their partnerships with
+                    implementing partners.
+                  </p>
+                  <div class="bg-white rounded-md p-3 border border-purple-100">
+                    <p class="text-sm text-gray-600 mb-2 font-medium">
+                      <i class="fas fa-info-circle text-purple-500 mr-2"></i>Admin Capabilities:
+                    </p>
+                    <ul class="text-xs text-gray-600 space-y-1 ml-6">
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>View
+                        all donor organizations in the system
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Monitor donor-partner relationships
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Manage
+                        partnerships on behalf of donors
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Search
+                        and filter donor organizations
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Admin-only section header and controls -->
+            <div id="adminDonorControls" class="hidden">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    All Donors
+                  </h3>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Click on a donor to view and manage their partner
+                    organizations
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span id="donorCount" class="text-sm text-gray-500"></span>
+                </div>
+              </div>
+
+              <!-- Search and Filters -->
+              <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4" id="donorSearchFilters">
+                <div class="col-span-2">
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    <i class="fas fa-search mr-1"></i>Search Donors
+                  </label>
+                  <div class="relative">
+                    <input type="text" id="donorSearch" placeholder="Search donors by name or email..."
+                      class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    <i class="fas fa-filter mr-1"></i>Filter by Status
+                  </label>
+                  <select id="donorApprovalFilter"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">All Status</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Loading State -->
+              <div id="donorsLoading" class="hidden">
+                <div class="animate-pulse space-y-4">
+                  <div class="flex items-center py-4 border-b">
+                    <div class="h-10 w-10 bg-gray-300 rounded-full mr-4"></div>
+                    <div class="flex-1">
+                      <div class="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
+                      <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                    </div>
+                  </div>
+                  <div class="flex items-center py-4 border-b">
+                    <div class="h-10 w-10 bg-gray-300 rounded-full mr-4"></div>
+                    <div class="flex-1">
+                      <div class="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
+                      <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End of admin-only controls -->
+            </div>
+
+            <!-- Donors List -->
+            <div id="donorsList" class="space-y-4">
+              <!-- Donors will be loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="donorsPagination" class="mt-6 flex justify-between items-center hidden">
+              <div class="text-sm text-gray-700">
+                Showing <span id="donorsPageInfo"></span>
+              </div>
+              <div class="flex space-x-2">
+                <button id="donorsPrevBtn" onclick="previousDonorsPage()"
+                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Previous
+                </button>
+                <button id="donorsNextBtn" onclick="nextDonorsPage()"
+                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Partners Section -->
+      <div id="partnersSection" class="tab-content hidden">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <!-- Welcome Banner for Donors -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-handshake text-blue-600 text-3xl"></i>
+                </div>
+                <div class="ml-4 flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    Partner Management Dashboard
+                  </h3>
+                  <p class="text-sm text-gray-700 mb-3">
+                    Welcome to your partner management portal. Here you can
+                    link partner organizations to your donor account, enabling
+                    collaborative project management and funding oversight.
+                  </p>
+                  <div class="bg-white rounded-md p-3 border border-blue-100">
+                    <p class="text-sm text-gray-600 mb-2 font-medium">
+                      <i class="fas fa-info-circle text-blue-500 mr-2"></i>What you can do:
+                    </p>
+                    <ul class="text-xs text-gray-600 space-y-1 ml-6">
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Link
+                        partner organizations to your account
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>View
+                        and manage all your partnerships
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Monitor partner project activities
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-green-500 mr-2"></i>Receive notifications about partnership changes
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  My Partner Organizations
+                </h3>
+                <p class="text-sm text-gray-500 mt-1">
+                  Organizations you've linked for collaboration and project
+                  oversight
+                </p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span id="partnerCount" class="text-sm text-gray-500"></span>
+              </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4" id="partnerSearchFilters">
+              <div class="col-span-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                  <i class="fas fa-search mr-1"></i>Search Partners
+                </label>
+                <div class="relative">
+                  <input type="text" id="partnerSearch" placeholder="Search partners by name or email..."
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                  <i class="fas fa-filter mr-1"></i>Filter by Status
+                </label>
+                <select id="partnerApprovalFilter"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">All Status</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="partnersLoading" class="hidden">
+              <div class="animate-pulse space-y-4">
+                <div class="border rounded-lg p-4">
+                  <div class="h-4 bg-gray-300 rounded w-1/3 mb-2"></div>
+                  <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+                <div class="border rounded-lg p-4">
+                  <div class="h-4 bg-gray-300 rounded w-1/3 mb-2"></div>
+                  <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Partners List -->
+            <div id="partnersList" class="space-y-4">
+              <!-- Partners will be loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="partnersPagination" class="mt-6 flex justify-between items-center hidden">
+              <div class="text-sm text-gray-700">
+                Showing <span id="partnersPageInfo"></span>
+              </div>
+              <div class="flex space-x-2">
+                <button id="partnersPrevBtn" onclick="previousPartnersPage()"
+                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Previous
+                </button>
+                <button id="partnersNextBtn" onclick="nextPartnersPage()"
+                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Next
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900 mb-1">
+                  Ready to add a partner?
+                </p>
+                <p class="text-xs text-gray-600">
+                  Link approved partner organizations to enable them to create
+                  and manage projects under your funding.
+                </p>
+              </div>
+              <button onclick="showLinkPartnerModal()"
+                class="ml-4 inline-flex items-center px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-all hover:shadow-md">
+                <i class="fas fa-plus-circle mr-2"></i>Link New Partner
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Donor Section (for partners) -->
+      <div id="myDonorSection" class="tab-content hidden">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+              My Donor Organization
+            </h3>
+            <div id="donorInfo" class="space-y-4">
+              <!-- Donor info will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link Partner Modal -->
+  <div id="linkPartnerModal"
+    class="fixed inset-0 backdrop-blur-md my-auto bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Link Partner Organization
+        </h3>
+        <form id="linkPartnerForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select Partner Organization</label>
+            <select id="partnerSelect" required
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Choose a partner...</option>
+              <!-- Available partners will be loaded here -->
+            </select>
+            <p class="text-xs text-gray-500 mt-1">
+              Only shows approved partner organizations that aren't already
+              linked to a donor
+            </p>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button type="button" onclick="hideLinkPartnerModal()"
+              class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+              Cancel
+            </button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+              Link Partner
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Partners Modal -->
+  <div id="viewPartnersModal"
+    class="fixed backdrop-blur-md inset-0 min-h-screen my-auto bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-medium text-gray-900">
+            Partners for <span id="donorNameDisplay"></span>
+          </h3>
+          <button onclick="hideViewPartnersModal()" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="viewPartnersList" class="space-y-3 max-h-96 overflow-y-auto">
+          <!-- Partners will be loaded here -->
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button onclick="hideViewPartnersModal()"
+            class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal"
+    class="fixed inset-0 backdrop-blur-md bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <div class="flex items-center justify-center h-12 w-12 mx-auto bg-blue-100 rounded-full">
+          <i class="fas fa-question-circle text-blue-600 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 text-center mt-4" id="confirmationTitle">
+          Confirm Action
+        </h3>
+        <p class="text-sm text-gray-500 text-center mt-2" id="confirmationMessage">
+          Are you sure you want to proceed?
+        </p>
+        <div class="flex justify-center space-x-3 mt-6">
+          <button type="button" onclick="hideConfirmationModal()"
+            class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+            Cancel
+          </button>
+          <button type="button" id="confirmationConfirmBtn"
+            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="styles/loadNav.js"></script>
+  <script src="styles/authnav.js"></script>
+  <script>
+    let currentUser = null;
+    let allDonors = [];
+    let allPartners = [];
+    let filteredDonors = [];
+    let filteredPartners = [];
+
+    // Pagination state
+    let donorsPagination = {
+      currentPage: 0,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 0,
+    };
+
+    let partnersPagination = {
+      currentPage: 0,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 0,
+    };
+
+    // Confirmation modal state
+    let confirmationCallback = null;
+
+    function updateUserDisplayWhenNavReady(user) {
+      // Check if nav is already loaded
+      const navPlaceholder = document.getElementById("nav-placeholder");
+      if (navPlaceholder && navPlaceholder.innerHTML.trim() !== "") {
+        updateUserDisplay(user);
+      } else {
+        // Wait for nav to be loaded
+        window.addEventListener(
+          "navLoaded",
+          () => {
+            updateUserDisplay(user);
+          },
+          { once: true }
+        );
+      }
+    }
+
+    function updateUserDisplay(user) {
+      // Update navigation display
+      const userDisplayName = document.getElementById("userDisplayName");
+      const userNameDisplay = document.getElementById("userNameDisplay");
+      const userEmailDisplay = document.getElementById("userEmailDisplay");
+      const userRoleDisplay = document.getElementById("userRoleDisplay");
+
+      if (userDisplayName) userDisplayName.textContent = user.name || "User";
+      if (userNameDisplay) userNameDisplay.textContent = user.name || "User";
+      if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+      if (userRoleDisplay)
+        userRoleDisplay.textContent = user.role || "Unknown";
+    }
+
+    // Initialize page
+    document.addEventListener("DOMContentLoaded", async function () {
+      const auth = new AuthManager();
+      const token = auth.getToken();
+
+      if (!token) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        // Get current user info
+        const userResponse = await fetch(`${auth.baseUrl}/api/auth/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Failed to get user info");
+        }
+
+        currentUser = await userResponse.json();
+        console.log("DEBUG: Full userResponse JSON:", currentUser);
+        console.log("DEBUG: currentUser.data:", currentUser.data);
+        console.log("DEBUG: currentUser.role:", currentUser.role);
+        console.log("DEBUG: currentUser.data.role:", currentUser.data?.role);
+
+        // Handle both response formats (with or without data wrapper)
+        const userData = currentUser.data || currentUser;
+        currentUser = userData;
+
+        console.log("DEBUG: Final currentUser object:", currentUser);
+        console.log(
+          "DEBUG: currentUser.role after assignment:",
+          currentUser.role
+        );
+
+        // Update user display after nav is loaded
+        updateUserDisplayWhenNavReady(currentUser);
+
+        // Check if user is donor or super admin
+        console.log("DEBUG: Checking role access...");
+        console.log("DEBUG: currentUser.role value:", currentUser.role);
+        console.log(
+          "DEBUG: currentUser.role === 'DONOR':",
+          currentUser.role === "DONOR"
+        );
+        console.log(
+          "DEBUG: currentUser.role === 'SUPER_ADMIN_APPROVER':",
+          currentUser.role === "SUPER_ADMIN_APPROVER"
+        );
+
+        if (
+          currentUser.role !== "DONOR" &&
+          currentUser.role !== "SUPER_ADMIN_APPROVER"
+        ) {
+          console.log("DEBUG: Access denied - role check failed");
+          await showAlert(
+            "Access denied. Only donors and approving admins can access this page.",
+            "Access Denied",
+            "error"
+          );
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        console.log("DEBUG: Access granted - proceeding with initialization");
+
+        // Setup tabs based on user role
+        setupTabsForRole();
+
+        // Load initial data
+        if (
+          currentUser.role === "SUPER_ADMIN_APPROVER" ||
+          currentUser.role === "SUPER_ADMIN"
+        ) {
+          // Show admin banner and controls
+          const adminBanner = document.getElementById("adminBanner");
+          if (adminBanner) {
+            adminBanner.classList.remove("hidden");
+          }
+          const adminDonorControls =
+            document.getElementById("adminDonorControls");
+          if (adminDonorControls) {
+            adminDonorControls.classList.remove("hidden");
+          }
+          document.getElementById("donorsSection").classList.remove("hidden");
+          loadDonors();
+        } else if (currentUser.role === "DONOR") {
+          // Show the partners section and load linked partners
+          document
+            .getElementById("partnersSection")
+            .classList.remove("hidden");
+          loadMyPartners();
+        } else if (currentUser.role === "PARTNER") {
+          document
+            .getElementById("myDonorSection")
+            .classList.remove("hidden");
+          loadMyDonor();
+        }
+      } catch (error) {
+        console.error("Error initializing page:", error);
+        await showAlert(
+          "Error initializing page: " + error.message,
+          "Error",
+          "error"
+        );
+        // window.location.href = "index.html";
+      }
+    });
+
+    function setupTabsForRole() {
+      const tabNavigation = document.getElementById("tabNavigation");
+      if (!tabNavigation) {
+        console.error("tabNavigation element not found");
+        return;
+      }
+
+      if (
+        currentUser.role === "SUPER_ADMIN_APPROVER" ||
+        currentUser.role === "SUPER_ADMIN"
+      ) {
+        tabNavigation.innerHTML = `
+            <button id="donorsTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
+              All Donors
+            </button>
+            <button id="myPartnersTab" class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 px-1 py-2 font-medium">
+              All Partners
+            </button>
+          `;
+      } else if (currentUser.role === "DONOR") {
+        tabNavigation.innerHTML = `
+            <button id="myPartnersTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
+              Donor Dashboard
+            </button>
+          `;
+      } else if (currentUser.role === "PARTNER") {
+        tabNavigation.innerHTML = `
+            <button id="myDonorTab" class="tab-button active border-b-2 border-blue-500 text-blue-600 px-1 py-2 font-medium">
+              My Donor
+            </button>
+          `;
+      }
+
+      setupTabs();
+    }
+
+    function setupTabs() {
+      const tabs = document.querySelectorAll(".tab-button");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", function () {
+          // Remove active class from all tabs
+          tabs.forEach((t) => {
+            t.classList.remove("active", "border-blue-500", "text-blue-600");
+            t.classList.add("border-transparent", "text-gray-500");
+          });
+
+          // Add active class to clicked tab
+          this.classList.add("active", "border-blue-500", "text-blue-600");
+          this.classList.remove("border-transparent", "text-gray-500");
+
+          // Show corresponding content
+          const tabContents = document.querySelectorAll(".tab-content");
+          tabContents.forEach((content) => content.classList.add("hidden"));
+
+          if (this.id === "donorsTab") {
+            document
+              .getElementById("donorsSection")
+              .classList.remove("hidden");
+            loadDonors();
+          } else if (this.id === "myPartnersTab") {
+            document
+              .getElementById("partnersSection")
+              .classList.remove("hidden");
+            loadMyPartners();
+          } else if (this.id === "myDonorTab") {
+            document
+              .getElementById("myDonorSection")
+              .classList.remove("hidden");
+            loadMyDonor();
+          }
+        });
+      });
+    }
+
+    async function loadDonors() {
+      const auth = new AuthManager();
+      const token = auth.getToken();
+
+      // Show loading state
+      showDonorsLoading();
+
+      try {
+        const response = await fetch(`${auth.baseUrl}/api/auth/donors`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to load donors");
+        }
+
+        const donors = await response.json();
+        allDonors = donors.data || donors;
+        filteredDonors = [...allDonors];
+
+        // Setup search and filter listeners
+        setupDonorSearchAndFilters();
+
+        // Display first page
+        updateDonorsPagination();
+        displayDonorsPage();
+        hideDonorsLoading();
+      } catch (error) {
+        console.error("Error loading donors:", error);
+        hideDonorsLoading();
+        showDonorsError(error.message);
+      }
+    }
+
+    async function loadMyPartners() {
+      const auth = new AuthManager();
+      const token = auth.getToken();
+
+      // Show loading state
+      showPartnersLoading();
+
+      try {
+        const response = await fetch(
+          `${auth.baseUrl}/api/auth/donor/${currentUser.id}/partners`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load partners");
+        }
+
+        const partners = await response.json();
+        allPartners = partners.data || partners;
+        filteredPartners = [...allPartners];
+
+        // Setup search and filter listeners
+        setupPartnerSearchAndFilters();
+
+        // Display first page
+        updatePartnersPagination();
+        displayPartnersPage();
+        hidePartnersLoading();
+      } catch (error) {
+        console.error("Error loading partners:", error);
+        hidePartnersLoading();
+        showPartnersError(error.message);
+      }
+    }
+
+    // Loading states
+    function showDonorsLoading() {
+      document.getElementById("donorsLoading").classList.remove("hidden");
+      document.getElementById("donorsList").classList.add("hidden");
+      document.getElementById("donorsPagination").classList.add("hidden");
+    }
+
+    function hideDonorsLoading() {
+      document.getElementById("donorsLoading").classList.add("hidden");
+      document.getElementById("donorsList").classList.remove("hidden");
+    }
+
+    function showPartnersLoading() {
+      document.getElementById("partnersLoading").classList.remove("hidden");
+      document.getElementById("partnersList").classList.add("hidden");
+      document.getElementById("partnersPagination").classList.add("hidden");
+    }
+
+    function hidePartnersLoading() {
+      document.getElementById("partnersLoading").classList.add("hidden");
+      document.getElementById("partnersList").classList.remove("hidden");
+    }
+
+    // Error displays
+    function showDonorsError(message) {
+      document.getElementById("donorsList").innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+              <div>
+                <p class="text-red-800 font-medium">Error loading donors</p>
+                <p class="text-red-600 text-sm">${message}</p>
+              </div>
+            </div>
+            <button 
+              onclick="loadDonors()" 
+              class="mt-3 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              <i class="fas fa-redo mr-1"></i>Try again
+            </button>
+          </div>
+        `;
+    }
+
+    function showPartnersError(message) {
+      document.getElementById("partnersList").innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+              <div>
+                <p class="text-red-800 font-medium">Error loading partners</p>
+                <p class="text-red-600 text-sm">${message}</p>
+              </div>
+            </div>
+            <button 
+              onclick="loadMyPartners()" 
+              class="mt-3 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              <i class="fas fa-redo mr-1"></i>Try again
+            </button>
+          </div>
+        `;
+    }
+
+    // Search and Filter Setup
+    function setupDonorSearchAndFilters() {
+      const searchInput = document.getElementById("donorSearch");
+      const filterSelect = document.getElementById("donorApprovalFilter");
+
+      // Remove existing listeners
+      const newSearchInput = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+      const newFilterSelect = filterSelect.cloneNode(true);
+      filterSelect.parentNode.replaceChild(newFilterSelect, filterSelect);
+
+      // Add new listeners
+      newSearchInput.addEventListener("input", filterDonors);
+      newFilterSelect.addEventListener("change", filterDonors);
+    }
+
+    function setupPartnerSearchAndFilters() {
+      const searchInput = document.getElementById("partnerSearch");
+      const filterSelect = document.getElementById("partnerApprovalFilter");
+
+      // Remove existing listeners
+      const newSearchInput = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+      const newFilterSelect = filterSelect.cloneNode(true);
+      filterSelect.parentNode.replaceChild(newFilterSelect, filterSelect);
+
+      // Add new listeners
+      newSearchInput.addEventListener("input", filterPartners);
+      newFilterSelect.addEventListener("change", filterPartners);
+    }
+
+    // Filter functions
+    function filterDonors() {
+      const searchTerm = document
+        .getElementById("donorSearch")
+        .value.toLowerCase();
+      const statusFilter = document.getElementById(
+        "donorApprovalFilter"
+      ).value;
+
+      filteredDonors = allDonors.filter((donor) => {
+        const matchesSearch =
+          donor.name.toLowerCase().includes(searchTerm) ||
+          donor.email.toLowerCase().includes(searchTerm);
+        const matchesStatus =
+          !statusFilter || donor.approvalStatus === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      donorsPagination.currentPage = 0;
+      updateDonorsPagination();
+      displayDonorsPage();
+    }
+
+    function filterPartners() {
+      const searchTerm = document
+        .getElementById("partnerSearch")
+        .value.toLowerCase();
+      const statusFilter = document.getElementById(
+        "partnerApprovalFilter"
+      ).value;
+
+      filteredPartners = allPartners.filter((partner) => {
+        const matchesSearch =
+          partner.name.toLowerCase().includes(searchTerm) ||
+          partner.email.toLowerCase().includes(searchTerm);
+        const matchesStatus =
+          !statusFilter || partner.approvalStatus === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      partnersPagination.currentPage = 0;
+      updatePartnersPagination();
+      displayPartnersPage();
+    }
+
+    // Pagination functions
+    function updateDonorsPagination() {
+      donorsPagination.totalItems = filteredDonors.length;
+      donorsPagination.totalPages = Math.ceil(
+        filteredDonors.length / donorsPagination.pageSize
+      );
+    }
+
+    function updatePartnersPagination() {
+      partnersPagination.totalItems = filteredPartners.length;
+      partnersPagination.totalPages = Math.ceil(
+        filteredPartners.length / partnersPagination.pageSize
+      );
+    }
+
+    function displayDonorsPage() {
+      const start = donorsPagination.currentPage * donorsPagination.pageSize;
+      const end = start + donorsPagination.pageSize;
+      const donorsToDisplay = filteredDonors.slice(start, end);
+
+      displayDonors(donorsToDisplay);
+      updateDonorsPaginationUI();
+    }
+
+    function displayPartnersPage() {
+      const start =
+        partnersPagination.currentPage * partnersPagination.pageSize;
+      const end = start + partnersPagination.pageSize;
+      const partnersToDisplay = filteredPartners.slice(start, end);
+
+      displayPartners(partnersToDisplay);
+      updatePartnersPaginationUI();
+    }
+
+    function updateDonorsPaginationUI() {
+      const pagination = document.getElementById("donorsPagination");
+      const pageInfo = document.getElementById("donorsPageInfo");
+      const prevBtn = document.getElementById("donorsPrevBtn");
+      const nextBtn = document.getElementById("donorsNextBtn");
+      const countSpan = document.getElementById("donorCount");
+
+      if (donorsPagination.totalPages > 1) {
+        pagination.classList.remove("hidden");
+        const start =
+          donorsPagination.currentPage * donorsPagination.pageSize + 1;
+        const end = Math.min(
+          (donorsPagination.currentPage + 1) * donorsPagination.pageSize,
+          donorsPagination.totalItems
+        );
+        pageInfo.textContent = `${start}-${end} of ${donorsPagination.totalItems}`;
+
+        prevBtn.disabled = donorsPagination.currentPage === 0;
+        nextBtn.disabled =
+          donorsPagination.currentPage >= donorsPagination.totalPages - 1;
+      } else {
+        pagination.classList.add("hidden");
+      }
+
+      countSpan.textContent = `(${donorsPagination.totalItems} ${donorsPagination.totalItems === 1 ? "donor" : "donors"
+        })`;
+    }
+
+    function updatePartnersPaginationUI() {
+      const pagination = document.getElementById("partnersPagination");
+      const pageInfo = document.getElementById("partnersPageInfo");
+      const prevBtn = document.getElementById("partnersPrevBtn");
+      const nextBtn = document.getElementById("partnersNextBtn");
+      const countSpan = document.getElementById("partnerCount");
+
+      if (partnersPagination.totalPages > 1) {
+        pagination.classList.remove("hidden");
+        const start =
+          partnersPagination.currentPage * partnersPagination.pageSize + 1;
+        const end = Math.min(
+          (partnersPagination.currentPage + 1) * partnersPagination.pageSize,
+          partnersPagination.totalItems
+        );
+        pageInfo.textContent = `${start}-${end} of ${partnersPagination.totalItems}`;
+
+        prevBtn.disabled = partnersPagination.currentPage === 0;
+        nextBtn.disabled =
+          partnersPagination.currentPage >= partnersPagination.totalPages - 1;
+      } else {
+        pagination.classList.add("hidden");
+      }
+
+      countSpan.textContent = `(${partnersPagination.totalItems} ${partnersPagination.totalItems === 1 ? "partner" : "partners"
+        })`;
+    }
+
+    function previousDonorsPage() {
+      if (donorsPagination.currentPage > 0) {
+        donorsPagination.currentPage--;
+        displayDonorsPage();
+      }
+    }
+
+    function nextDonorsPage() {
+      if (donorsPagination.currentPage < donorsPagination.totalPages - 1) {
+        donorsPagination.currentPage++;
+        displayDonorsPage();
+      }
+    }
+
+    function previousPartnersPage() {
+      if (partnersPagination.currentPage > 0) {
+        partnersPagination.currentPage--;
+        displayPartnersPage();
+      }
+    }
+
+    function nextPartnersPage() {
+      if (
+        partnersPagination.currentPage <
+        partnersPagination.totalPages - 1
+      ) {
+        partnersPagination.currentPage++;
+        displayPartnersPage();
+      }
+    }
+
+    function displayDonors(donors) {
+      const donorsList = document.getElementById("donorsList");
+      const searchFilters = document.getElementById("donorSearchFilters");
+
+      if (!donors || donors.length === 0) {
+        // Hide search/filters when no donors
+        if (allDonors.length === 0) {
+          searchFilters.classList.add("hidden");
+          donorsList.innerHTML = `
+              <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
+                  <i class="fas fa-hand-holding-usd text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Donor Organizations Found</h3>
+                <p class="text-gray-600 mb-4 max-w-md mx-auto">
+                  There are currently no donor organizations registered in the system.
+                </p>
+              </div>
+            `;
+        } else {
+          // Show filters but no results message
+          searchFilters.classList.remove("hidden");
+          donorsList.innerHTML = `
+              <div class="text-center py-8">
+                <i class="fas fa-search text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No donors match your search criteria</p>
+                <button 
+                  onclick="clearDonorFilters()" 
+                  class="mt-3 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <i class="fas fa-times-circle mr-1"></i>Clear filters
+                </button>
+              </div>
+            `;
+        }
+        return;
+      }
+
+      // Show search/filters when donors exist
+      searchFilters.classList.remove("hidden");
+
+      donorsList.innerHTML = donors
+        .map(
+          (donor) => `
+						<div class="flex items-center py-4 px-4 border border-gray-200 rounded-lg mb-3 hover:shadow-md transition-all duration-150 cursor-pointer" onclick="viewDonorPartners(${donor.id
+            })">
+							<div class="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-xl font-bold text-white mr-4 shadow-sm">
+								${donor.name.charAt(0).toUpperCase()}
+							</div>
+							
+							<div class="flex-1 min-w-0">
+								<p class="text-base font-semibold text-gray-900 truncate">${donor.name}</p>
+								<p class="text-sm text-gray-500 truncate">
+                  <i class="fas fa-envelope text-xs mr-1"></i>${donor.email}
+                </p>
+                ${donor.organization
+              ? `
+                  <p class="text-xs text-gray-600 mt-1">
+                    <i class="fas fa-building text-xs mr-1"></i>${donor.organization.name || donor.organization
+              }
+                  </p>
+                `
+              : ""
+            }
+							</div>
+							
+							<div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${donor.approvalStatus === "APPROVED"
+              ? "bg-green-100 text-green-800"
+              : donor.approvalStatus === "PENDING"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
+            }">
+                  ${donor.approvalStatus || "PENDING"}
+                </span>
+								<button 
+                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                  title="View and manage partnerships"
+                >
+									<i class="fas fa-users mr-1"></i> Manage Partners
+								</button>
+							</div>
+						</div>
+					`
+        )
+        .join("");
+    }
+
+    function clearDonorFilters() {
+      document.getElementById("donorSearch").value = "";
+      document.getElementById("donorApprovalFilter").value = "";
+      filterDonors();
+    }
+
+    function displayPartners(partners) {
+      const partnersList = document.getElementById("partnersList");
+      const searchFilters = document.getElementById("partnerSearchFilters");
+
+      if (!partners || partners.length === 0) {
+        // Hide search/filters when no partners
+        if (allPartners.length === 0) {
+          searchFilters.classList.add("hidden");
+          partnersList.innerHTML = `
+              <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                  <i class="fas fa-users text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Partner Organizations Yet</h3>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                  You haven't linked any partner organizations yet. Click the button below to get started and 
+                  establish partnerships with organizations implementing projects.
+                </p>
+                <button
+                  onclick="showLinkPartnerModal()"
+                  class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-colors"
+                >
+                  <i class="fas fa-plus-circle mr-2"></i>Link Your First Partner
+                </button>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg max-w-lg mx-auto">
+                  <p class="text-xs text-gray-600 text-left">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    <strong>How it works:</strong> Linking partners allows them to create projects under your funding organization. 
+                    You'll be able to monitor their activities and provide oversight for funded initiatives.
+                  </p>
+                </div>
+              </div>
+            `;
+        } else {
+          // Show filters but no results message
+          searchFilters.classList.remove("hidden");
+          partnersList.innerHTML = `
+              <div class="text-center py-8">
+                <i class="fas fa-search text-gray-300 text-4xl mb-3"></i>
+                <p class="text-gray-500">No partners match your search criteria</p>
+                <button 
+                  onclick="clearPartnerFilters()" 
+                  class="mt-3 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <i class="fas fa-times-circle mr-1"></i>Clear filters
+                </button>
+              </div>
+            `;
+        }
+        return;
+      }
+
+      // Show search/filters when partners exist
+      searchFilters.classList.remove("hidden");
+
+      partnersList.innerHTML = partners
+        .map(
+          (partner) => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold mr-3">
+                                ${partner.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <h4 class="font-semibold text-gray-900">${partner.name
+            }</h4>
+                                <p class="text-xs text-gray-500">
+                                  <i class="fas fa-envelope mr-1"></i>${partner.email
+            }
+                                </p>
+                              </div>
+                            </div>
+                            ${partner.organization
+              ? `
+                              <p class="text-sm text-gray-600 mt-2">
+                                <i class="fas fa-building mr-1 text-gray-400"></i>
+                                ${partner.organization.name ||
+              partner.organization
+              }
+                              </p>
+                            `
+              : ""
+            }
+                            ${partner.thematicArea
+              ? `
+                              <p class="text-xs text-blue-600 mt-1">
+                                <i class="fas fa-tag mr-1"></i>${partner.thematicArea}
+                              </p>
+                            `
+              : ""
+            }
+                            <div class="mt-3">
+                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${partner.approvalStatus === "APPROVED"
+              ? "bg-green-100 text-green-800"
+              : partner.approvalStatus === "PENDING"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
+            }">
+                                <i class="fas fa-circle text-xs mr-1"></i>
+                                ${partner.approvalStatus || "PENDING"}
+                              </span>
+                            </div>
+                        </div>
+                        <div class="text-right ml-4">
+                            <button 
+                              onclick="unlinkPartner(${partner.id})"
+                              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                              title="Remove this partnership"
+                            >
+                              <i class="fas fa-unlink mr-1"></i>Unlink
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `
+        )
+        .join("");
+    }
+
+    function clearPartnerFilters() {
+      document.getElementById("partnerSearch").value = "";
+      document.getElementById("partnerApprovalFilter").value = "";
+      filterPartners();
+    }
+
+    function viewDonorPartners(donorId) {
+      // Find the donor to get their name
+      const auth = new AuthManager();
+      const token = auth.getToken();
+
+      // Show the modal
+      document.getElementById("viewPartnersModal").classList.remove("hidden");
+      document.getElementById("viewPartnersList").innerHTML =
+        '<p class="text-gray-500">Loading partners...</p>';
+
+      // Load the partners for this donor
+      fetch(`${auth.baseUrl}/api/auth/donor/${donorId}/partners`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to load partners");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const partners = data.data || data;
+
+          // Update donor name in modal title
+          if (partners.length > 0 && partners[0].parentDonor) {
+            document.getElementById("donorNameDisplay").textContent =
+              partners[0].parentDonor.name || "This Donor";
+          } else {
+            // Fallback: find donor name from the donors list
+            const donorsList = document.getElementById("donorsList");
+            const donorElements =
+              donorsList.querySelectorAll("[data-donor-id]");
+            donorElements.forEach((el) => {
+              if (el.dataset.donorId == donorId) {
+                const donorName = el.querySelector("h4")?.textContent;
+                if (donorName) {
+                  document.getElementById("donorNameDisplay").textContent =
+                    donorName;
+                }
+              }
+            });
+          }
+
+          displayPartnersInModal(partners);
+        })
+        .catch((error) => {
+          console.error("Error loading partners:", error);
+          document.getElementById("viewPartnersList").innerHTML =
+            '<p class="text-red-600">Error loading partners</p>';
+        });
+    }
+
+    function displayPartnersInModal(partners) {
+      const viewPartnersList = document.getElementById("viewPartnersList");
+
+      if (!partners || partners.length === 0) {
+        viewPartnersList.innerHTML =
+          '<p class="text-gray-500">No partners linked to this donor yet</p>';
+        return;
+      }
+
+      viewPartnersList.innerHTML = partners
+        .map(
+          (partner) => `
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-medium text-gray-900">${partner.name || "N/A"
+            }</h4>
+                <p class="text-sm text-gray-600">${partner.email || "N/A"}</p>
+                ${partner.organization
+              ? `
+                  <p class="text-sm text-gray-500 mt-1">
+                    <i class="fas fa-building mr-1"></i>
+                    ${partner.organization.name}
+                  </p>
+                `
+              : ""
+            }
+                ${partner.thematicArea
+              ? `
+                  <p class="text-xs text-blue-600 mt-1">
+                    <i class="fas fa-tag mr-1"></i>
+                    ${partner.thematicArea}
+                  </p>
+                `
+              : ""
+            }
+              </div>
+              <span class="px-3 py-1 text-xs font-medium rounded-full ${partner.approvalStatus === "APPROVED"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+            }">
+                ${partner.approvalStatus || "PENDING"}
+              </span>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function hideViewPartnersModal() {
+      document.getElementById("viewPartnersModal").classList.add("hidden");
+      document.getElementById("viewPartnersList").innerHTML = "";
+      document.getElementById("donorNameDisplay").textContent = "";
+    }
+
+    function showDonorPlaceholder() {
+      const partnersList = document.getElementById("partnersList");
+      if (!partnersList) {
+        console.error("partnersList element not found");
+        return;
+      }
+      partnersList.innerHTML =
+        '<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"><h3 class="text-lg font-semibold text-blue-900 mb-2">Donor Management Portal</h3><p class="text-blue-700">Welcome to your donor management dashboard.</p></div>';
+    }
+
+    // Confirmation Modal Functions
+    function showConfirmationModal(title, message, callback) {
+      document.getElementById("confirmationTitle").textContent = title;
+      document.getElementById("confirmationMessage").textContent = message;
+      confirmationCallback = callback;
+      document.getElementById("confirmationModal").classList.remove("hidden");
+    }
+
+    function hideConfirmationModal() {
+      document.getElementById("confirmationModal").classList.add("hidden");
+      confirmationCallback = null;
+    }
+
+    // Setup confirmation button click
+    document.addEventListener("DOMContentLoaded", function () {
+      const confirmBtn = document.getElementById("confirmationConfirmBtn");
+      if (confirmBtn) {
+        confirmBtn.addEventListener("click", function () {
+          if (confirmationCallback) {
+            confirmationCallback();
+          }
+          hideConfirmationModal();
+        });
+      }
+    });
+
+    async function unlinkPartner(partnerId) {
+      const confirmed = await showConfirm(
+        "Are you sure you want to unlink this partner?",
+        "Confirm Unlink",
+        "Yes, Unlink",
+        "Cancel"
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      const auth = new AuthManager();
+      const token = auth.getToken();
+
+      try {
+        const response = await fetch(
+          `${auth.baseUrl}/api/auth/partner/${partnerId}/unlink-donor`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to unlink partner");
+        }
+
+        await showAlert(
+          "Partner unlinked successfully",
+          "Success",
+          "success"
+        );
+        loadMyPartners(); // Refresh the list
+      } catch (error) {
+        console.error("Error unlinking partner:", error);
+        await showAlert(
+          "Error unlinking partner: " + error.message,
+          "Error",
+          "error"
+        );
+      }
+    }
+
+    function showLinkPartnerModal() {
+      document.getElementById("linkPartnerModal").classList.remove("hidden");
+      loadAvailablePartners();
+    }
+
+    async function loadAvailablePartners() {
+      const auth = new AuthManager();
+      const token = auth.getToken();
+      const select = document.getElementById("partnerSelect");
+
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Choose a partner...</option>';
+
+      try {
+        // Get available partners (approved partners not linked to any donor)
+        const response = await fetch(
+          `${auth.baseUrl}/api/auth/partners/available`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load partners");
+        }
+
+        const result = await response.json();
+        const availablePartners = result.data || result;
+
+        if (availablePartners.length === 0) {
+          select.innerHTML +=
+            '<option value="" disabled>No available partners</option>';
+          return;
+        }
+
+        // Add partners to dropdown
+        availablePartners.forEach((partner) => {
+          const option = document.createElement("option");
+          option.value = partner.id;
+          option.textContent = `${partner.name} (${partner.email})`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error loading available partners:", error);
+        select.innerHTML +=
+          '<option value="" disabled>Error loading partners</option>';
+      }
+    }
+
+    function hideLinkPartnerModal() {
+      document.getElementById("linkPartnerModal").classList.add("hidden");
+      document.getElementById("linkPartnerForm").reset();
+      document.getElementById("partnerSelect").innerHTML =
+        '<option value="">Choose a partner...</option>';
+    }
+
+    // Handle link partner form submission
+    document
+      .getElementById("linkPartnerForm")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const partnerId = document.getElementById("partnerSelect").value;
+        const partnerSelect = document.getElementById("partnerSelect");
+        const partnerName =
+          partnerSelect.options[partnerSelect.selectedIndex].text;
+
+        if (!partnerId) {
+          await showAlert(
+            "Please select a partner organization",
+            "Validation Error",
+            "warning"
+          );
+          return;
+        }
+
+        // Show confirmation modal
+        showConfirmationModal(
+          "Confirm Partner Link",
+          `Are you sure you want to link ${partnerName} to your organization?`,
+          async function () {
+            const auth = new AuthManager();
+            const token = auth.getToken();
+
+            try {
+              const response = await fetch(
+                `${auth.baseUrl}/api/auth/partner/${partnerId}/link-donor/${currentUser.id}`,
+                {
+                  method: "POST",
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                  errorData.message || "Failed to link partner"
+                );
+              }
+
+              await showAlert(
+                "Partner linked successfully. Notification email has been sent.",
+                "Success",
+                "success"
+              );
+              hideLinkPartnerModal();
+              loadMyPartners(); // Refresh the list
+            } catch (error) {
+              console.error("Error linking partner:", error);
+              await showAlert(
+                "Error linking partner: " + error.message,
+                "Error",
+                "error"
+              );
+            }
+          }
+        );
+      });
+
+    function loadMyDonor() {
+      const donorSection = document.getElementById("donorInfo");
+      donorSection.innerHTML =
+        "<p class='text-gray-600'>Loading donor information...</p>";
+
+      fetch("/api/auth/me/donor", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authManager.getToken()}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const donor = data.data;
+          if (donor) {
+            donorSection.innerHTML = `
+                <div class="bg-white rounded-lg shadow p-6">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">My Donor</h3>
+                  <div class="space-y-3">
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Name:</span>
+                      <span class="font-medium">${donor.firstName} ${donor.lastName
+              }</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Email:</span>
+                      <span class="font-medium">${donor.email}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Organization:</span>
+                      <span class="font-medium">${donor.organization || "N/A"
+              }</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Phone:</span>
+                      <span class="font-medium">${donor.phone || "N/A"}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+          } else {
+            donorSection.innerHTML = `
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p class="text-yellow-800">You are not linked to any donor yet.</p>
+                </div>
+              `;
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading donor:", error);
+          donorSection.innerHTML = `
+              <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-red-800">Error loading donor information. Please try again.</p>
+              </div>
+            `;
+        });
+    }
+
+    function logout() {
+      const auth = new AuthManager();
+      auth.logout();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+
+</html>

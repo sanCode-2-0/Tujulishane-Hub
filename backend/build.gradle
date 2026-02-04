@@ -1,16 +1,15 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.0'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.2.6'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'com.tujulishanehub'
 version = '1.0.0'
-// sourceCompatibility = '21'
+
 java {
-    toolchain {
-        languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
-    }
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
 }
 
 configurations {
@@ -32,8 +31,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     
     // Database
+    // H2 for local development (dev profile)
     runtimeOnly 'com.h2database:h2'
+    // PostgreSQL for production (prod profile)
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core:10.21.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.21.0'
     
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -41,19 +44,29 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     
     // Lombok (updated for Java 21 compatibility)
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
     
     // Documentation (updated version)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.securi/*  */ty:spring-security-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Heroku deployment task
+task stage(dependsOn: 'bootJar') {
+    doLast {
+        copy {
+            from 'build/libs/app.jar'
+            into '.'
+        }
+    }
 }
 
 // Build configuration for Docker

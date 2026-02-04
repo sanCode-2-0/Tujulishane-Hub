@@ -68,6 +68,37 @@ public class OrganizationService {
     }
     
     /**
+     * Find an existing organization by name or create a new one
+     * Returns the organization ID
+     */
+    public Long findOrCreateOrganization(String organizationName) {
+        if (organizationName == null || organizationName.trim().isEmpty()) {
+            return null;
+        }
+        
+        String trimmedName = organizationName.trim();
+        
+        // Try to find existing organization
+        Optional<Organization> existingOrg = organizationRepository.findByNameIgnoreCase(trimmedName);
+        if (existingOrg.isPresent()) {
+            logger.info("Found existing organization: {} (ID: {})", trimmedName, existingOrg.get().getId());
+            return existingOrg.get().getId();
+        }
+        
+        // Create new organization
+        Organization newOrg = new Organization();
+        newOrg.setName(trimmedName);
+        newOrg.setApprovalStatus(ApprovalStatus.PENDING); // New organizations need approval
+        newOrg.setOrganizationType(Organization.OrganizationType.OTHER); // Default to OTHER
+        newOrg.setCreatedAt(LocalDateTime.now());
+        
+        Organization savedOrg = organizationRepository.save(newOrg);
+        logger.info("Created new organization: {} (ID: {})", trimmedName, savedOrg.getId());
+        
+        return savedOrg.getId();
+    }
+    
+    /**
      * Get all organizations with pagination
      */
     public Page<Organization> getAllOrganizations(Pageable pageable) {
@@ -147,6 +178,13 @@ public class OrganizationService {
         existingOrganization.setAddress(organizationDetails.getAddress());
         existingOrganization.setWebsiteUrl(organizationDetails.getWebsiteUrl());
         existingOrganization.setRegistrationNumber(organizationDetails.getRegistrationNumber());
+        
+        // Update logo if provided
+        if (organizationDetails.getLogoData() != null && organizationDetails.getLogoData().length > 0) {
+            existingOrganization.setLogoData(organizationDetails.getLogoData());
+            existingOrganization.setLogoContentType(organizationDetails.getLogoContentType());
+            logger.info("Logo updated for organization: {}", id);
+        }
         
         return organizationRepository.save(existingOrganization);
     }

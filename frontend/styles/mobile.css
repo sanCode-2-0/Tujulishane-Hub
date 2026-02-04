@@ -1,0 +1,184 @@
+/* Mobile Optimization Utilities for Tujulishane Hub */
+
+/* Responsive container with padding */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+.show-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .show-mobile {
+    display: block !important;
+  }
+
+  .show-mobile-flex {
+    display: flex !important;
+  }
+
+  .show-mobile-inline {
+    display: inline !important;
+  }
+}
+
+/* Mobile-friendly card spacing */
+@media (max-width: 640px) {
+  .card,
+  .bg-white {
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  /* Reduce padding on mobile */
+  .p-6 {
+    padding: 1rem !important;
+  }
+
+  .p-8 {
+    padding: 1.5rem !important;
+  }
+}
+
+/* Mobile-friendly grid layouts */
+@media (max-width: 768px) {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4,
+  .md\\:grid-cols-2,
+  .md\\:grid-cols-3,
+  .lg\\:grid-cols-3,
+  .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Mobile-friendly flex layouts */
+@media (max-width: 640px) {
+  .flex-wrap-mobile {
+    flex-wrap: wrap;
+  }
+
+  .flex-col-mobile {
+    flex-direction: column !important;
+  }
+}
+
+/* Overflow scroll for wide content */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .overflow-auto-mobile {
+    overflow-x: auto;
+  }
+}
+
+/* Mobile-friendly text sizes */
+@media (max-width: 640px) {
+  .text-mobile-sm {
+    font-size: 0.875rem !important;
+  }
+
+  .text-mobile-xs {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Mobile-friendly spacing */
+@media (max-width: 640px) {
+  .gap-mobile-2 {
+    gap: 0.5rem !important;
+  }
+
+  .space-y-mobile-4 > * + * {
+    margin-top: 1rem !important;
+  }
+}
+
+/* Mobile-optimized map */
+@media (max-width: 768px) {
+  #kenyaMap,
+  #newProjectMap {
+    height: 300px !important;
+  }
+}
+
+/* Touch-friendly action buttons */
+@media (max-width: 640px) {
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .action-buttons button,
+  .action-buttons a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Prevent text selection on buttons for better mobile UX */
+button,
+.btn {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Mobile-friendly modal sizing */
+@media (max-width: 640px) {
+  [data-twe-modal-dialog-ref] {
+    margin: 0.5rem !important;
+    max-width: calc(100% - 1rem) !important;
+  }
+}
+
+/* Improve mobile scrolling */
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile-friendly form steps */
+@media (max-width: 640px) {
+  .form-step {
+    padding: 1rem !important;
+  }
+
+  .form-step h2 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Mobile-friendly badges and chips */
+@media (max-width: 640px) {
+  .badge,
+  .chip {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+}
+
+/* Sticky header spacing on mobile */
+@media (max-width: 768px) {
+  body {
+    padding-top: 60px; /* Account for fixed header */
+  }
+}

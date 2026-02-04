@@ -421,7 +421,7 @@ public class ProjectReportController {
      * Get reports for review (Admin only)
      */
     @GetMapping("/admin/review")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<List<ProjectReport>>> getReportsForReview() {
         try {
             List<ProjectReport> reports = projectReportService.getReportsForReview();
@@ -448,7 +448,7 @@ public class ProjectReportController {
      * Set report under review (Admin only)
      */
     @PostMapping("/admin/{id}/review")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('SUPER_ADMIN_REVIEWER') or hasRole('SUPER_ADMIN_APPROVER')")
     public ResponseEntity<ApiResponse<Object>> setReportUnderReview(@PathVariable Long id) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

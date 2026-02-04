@@ -2,874 +2,3200 @@
 <html lang="en" class="scroll-smooth">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Tailwind CSS (with custom config using inline script) -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',   // Custom Blue
-                        secondary: '#f59e0b', // Custom Amber
-                        accent: '#10b981',    // Custom Green
-                        dark: '#1f2937',      // Gray-800
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="styles/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <style>
-        .fade-slide-enter {
-            opacity: 0;
-            transform: translateY(20px);
-        }
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        .fade-slide-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.4s ease;
-        }
+	<!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+	<script src="./config.js"></script>
+	<script src="./set-base-url.js"></script>
 
-        .fade-slide-leave {
-            opacity: 1;
-            transform: translateY(0);
-        }
+	<!-- Modal Utilities -->
+	<script src="./modal-utils.js"></script>
 
-        .fade-slide-leave-active {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-    </style>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
 
+	<!-- Tailwind CSS custom config -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="styles/main.js"></script>
+	<script src="auth.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Leaflet CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<!-- Leaflet JS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="src/utils/counter-utils.js"></script>
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
+
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+	</style>
 </head>
 
-<body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
-            <!-- Logo -->
-            <a href="/" class="flex items-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/resources/gov.png" class="object-contain h-12" alt="Site Logo">
-            </a>
+<body x-data="shareHoldersApp()" x-init="init()" class="text-gray-800">
+	<script>
+		window.shareHoldersApp = function shareHoldersApp() {
+			return {
+				announcements: [],
+				myProjects: [],
+				organizations: [],
+				myCollaborationRequests: [], // Track user's submitted requests
+				chatMessages: [],
+				sendingMessage: false,
+				newMessage: "",
+				searchText: "",
+				filterStatus: "",
+				sortOrder: "NEWEST",
+				activeSlide: 0,
+				media: [
+					{ type: 'image', src: 'resources/images/main-1.jpg' },
+					{ type: 'image', src: 'resources/images/main-2.jpg' },
+					{ type: 'image', src: 'resources/images/main-3.jpg' }
+				],
+				loading: true,
+				creating: false,
+				submitting: false,
+				showCreateModal: false,
+				showDetailsModal: false,
+				showRequestModal: false,
+				selectedAnnouncement: null,
+				userRole: null, // Will be set in init from user object
+				currentUser: null, // Store current user data including email
+				newAnnouncement: {
+					projectId: "",
+					title: "",
+					content: "",
+					deadline: "",
+				},
+				collaborationRequest: {
+					organizationId: "",
+					proposedContribution: "",
+				},
 
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
-            </button>
+				async init() {
+					// Wait for auth.js to load user data and get it directly
+					const user = await this.waitForAuth();
 
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
-                <li>
-                    <a href="/" class="uppercase transition hover:text-blue-600">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="/about" class="uppercase transition hover:text-blue-600">
-                        Programs
-                    </a>
-                </li>
+					// Set user role and store user data from the returned user object
+					if (user && user.role) {
+						this.userRole = user.role;
+						this.currentUser = user; // Store full user object
+					} else {
+						// Fallback: try to read from localStorage
+						const userStr = localStorage.getItem("currentUser");
+						if (userStr) {
+							try {
+								const parsedUser = JSON.parse(userStr);
+								this.userRole = parsedUser.role;
+								this.currentUser = parsedUser;
+							} catch (e) {
+								console.error("Error parsing user data:", e);
+							}
+						}
+						// Final fallback to userRole if it exists
+						if (!this.userRole) {
+							this.userRole = localStorage.getItem("userRole");
+						}
+					}
+					console.log("🔍 User Role:", this.userRole); // Debug log
+					console.log("🔍 Current User:", this.currentUser); // Debug log
 
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Stakeholder <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
+					// Populate user dropdown in navigation
+					if (this.currentUser) {
+						console.log("👤 Populating user dropdown...");
+						this.populateUserDropdown(this.currentUser);
+					}
 
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="access.html">Login / Registration</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="Stakeholders/dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Admin <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
+					await this.loadAnnouncements();
 
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <!-- Pages Dropdown Trigger -->
-                <li class="relative" x-data="{ showDropdown: false }">
-                    <button @click="showDropdown = !showDropdown"
-                        class="inline-flex items-center font-medium uppercase transition focus:outline-none">
-                        Donor <i class="ml-2 fal fa-chevron-down"></i>
-                    </button>
+					// Always try to load projects if user is authenticated
+					// The backend will handle authorization
+					const token = localStorage.getItem("accessToken");
+					if (token) {
+						console.log("🔍 User authenticated, loading projects...");
+						await this.loadMyProjects();
+						await this.loadOrganizations();
+						// Load user's collaboration requests to prevent duplicates
+						await this.loadMyCollaborationRequests();
+					} else {
+						console.warn("⚠️ No access token found, skipping project load");
+					}
+				},
 
-                    <!-- Dropdown Content -->
-                    <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                        class="absolute z-50 w-56 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl"
-                        style="display: none;">
-                        <ul class="py-2 text-sm text-left text-blue-800">
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="index.html">Index</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="access.html">Login / Registration</a>
-                            </li>
-                            <li class="px-4 py-2 transition hover:bg-blue-100">
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
-                        Announcements
-                    </a>
-                </li>
-            </ul>
-        </div>
+				// Populate user dropdown with current user data
+				populateUserDropdown(user) {
+					try {
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
 
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+						if (userDisplayName)
+							userDisplayName.textContent = user.name || "User";
+						if (userNameDisplay)
+							userNameDisplay.textContent = user.name || "Loading...";
+						if (userEmailDisplay)
+							userEmailDisplay.textContent = user.email || "";
+						if (userRoleDisplay)
+							userRoleDisplay.textContent = user.role || "N/A";
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent = user.status || "N/A";
+							// Update status color based on status
+							userStatusDisplay.className =
+								user.status === "ACTIVE"
+									? "font-medium text-green-600"
+									: "font-medium text-gray-600";
+						}
 
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
+						// Show role-based navs
+						if (
+							user.role === "ADMIN" ||
+							user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+						) {
+							const adminNav = document.getElementById("adminNav");
+							if (adminNav) adminNav.classList.remove("hidden");
+						}
+						if (user.role === "DONOR") {
+							const donorNav = document.getElementById("donorNav");
+							if (donorNav) donorNav.classList.remove("hidden");
+						}
 
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
-            </div>
-        </div>
-    </nav>
-    <div class="min-h-screen pt-12 bg-gray-100">
+						console.log("✅ User dropdown populated successfully!");
+					} catch (error) {
+						console.error("❌ Error populating user dropdown:", error);
+					}
+				},
 
-        <!-- New Project -->
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
-                            New Project
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
+				async waitForAuth() {
+					// Wait for AuthManager to be available and initialized
+					let attempts = 0;
+					while (attempts < 50) {
+						// Max 5 seconds
+						if (
+							window.authManager &&
+							typeof window.authManager.getCurrentUser === "function"
+						) {
+							// Try to get current user and return it directly
+							try {
+								const user = await window.authManager.getCurrentUser();
+								return user; // Return the user object
+							} catch (e) {
+								// User not logged in or error
+								return null;
+							}
+						}
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						attempts++;
+					}
+					return null; // Timeout - no auth available
+				},
 
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-                        <form id="userForm" class="space-y-5">
-                            <!-- First & Last Name -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
-                                    <input type="text" name="first_name" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                                    <input type="text" name="last_name" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+				async loadAnnouncements() {
+					try {
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`
+						);
+						const data = await response.json();
+						if (data.status === 200) {
+							this.announcements = data.data;
+						}
+					} catch (error) {
+						console.error("Error loading announcements:", error);
+						await showAlert("Failed to load announcements", "Error", "error");
+					} finally {
+						this.loading = false;
+					}
+				},
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Gender</label>
-                                    <select name="gender" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select...</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
+				async loadMyProjects() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						console.log(
+							"🔍 Loading my projects with token:",
+							token ? "Present" : "Missing"
+						);
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Country</label>
-                                    <input type="text" name="country" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+						const response = await fetch(
+							`${window.BASE_URL}/api/projects/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">County</label>
-                                    <input type="text" name="county" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+						console.log("🔍 My projects response status:", response.status);
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Role</label>
-                                    <select name="role" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select Role...</option>
-                                        <option>
-                                            Super Admin
-                                        </option>
-                                        <option>
-                                            Ei
-                                        </option>
-                                    </select>
-                                </div>
+						if (!response.ok) {
+							console.error(
+								"❌ Failed to load projects. Status:",
+								response.status
+							);
+							if (response.status === 403) {
+								console.error(
+									"❌ 403 Forbidden - You may not have PARTNER role"
+								);
+							} else if (response.status === 401) {
+								console.error(
+									"❌ 401 Unauthorized - Token may be invalid or expired"
+								);
+							}
+							this.myProjects = [];
+							return;
+						}
 
-                                <!-- Email -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                                    <input type="email" name="email" required
-                                        class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+						const data = await response.json();
+						console.log("🔍 My projects response data:", data);
 
-                            </div>
-                            <!-- Submit -->
-                            <div class="pt-4">
-                                <button type="submit"
-                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
-                                    Create User
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+						if (data.status === 200) {
+							this.myProjects = data.data || [];
+							console.log(
+								"✅ Loaded projects:",
+								this.myProjects.length,
+								"projects"
+							);
+							console.log("📋 Projects:", this.myProjects);
+						} else {
+							console.warn("⚠️ Unexpected response status:", data.status);
+							this.myProjects = [];
+						}
+					} catch (error) {
+						console.error("❌ Error loading projects:", error);
+						this.myProjects = [];
+					}
+				},
+
+				async loadOrganizations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/organizations`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							// Silently handle 403 - organizations endpoint may be restricted
+							this.organizations = []; // Set empty array
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.organizations = data.data;
+						}
+					} catch (error) {
+						// Silently handle errors - organizations are optional
+						this.organizations = []; // Set empty array on error
+					}
+				},
+
+				async loadMyCollaborationRequests() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/my-requests`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						if (!response.ok) {
+							console.warn(
+								"Could not load collaboration requests:",
+								response.status
+							);
+							this.myCollaborationRequests = [];
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.myCollaborationRequests = data.data || [];
+							console.log(
+								"✅ Loaded collaboration requests:",
+								this.myCollaborationRequests.length
+							);
+						} else {
+							this.myCollaborationRequests = [];
+						}
+					} catch (error) {
+						console.error("Error loading collaboration requests:", error);
+						this.myCollaborationRequests = [];
+					}
+				},
+
+				async createAnnouncement() {
+					this.creating = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(this.newAnnouncement),
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied. You may not have access to create announcements.",
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"You must be logged in to create announcements.",
+									"Authentication Required",
+									"warning"
+								);
+							} else {
+								await showAlert(
+									`Error: Server returned status ${response.status}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						const data = await response.json();
+
+						if (data.status === 201) {
+							await showAlert(
+								"Announcement created successfully!",
+								"Success",
+								"success"
+							);
+							this.showCreateModal = false;
+							this.newAnnouncement = {
+								projectId: "",
+								title: "",
+								content: "",
+								deadline: "",
+							};
+							await this.loadAnnouncements();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error creating announcement:", error);
+						await showAlert(
+							"Failed to create announcement. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.creating = false;
+					}
+				},
+
+				viewDetails(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showDetailsModal = true;
+					this.loadChatMessages(announcement.id);
+				},
+
+				requestCollaboration(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showRequestModal = true;
+					this.showDetailsModal = false;
+				},
+
+				async submitRequest() {
+					this.submitting = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+
+						// Prepare request payload - only include organizationId if it's not empty
+						const payload = {
+							proposedContribution:
+								this.collaborationRequest.proposedContribution,
+						};
+
+						// Only add organizationId if it's set (not empty string)
+						if (this.collaborationRequest.organizationId) {
+							payload.organizationId = parseInt(
+								this.collaborationRequest.organizationId
+							);
+						}
+
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(payload),
+							}
+						);
+
+						// Always try to parse JSON to get the error message
+						const data = await response.json();
+
+						// Check if response is OK
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied: " +
+									(data.message ||
+										"You may not have access to submit collaboration requests."),
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"Authentication required: " +
+									(data.message ||
+										"You must be logged in to submit a collaboration request."),
+									"Authentication Required",
+									"warning"
+								);
+							} else if (response.status === 400) {
+								await showAlert(
+									"Invalid request: " +
+									(data.message ||
+										"Please check your input and try again."),
+									"Invalid Request",
+									"error"
+								);
+							} else {
+								await showAlert(
+									`Error: ${data.message ||
+									"Server returned status " + response.status
+									}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						if (data.status === 201) {
+							await showAlert(
+								"Collaboration request submitted successfully! The Ministry of Health will review your request.",
+								"Success",
+								"success"
+							);
+							this.showRequestModal = false;
+							this.collaborationRequest = {
+								organizationId: "",
+								proposedContribution: "",
+							};
+							// Reload collaboration requests to update the UI
+							await this.loadMyCollaborationRequests();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error submitting request:", error);
+						await showAlert(
+							"Failed to submit collaboration request. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.submitting = false;
+					}
+				},
+
+				// Helper method to check if announcement was created by current user
+				isOwnAnnouncement(announcement) {
+					if (!this.currentUser || !announcement || !announcement.createdBy) {
+						console.log("🔍 isOwnAnnouncement: Missing data", {
+							hasCurrentUser: !!this.currentUser,
+							hasAnnouncement: !!announcement,
+							hasCreatedBy: !!(announcement && announcement.createdBy),
+						});
+						return false;
+					}
+					// Compare by email as it's unique
+					const isOwn =
+						this.currentUser.email === announcement.createdBy.email;
+					console.log("🔍 isOwnAnnouncement:", {
+						currentUserEmail: this.currentUser.email,
+						createdByEmail: announcement.createdBy.email,
+						isOwn: isOwn,
+					});
+					return isOwn;
+				},
+
+				// Helper method to check if user has already requested collaboration for this announcement
+				hasAlreadyRequested(announcement) {
+					if (!announcement || !this.myCollaborationRequests) {
+						return false;
+					}
+
+					const hasRequested = this.myCollaborationRequests.some(
+						(request) =>
+							request.announcement &&
+							request.announcement.id === announcement.id
+					);
+
+					console.log("🔍 hasAlreadyRequested:", {
+						announcementId: announcement.id,
+						totalRequests: this.myCollaborationRequests.length,
+						hasRequested: hasRequested,
+					});
+
+					return hasRequested;
+				},
+
+				isDeadlineImminent(deadline) {
+					if (!deadline) return false;
+					const now = new Date();
+					const deadlineDate = new Date(deadline);
+					const diffTime = deadlineDate - now;
+					const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+					return diffDays <= 7 && diffDays >= 0; // Imminent if within 7 days and not past
+				},
+
+				async loadChatMessages(announcementId) {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${announcementId}/messages`, {
+							headers: { Authorization: `Bearer ${token}` }
+						});
+						if (response.ok) {
+							const data = await response.json();
+							this.chatMessages = data.data || [];
+						}
+					} catch (error) {
+						console.error("Error loading chat messages:", error);
+					}
+				},
+
+				async sendMessage() {
+					if (!this.newMessage.trim()) return;
+					this.sendingMessage = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`
+							},
+							body: JSON.stringify({ message: this.newMessage })
+						});
+						if (response.ok) {
+							this.newMessage = "";
+							await this.loadChatMessages(this.selectedAnnouncement.id);
+						} else {
+							await showAlert("Failed to send message", "Error", "error");
+						}
+					} catch (error) {
+						console.error("Error sending message:", error);
+						await showAlert("Failed to send message", "Error", "error");
+					} finally {
+						this.sendingMessage = false;
+					}
+				},
+
+				async editMessage(msg) {
+					const newMessage = prompt("Edit message:", msg.message);
+					if (newMessage && newMessage.trim() && newMessage !== msg.message) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "PUT",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`
+								},
+								body: JSON.stringify({ message: newMessage })
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to edit message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error editing message:", error);
+							await showAlert("Failed to edit message", "Error", "error");
+						}
+					}
+				},
+
+				async deleteMessage(msg) {
+					if (confirm("Are you sure you want to delete this message?")) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "DELETE",
+								headers: {
+									Authorization: `Bearer ${token}`
+								}
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to delete message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error deleting message:", error);
+							await showAlert("Failed to delete message", "Error", "error");
+						}
+					}
+				},
+			};
+		};
+	</script>
+	<div class="" id="nav-placeholder"></div>
+	<!-- Loading Overlay -->
+	<div id="loadingOverlay" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
+		<div class="flex items-center justify-center h-full">
+			<div class="text-center">
+				<div
+					class="inline-block w-16 h-16 border-4 border-white rounded-full border-t-transparent animate-spin">
+				</div>
+				<p class="mt-4 text-white">Loading...</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Toast Notification -->
+	<div id="toast"
+		class="fixed z-50 hidden px-6 py-4 text-white transition-all transform translate-x-1/2 bg-green-600 rounded-lg shadow-lg top-4 right-1/2">
+		<div class="flex items-center gap-3">
+			<i class="text-xl fas fa-check-circle"></i>
+			<span id="toastMessage">Success!</span>
+		</div>
+	</div>
+
+	<!-- Authentication & Authorization Scripts -->
+	<script>
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+	</script>
+	<script type="module">
+		// Use centralized BASE_URL from config.js (already loaded via script tag)
+		// Don't import - just use window.BASE_URL which is already set
+		const BASE_URL = window.BASE_URL;
+
+		console.log("BASE_URL:", BASE_URL);
+		console.log(
+			"Environment:",
+			window.USE_PROD ? "PRODUCTION" : "DEVELOPMENT"
+		);
+
+		// Check authentication on page load
+		document.addEventListener("DOMContentLoaded", async function () {
+			const token = localStorage.getItem("accessToken");
+
+			if (!token) {
+				showToast("Please log in to access this page", "error");
+				setTimeout(() => {
+					window.location.href = "frontend/index.html";
+				}, 2000);
+				return;
+			}
+
+			try {
+				// Get current user profile
+				const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+				});
+
+				if (!response.ok) {
+					throw new Error("Authentication failed");
+				}
+
+				const result = await response.json();
+				const user = result.data;
+
+				// Check if user is SUPER_ADMIN, SUPER_ADMIN_APPROVER, or SUPER_ADMIN_REVIEWER
+				if (
+					user.role !== "SUPER_ADMIN" &&
+					user.role !== "SUPER_ADMIN_APPROVER" &&
+					user.role !== "SUPER_ADMIN_REVIEWER"
+				) {
+					console.log("Access denied - Role:", user.role);
+					showToast("Access denied. Super Admin role required.", "error");
+					setTimeout(() => {
+						window.location.href = "dashboard.html";
+					}, 2000);
+					return;
+				}
+
+				// Check if user is approved
+				if (user.approvalStatus !== "APPROVED") {
+					showToast("Your account is pending approval", "error");
+					setTimeout(() => {
+						window.location.href = "frontend/dashboard.html";
+					}, 2000);
+					return;
+				}
+
+				// Load initial data
+				await Promise.all([
+					loadUserStats(),
+					loadPendingUsers(),
+					loadApprovedUsers(),
+					loadRejectedUsers(),
+				]);
+			} catch (error) {
+				console.error("Auth error:", error);
+				showToast("Authentication error. Please log in again.", "error");
+				setTimeout(() => {
+					window.location.href = "frontend/index.html";
+				}, 2000);
+			}
+		});
+	</script>
+	<!-- Nav End -->
+
+	<div class="min-h-screen pt-12 bg-gray-100">
+		<!-- New Project -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="createNewOrganization" tabindex="-1" aria-labelledby="createNewOrganizationTitle" aria-modal="true"
+			role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<!-- Modal title -->
+						<h5 class="text-xl font-medium leading-normal text-surface" id="createNewOrganizationTitle">
+							New Project
+						</h5>
+						<!-- Close button -->
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="relative p-4">
+						<form id="userForm" class="space-y-5">
+							<!-- First & Last Name -->
+							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								<div>
+									<label class="block text-sm font-medium text-gray-700">First Name</label>
+									<input type="text" name="first_name" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700">Last Name</label>
+									<input type="text" name="last_name" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700">Gender</label>
+									<select name="gender" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+										<option value="">Select...</option>
+										<option>Male</option>
+										<option>Female</option>
+										<option>Other</option>
+									</select>
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700">Country</label>
+									<input type="text" name="country" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700">County</label>
+									<input type="text" name="county" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+
+								<div>
+									<label class="block text-sm font-medium text-gray-700">Role</label>
+									<select name="role" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+										<option value="">Select Role...</option>
+										<option>Super Admin</option>
+										<option>Ei</option>
+									</select>
+								</div>
+
+								<!-- Email -->
+								<div>
+									<label class="block text-sm font-medium text-gray-700">Email Address</label>
+									<input type="email" name="email" required
+										class="block w-full py-2 mt-1 border-gray-600 rounded-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+								</div>
+							</div>
+							<!-- Submit -->
+							<div class="pt-4">
+								<button type="submit"
+									class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
+									Create User
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Reject User Modal -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="rejectUserModal" tabindex="-1" aria-labelledby="rejectUserModalTitle" aria-modal="true" role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<h5 class="text-xl font-medium leading-normal text-surface" id="rejectUserModalTitle">
+							Reject User
+						</h5>
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
+
+					<div class="relative p-6">
+						<form id="rejectUserForm" class="space-y-4">
+							<input type="hidden" id="rejectUserId" />
+
+							<div class="p-4 mb-4 bg-yellow-50 border border-yellow-200 rounded-md">
+								<div class="flex items-start">
+									<i class="text-yellow-600 fas fa-exclamation-triangle mt-0.5 mr-3"></i>
+									<div>
+										<p class="text-sm font-medium text-yellow-800">
+											User Details
+										</p>
+										<p class="mt-1 text-sm text-yellow-700">
+											<strong>Name:</strong> <span id="rejectUserName"></span><br />
+											<strong>Email:</strong>
+											<span id="rejectUserEmail"></span>
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div>
+								<label class="block mb-2 text-sm font-medium text-gray-700">
+									Reason for Rejection <span class="text-red-500">*</span>
+								</label>
+								<select id="rejectReasonSelect" required
+									class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+									onchange="toggleCustomReasonField()">
+									<option value="">-- Select Rejection Reason --</option>
+									<option value="Incomplete registration information">
+										Incomplete registration information
+									</option>
+									<option value="Invalid or unverified email address">
+										Invalid or unverified email address
+									</option>
+									<option value="Organization not eligible for platform access">
+										Organization not eligible for platform access
+									</option>
+									<option value="Duplicate account detected">
+										Duplicate account detected
+									</option>
+									<option value="Suspicious or fraudulent activity">
+										Suspicious or fraudulent activity
+									</option>
+									<option value="Does not meet platform requirements">
+										Does not meet platform requirements
+									</option>
+									<option value="Requested role not appropriate for organization">
+										Requested role not appropriate for organization
+									</option>
+									<option value="Failed verification process">
+										Failed verification process
+									</option>
+									<option value="custom">Other (Specify reason)</option>
+								</select>
+								<p class="mt-1 text-xs text-gray-500">
+									This reason will be sent to the user via email.
+								</p>
+							</div>
+
+							<div id="customReasonSection" class="hidden">
+								<label class="block mb-2 text-sm font-medium text-gray-700">
+									Custom Rejection Reason <span class="text-red-500">*</span>
+								</label>
+								<textarea id="customReasonText" rows="3"
+									class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+									placeholder="Please provide a detailed custom reason..."></textarea>
+							</div>
+
+							<div class="flex gap-3 pt-4">
+								<button type="button" data-twe-modal-dismiss
+									class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+									Cancel
+								</button>
+								<button type="submit"
+									class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+									<i class="mr-1 fas fa-times"></i>
+									Reject User
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- View User Details Modal -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="viewUserDetailsModal" tabindex="-1" aria-labelledby="viewUserDetailsModalTitle" aria-modal="true"
+			role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[800px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<h5 class="text-xl font-medium leading-normal text-surface" id="viewUserDetailsModalTitle">
+							User Details & Documents
+						</h5>
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							onclick="closeUserDetailsModal()" aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
+
+					<div class="relative p-6 max-h-[70vh] overflow-y-auto">
+						<!-- Loading State -->
+						<div id="userDetailsLoading" class="hidden text-center py-8">
+							<div
+								class="inline-block w-12 h-12 border-4 border-blue-600 rounded-full border-t-transparent animate-spin">
+							</div>
+							<p class="mt-4 text-gray-600">Loading user details...</p>
+						</div>
+
+						<!-- User Details Content -->
+						<div id="userDetailsContent" class="space-y-6">
+							<!-- Basic Information -->
+							<div class="bg-gray-50 p-4 rounded-lg">
+								<h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+									<i class="fas fa-user mr-2 text-blue-600"></i>
+									Basic Information
+								</h3>
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div>
+										<label class="text-sm font-medium text-gray-600">Name</label>
+										<p class="text-gray-900" id="viewUserName">-</p>
+									</div>
+									<div>
+										<label class="text-sm font-medium text-gray-600">Email</label>
+										<p class="text-gray-900" id="viewUserEmail">-</p>
+									</div>
+									<div>
+										<label class="text-sm font-medium text-gray-600">Role</label>
+										<p class="text-gray-900" id="viewUserRole">-</p>
+									</div>
+									<div>
+										<label class="text-sm font-medium text-gray-600">Status</label>
+										<p class="text-gray-900" id="viewUserStatus">-</p>
+									</div>
+									<div>
+										<label class="text-sm font-medium text-gray-600">Organization</label>
+										<p class="text-gray-900" id="viewUserOrganization">-</p>
+									</div>
+									<div>
+										<label class="text-sm font-medium text-gray-600">Registration Date</label>
+										<p class="text-gray-900" id="viewUserCreatedAt">-</p>
+									</div>
+								</div>
+							</div>
+
+							<!-- Supporting Documents -->
+							<div class="bg-blue-50 p-4 rounded-lg">
+								<h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+									<i class="fas fa-file-alt mr-2 text-blue-600"></i>
+									Supporting Documents
+								</h3>
+								<div id="supportingDocumentsList" class="space-y-3">
+									<!-- Documents will be loaded here -->
+								</div>
+							</div>
+
+							<!-- Additional Information -->
+							<div class="bg-gray-50 p-4 rounded-lg" id="additionalInfoSection">
+								<h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+									<i class="fas fa-info-circle mr-2 text-blue-600"></i>
+									Additional Information
+								</h3>
+								<div class="grid grid-cols-1 gap-4">
+									<div id="thematicAreaDiv" class="hidden">
+										<label class="text-sm font-medium text-gray-600">Thematic Area</label>
+										<p class="text-gray-900" id="viewUserThematicArea">-</p>
+									</div>
+									<div id="rejectionReasonDiv" class="hidden">
+										<label class="text-sm font-medium text-gray-600">Rejection Reason</label>
+										<p class="text-gray-900" id="viewUserRejectionReason">
+											-
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex gap-3 p-4 border-t border-gray-200">
+						<button type="button" onclick="closeUserDetailsModal()"
+							class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Change Role Modal -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="changeRoleModal" tabindex="-1" aria-labelledby="changeRoleModalTitle" aria-modal="true" role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<h5 class="text-xl font-medium leading-normal text-surface" id="changeRoleModalTitle">
+							Change User Role
+						</h5>
+						<button type="button"
+							class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+							data-twe-modal-dismiss aria-label="Close">
+							<span class="[&>svg]:h-6 [&>svg]:w-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</span>
+						</button>
+					</div>
+
+					<div class="relative p-6">
+						<form id="changeRoleForm" class="space-y-4">
+							<input type="hidden" id="changeRoleUserId" />
+
+							<div>
+								<label class="block mb-2 text-sm font-medium text-gray-700">
+									Select New Role <span class="text-red-500">*</span>
+								</label>
+								<select id="changeRoleSelect" required
+									class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+									onchange="toggleThematicAreaField()">
+									<option value="">-- Select Role --</option>
+									<option value="SUPER_ADMIN">Super Admin</option>
+									<option value="SUPER_ADMIN_APPROVER">
+										Super Admin Approver
+									</option>
+									<option value="SUPER_ADMIN_REVIEWER">
+										Super Admin Reviewer
+									</option>
+									<option value="PARTNER">Partner</option>
+									<option value="DONOR">Donor</option>
+								</select>
+							</div>
+
+							<div id="thematicAreaSection" class="hidden">
+								<label class="block mb-2 text-sm font-medium text-gray-700">
+									Thematic Area <span class="text-red-500">*</span>
+								</label>
+								<select id="thematicAreaSelect"
+									class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+									<option value="">-- Select Thematic Area --</option>
+									<option value="GBV">Gender-Based Violence (GBV)</option>
+									<option value="AYPSRH">
+										Adolescent & Youth PSRH (AYPSRH)
+									</option>
+									<option value="MNH">Maternal & Newborn Health (MNH)</option>
+									<option value="FP">Family Planning (FP)</option>
+									<option value="CH">Child Health (CH)</option>
+									<option value="AH">Adolescent Health (AH)</option>
+									<option value="ADV_SBC">Advocacy and SBC</option>
+									<option value="MONITORING_EVALUATION">Monitoring and Evaluation</option>
+									<option value="RESEARCH_LEARNING">Research and Learning</option>
+								</select>
+								<p class="mt-1 text-xs text-gray-500">
+									Required for Super Admin Reviewer role
+								</p>
+							</div>
+
+							<div class="flex gap-3 pt-4">
+								<button type="button" data-twe-modal-dismiss
+									class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+									Cancel
+								</button>
+								<button type="submit"
+									class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+									Update Role
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Document Viewer Modal -->
+		<div data-twe-modal-init
+			class="fixed left-0 top-0 backdrop-blur-md z-[1060] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+			id="documentViewerModal" tabindex="-1" aria-labelledby="documentViewerModalTitle" aria-modal="true"
+			role="dialog">
+			<div data-twe-modal-dialog-ref
+				class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[90vw] min-[992px]:max-w-[80vw] min-[1200px]:max-w-[70vw]">
+				<div
+					class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
+					<!-- Modal Header -->
+					<div
+						class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
+						<h5 class="text-xl font-medium leading-normal text-surface" id="documentViewerModalTitle">
+							<i class="fas fa-file-alt mr-2 text-blue-600"></i>
+							<span id="documentViewerFileName">Document Viewer</span>
+						</h5>
+						<button type="button"
+							class="box-content text-gray-500 border-none rounded-none hover:text-gray-700 hover:no-underline focus:text-gray-700 focus:opacity-100 focus:shadow-none focus:outline-none"
+							onclick="closeDocumentViewer()" aria-label="Close">
+							<i class="fas fa-times text-xl"></i>
+						</button>
+					</div>
+
+					<!-- Modal Body -->
+					<div class="relative p-4" style="height: 80vh">
+						<!-- Loading State -->
+						<div id="documentViewerLoading" class="flex items-center justify-center h-full">
+							<div class="text-center">
+								<div
+									class="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4">
+								</div>
+								<p class="text-gray-600">Loading document...</p>
+							</div>
+						</div>
+
+						<!-- Document Container (for PDFs and images) -->
+						<div id="documentViewerContent" class="hidden h-full">
+							<object id="documentViewerFrame" class="w-full h-full border rounded"
+								type="application/pdf">
+								<embed id="documentViewerEmbed" class="w-full h-full" type="application/pdf" />
+								<p class="text-center p-4">
+									Your browser doesn't support PDF viewing.
+									<button onclick="document.getElementById('documentViewerDownloadBtn').click()"
+										class="text-blue-600 underline">
+										Click here to download
+									</button>
+								</p>
+							</object>
+						</div>
+
+						<!-- Word/Excel Document Container (using Office viewer) -->
+						<div id="officeDocumentViewerContent" class="hidden h-full">
+							<iframe id="officeViewerFrame" class="w-full h-full border rounded"
+								frameborder="0"></iframe>
+						</div>
+
+						<!-- Unsupported Document Type -->
+						<div id="unsupportedDocumentContent" class="hidden flex items-center justify-center h-full">
+							<div class="text-center max-w-md p-8">
+								<div class="mb-4">
+									<i class="fas fa-file-alt text-6xl text-gray-400"></i>
+								</div>
+								<h3 class="text-xl font-semibold text-gray-800 mb-2">
+									Preview Not Available
+								</h3>
+								<p class="text-gray-600 mb-6">
+									This document type cannot be previewed in the browser.
+									Please download the file to view it.
+								</p>
+								<button onclick="document.getElementById('documentViewerDownloadBtn').click()"
+									class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+									<i class="fas fa-download mr-2"></i>
+									Download Document
+								</button>
+							</div>
+						</div>
+
+						<!-- Error State -->
+						<div id="documentViewerError" class="hidden flex items-center justify-center h-full">
+							<div class="text-center text-red-600">
+								<i class="fas fa-exclamation-circle text-5xl mb-4"></i>
+								<p class="text-lg font-medium">Failed to load document</p>
+								<p class="text-sm text-gray-600 mt-2" id="documentViewerErrorMessage"></p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal Footer -->
+					<div
+						class="flex items-center justify-end gap-2 flex-shrink-0 p-4 border-t-2 border-neutral-100 rounded-b-md">
+						<button type="button" id="documentViewerDownloadBtn"
+							class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">
+							<i class="fas fa-download mr-2"></i>
+							Download
+						</button>
+						<button type="button"
+							class="inline-block px-6 py-2.5 bg-gray-200 text-gray-700 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-400 active:shadow-lg transition duration-150 ease-in-out"
+							onclick="closeDocumentViewer()">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="max-w-full p-8 mx-auto">
+			<div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
+				<div class="flex items-center justify-between mb-5">
+					<h2 class="text-2xl font-light text-gray-900 uppercase fade fade-left">
+						User Management Dashboard
+					</h2>
+					<button onclick="refreshData()"
+						class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700">
+						<i class="fas fa-sync-alt"></i>
+						<span>Refresh</span>
+					</button>
+				</div>
+				
+				<!-- Enhanced User Counters -->
+				<div id="user-counters-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+					<!-- Counters will be loaded dynamically -->
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+					<div class="bg-white rounded-lg shadow-md p-4 animate-pulse">
+						<div class="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+						<div class="h-6 bg-gray-300 rounded w-12"></div>
+					</div>
+				</div>
+				
+				<div class="flex flex-col gap-2">
+					<ul class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-4" id="pills-tab" role="tablist"
+						data-twe-nav-ref>
+						<li class="flex" role="presentation">
+							<a class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+								id="pills-approved-tab" data-twe-toggle="pill" data-twe-target="#pills-approved"
+								data-twe-nav-active role="tab" aria-controls="pills-approved" aria-selected="true">
+								<p class="text-3xl font-bold" id="approvedCount">0</p>
+								<p class="text-sm">Approved</p>
+							</a>
+						</li>
+						<li class="flex" role="presentation">
+							<a class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+								id="pills-pending-tab" data-twe-toggle="pill" data-twe-target="#pills-pending"
+								role="tab">
+								<p class="text-3xl font-bold" id="pendingCount">0</p>
+								<p class="text-sm">Pending</p>
+							</a>
+						</li>
+						<li class="flex" role="presentation">
+							<a class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+								id="pills-rejected-tab" data-twe-toggle="pill" data-twe-target="#pills-rejected"
+								role="tab">
+								<p class="text-3xl font-bold" id="rejectedCount">0</p>
+								<p class="text-sm">Rejected</p>
+							</a>
+						</li>
+						<li class="flex" role="presentation">
+							<a class="fade w-full fade-up bg-blue-50 transition ease-in-out duration-150 text-blue-700 data-[twe-nav-active]:bg-blue-900 data-[twe-nav-active]:text-white p-4 rounded-md cursor-pointer"
+								id="pills-all-tab" data-twe-toggle="pill" data-twe-target="#pills-all" role="tab">
+								<p class="text-3xl font-bold" id="totalCount">0</p>
+								<p class="text-sm">All Users</p>
+							</a>
+						</li>
+					</ul>
+					<!--Pills content-->
+					<div class="mb-6">
+						<!-- Approved Users Tab -->
+						<div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+							id="pills-approved" role="tabpanel" aria-labelledby="pills-approved-tab"
+							data-twe-tab-active>
+							<div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+								<div class="inline-block min-w-full overflow-hidden rounded-lg">
+									<table class="min-w-full leading-normal">
+										<thead>
+											<tr>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Full Name
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Email Address
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Organization
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Role
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Status
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Actions
+												</th>
+											</tr>
+										</thead>
+										<tbody id="approvedUsersTable">
+											<tr>
+												<td colspan="6" class="px-4 py-8 text-center text-gray-500">
+													<i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+													<p>Loading approved users...</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<!-- Pending Users Tab -->
+						<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+							id="pills-pending" role="tabpanel" aria-labelledby="pills-pending-tab">
+							<div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+								<div class="inline-block min-w-full overflow-hidden rounded-lg">
+									<table class="min-w-full leading-normal">
+										<thead>
+											<tr>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Full Name
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Email Address
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Organization
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Role
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Requested On
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Actions
+												</th>
+											</tr>
+										</thead>
+										<tbody id="pendingUsersTable">
+											<tr>
+												<td colspan="6" class="px-4 py-8 text-center text-gray-500">
+													<i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+													<p>Loading pending users...</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<!-- Rejected Users Tab -->
+						<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+							id="pills-rejected" role="tabpanel" aria-labelledby="pills-rejected-tab">
+							<div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+								<div class="inline-block min-w-full overflow-hidden rounded-lg">
+									<table class="min-w-full leading-normal">
+										<thead>
+											<tr>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Full Name
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Email Address
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Organization
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Role
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Rejection Reason
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Actions
+												</th>
+											</tr>
+										</thead>
+										<tbody id="rejectedUsersTable">
+											<tr>
+												<td colspan="6" class="px-4 py-8 text-center text-gray-500">
+													<i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+													<p>Loading rejected users...</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<!-- All Users Tab -->
+						<div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+							id="pills-all" role="tabpanel" aria-labelledby="pills-all-tab">
+							<div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
+								<div class="inline-block min-w-full overflow-hidden rounded-lg">
+									<table class="min-w-full leading-normal">
+										<thead>
+											<tr>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Full Name
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Email Address
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Organization
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Role
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Status
+												</th>
+												<th scope="col"
+													class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+													Actions
+												</th>
+											</tr>
+										</thead>
+										<tbody id="allUsersTable">
+											<tr>
+												<td colspan="6" class="px-4 py-8 text-center text-gray-500">
+													<i class="mb-2 text-3xl fas fa-spinner fa-spin"></i>
+													<p>Loading all users...</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="styles/effects.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+	<script>
+		// Global state
+		let allUsers = [];
+		let approvedUsers = [];
+		let pendingUsers = [];
+		let rejectedUsers = [];
+
+		// Utility Functions
+		function showLoading(show = true) {
+			const overlay = document.getElementById("loadingOverlay");
+			if (show) {
+				overlay.classList.remove("hidden");
+			} else {
+				overlay.classList.add("hidden");
+			}
+		}
+
+		function showToast(message, type = "success") {
+			const toast = document.getElementById("toast");
+			const toastMessage = document.getElementById("toastMessage");
+
+			toastMessage.textContent = message;
+
+			// Set color based on type
+			if (type === "error") {
+				toast.classList.remove("bg-green-600");
+				toast.classList.add("bg-red-600");
+			} else {
+				toast.classList.remove("bg-red-600");
+				toast.classList.add("bg-green-600");
+			}
+
+			toast.classList.remove("hidden");
+
+			setTimeout(() => {
+				toast.classList.add("hidden");
+			}, 3000);
+		}
+
+		function formatDate(dateString) {
+			if (!dateString) return "N/A";
+			const date = new Date(dateString);
+			return date.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+			});
+		}
+
+		// Helper function to get thematic area display name
+		function getThematicAreaDisplayName(code) {
+			const thematicAreas = {
+				GBV: "GBV",
+				AYPSRH: "AYPSRH",
+				MNH: "MNH",
+				FP: "FP",
+				CH: "CH",
+				AH: "AH"
+			};
+			return thematicAreas[code] || code || "Not Assigned";
+		}
+
+		function getStatusBadge(status) {
+			const badges = {
+				APPROVED: "bg-green-100 text-green-800",
+				PENDING: "bg-yellow-100 text-yellow-800",
+				REJECTED: "bg-red-100 text-red-800",
+				ACTIVE: "bg-blue-100 text-blue-800",
+				INACTIVE: "bg-gray-100 text-gray-800",
+			};
+			return badges[status] || "bg-gray-100 text-gray-800";
+		}
+
+		// API Functions
+		async function apiCall(endpoint, method = "GET", data = null) {
+			const token = localStorage.getItem("accessToken");
+			const config = {
+				method,
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+			};
+
+			if (data && (method === "POST" || method === "PUT")) {
+				config.body = JSON.stringify(data);
+			}
+
+			const response = await fetch(`${window.BASE_URL}${endpoint}`, config);
+
+			if (!response.ok) {
+				let errorMessage = "API request failed";
+				try {
+					const error = await response.json();
+					errorMessage = error.message || errorMessage;
+				} catch (e) {
+					// If response is not JSON, try to get text
+					try {
+						const text = await response.text();
+						errorMessage =
+							text || `HTTP ${response.status}: ${response.statusText}`;
+					} catch (textError) {
+						errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+					}
+				}
+				throw new Error(errorMessage);
+			}
+
+			return response.json();
+		}
+
+		// Load User Statistics
+		async function loadUserStats() {
+			try {
+				const result = await apiCall("/api/auth/admin/users");
+				allUsers = result.data || [];
+
+				const approved = allUsers.filter(
+					(u) => u.approvalStatus === "APPROVED"
+				).length;
+				const pending = allUsers.filter(
+					(u) => u.approvalStatus === "PENDING"
+				).length;
+				const rejected = allUsers.filter(
+					(u) => u.approvalStatus === "REJECTED"
+				).length;
+
+				document.getElementById("approvedCount").textContent = approved;
+				document.getElementById("pendingCount").textContent = pending;
+				document.getElementById("rejectedCount").textContent = rejected;
+				document.getElementById("totalCount").textContent = allUsers.length;
+				
+				// Load enhanced counters
+				await loadEnhancedUserCounters();
+			} catch (error) {
+				console.error("Error loading user stats:", error);
+				showToast("Failed to load user statistics", "error");
+			}
+		}
+		
+		async function loadEnhancedUserCounters() {
+			try {
+				console.log("[DEBUG] Fetching user counts...");
+				// Use the apiCall function that already exists in members.html
+				const result = await apiCall("/api/auth/counts");
+				const counts = result.data || {};
+				console.log("[DEBUG] User counts:", counts);
+				
+				// Create counter cards with detailed user metrics
+				const countersContainer = document.getElementById('user-counters-grid');
+				if (countersContainer) {
+					const counters = [
+						{
+							title: 'Partners',
+							count: counts.partners || 0,
+							icon: 'fas fa-handshake',
+							color: 'blue'
+						},
+						{
+							title: 'Donors',
+							count: counts.donors || 0,
+							icon: 'fas fa-hand-holding-usd',
+							color: 'green'
+						},
+						{
+							title: 'Administrators',
+							count: (counts.admins || 0),
+							icon: 'fas fa-user-shield',
+							color: 'purple'
+						},
+						{
+							title: 'Active Users',
+							count: counts.active || 0,
+							icon: 'fas fa-user-check',
+							color: 'indigo'
+						}
+					];
+					
+					// Create only the cards, not the grid wrapper
+					countersContainer.innerHTML = counters.map(counter => createCounterCard(counter)).join('');
+				}
+			} catch (error) {
+				console.error("Error loading enhanced user counters:", error);
+				// Fallback to showing data from allUsers
+				const countersContainer = document.getElementById('user-counters-grid');
+				if (countersContainer && allUsers && allUsers.length > 0) {
+					const partners = allUsers.filter(u => u.role === 'PARTNER').length;
+					const donors = allUsers.filter(u => u.role === 'DONOR').length;
+					const admins = allUsers.filter(u => 
+						u.role === 'SUPER_ADMIN' || 
+						u.role === 'SUPER_ADMIN_APPROVER' || 
+						u.role === 'SUPER_ADMIN_REVIEWER'
+					).length;
+					const active = allUsers.filter(u => u.approvalStatus === 'APPROVED').length;
+					
+					const counters = [
+						{ title: 'Partners', count: partners, icon: 'fas fa-handshake', color: 'blue' },
+						{ title: 'Donors', count: donors, icon: 'fas fa-hand-holding-usd', color: 'green' },
+						{ title: 'Administrators', count: admins, icon: 'fas fa-user-shield', color: 'purple' },
+						{ title: 'Active Users', count: active, icon: 'fas fa-user-check', color: 'indigo' }
+					];
+					
+					// Create only the cards, not the grid wrapper
+					countersContainer.innerHTML = counters.map(counter => createCounterCard(counter)).join('');
+				}
+			}
+		}
+
+		// Load Pending Users
+		async function loadPendingUsers() {
+			try {
+				const result = await apiCall("/api/auth/admin/pending-users");
+				pendingUsers = result.data || [];
+				renderPendingUsers();
+			} catch (error) {
+				console.error("Error loading pending users:", error);
+				showToast("Failed to load pending users", "error");
+				document.getElementById("pendingUsersTable").innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-red-500">
+                          <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
+                          <p>Failed to load pending users</p>
+                      </td>
+                  </tr>
+              `;
+			}
+		}
+
+		// Load Approved Users
+		async function loadApprovedUsers() {
+			try {
+				const result = await apiCall("/api/auth/admin/users/status/APPROVED");
+				approvedUsers = result.data || [];
+				renderApprovedUsers();
+			} catch (error) {
+				console.error("Error loading approved users:", error);
+				showToast("Failed to load approved users", "error");
+				document.getElementById("approvedUsersTable").innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-red-500">
+                          <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
+                          <p>Failed to load approved users</p>
+                      </td>
+                  </tr>
+              `;
+			}
+		}
+
+		// Load Rejected Users
+		async function loadRejectedUsers() {
+			try {
+				const result = await apiCall("/api/auth/admin/users/status/REJECTED");
+				rejectedUsers = result.data || [];
+				renderRejectedUsers();
+			} catch (error) {
+				console.error("Error loading rejected users:", error);
+				showToast("Failed to load rejected users", "error");
+				document.getElementById("rejectedUsersTable").innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-red-500">
+                          <i class="mb-2 text-3xl fas fa-exclamation-circle"></i>
+                          <p>Failed to load rejected users</p>
+                      </td>
+                  </tr>
+              `;
+			}
+		}
+
+		// Load All Users
+		async function loadAllUsers() {
+			try {
+				const result = await apiCall("/api/auth/admin/users");
+				allUsers = result.data || [];
+				renderAllUsers();
+			} catch (error) {
+				console.error("Error loading all users:", error);
+				showToast("Failed to load users", "error");
+			}
+		}
+
+		// Render Functions
+		function renderPendingUsers() {
+			const table = document.getElementById("pendingUsersTable");
+
+			if (pendingUsers.length === 0) {
+				table.innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                          <i class="mb-2 text-3xl fas fa-inbox"></i>
+                          <p>No pending user requests</p>
+                      </td>
+                  </tr>
+              `;
+				return;
+			}
+
+			table.innerHTML = pendingUsers
+				.map(
+					(user) => `
+              <tr class="border-b hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+							? "bg-purple-100 text-purple-800"
+							: "bg-blue-100 text-blue-800"
+						}">
+                          ${user.role}
+                      </span>
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
+                          </span>`
+							: ""
+						}
+                      </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${formatDate(
+							user.createdAt
+						)}</td>
+                  <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="approveUser(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
+                          <i class="mr-1 fas fa-check"></i> Approve
+                      </button>
+                      <button onclick="updateUserRoleWithTheme(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
+                      </button>
+                      <button onclick="showRejectModal(${user.id}, '${user.name
+						}', '${user.email
+						}')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
+                          <i class="mr-1 fas fa-times"></i> Reject
+                      </button>
+                  </td>
+              </tr>
+          `
+				)
+				.join("");
+		}
+
+		function renderApprovedUsers() {
+			const table = document.getElementById("approvedUsersTable");
+
+			if (approvedUsers.length === 0) {
+				table.innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                          <i class="mb-2 text-3xl fas fa-inbox"></i>
+                          <p>No approved users</p>
+                      </td>
+                  </tr>
+              `;
+				return;
+			}
+
+			table.innerHTML = approvedUsers
+				.map(
+					(user) => `
+              <tr class="border-b hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+							? "bg-purple-100 text-purple-800"
+							: "bg-blue-100 text-blue-800"
+						}">
+                          ${user.role}
+                      </span>
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
+                          </span>`
+							: ""
+						}
+                      </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
+							user.status
+						)}">
+                          ${user.status}
+                      </span>
+                  </td>
+                  <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="updateUserRoleWithTheme(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-purple-500 rounded hover:bg-purple-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
+                      </button>
+                      <button onclick="showRejectModal(${user.id}, '${user.name
+						}', '${user.email
+						}')" class="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition">
+                          <i class="mr-1 fas fa-ban"></i> Suspend
+                      </button>
+                  </td>
+              </tr>
+          `
+				)
+				.join("");
+		}
+
+		function renderRejectedUsers() {
+			const table = document.getElementById("rejectedUsersTable");
+
+			if (rejectedUsers.length === 0) {
+				table.innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                          <i class="mb-2 text-3xl fas fa-inbox"></i>
+                          <p>No rejected users</p>
+                      </td>
+                  </tr>
+              `;
+				return;
+			}
+
+			table.innerHTML = rejectedUsers
+				.map(
+					(user) => `
+              <tr class="border-b hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+							? "bg-purple-100 text-purple-800"
+							: "bg-blue-100 text-blue-800"
+						}">
+                          ${user.role}
+                      </span>
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
+                          </span>`
+							: ""
+						}
+                      </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">
+                      <div class="max-w-xs truncate" title="${user.rejectionReason || "No reason provided"
+						}">
+                          ${user.rejectionReason || "No reason provided"}
+                      </div>
+                  </td>
+                  <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="approveUser(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600 transition">
+                          <i class="mr-1 fas fa-redo"></i> Restore
+                      </button>
+                      <button onclick="deleteUser(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-red-700 rounded hover:bg-red-800 transition">
+                          <i class="mr-1 fas fa-trash"></i> Delete
+                      </button>
+                  </td>
+              </tr>
+          `
+				)
+				.join("");
+		}
+
+		function renderAllUsers() {
+			const table = document.getElementById("allUsersTable");
+
+			if (allUsers.length === 0) {
+				table.innerHTML = `
+                  <tr>
+                      <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                          <i class="mb-2 text-3xl fas fa-inbox"></i>
+                          <p>No users found</p>
+                      </td>
+                  </tr>
+              `;
+				return;
+			}
+
+			table.innerHTML = allUsers
+				.map(
+					(user) => `
+              <tr class="border-b hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.email}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${user.organization?.name || "N/A"
+						}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <div class="flex flex-wrap items-center gap-2">
+                          <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+							? "bg-purple-100 text-purple-800"
+							: "bg-blue-100 text-blue-800"
+						}">
+                          ${user.role}
+                      </span>
+                      ${user.role === "SUPER_ADMIN_REVIEWER" && (user.thematicAreas && user.thematicAreas.length > 0 || user.thematicArea)
+							? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Thematic Area(s)">
+                              <i class="fas fa-tag mr-1"></i>${
+								user.thematicAreas && user.thematicAreas.length > 0 
+									? user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ')
+									: getThematicAreaDisplayName(user.thematicArea)
+							  }
+                          </span>`
+							: ""
+						}
+                      </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700">
+                      <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
+							user.approvalStatus
+						)}">
+                          ${user.approvalStatus}
+                      </span>
+                  </td>
+                  <td class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium">
+                      <button onclick="viewPendingUserDetails(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 transition">
+                          <i class="mr-1 fas fa-eye"></i> View
+                      </button>
+                      <button onclick="updateUserRoleWithTheme(${user.id
+						})" class="px-3 py-1 text-xs text-white bg-purple-500 rounded hover:bg-purple-600 transition">
+                          <i class="mr-1 fas fa-user-tag"></i> Change Role
+                      </button>
+                  </td>
+              </tr>
+          `
+				)
+				.join("");
+		}
+
+		// User Actions
+		async function approveUser(userId) {
+			const confirmed = await showConfirm(
+				"Are you sure you want to approve this user?",
+				"Approve User",
+				"Approve",
+				"Cancel"
+			);
+
+			if (!confirmed) {
+				return;
+			}
+
+			showLoading();
+			try {
+				await apiCall(`/api/auth/admin/approve-user/${userId}`, "POST");
+				showToast("User approved successfully!");
+
+				// Reload data
+				await Promise.all([
+					loadUserStats(),
+					loadPendingUsers(),
+					loadApprovedUsers(),
+					loadRejectedUsers(),
+				]);
+			} catch (error) {
+				console.error("Error approving user:", error);
+				showToast(error.message || "Failed to approve user", "error");
+			} finally {
+				showLoading(false);
+			}
+		}
+
+		// Toggle custom reason field visibility
+		function toggleCustomReasonField() {
+			const reasonSelect = document.getElementById("rejectReasonSelect");
+			const customReasonSection = document.getElementById(
+				"customReasonSection"
+			);
+			const customReasonText = document.getElementById("customReasonText");
+
+			if (reasonSelect.value === "custom") {
+				customReasonSection.classList.remove("hidden");
+				customReasonText.required = true;
+			} else {
+				customReasonSection.classList.add("hidden");
+				customReasonText.required = false;
+				customReasonText.value = "";
+			}
+		}
+
+		function showRejectModal(userId, name, email) {
+			// Store user information in the modal
+			document.getElementById("rejectUserId").value = userId;
+			document.getElementById("rejectUserName").textContent = name || "N/A";
+			document.getElementById("rejectUserEmail").textContent = email;
+
+			// Reset form
+			document.getElementById("rejectUserForm").reset();
+			document.getElementById("rejectUserId").value = userId; // Reset clears hidden fields too
+			document.getElementById("customReasonSection").classList.add("hidden");
+
+			// Open modal
+			const modalElement = document.getElementById("rejectUserModal");
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = new window.te.Modal(modalElement);
+				modal.show();
+			} else {
+				// Fallback: show modal manually
+				modalElement.classList.remove("hidden");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.remove("opacity-0", "translate-y-[-50px]");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.add("opacity-100", "translate-y-0");
+			}
+		}
+
+		async function rejectUser(userId, reason) {
+			showLoading();
+			try {
+				await apiCall(`/api/auth/admin/reject-user/${userId}`, "POST", {
+					reason,
+				});
+				showToast("User rejected successfully");
+
+				// Reload data
+				await Promise.all([
+					loadUserStats(),
+					loadPendingUsers(),
+					loadApprovedUsers(),
+					loadRejectedUsers(),
+				]);
+			} catch (error) {
+				console.error("Error rejecting user:", error);
+				showToast(error.message || "Failed to reject user", "error");
+			} finally {
+				showLoading(false);
+			}
+		}
+
+		async function deleteUser(userId) {
+			const confirmed = await showConfirm(
+				"Are you sure you want to permanently delete this user? This action cannot be undone.",
+				"Delete User",
+				"Delete",
+				"Cancel"
+			);
+
+			if (!confirmed) {
+				return;
+			}
+
+			showLoading();
+			try {
+				// Call the backend delete endpoint. Ensure a matching endpoint exists
+				// (e.g. DELETE /api/auth/admin/delete-user/{id}) and that the logged-in
+				// user has permission to perform deletes.
+				await apiCall(`/api/auth/admin/delete-user/${userId}`, "DELETE");
+				showToast("User deleted successfully");
+
+				// Reload data
+				await Promise.all([
+					loadUserStats(),
+					loadPendingUsers(),
+					loadApprovedUsers(),
+					loadRejectedUsers(),
+				]);
+			} catch (error) {
+				console.error("Error deleting user:", error);
+				showToast(error.message || "Failed to delete user", "error");
+			} finally {
+				showLoading(false);
+			}
+		}
+
+		function viewUserDetails(userId) {
+			// This function now redirects to the detailed modal view
+			// which provides better UX with document viewing capabilities
+			viewPendingUserDetails(userId);
+		}
+
+		// View Pending User Details with Supporting Documents
+		async function viewPendingUserDetails(userId) {
+			const modalElement = document.getElementById("viewUserDetailsModal");
+			const loadingElement = document.getElementById("userDetailsLoading");
+			const contentElement = document.getElementById("userDetailsContent");
+
+			// Show modal
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = new window.te.Modal(modalElement);
+				modal.show();
+			} else {
+				modalElement.classList.remove("hidden");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.remove("opacity-0", "translate-y-[-50px]");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.add("opacity-100", "translate-y-0");
+			}
+
+			// Add backdrop click handler to close modal
+			modalElement.onclick = function (event) {
+				// Only close if clicking the backdrop (not the modal content)
+				if (event.target === modalElement) {
+					closeUserDetailsModal();
+				}
+			};
+
+			// Add keyboard handler (ESC to close)
+			document.addEventListener("keydown", handleModalKeydown);
+
+			// Show loading state
+			loadingElement.classList.remove("hidden");
+			contentElement.classList.add("hidden");
+
+			try {
+				// Find user from existing data (check all arrays)
+				let user = pendingUsers.find((u) => u.id === userId);
+				if (!user) user = approvedUsers.find((u) => u.id === userId);
+				if (!user) user = rejectedUsers.find((u) => u.id === userId);
+				if (!user) user = allUsers.find((u) => u.id === userId);
+
+				if (!user) {
+					throw new Error("User not found");
+				}
+
+				// Populate basic information
+				document.getElementById("viewUserName").textContent =
+					user.name || "N/A";
+				document.getElementById("viewUserEmail").textContent =
+					user.email || "N/A";
+				document.getElementById("viewUserRole").innerHTML = `
+            <span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === "SUPER_ADMIN" ||
+						user.role === "SUPER_ADMIN_REVIEWER" ||
+						user.role === "SUPER_ADMIN_APPROVER"
+						? "bg-purple-100 text-purple-800"
+						: "bg-blue-100 text-blue-800"
+					}">
+              ${user.role}
+            </span>
+          `;
+				document.getElementById("viewUserStatus").innerHTML = `
+            <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
+					user.approvalStatus
+				)}">
+              ${user.approvalStatus}
+            </span>
+          `;
+				document.getElementById("viewUserOrganization").textContent =
+					user.organization?.name || "N/A";
+				document.getElementById("viewUserCreatedAt").textContent = formatDate(
+					user.createdAt
+				);
+
+				// Show thematic area(s) if exists
+				if (user.thematicAreas && user.thematicAreas.length > 0) {
+					document
+						.getElementById("thematicAreaDiv")
+						.classList.remove("hidden");
+					document.getElementById("viewUserThematicArea").textContent =
+						user.thematicAreas.map(t => getThematicAreaDisplayName(t)).join(', ');
+				} else if (user.thematicArea) {
+					document
+						.getElementById("thematicAreaDiv")
+						.classList.remove("hidden");
+					document.getElementById("viewUserThematicArea").textContent =
+						getThematicAreaDisplayName(user.thematicArea);
+				} else {
+					document.getElementById("thematicAreaDiv").classList.add("hidden");
+				}
+
+				// Show rejection reason if exists
+				if (user.rejectionReason) {
+					document
+						.getElementById("rejectionReasonDiv")
+						.classList.remove("hidden");
+					document.getElementById("viewUserRejectionReason").textContent =
+						user.rejectionReason;
+				} else {
+					document
+						.getElementById("rejectionReasonDiv")
+						.classList.add("hidden");
+				}
+
+				// Fetch and display supporting documents
+				try {
+					console.log(
+						`Fetching documents for user ${userId} from: ${window.BASE_URL}/api/auth/users/${userId}/supporting-documents`
+					);
+
+					const token = localStorage.getItem("accessToken");
+					const response = await fetch(
+						`${window.BASE_URL}/api/auth/users/${userId}/supporting-documents`,
+						{
+							method: "GET",
+							headers: {
+								Authorization: `Bearer ${token}`,
+								"Content-Type": "application/json",
+							},
+						}
+					);
+
+					console.log(
+						"Documents response status:",
+						response.status,
+						response.statusText
+					);
+
+					if (!response.ok) {
+						throw new Error(
+							`HTTP ${response.status}: ${response.statusText}`
+						);
+					}
+
+					const docsResult = await response.json();
+					console.log("Documents response:", docsResult);
+					const documents = docsResult.data || [];
+
+					const documentsList = document.getElementById(
+						"supportingDocumentsList"
+					);
+
+					if (documents.length === 0) {
+						documentsList.innerHTML = `
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-folder-open text-3xl mb-2"></i>
+                  <p>No supporting documents uploaded</p>
                 </div>
-            </div>
-        </div>
-
-        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
-        </div>
-
-        <div class="max-w-full p-8 mx-auto">
-            <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-                    Stakeholders Overview
-                </h2>
-                <div class="flex flex-col gap-2">
-                    <!-- <label class="text-sm font-medium text-gray-700">Status:</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="highlightMarkers('all')"
-                            class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            Show All
-                        </button>
-                        <button onclick="highlightMarkers('active')"
-                            class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            Active
-                        </button>
-                        <button onclick="highlightMarkers('pending')"
-                            class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            Pending
-                        </button>
-                        <button onclick="highlightMarkers('stalled')"
-                            class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            Stalled
-                        </button>
-                        <button onclick="highlightMarkers('completed')"
-                            class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            Completed
-                        </button>
+              `;
+					} else {
+						documentsList.innerHTML = documents
+							.map(
+								(doc) => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <i class="fas fa-file-pdf text-blue-600"></i>
                     </div>
-                </div> -->
-
-                    <ul class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5" id="pills-tab" role="tablist"
-                        data-twe-nav-ref>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-green-50 transition ease-in-out duration-150 text-green-700 data-[twe-nav-active]:bg-green-900 data-[twe-nav-active]:text-white p-4 rounded-md"
-                                id="pills-home-tab" data-twe-toggle="pill" data-twe-target="#pills-home"
-                                data-twe-nav-active role="tab" aria-controls="pills-home" aria-selected="true">
-                                <p class="text-3xl font-bold">800</p>
-                                <p class="text-sm">Active</p>
-                            </a>
-                        </li>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-yellow-50 transition ease-in-out duration-150 text-yellow-700 data-[twe-nav-active]:bg-yellow-900 data-[twe-nav-active]:text-white p-4 rounded-md"
-                                id="pills-profile-tab" data-twe-toggle="pill" data-twe-target="#pills-profile"
-                                role="tab">
-                                <p class="text-3xl font-bold">200</p>
-                                <p class="text-sm">Pending</p>
-                            </a>
-                        </li>
-                        <li class="flex" role="presentation">
-                            <a class="fade w-full fade-up bg-red-50 transition ease-in-out duration-150 text-red-700 data-[twe-nav-active]:bg-red-900 data-[twe-nav-active]:text-white p-4 rounded-md"
-                                id="pills-contact-tab" data-twe-toggle="pill" data-twe-target="#pills-contact"
-                                role="tab">
-                                <p class="text-3xl font-bold">150</p>
-                                <p class="text-sm">Restricted</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <!--Pills content-->
-                    <div class="mb-6">
-                        <div class="hidden px-4 opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" data-twe-tab-active>
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role / Title
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orage-600">
-                                                        Suspend
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600">
-                                                        Restrict
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role / Title
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
-                                                        Approve
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600">
-                                                        Restrict
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
-                            id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                            <div class="px-4 py-4 -mx-4 overflow-x-auto md:px-0 sm:-mx-4">
-                                <div class="inline-block min-w-full overflow-hidden rounded-lg">
-                                    <table class="min-w-full leading-normal">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Full Name
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Email Address
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Organization
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Role / Title
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="fade fade-up">
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-700 fade whitespace-nowrap">
-
-                                                </td>
-                                                <td
-                                                    class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm font-medium fade whitespace-nowrap">
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-orange-500 rounded hover:bg-orage-600">
-                                                        Restore
-                                                    </button>
-                                                    <button
-                                                        class="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600">
-                                                        Terminate
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        ${doc.fileName || doc.documentType || "Document"}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Uploaded: ${formatDate(doc.uploadedAt)}
+                        ${doc.fileSize
+										? ` • ${formatFileSize(doc.fileSize)}`
+										: ""
+									}
+                      </p>
                     </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <script src="styles/effects.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        let map, heatLayer;
-        let projects = [];
-        let filteredProjects = [];
-        let sortBy = 'name';
-        let sortOrder = 'asc';
-        let currentPage = 1;
-        const itemsPerPage = 5;
-        let currentFilter = 'all';
-        let searchQuery = '';
-        let dateRangeFrom = null;
-        let dateRangeTo = null;
-
-
-        const markers = [];
-        const icons = {
-            default: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `/frontend/resources/${tag}.png`, iconSize: [40, 40] })
-        };
-
-        const bgColors = {
-            active: 'bg-green-50',
-            pending: 'bg-yellow-50',
-            stalled: 'bg-red-50',
-            completed: 'bg-cyan-100',
-            default: 'bg-white'
-        };
-
-        const statusBadge = (tag) => {
-            return {
-                active: 'bg-green-200 text-green-800',
-                pending: 'bg-yellow-200 text-yellow-800',
-                stalled: 'bg-red-200 text-red-800',
-                completed: 'bg-cyan-300 text-gray-800',
-            }[tag] || 'bg-gray-200 text-gray-800';
-        };
-
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-            map = L.map('kenyaMap', {
-                center: [-0.0236, 37.9062],
-                zoom: 6.3,
-                scrollWheelZoom: false,
-                dragging: true,
-                touchZoom: false,
-                doubleClickZoom: true,
-                boxZoom: false,
-                keyboard: false,
-                zoomControl: true // keeps the + / – buttons visible
-            });
-
-            var kenyaBounds = [
-                [-4.677504, 33.893568],  // Southwest corner (Lat, Lng)
-                [5.019938, 41.906895]    // Northeast corner (Lat, Lng)
-            ];
-
-            // Set initial view to Kenya
-            map.fitBounds(kenyaBounds);
-
-            // Add tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 22,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Restrict map so user cannot pan outside Kenya
-            map.setMaxBounds(kenyaBounds);
-            map.on('drag', function () {
-                map.panInsideBounds(kenyaBounds, { animate: false });
-            });
-
-            // This comes from the db  -->
-            const markerData = [
-                { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
-                { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
-                { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
-                { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "completed" },
-            ];
-
-            // This comes from db-- >
-            markerData.forEach((data) => {
-                const fullDescription = `Loin ipsum dolor sit amet, leo in savanna stride, rugitus magna echoing plains. 
-                    Praeterea mane hunters vigilant, acacia shade sub arbore. Serengeti felis aurum, 
-                    crinibus ventis fluctuantibus, prideland auctor sapien. Ungulae zebrae cursitant, 
-                    antelopae metu per campos. Territorium regale defenditur, solis ardor fulget super 
-                    juba. Luna sub nocte vigil, oculi flammae micantes, silentium ruptum rugitu ${data.name}`;
-
-                data.description = fullDescription.substring(0, 300) + "...";
-                data.fullDescription = fullDescription;
-                data.region = `Region ${Math.ceil(Math.random() * 10)}`;
-                data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
-                data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
-                data.sponsor = `Sponsor for ${data.name}`;
-                data.participants = Math.ceil(Math.random() * 100);
-                data.start_date = new Date(Date.now() - Math.random() * 10000000000).toISOString();
-                data.status = data.tag;
-
-                const marker = L.marker([data.lat, data.lng], { icon: icons.default(data.tag) })
-                    .addTo(map)
-                    .bindTooltip(data.name)
-                    .on("click", function () {
-                        if (selectedMarker && selectedMarker !== this) {
-                            selectedMarker.setIcon(icons.default(selectedMarker.tag));
-                        }
-                        this.setIcon(icons.selected(data.tag));
-                        selectedMarker = this;
-                        showProjectInfo(data);
-                    });
-
-                marker.data = data;
-                marker.tag = data.tag;
-                markers.push(marker);
-            });
-
-
-            highlightMarkers('all');
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim().toLowerCase();
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateFrom').addEventListener('change', (e) => {
-                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateTo').addEventListener('change', (e) => {
-                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('sortSelect').addEventListener('change', (e) => {
-                sortProjects(e.target.value);
-            });
-        });
-        // Comes From DB
-        function showProjectInfo(project) {
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.remove("hidden");
-            infoBox.innerHTML = `
-            <div class="flex flex-wrap">
-                <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
-                <p><strong>Description:</strong> ${project.description}</p>
-                <p><strong>Region:</strong> ${project.region}</p>
-                <p><strong>Budget:</strong> ${project.budget}</p>
-                <p><strong>Team:</strong> ${project.team}</p>
-                <p><strong>Participants:</strong> ${project.participants}</p>
-                <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
-                <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
-            </div>
-        `;
-        }
-
-        function focusMarker(index) {
-            const marker = markers[index];
-            map.setView(marker.getLatLng(), 9);
-            marker.fire('click');
-            document.getElementById('localMap').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function sortProjects(field) {
-            if (sortBy === field) {
-                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortBy = field;
-                sortOrder = 'asc';
-            }
-            currentPage = 1;
-            highlightMarkers(currentFilter);
-        }
-
-        function highlightMarkers(tag) {
-            currentFilter = tag;
-            const accordion = document.getElementById("projectAccordion");
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.add("hidden");
-            accordion.innerHTML = '';
-            accordion.classList.remove("hidden");
-            accordion.classList.add("opacity-0", "translate-y-4");
-
-            let filteredMarkers = markers.filter(marker => {
-                const p = marker.data;
-                if (tag !== 'all' && marker.tag !== tag) return false;
-                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                const pDate = new Date(p.start_date);
-                if (dateRangeFrom && pDate < dateRangeFrom) return false;
-                if (dateRangeTo && pDate > dateRangeTo) return false;
-                return true;
-            });
-
-            filteredMarkers.sort((a, b) => {
-                const aVal = sortBy === 'name' ? a.data.name : new Date(a.data.start_date);
-                const bVal = sortBy === 'name' ? b.data.name : new Date(b.data.start_date);
-                return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
-            });
-
-            const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-            const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-            updatePaginationControls(totalPages);
-
-            markers.forEach(marker => {
-                marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
-            });
-
-            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
-
-            paginated.forEach((marker, idx) => {
-                const i = markers.indexOf(marker);
-                const project = marker.data;
-                const bg = bgColors[project.status] || bgColors.default;
-
-                const item = document.createElement("div");
-                item.className = `rounded shadow-sm ${bg}`;
-
-                item.innerHTML = `
-                    <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
-                                <p id="desc-${i}" class="mt-2 text-sm text-gray-600">${project.description}</p>
-                            </div>
-                            <div class="flex items-center mt-2 text-sm font-semibold tracking-wider text-gray-500 sm:mt-0">
-                                ${new Date(project.start_date).toLocaleDateString()}
-                            </div>
-                        </div>
+                  </div>
+                  <div class="flex gap-2">
+                    <button
+                      onclick="downloadDocument(${userId}, ${doc.id}, '${doc.fileName || "document"
+									}')"
+                      class="px-3 py-1 text-xs text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                    >
+                      <i class="fas fa-download mr-1"></i> Download
                     </button>
-                    <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
-                        <p><strong>Region:</strong> ${project.region}</p>
-                        <p><strong>Budget:</strong> ${project.budget}</p>
-                        <p><strong>Team:</strong> ${project.team}</p>
-                        <p><strong>Participants:</strong> ${project.participants}</p>
-                        <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                        <p><strong>Status:</strong> 
-                            <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">
-                                ${project.status}
-                            </span>
-                        </p>
-                        <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
-                            Show on Map
-                        </button>
-                    </div>
-                `;
+                    <button
+                      onclick="viewDocument(${userId}, ${doc.id}, '${doc.fileName || "Document"
+									}')"
+                      class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded hover:bg-blue-200 transition"
+                    >
+                      <i class="fas fa-eye mr-1"></i> View
+                    </button>
+                  </div>
+                </div>
+              `
+							)
+							.join("");
+					}
+				} catch (docError) {
+					console.error("Error loading documents:", docError);
+					console.error("Error details:", docError.message);
+					document.getElementById("supportingDocumentsList").innerHTML = `
+              <div class="text-center py-4 text-orange-500">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                <p class="text-sm font-medium">Unable to load supporting documents</p>
+                <p class="text-xs mt-1 text-gray-600">${docError.message}</p>
+                <p class="text-xs mt-2 text-gray-500">The user may not have uploaded any documents yet, or there may be a temporary issue accessing them.</p>
+              </div>
+            `;
+				}
 
-                accordion.appendChild(item);
+				// Hide loading, show content
+				loadingElement.classList.add("hidden");
+				contentElement.classList.remove("hidden");
+			} catch (error) {
+				console.error("Error loading user details:", error);
+				showToast("Failed to load user details", "error");
 
-                // Toggle description between truncated and full
-                const btn = item.querySelector(`[data-toggle="collapse-${i}"]`);
-                btn.addEventListener("click", () => {
-                    const collapse = document.getElementById(`collapse-${i}`);
-                    const desc = document.getElementById(`desc-${i}`);
-                    collapse.classList.toggle("hidden");
+				// Close modal on error
+				if (typeof window.te !== "undefined" && window.te.Modal) {
+					const modal = window.te.Modal.getInstance(modalElement);
+					if (modal) modal.hide();
+				} else {
+					modalElement.classList.add("hidden");
+				}
+			}
+		}
 
-                    if (!collapse.classList.contains("hidden")) {
-                        desc.textContent = project.fullDescription; // expand
-                    } else {
-                        desc.textContent = project.description; // truncate
-                    }
-                });
-            });
+		// Close User Details Modal
+		function closeUserDetailsModal() {
+			const modalElement = document.getElementById("viewUserDetailsModal");
 
-        }
+			// Remove event listeners
+			modalElement.onclick = null;
+			document.removeEventListener("keydown", handleModalKeydown);
 
-        function updatePaginationControls(totalPages) {
-            const container = document.getElementById("paginationControls");
-            container.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement("button");
-                btn.textContent = i;
-                btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`;
-                btn.onclick = () => {
-                    currentPage = i;
-                    highlightMarkers(currentFilter);
-                };
-                container.appendChild(btn);
-            }
-        }
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = window.te.Modal.getInstance(modalElement);
+				if (modal) {
+					modal.hide();
+				} else {
+					// Fallback: hide modal manually
+					modalElement.classList.add("hidden");
+					const dialogRef = modalElement.querySelector(
+						"[data-twe-modal-dialog-ref]"
+					);
+					if (dialogRef) {
+						dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+						dialogRef.classList.remove("opacity-100", "translate-y-0");
+					}
+				}
+			} else {
+				// Fallback: hide modal manually
+				modalElement.classList.add("hidden");
+				const dialogRef = modalElement.querySelector(
+					"[data-twe-modal-dialog-ref]"
+				);
+				if (dialogRef) {
+					dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+					dialogRef.classList.remove("opacity-100", "translate-y-0");
+				}
+			}
+		}
 
-        function exportCSV() {
-            const headers = ['Name', 'Description', 'Region', 'Budget', 'Team', 'Participants', 'Sponsor', 'Start Date', 'Status'];
-            const rows = markers
-                .map(m => m.data)
-                .filter(p => {
-                    if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                    const date = new Date(p.start_date);
-                    if (dateRangeFrom && date < dateRangeFrom) return false;
-                    if (dateRangeTo && date > dateRangeTo) return false;
-                    if (currentFilter !== 'all' && p.status !== currentFilter) return false;
-                    return true;
-                })
-                .map(p => [
-                    p.name, p.description, p.region, p.budget, p.team, p.participants,
-                    p.sponsor, new Date(p.start_date).toLocaleDateString(), p.status
-                ]);
+		// Handle keyboard events for modal
+		function handleModalKeydown(event) {
+			if (event.key === "Escape") {
+				closeUserDetailsModal();
+			}
+		}
 
-            let csvContent = [headers.join(',')];
-            rows.forEach(r => csvContent.push(r.map(field => `"${field}"`).join(',')));
+		// Helper function to format file size
+		function formatFileSize(bytes) {
+			if (!bytes) return "Unknown size";
+			if (bytes < 1024) return bytes + " B";
+			if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+			return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+		}
 
-            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `projects_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <!-- Leaflet JS -->
+		// Download document
+		async function downloadDocument(userId, documentId, fileName) {
+			try {
+				const token = localStorage.getItem("accessToken");
+				const response = await fetch(
+					`${window.BASE_URL}/api/auth/users/${userId}/supporting-documents/${documentId}/download`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
 
+				if (!response.ok) {
+					throw new Error(
+						`Failed to download document: ${response.statusText}`
+					);
+				}
 
+				// Get the blob from the response
+				const blob = await response.blob();
+
+				// Create a temporary URL for the blob
+				const url = window.URL.createObjectURL(blob);
+
+				// Create a temporary anchor element and trigger download
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = fileName || "document";
+				document.body.appendChild(a);
+				a.click();
+
+				// Cleanup
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+				showToast("Document downloaded successfully");
+			} catch (error) {
+				console.error("Error downloading document:", error);
+				showToast(error.message || "Failed to download document", "error");
+			}
+		}
+
+		// View document in modal
+		async function viewDocument(userId, documentId, fileName = "Document") {
+			const modalElement = document.getElementById("documentViewerModal");
+			const loadingElement = document.getElementById("documentViewerLoading");
+			const contentElement = document.getElementById("documentViewerContent");
+			const officeContentElement = document.getElementById(
+				"officeDocumentViewerContent"
+			);
+			const unsupportedElement = document.getElementById(
+				"unsupportedDocumentContent"
+			);
+			const errorElement = document.getElementById("documentViewerError");
+			const fileNameElement = document.getElementById(
+				"documentViewerFileName"
+			);
+			const downloadBtn = document.getElementById(
+				"documentViewerDownloadBtn"
+			);
+
+			// Show modal
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = new window.te.Modal(modalElement);
+				modal.show();
+			} else {
+				modalElement.classList.remove("hidden");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.remove("opacity-0", "translate-y-[-50px]");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.add("opacity-100", "translate-y-0");
+			}
+
+			// Set filename in modal title
+			fileNameElement.textContent = fileName || "Document";
+
+			// Reset states - hide all containers
+			loadingElement.classList.remove("hidden");
+			contentElement.classList.add("hidden");
+			officeContentElement.classList.add("hidden");
+			unsupportedElement.classList.add("hidden");
+			errorElement.classList.add("hidden");
+
+			// Setup download button
+			downloadBtn.onclick = () =>
+				downloadDocument(userId, documentId, fileName);
+
+			try {
+				const token = localStorage.getItem("accessToken");
+				const response = await fetch(
+					`${window.BASE_URL}/api/auth/users/${userId}/supporting-documents/${documentId}/view`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+
+				if (!response.ok) {
+					throw new Error(`Failed to view document: ${response.statusText}`);
+				}
+
+				// Get the content type from response
+				const contentType =
+					response.headers.get("Content-Type") || "application/pdf";
+				console.log("Document Content-Type:", contentType);
+				console.log("File name:", fileName);
+
+				// Get the blob from the response
+				const blob = await response.blob();
+
+				// Create a new blob with explicit type to ensure proper rendering
+				const typedBlob = new Blob([blob], { type: contentType });
+
+				// Create a temporary URL for the blob
+				const url = window.URL.createObjectURL(typedBlob);
+				console.log("Blob URL created:", url);
+
+				// Determine how to display based on content type
+				const fileExtension = fileName.toLowerCase().split(".").pop();
+
+				// Check if it's a Word or Excel document
+				const isWordDoc =
+					contentType.includes("word") ||
+					contentType.includes("msword") ||
+					contentType.includes("officedocument.wordprocessingml") ||
+					fileExtension === "doc" ||
+					fileExtension === "docx";
+
+				const isExcelDoc =
+					contentType.includes("excel") ||
+					contentType.includes("spreadsheet") ||
+					contentType.includes("officedocument.spreadsheetml") ||
+					fileExtension === "xls" ||
+					fileExtension === "xlsx";
+
+				const isPDF = contentType.includes("pdf") || fileExtension === "pdf";
+				const isImage = contentType.startsWith("image/");
+
+				if (isWordDoc || isExcelDoc) {
+					// Use Microsoft Office Online Viewer for Word/Excel
+					// Note: Office viewer requires publicly accessible URL
+					// For authenticated documents, we'll show a message instead
+					officeContentElement.innerHTML = `
+              <div class="flex flex-col items-center justify-center h-full p-8 bg-gray-50">
+                <div class="text-center max-w-2xl">
+                  <div class="mb-6">
+                    <i class="fas fa-file-word text-7xl ${isWordDoc ? "text-blue-600" : "text-green-600"
+						}"></i>
+                  </div>
+                  <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                    ${isWordDoc ? "Word Document" : "Excel Spreadsheet"}
+                  </h3>
+                  <p class="text-gray-600 mb-6">
+                    <strong>${fileName}</strong>
+                  </p>
+                  <p class="text-gray-600 mb-8">
+                    This document cannot be previewed directly in the browser. 
+                    Please download it to view the full content.
+                  </p>
+                  <div class="flex gap-4 justify-center">
+                    <button
+                      id="officeDocDownloadBtn"
+                      data-user-id="${userId}"
+                      data-doc-id="${documentId}"
+                      data-file-name="${fileName.replace(/"/g, "&quot;")}"
+                      class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+                    >
+                      <i class="fas fa-download mr-2"></i>
+                      Download to View
+                    </button>
+                    <button
+                      id="officeDocCloseBtn"
+                      class="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
+                    >
+                      <i class="fas fa-times mr-2"></i>
+                      Close
+                    </button>
+                  </div>
+                  <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                      <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                      <strong>Tip:</strong> After downloading, you can open the file in Microsoft Word${isExcelDoc ? " or Excel" : ""
+						} or compatible software.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+
+					// Add event listeners to the dynamically created buttons
+					setTimeout(() => {
+						const downloadBtn = document.getElementById(
+							"officeDocDownloadBtn"
+						);
+						const closeBtn = document.getElementById("officeDocCloseBtn");
+
+						if (downloadBtn) {
+							downloadBtn.addEventListener("click", function () {
+								const uid = this.getAttribute("data-user-id");
+								const did = this.getAttribute("data-doc-id");
+								const fname = this.getAttribute("data-file-name");
+								downloadDocument(uid, did, fname);
+							});
+						}
+
+						if (closeBtn) {
+							closeBtn.addEventListener("click", closeDocumentViewer);
+						}
+					}, 0);
+
+					loadingElement.classList.add("hidden");
+					officeContentElement.classList.remove("hidden");
+
+					// Store URL for cleanup on the container element
+					officeContentElement.dataset.blobUrl = url;
+				} else if (isPDF || isImage) {
+					// Display PDF or image in object/embed
+					const objectElement = document.getElementById(
+						"documentViewerFrame"
+					);
+					const embedElement = document.getElementById("documentViewerEmbed");
+
+					// Set the data attribute for both object and embed
+					objectElement.setAttribute("data", url);
+					objectElement.setAttribute("type", contentType);
+					embedElement.setAttribute("src", url);
+					embedElement.setAttribute("type", contentType);
+
+					// Show content, hide loading
+					loadingElement.classList.add("hidden");
+					contentElement.classList.remove("hidden");
+
+					// Store URL and type for cleanup
+					objectElement.dataset.blobUrl = url;
+					objectElement.dataset.contentType = contentType;
+				} else {
+					// Unsupported file type
+					loadingElement.classList.add("hidden");
+					unsupportedElement.classList.remove("hidden");
+
+					// Still store URL for potential download
+					unsupportedElement.dataset.blobUrl = url;
+				}
+
+				console.log("Document loaded successfully");
+			} catch (error) {
+				console.error("Error viewing document:", error);
+
+				// Show error state
+				loadingElement.classList.add("hidden");
+				errorElement.classList.remove("hidden");
+				document.getElementById("documentViewerErrorMessage").textContent =
+					error.message || "An unexpected error occurred";
+			}
+		}
+
+		// Close document viewer modal
+		function closeDocumentViewer() {
+			const modalElement = document.getElementById("documentViewerModal");
+			const objectElement = document.getElementById("documentViewerFrame");
+			const embedElement = document.getElementById("documentViewerEmbed");
+			const officeFrame = document.getElementById("officeViewerFrame");
+			const officeContent = document.getElementById(
+				"officeDocumentViewerContent"
+			);
+			const unsupportedContent = document.getElementById(
+				"unsupportedDocumentContent"
+			);
+
+			// Clean up blob URLs from all possible containers
+			if (objectElement && objectElement.dataset.blobUrl) {
+				window.URL.revokeObjectURL(objectElement.dataset.blobUrl);
+				delete objectElement.dataset.blobUrl;
+			}
+
+			if (officeContent && officeContent.dataset.blobUrl) {
+				window.URL.revokeObjectURL(officeContent.dataset.blobUrl);
+				delete officeContent.dataset.blobUrl;
+			}
+
+			if (unsupportedContent && unsupportedContent.dataset.blobUrl) {
+				window.URL.revokeObjectURL(unsupportedContent.dataset.blobUrl);
+				delete unsupportedContent.dataset.blobUrl;
+			}
+
+			// Clear all elements
+			if (objectElement) objectElement.removeAttribute("data");
+			if (embedElement) embedElement.removeAttribute("src");
+			if (officeFrame) officeFrame.src = "";
+			if (officeContent) officeContent.innerHTML = "";
+
+			// Close modal
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = window.te.Modal.getInstance(modalElement);
+				if (modal) {
+					modal.hide();
+				} else {
+					// If modal instance not found, hide manually
+					if (modalElement) modalElement.classList.add("hidden");
+					const dialogRef = modalElement
+						? modalElement.querySelector("[data-twe-modal-dialog-ref]")
+						: null;
+					if (dialogRef) {
+						dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+						dialogRef.classList.remove("opacity-100", "translate-y-0");
+					}
+				}
+			} else {
+				// Fallback: hide modal manually
+				if (modalElement) modalElement.classList.add("hidden");
+				const dialogRef = modalElement
+					? modalElement.querySelector("[data-twe-modal-dialog-ref]")
+					: null;
+				if (dialogRef) {
+					dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+					dialogRef.classList.remove("opacity-100", "translate-y-0");
+				}
+			}
+		}
+
+		// Toggle thematic area field visibility
+		function toggleThematicAreaField() {
+			const roleSelect = document.getElementById("changeRoleSelect");
+			const thematicAreaSection = document.getElementById(
+				"thematicAreaSection"
+			);
+			const thematicAreaSelect =
+				document.getElementById("thematicAreaSelect");
+
+			if (roleSelect.value === "SUPER_ADMIN_REVIEWER") {
+				thematicAreaSection.classList.remove("hidden");
+				thematicAreaSelect.required = true;
+			} else {
+				thematicAreaSection.classList.add("hidden");
+				thematicAreaSelect.required = false;
+				thematicAreaSelect.value = "";
+			}
+		}
+
+		// Open change role modal
+		function updateUserRoleWithTheme(userId) {
+			// Store userId in hidden field
+			document.getElementById("changeRoleUserId").value = userId;
+
+			// Reset form
+			document.getElementById("changeRoleForm").reset();
+			document.getElementById("thematicAreaSection").classList.add("hidden");
+
+			// Open modal using data attributes (more reliable)
+			const modalElement = document.getElementById("changeRoleModal");
+
+			// Initialize modal if not already initialized
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = new window.te.Modal(modalElement);
+				modal.show();
+			} else {
+				// Fallback: show modal manually
+				modalElement.classList.remove("hidden");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.remove("opacity-0", "translate-y-[-50px]");
+				modalElement
+					.querySelector("[data-twe-modal-dialog-ref]")
+					.classList.add("opacity-100", "translate-y-0");
+			}
+		}
+
+		// Handle form submission
+		document.addEventListener("DOMContentLoaded", function () {
+			// Handle Reject User Form
+			const rejectUserForm = document.getElementById("rejectUserForm");
+			if (rejectUserForm) {
+				rejectUserForm.addEventListener("submit", async function (e) {
+					e.preventDefault();
+
+					const userId = document.getElementById("rejectUserId").value;
+					const reasonSelect =
+						document.getElementById("rejectReasonSelect").value;
+					const customReason = document
+						.getElementById("customReasonText")
+						.value.trim();
+
+					let reason = "";
+					if (reasonSelect === "custom") {
+						if (!customReason) {
+							showToast("Please provide a custom rejection reason", "error");
+							return;
+						}
+						reason = customReason;
+					} else if (reasonSelect) {
+						reason = reasonSelect;
+					} else {
+						showToast("Please select a rejection reason", "error");
+						return;
+					}
+
+					// Close modal
+					const modalElement = document.getElementById("rejectUserModal");
+					if (typeof window.te !== "undefined" && window.te.Modal) {
+						const modal = window.te.Modal.getInstance(modalElement);
+						if (modal) {
+							modal.hide();
+						} else {
+							modalElement.classList.add("hidden");
+						}
+					} else {
+						modalElement.classList.add("hidden");
+						modalElement
+							.querySelector("[data-twe-modal-dialog-ref]")
+							.classList.add("opacity-0", "translate-y-[-50px]");
+						modalElement
+							.querySelector("[data-twe-modal-dialog-ref]")
+							.classList.remove("opacity-100", "translate-y-0");
+					}
+
+					// Call reject function
+					await rejectUser(userId, reason);
+				});
+			}
+
+			// Handle Change Role Form
+			const changeRoleForm = document.getElementById("changeRoleForm");
+			if (changeRoleForm) {
+				changeRoleForm.addEventListener("submit", async function (e) {
+					e.preventDefault();
+
+					const userId = document.getElementById("changeRoleUserId").value;
+					const role = document.getElementById("changeRoleSelect").value;
+					const thematicArea =
+						document.getElementById("thematicAreaSelect").value;
+
+					if (!role) {
+						showToast("Please select a role", "error");
+						return;
+					}
+
+					if (role === "SUPER_ADMIN_REVIEWER" && !thematicArea) {
+						showToast("Please select a thematic area for reviewers", "error");
+						return;
+					}
+
+					// Close modal
+					const modalElement = document.getElementById("changeRoleModal");
+					if (typeof window.te !== "undefined" && window.te.Modal) {
+						const modal = window.te.Modal.getInstance(modalElement);
+						if (modal) {
+							modal.hide();
+						} else {
+							// Fallback: hide modal manually
+							modalElement.classList.add("hidden");
+						}
+					} else {
+						// Fallback: hide modal manually
+						modalElement.classList.add("hidden");
+						modalElement
+							.querySelector("[data-twe-modal-dialog-ref]")
+							.classList.add("opacity-0", "translate-y-[-50px]");
+						modalElement
+							.querySelector("[data-twe-modal-dialog-ref]")
+							.classList.remove("opacity-100", "translate-y-0");
+					}
+
+					showLoading();
+					try {
+						const payload = { role };
+						if (thematicArea) {
+							payload.thematicArea = thematicArea;
+						}
+
+						await apiCall(
+							`/api/auth/admin/update-role-with-theme/${userId}`,
+							"POST",
+							payload
+						);
+						showToast("User role updated successfully!");
+
+						// Reload all data to reflect the changes
+						await Promise.all([
+							loadUserStats(),
+							loadPendingUsers(),
+							loadApprovedUsers(),
+							loadRejectedUsers(),
+							loadAllUsers(),
+						]);
+					} catch (error) {
+						console.error("Error updating user role:", error);
+						showToast(error.message || "Failed to update user role", "error");
+					} finally {
+						showLoading(false);
+					}
+				});
+			}
+
+			// Add click handlers for modal close buttons
+			const closeButtons = document.querySelectorAll(
+				"#changeRoleModal [data-twe-modal-dismiss]"
+			);
+			closeButtons.forEach((button) => {
+				button.addEventListener("click", function () {
+					closeChangeRoleModal();
+				});
+			});
+		});
+
+		// Function to close the change role modal
+		function closeChangeRoleModal() {
+			const modalElement = document.getElementById("changeRoleModal");
+			if (typeof window.te !== "undefined" && window.te.Modal) {
+				const modal = window.te.Modal.getInstance(modalElement);
+				if (modal) {
+					modal.hide();
+				} else {
+					modalElement.classList.add("hidden");
+				}
+			} else {
+				modalElement.classList.add("hidden");
+				const dialogRef = modalElement.querySelector(
+					"[data-twe-modal-dialog-ref]"
+				);
+				if (dialogRef) {
+					dialogRef.classList.add("opacity-0", "translate-y-[-50px]");
+					dialogRef.classList.remove("opacity-100", "translate-y-0");
+				}
+			}
+		}
+
+		// Assign thematic area to existing reviewer
+		async function assignThematicArea(userId) {
+			const thematicArea = prompt(
+				"Enter thematic area (GBV, AYPSRH, MNH, FP, CH, AH):"
+			);
+			if (!thematicArea) return;
+
+			showLoading();
+			try {
+				await apiCall(
+					`/api/auth/admin/assign-thematic-area/${userId}`,
+					"POST",
+					{ thematicArea }
+				);
+				showToast("Thematic area assigned successfully!");
+				await loadAllUsers();
+			} catch (error) {
+				console.error("Error assigning thematic area:", error);
+				showToast(error.message || "Failed to assign thematic area", "error");
+			} finally {
+				showLoading(false);
+			}
+		}
+
+		// Refresh all data
+		async function refreshData() {
+			showLoading();
+			try {
+				await Promise.all([
+					loadUserStats(),
+					loadPendingUsers(),
+					loadApprovedUsers(),
+					loadRejectedUsers(),
+					loadAllUsers(),
+				]);
+				showToast("Data refreshed successfully");
+			} catch (error) {
+				console.error("Error refreshing data:", error);
+				showToast("Failed to refresh data", "error");
+			} finally {
+				showLoading(false);
+			}
+		}
+
+		// Lazy load all users when tab is clicked
+		document
+			.getElementById("pills-all-tab")
+			.addEventListener("click", function () {
+				if (
+					allUsers.length === 0 ||
+					document
+						.getElementById("allUsersTable")
+						.innerHTML.includes("Loading")
+				) {
+					loadAllUsers();
+				}
+			});
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </body>
 
 </html>

@@ -1,1071 +1,3025 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html class="light" lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RMNCAH</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Tailwind CSS (with custom config using inline script) -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',   // Custom Blue
-                        secondary: '#f59e0b', // Custom Amber
-                        accent: '#10b981',    // Custom Green
-                        dark: '#1f2937',      // Gray-800
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="styles/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <script src="styles/main.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-    <style>
-        .fade-slide-enter {
-            opacity: 0;
-            transform: translateY(20px);
-        }
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<title>RMNCAH Dashboard</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+		rel="stylesheet" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+		rel="stylesheet" />
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<style>
+		.material-symbols-outlined {
+			font-variation-settings:
+				'FILL' 0,
+				'wght' 400,
+				'GRAD' 0,
+				'opsz' 24
+		}
+	</style>
+	<script id="tailwind-config">
+		tailwind.config = {
+			darkMode: "class",
+			theme: {
+				extend: {
+					colors: {
+						"primary": "#137fec",
+						"background-light": "#f6f7f8",
+						"background-dark": "#101922",
+						"neutral-text": "#4A4A4A"
+					},
+					fontFamily: {
+						"display": ["Inter", "sans-serif"]
+					},
+					borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+				},
+			},
+		}
+	</script>
+	<script src="config.js"></script>
+	<script src="auth.js"></script>
 
-        .fade-slide-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.4s ease;
-        }
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<link rel="stylesheet" href="styles/main.css">
+	<script defer src="styles/loadNav.js"></script>
+	<script src="src/utils/counter-utils.js"></script>
+	<style>
+		/* Popup container styles */
+		.popup {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			/* Transparent black background */
+			z-index: 1000;
+			/* Ensure it stays on top */
+			justify-content: center;
+			align-items: center;
+		}
 
-        .fade-slide-leave {
-            opacity: 1;
-            transform: translateY(0);
-        }
+		/* Popup content styling */
+		.popup-content {
+			background-color: white;
+			border-radius: 10px;
+			padding: 20px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+			max-width: 400px;
+			margin: 0 20px;
+		}
 
-        .fade-slide-leave-active {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-    </style>
+		/* Message styling */
+		.popup p {
+			font-size: 16px;
+			margin-bottom: 20px;
+		}
 
+		/* Close button styling */
+		.close-button {
+			background-color: #137fec;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			font-size: 16px;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.close-button:hover {
+			background-color: #105bbf;
+		}
+
+		/* Add a smooth fade-in transition */
+		.popup {
+			display: none;
+			opacity: 0;
+			transition: opacity 0.5s ease;
+		}
+
+		.popup.show {
+			display: flex;
+			opacity: 1;
+		}
+	</style>
+	<script>
+		// Function to check if the device is mobile
+		function isMobile() {
+			return window.innerWidth <= 768; // Check if screen width is less than or equal to 768px (Mobile width)
+		}
+
+		// Function to show the popup
+		function showDesktopPopup() {
+			const popup = document.getElementById('desktop-popup');
+			if (isMobile()) {
+				popup.classList.add('show'); // Use CSS transition for smooth appearance
+			}
+		}
+
+		function closePopup() {
+			const popup = document.getElementById('desktop-popup');
+			popup.classList.remove('show'); // Use CSS transition for smooth disappearance
+		}
+
+		// Close popup when the close button is clicked
+		document.getElementById('close-popup').addEventListener('click', closePopup);
+
+		// Show the popup when the page is loaded
+		window.addEventListener('load', showDesktopPopup);
+
+	</script>
 </head>
 
-<body class="text-gray-800 ">
-    <nav x-data="{ open: false }"
-        class="fixed z-50 border shadow-sm bg-white/70 top-4 left-4 right-4 backdrop-blur-md border-white/10 rounded-xl">
-        <div class="flex items-center justify-between px-6 py-4">
-            <!-- Logo -->
-            <a href="/frontend/index.html"
-                class="flex items-center justify-center space-x-2 text-2xl font-bold text-black uppercase">
-                <img src="/frontend/resources/images/moh.png" class="object-contain h-12" alt="Site Logo">
-                <img src="/frontend/resources/images/log2.png" class="object-contain h-12" alt="Site Logo">
-            </a>
+<body class="font-display bg-background-light dark:bg-background-dark text-neutral-text dark:text-gray-200">
+	<div id="desktop-popup" class="popup">
+		<div class="popup-content">
+			<p>Please switch to desktop view for a better experience.</p>
+			<button id="close-popup" class="close-button">Close</button>
+		</div>
+	</div>
 
-            <!-- Mobile Menu Toggle -->
-            <button @click="open = !open" class="text-xl lg:hidden focus:outline-none">
-                <i class="fas fa-bars" x-show="!open"></i>
-                <i class="fas fa-times" x-show="open" x-cloak></i>
-            </button>
+	<div class="relative flex h-auto min-h-screen w-full group/design-root">
+		<div class="md:flex md:min-h-screen">
 
-            <!-- Nav Links - Desktop -->
-            <ul class="items-center hidden space-x-8 text-sm font-medium text-gray-700 lg:flex">
-                <li>
-                    <a href="/frontend/index.html" class="uppercase transition hover:text-blue-600">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="/frontend/projects.html" class="uppercase transition hover:text-blue-600">
-                        All Projects
-                    </a>
-                </li>
-                <li>
-                    <a href="/frontend/members.html" class="uppercase transition hover:text-blue-600">
-                        Stakeholders
-                    </a>
-                </li>
+			<!-- SIDEBAR -->
+			<div x-data="{ open: false }" @click.away="open = false" class="w-full md:w-64 bg-white flex-shrink-0 
+                sticky top-0 md:h-screen border-r">
 
-                <li>
-                    <a href="/contact" class="font-bold text-blue-700 uppercase hover:text-pink-500">
-                        Announcements
-                    </a>
-                </li>
-            </ul>
-        </div>
+				<!-- HEADER -->
+				<div class="flex items-center justify-between px-6 py-4 border-b">
+					<a href="#" class="text-lg font-bold text-purple-900 flex items-center uppercase tracking-wide">
+						<img src="resources/images/logo.png" class=" mr-1 h-12" alt="">
+						RMNCAH Dashboard
+					</a>
 
-        <!-- Nav Links - Mobile -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform -translate-y-2"
-            x-transition:enter-end="opacity-100 transform translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 transform translate-y-0"
-            x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
+					<!-- Mobile Menu Button -->
+					<button class="md:hidden p-2 rounded-lg hover:bg-gray-100" @click="open = !open">
+						<svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+							<path x-show="!open" fill-rule="evenodd"
+								d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
+								clip-rule="evenodd"></path>
 
-            <ul class="flex flex-col space-y-4 font-semibold text-gray-700">
-                <li><a href="/" class="block transition hover:text-blue-600">Home</a></li>
-                <li><a href="#about" class="block transition hover:text-blue-600">About</a></li>
-                <li><a href="#why-us" class="block transition hover:text-blue-600">Why Us</a></li>
-                <li><a href="#contact-us" class="block transition hover:text-blue-600">Contact Us</a></li>
-            </ul>
+							<path x-show="open" fill-rule="evenodd"
+								d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+								clip-rule="evenodd"></path>
+						</svg>
+					</button>
+				</div>
 
-            <!-- CTA Button -->
-            <div class="mt-6">
-                <a href="/contact"
-                    class="relative inline-block w-full px-4 py-2 overflow-hidden font-semibold text-center text-white bg-pink-600 rounded-full group">
-                    <span
-                        class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-left transform scale-x-0 bg-blue-700 group-hover:scale-x-100"></span>
-                    <span class="relative z-10 group-hover:text-white">Collaborate</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+				<!-- MENU -->
+				<div class="px-4 py-4 w-full md:py-4 md:block overflow-y-auto"
+					:class="{ 'block': open, 'hidden': !open }">
 
-    <section class="pt-16 mt-20 bg-cyan-800 sm:pt-20 ">
-        <div class="grid max-w-6xl px-4 py-8 mx-auto text-white sm:px-6 lg:px-8 md:grid-cols-5">
-            <div class="md:col-span-4">
-                <h1 class="mb-2 text-4xl font-semibold md:text-4xl">
-                    RMNCAH Hub Admn Portal
-                </h1>
-                <p class="text-[16px] mb-6 max-w-2xl">
-                    Welcome back, <span class="font-bold">John</span>! Here is a quick overview of the system
-                    statistics and your recent activities.
-                </p>
-            </div>
-            <div class="md:col-span-1">
-                <h6 class="mt-4 mb-1 mb-2 text-sm font-semibold leading-tight text-center uppercase">
-                    Admin Actions
-                </h6>
-                <div class="grid gap-4 text-white">
-                    <button data-twe-toggle="modal" data-twe-target="#createNewUser"
-                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
-                        <span class="text-sm">
-                            New Admin
-                        </span>
-                        <span class="text-sm">
-                            <i class="far fa-user-plus"></i>
-                        </span>
-                    </button>
-                    <button data-twe-toggle="modal" data-twe-target="#createNewUser"
-                        class="flex items-center justify-between px-4 py-2 rounded-full bg-cyan-600">
-                        <span class="text-sm">
-                            Access Control
-                        </span>
-                        <span class="text-sm">
-                            <i class="far fa-user-shield"></i>
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+					<div class="grid gap-2" id="sidebar-tabs">
+						<!-- JS injects tabs here -->
+					</div>
 
-    <div class="min-h-screen bg-gray-100">
+				</div>
+			</div>
 
-        <!-- New User -->
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewUser" tabindex="-1" aria-labelledby="createNewUserTitle" aria-modal="true" role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewUserTitle">
-                            New User
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
+		</div>
 
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-                        <form id="userForm" class="space-y-5">
-                            <!-- First & Last Name -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
-                                    <input type="text" name="first_name" required
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                                    <input type="text" name="last_name" required
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+		<div class="layout-container flex h-full grow flex-col w-full">
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Role</label>
-                                    <select name="role" required
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select Role...</option>
-                                        <option>
-                                            Super Admin
-                                        </option>
-                                        <option>
-                                            Ei
-                                        </option>
-                                    </select>
-                                </div>
+			<main class="flex-1 px-6 md:px-10 py-8">
+				<div class="layout-content-container flex flex-col mx-auto w-full">
+					<!-- <div class="absolute" id="nav-placeholder"></div> -->
+					<div class="layout-content-container flex flex-col mx-auto w-full" id="tab-content-container">
+						<!-- Tab content will be injected by JS -->
+					</div>
 
-                                <!-- Email -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                                    <input type="email" name="email" required
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+					<div id="tab-dashboard" class="tab-section" style="display:none;">
 
-                            </div>
-                            <!-- Submit -->
-                            <div class="pt-4">
-                                <button type="submit"
-                                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
-                                    Create User
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+						<!-- Banner -->
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+							<div class="p-10">
+								<h3 class="text-3xl font-semibold  mb-3 tracking-tight">
+									Welcome to RMNCAH Dashboard
+								</h3>
+								<p class="text-gray-600 text-base leading-relaxed max-w-2xl">
+									Manage all RMNCAH projects, partners, and users in a unified, streamlined workspace.
+								</p>
+							</div>
+						</div>
 
-        <!-- New Project -->
-        <div data-twe-modal-init
-            class="fixed left-0 top-0 backdrop-blur-md z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-            id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectTitle" aria-modal="true" role="dialog">
-            <div data-twe-modal-dialog-ref
-                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:max-w-[500px] min-[992px]:max-w-[800px] min-[1200px]:max-w-[1140px]">
-                <div
-                    class="relative flex flex-col w-full text-current bg-white border-none rounded-md outline-none pointer-events-auto bg-clip-padding shadow-4">
-                    <div
-                        class="flex items-center justify-between flex-shrink-0 p-4 border-b-2 rounded-t-md border-neutral-100">
-                        <!-- Modal title -->
-                        <h5 class="text-xl font-medium leading-normal text-surface" id="createNewProjectTitle">
-                            New ADMIN Project
-                        </h5>
-                        <!-- Close button -->
-                        <button type="button"
-                            class="box-content border-none rounded-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            data-twe-modal-dismiss aria-label="Close">
-                            <span class="[&>svg]:h-6 [&>svg]:w-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
+						<!-- Counters -->
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
 
-                    <!-- Modal body -->
-                    <div class="relative p-4">
-                        <form action="#" method="POST">
-                            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                                <!-- Title -->
-                                <div>
-                                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                                    <input type="text" id="title" name="title"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+							<!-- Info Banner -->
+							<div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+								<div class="flex items-center gap-2 text-sm text-blue-700">
+									<span class="material-symbols-outlined text-base">info</span>
+									<span>Dashboard counters update automatically based on filters applied in Projects,
+										Users, and Past Projects tabs</span>
+								</div>
+							</div>
+
+							<!-- Total Projects Counter -->
+							<div
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-purple-100 text-[100px] pointer-events-none">folder</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Total Projects</p>
+									<p id="total-projects-count" class="text-3xl font-semibold text-gray-900 mt-2">
+										<span class="inline-block animate-pulse">...</span>
+									</p>
+									<p class="text-xs text-purple-600 mt-3">
+										<span id="active-projects-count">0</span> Active
+									</p>
+								</div>
+							</div>
+
+							<!-- Partners Counter -->
+							<div
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-blue-100 text-[100px] pointer-events-none">group</span>
+
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Partners</p>
+									<p id="partners-count" class="text-3xl font-semibold text-gray-900 mt-2">
+										<span class="inline-block animate-pulse">...</span>
+									</p>
+									<p class="text-xs text-blue-600 mt-3">
+										<span id="total-users-count">0</span> Total Users
+									</p>
+								</div>
+							</div>
+
+							<!-- Thematic Areas Counter -->
+							<div
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-indigo-100 text-[100px] pointer-events-none">category</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Thematic Areas</p>
+									<p id="thematic-areas-count" class="text-3xl font-semibold text-gray-900 mt-2">
+										<span class="inline-block animate-pulse">...</span>
+									</p>
+									<p class="text-xs text-indigo-600 mt-3">Stable</p>
+								</div>
+							</div>
+
+							<!-- Counties Counter -->
+							<div
+								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
+								<span
+									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-red-100 text-[100px] pointer-events-none">location_on</span>
+								<div class="relative z-10">
+									<p class="text-sm text-gray-600 tracking-wide">Counties</p>
+									<p id="counties-count" class="text-3xl font-semibold text-gray-900 mt-2">
+										<span class="inline-block animate-pulse">...</span>
+									</p>
+									<p class="text-xs text-red-600 mt-3">
+										<span id="pending-approvals-count">0</span> Pending Approvals
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- <div class="min-h-screen py-10">
+							<div class="max-w-7xl mx-auto ">
+
+								<div id="kpi-container"
+									class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+								</div>
+
+								<div class="mb-10 flex justify-between items-center">
+									<span class="text-sm text-gray-500">
+										Last Updated: <span id="lastUpdated"></span>
+									</span>
+								</div>
+
+								<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+
+									<div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+										<h2 class="text-xl font-semibold mb-4 text-gray-900">
+											Project Status by Theme</h2>
+										<div id="barChart"></div>
+									</div>
+
+									<div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+										<h2 class="text-xl font-semibold mb-4 text-gray-900">
+											Resource Distribution (%)</h2>
+										<div id="teamChart"></div>
+									</div>
+								</div>
+
+								<h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
+									Performance by Thematic Area
+								</h2>
+
+								<div id="detail-card-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+								</div>
+
+							</div>
+						</div> -->
+
+					</div>
+
+					<div id="tab-projects" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Projects</p>
+									<p id="tab-projects-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">folder</span>
+							</div>
+						</div>
+
+						<!-- Thematic Area Filter Section -->
+						<div class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-6">
+							<div class="p-6">
+								<div class="flex flex-wrap items-center gap-4">
+									<div class="flex items-center gap-2">
+										<span class="material-symbols-outlined text-gray-600">category</span>
+										<label class="text-sm font-semibold text-gray-700">Filter by Thematic Area:</label>
+									</div>
+									
+									<div class="flex-1 min-w-[300px]">
+										<style>
+											#thematic-area-filter {
+												min-height: 180px !important;
+												max-height: 300px !important;
+											}
+											#thematic-area-filter option {
+												padding: 10px 12px;
+												border-bottom: 1px solid #e5e7eb;
+												cursor: pointer;
+												transition: all 0.2s;
+											}
+											#thematic-area-filter option:hover {
+												background-color: #dbeafe;
+												color: #1e40af;
+											}
+											#thematic-area-filter option:checked {
+												background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+												color: white;
+												font-weight: 500;
+											}
+											#thematic-area-filter option:last-child {
+												border-bottom: none;
+											}
+										</style>
+										<select id="thematic-area-filter" multiple 
+											class="w-full px-3 py-2 text-sm border-2 border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition cursor-pointer shadow-sm hover:shadow-md">
+											<option value="" disabled>Loading thematic areas...</option>
+										</select>
+										<p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+											<span class="material-symbols-outlined text-sm">info</span>
+											<span>Click to select/deselect thematic areas (multiple selection supported)</span>
+										</p>
+									</div>
+									
+									<button id="clear-theme-filter" 
+										class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
+										<span class="material-symbols-outlined text-base">clear_all</span>
+										Clear Filter
+									</button>
+								</div>
+								
+								<!-- Selected Themes Display -->
+								<div id="selected-themes-container" class="mt-4 flex flex-wrap gap-2" style="display: none;">
+									<!-- Selected theme chips will be added here -->
+								</div>
+							</div>
+						</div>
+
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Projects</h3>
+
+								<button
+									class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									Export CSV
+								</button>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3" style="min-width: 220px;">Title</th>
+											<th class="px-6 py-3" style="min-width: 170px;">Partner Name</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Project No</th>
+											<th class="px-6 py-3" style="min-width: 140px;">Category</th>
+											<th class="px-6 py-3" style="min-width: 200px;">Themes</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
+											<th class="px-6 py-3" style="min-width: 140px;">Start Date</th>
+											<th class="px-6 py-3" style="min-width: 140px;">End Date</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Budget</th>
+											<th class="px-6 py-3" style="min-width: 170px;">Locations</th>
+											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
+											<th class="px-6 py-3" style="min-width: 100px;"></th>
+										</tr>
+
+										<!-- Filter Row (Pastel inputs) -->
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2" style="min-width: 220px;"><input type="text"
+													data-column="0" placeholder="Filter Title"
+													class="filter-input w-full px-3 py-2 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
+											</th>
+											<th class="px-6 py-2" style="min-width: 170px;"><input type="text"
+													data-column="1" placeholder="Filter Partner"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
+											</th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
+													data-column="2" placeholder="Filter Project No"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
+											</th>
+											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
+													data-column="3" placeholder="Filter Category"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
+											</th>
+											<th class="px-6 py-2" style="min-width: 200px;"><input type="text"
+													data-column="4" placeholder="Filter Themes"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
+											</th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
+													data-column="5" placeholder="Filter Status"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
+											</th>
+											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
+													data-column="6" placeholder="Filter Start"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
+													data-column="7" placeholder="Filter End"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
+													data-column="8" placeholder="Filter Budget"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 170px;"><input type="text"
+													data-column="9" placeholder="Filter Locations"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 160px;"><input type="text"
+													data-column="10" placeholder="Filter Created At"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th style="min-width: 100px;"></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav aria-label="Table navigation" class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">
+									Showing <span class="font-semibold text-gray-900">1–1</span> of <span
+										class="font-semibold text-gray-900">1</span>
+								</span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100 transition">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100 transition">Next</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+					<div id="tab-users" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Users</p>
+									<p id="tab-users-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">people</span>
+							</div>
+						</div>
+
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Users</h3>
+
+								<button
+									class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									Export CSV
+								</button>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+
+										<tr>
+											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
+											<th class="px-6 py-3" style="min-width: 220px;">Email</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Role</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
+											<th class="px-6 py-3" style="min-width: 170px;">Organization</th>
+											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
+											<th class="px-6 py-3" style="min-width: 100px;"></th>
+										</tr>
+
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
+													placeholder="Filter Name"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="1"
+													placeholder="Filter Email"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="2"
+													placeholder="Filter Role"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="3"
+													placeholder="Filter Status"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="4"
+													placeholder="Filter Organization"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="5"
+													placeholder="Filter Created At"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th style="min-width: 100px;"></th>
+										</tr>
+
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">Showing <span
+										class="font-semibold text-gray-900">1–1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100">Next</a>
+									</li>
+								</ul>
+							</nav>
+
+						</div>
+					</div>
+
+					<div id="tab-organizations" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Organizations</p>
+									<p id="tab-organizations-count" class="text-3xl font-semibold text-gray-900 mt-1">0
+									</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">business</span>
+							</div>
+						</div>
+
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Organizations</h3>
+
+								<button
+									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									Export CSV
+								</button>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
+											<th class="px-6 py-3" style="min-width: 140px;">Type</th>
+											<th class="px-6 py-3" style="min-width: 220px;">Email</th>
+											<th class="px-6 py-3" style="min-width: 170px;">Location</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
+											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
+											<th class="px-6 py-3" style="min-width: 100px;"></th>
+										</tr>
+
+										<!-- Filter Row -->
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
+													placeholder="Filter Name"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 140px;"><input data-column="1"
+													placeholder="Filter Type"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="2"
+													placeholder="Filter Email"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="3"
+													placeholder="Filter Location"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="4"
+													placeholder="Filter Status"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="5"
+													placeholder="Filter Created At"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th style="min-width: 100px;"></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">
+									Showing <span class="font-semibold text-gray-900">1-1</span> of
+									<span class="font-semibold text-gray-900">1</span>
+								</span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100">Next</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
 
 
-                                <!-- Project Theme -->
-                                <div>
-                                    <label for="theme" class="block text-sm font-medium text-gray-700">Project
-                                        Theme</label>
-                                    <select id="theme" name="theme"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                        <option value="">Select Theme</option>
-                                        <option value="GBV">
-                                            Gender based violence
-                                        </option>
-                                        <option value="AYPSRH">
-                                            Adolescent and Young People Sexual and Reproductive Health
-                                        </option>
-                                        <option value="MNH">
-                                            Maternal and Newborn Health
-                                        </option>
-                                        <option value="FP">
-                                            Family planning
-                                        </option>
-                                        <option value="CH">
-                                            Child Health
-                                        </option>
-                                        <option value="AH">
-                                            Adolescent Health
-                                        </option>
-                                    </select>
-                                </div>
+					<div id="tab-announcements" class="tab-section" style="display:none;">
+
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Announcements</h3>
+
+								<div class="flex items-center gap-2">
+									<button id="create-announcement-btn"
+										class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition">
+										<span class="material-symbols-outlined text-base">add</span>
+										Create Announcement
+									</button>
+
+									<button
+										class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
+										<span class="material-symbols-outlined text-base">file_download</span>
+										Export CSV
+									</button>
+								</div>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3">Title</th>
+											<th class="px-6 py-3">Content</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3">Created By</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Priority</th>
+											<th class="px-6 py-3">Created At</th>
+											<th class="px-6 py-3"></th>
+										</tr>
+
+										<!-- Filters -->
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2"><input data-column="0" placeholder="Filter Title"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="1" placeholder="Filter Content"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="2" placeholder="Filter Date"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="3" placeholder="Filter Created By"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="4" placeholder="Filter Status"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="5" placeholder="Filter Priority"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="6" placeholder="Filter Created At"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">Showing <span class="font-semibold">1-1</span> of
+									<span class="font-semibold">1</span></span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100 flex items-center">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white hover:bg-gray-100 flex items-center">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100 flex items-center">Next</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+
+						<!-- Create Modal -->
+						<div id="create-announcement-modal" class="fixed inset-0 bg-black/40 hidden z-50">
+							<div class="flex items-center justify-center min-h-screen p-4">
+								<div class="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+
+									<h3 class="text-xl font-semibold text-gray-900 mb-4">Create Announcement</h3>
+
+									<form id="create-announcement-form">
+
+										<div class="mb-4">
+											<label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+											<input id="announcement-title" required
+												class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white">
+										</div>
+
+										<div class="mb-4">
+											<label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+											<textarea id="announcement-content" rows="4"
+												class="w-full px-3 py-2 border rounded-lg" required></textarea>
+										</div>
+
+										<div class="mb-4">
+											<label class="block text-sm font-medium text-gray-700 mb-2">Deadline
+												(optional)</label>
+											<input type="date" id="announcement-deadline"
+												class="w-full px-3 py-2 border rounded-lg bg-white">
+										</div>
+
+										<div class="mb-4">
+											<label class="block text-sm font-medium text-gray-700 mb-2">Collaboration
+												Type</label>
+											<select id="announcement-collaboration-type"
+												class="w-full px-3 py-2 border rounded-lg bg-white">
+												<option value="OPEN">Open</option>
+												<option value="INVITATION_ONLY">Invitation Only</option>
+											</select>
+										</div>
+
+										<div class="flex justify-end gap-3">
+											<button type="button" id="cancel-announcement-btn"
+												class="px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-gray-100">
+												Cancel
+											</button>
+											<button type="submit"
+												class="px-4 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
+												Create
+											</button>
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
 
 
-                                <!-- Time Period -->
-                                <div>
-                                    <label for="starttime_period" class="block text-sm font-medium text-gray-700">
-                                        Start
-                                    </label>
-                                    <input type="date" id="starttime_period" name="start_date"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="endtime_period"
-                                        class="block text-sm font-medium text-gray-700">End</label>
-                                    <input type="date" id="endtime_period" name="end_date"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <!-- Activity Type -->
-                                <div class="col-span-2 md:col-span-4">
-                                    <label for="activity_type" class="block text-sm font-medium text-gray-700">Activity
-                                        Type (Description)</label>
-                                    <textarea id="activity_type" name="activity_type" rows="3"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                                </div>
+					<div id="tab-collaboration" class="tab-section" style="display:none;">
 
-                                <!-- Location -->
-                                <div>
-                                    <label for="location" class="block text-sm font-medium text-gray-700">County</label>
-                                    <input type="text" id="time_period" name="county" placeholder="County"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
 
-                                <div>
-                                    <label for="subcounty" class="block text-sm font-medium text-gray-700">Sub
-                                        County</label>
-                                    <input type="text" id="subcounty" name="sub_county" placeholder="County"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Collaboration Requests
+								</h3>
 
-                                <div>
-                                    <label for="location" class="block text-sm font-medium text-gray-700">Area</label>
-                                    <input type="text" id="time_period" name="project_area"
-                                        placeholder="Where in county"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+								<button
+									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
+									<span class="material-symbols-outlined">file_download</span>
+									Export CSV
+								</button>
+							</div>
 
-                                <div>
-                                    <label for="location" class="block text-sm font-medium text-gray-700">Maps
-                                        Address</label>
-                                    <input type="text" id="time_period" name="maps_address" placeholder="Maps Address"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
 
-                                <!-- Contact Person -->
-                                <div>
-                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                        Contact Person Name
-                                    </label>
-                                    <input type="text" id="contact_person" name="contact_person_name" placeholder="Name"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                        Contact Person Role
-                                    </label>
-                                    <input type="text" id="contact_person" name="contact_person_role" placeholder="Role"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
-                                <div>
-                                    <label for="contact_person" class="block text-sm font-medium text-gray-700">
-                                        Contact Person Email
-                                    </label>
-                                    <input type="email" id="contact_person" name="contact_person_mail"
-                                        placeholder="Email"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                </div>
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3">Requester</th>
+											<th class="px-6 py-3">Project</th>
+											<th class="px-6 py-3">Organization</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Message</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3"></th>
+										</tr>
 
-                                <!-- Gaps -->
-                                <div class="col-span-2 lg:col-span-4">
-                                    <label for="gaps" class="block text-sm font-medium text-gray-700">
-                                        Objectives
-                                    </label>
-                                    <textarea id="gaps" name="gaps" rows="3"
-                                        class="block w-full p-2 mt-1 border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                                </div>
-                            </div>
+										<!-- Filters -->
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2"><input data-column="0" placeholder="Filter Requester"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="1" placeholder="Filter Project"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="2"
+													placeholder="Filter Organization"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="3" placeholder="Filter Status"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="4" placeholder="Filter Message"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th class="px-6 py-2"><input data-column="5" placeholder="Filter Date"
+													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
+											</th>
+											<th></th>
+										</tr>
+									</thead>
 
-                            <!-- Button -->
-                            <div class="mt-3">
-                                <button type="submit"
-                                    class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Request Info
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+									<tbody></tbody>
+								</table>
+							</div>
 
-        <div class="max-w-6xl p-8 mx-auto">
-            <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
-                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-                    Projects Overview
-                </h2>
-                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-                    Investments Over Time
-                </h3>
-                <div id="chart" class="p-4 mt-6 fade fade-up">
-                </div>
-                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-                    Projects Distribution By Topic
-                </h3>
-                <div id="barChart"></div>
-                <h2 class="flex items-center mb-5 text-lg font-light text-gray-900 uppercase fade fade-left">
-                    Status Summary
-                </h2>
-                <div class="grid grid-cols-2 gap-4 mb-6 text-center lg:grid-cols-5">
-                    <button data-twe-toggle="modal" data-twe-target="#createNewProject"
-                        class="p-4 rounded-md fade fade-up bg-blue-50">
-                        <p class="text-3xl font-bold text-blue-700">
-                            <i class="text-xl fas fa-plus-circle"></i>
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">Showing <span class="font-semibold">1-1</span> of
+									<span class="font-semibold">1</span></span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100 flex items-center">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white hover:bg-gray-100 flex items-center">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100 flex items-center">Next</a>
+									</li>
+								</ul>
+							</nav>
+
+						</div>
+					</div>
+
+
+					<div id="tab-pastprojects" class="tab-section" style="display:none;">
+
+						<!-- Individual Tab Counters -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Filtered Past Projects</p>
+									<p id="tab-past-projects-count" class="text-3xl font-semibold text-gray-900 mt-1">0
+									</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">history</span>
+							</div>
+						</div>
+
+						<div
+							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
+
+							<!-- Header -->
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Past Projects</h3>
+
+								<button
+									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									Export CSV
+								</button>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
+											<th class="px-6 py-3" style="min-width: 220px;">Description</th>
+											<th class="px-6 py-3" style="min-width: 170px;">Organization</th>
+											<th class="px-6 py-3" style="min-width: 140px;">Category</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
+											<th class="px-6 py-3" style="min-width: 120px;">Budget</th>
+											<th class="px-6 py-3" style="min-width: 160px;">Completion Date</th>
+											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
+											<th class="px-6 py-3" style="min-width: 100px;"></th>
+										</tr>
+
+										<!-- Filters -->
+										<tr class="bg-blue-50/50 border-t border-gray-200">
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
+													placeholder="Filter Name"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="1"
+													placeholder="Filter Description"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="2"
+													placeholder="Filter Organization"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 140px;"><input data-column="3"
+													placeholder="Filter Category"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="4"
+													placeholder="Filter Status"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="5"
+													placeholder="Filter Budget"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="6"
+													placeholder="Filter Completion Date"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="7"
+													placeholder="Filter Created At"
+													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
+											<th style="min-width: 100px;"></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-5 bg-gray-50">
+								<span class="text-sm text-gray-600">Showing <span class="font-semibold">1-1</span> of
+									<span class="font-semibold">1</span></span>
+
+								<ul class="inline-flex -space-x-px text-sm">
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100 flex items-center">Previous</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white hover:bg-gray-100 flex items-center">1</a>
+									</li>
+									<li><a href="#"
+											class="px-4 h-9 border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100 flex items-center">Next</a>
+									</li>
+								</ul>
+							</nav>
+
+						</div>
+					</div>
+
+
+					<div id="tab-projectdocs" class="tab-section" style="display:none;">
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">Project Documents</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">File Name</th>
+											<th class="px-6 py-3">Project</th>
+											<th class="px-6 py-3">Uploaded By</th>
+											<th class="px-6 py-3">Type</th>
+											<th class="px-6 py-3">Size</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3">Created At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<!-- Filters -->
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="0"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="1"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="2"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="3"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="4"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="5"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="6"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="7"></th>
+											<th></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+
+					<div id="tab-projectreports" class="tab-section" style="display:none;">
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">Project Reports</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">Report Title</th>
+											<th class="px-6 py-3">Project</th>
+											<th class="px-6 py-3">Created By</th>
+											<th class="px-6 py-3">Type</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3">Created At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Report Title"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="0"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="1"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created By"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="2"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="3"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="4"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="5"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="6"></th>
+											<th></th>
+										</tr>
+									</thead>
+
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+
+					<div id="tab-userdocs" class="tab-section" style="display:none;">
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">User Documents</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">File Name</th>
+											<th class="px-6 py-3">User</th>
+											<th class="px-6 py-3">Uploaded By</th>
+											<th class="px-6 py-3">Type</th>
+											<th class="px-6 py-3">Size</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3">Created At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter User"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+
+					<div id="tab-userdocs" class="tab-section" style="display:none;">
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">User Documents</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">File Name</th>
+											<th class="px-6 py-3">User</th>
+											<th class="px-6 py-3">Uploaded By</th>
+											<th class="px-6 py-3">Type</th>
+											<th class="px-6 py-3">Size</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Date</th>
+											<th class="px-6 py-3">Created At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter User"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
+													class="w-full px-2 py-1 text-xs border rounded"></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+
+					<div id="tab-collaborators" class="tab-section" style="display:none;">
+						<!-- Individual Tab Counter -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="text-sm text-gray-500">Total Project Collaborators</p>
+									<p id="tab-collaborators-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
+								</div>
+								<span class="material-symbols-outlined text-blue-600 text-4xl">groups</span>
+							</div>
+						</div>
+
+						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
+								<h3 class="text-lg font-bold text-neutral-text">Project Collaborators</h3>
+								<button
+									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
+									<span class="material-symbols-outlined text-base">file_download</span>
+									<span>Export CSV</span>
+								</button>
+							</div>
+
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-left text-gray-600">
+									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+										<tr>
+											<th class="px-6 py-3">User Name</th>
+											<th class="px-6 py-3">Project Title</th>
+											<th class="px-6 py-3">Organization</th>
+											<th class="px-6 py-3">Role</th>
+											<th class="px-6 py-3">Status</th>
+											<th class="px-6 py-3">Added At</th>
+											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+										</tr>
+
+										<!-- Filters -->
+										<tr class="filter-row bg-gray-100">
+											<th class="px-6 py-2"><input type="text" placeholder="Filter User Name"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="0"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="1"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Organization"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="2"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Role"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="3"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="4"></th>
+											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
+													class="filter-input w-full px-2 py-1 text-xs border rounded"
+													data-column="5"></th>
+											<th></th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<!-- Empty state will be shown when no data -->
+										<tr id="collaborators-empty-state" style="display:none;">
+											<td colspan="7" class="px-6 py-12 text-center">
+												<div class="flex flex-col items-center justify-center">
+													<span class="material-symbols-outlined text-gray-300 text-6xl mb-4">group_off</span>
+													<p class="text-gray-500 text-lg font-medium">No Collaborators Found</p>
+													<p class="text-gray-400 text-sm mt-2">There are currently no project collaborators in the system.</p>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<!-- Pagination -->
+							<nav class="flex items-center justify-between p-4">
+								<span class="text-sm text-gray-500">Showing <span
+										class="font-semibold text-gray-900">1-1</span> of <span
+										class="font-semibold text-gray-900">1</span></span>
+								<ul class="inline-flex -space-x-px text-sm h-8">
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
+											href="#">Previous</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 hover:bg-gray-100"
+											href="#">1</a></li>
+									<li><a class="flex items-center justify-center px-3 h-8 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
+											href="#">Next</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+
+				</div>
+			</main>
+		</div>
+	</div>
+	<script>
+		// --- 1. Utility Functions ---
+		const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+		const formatNumber = (num) => num.toLocaleString();
+		const formatCurrency = (num) => '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+		// --- 2. Analytic Metric Generator for Detail Cards ---
+		function generateCategoryAnalytics() {
+			const totalProjects = rand(40, 150);
+			const active = rand(Math.floor(totalProjects * 0.3), Math.floor(totalProjects * 0.7));
+			const pending = rand(Math.floor(totalProjects * 0.1), Math.floor(totalProjects * 0.3));
+			const stalled = rand(Math.floor(totalProjects * 0.05), Math.floor(totalProjects * 0.2));
+			const completed = Math.max(0, totalProjects - active - pending - stalled); // Ensure non-negative
+
+			return {
+				totalCost: rand(5, 50), // Millions
+				totalProjects: totalProjects,
+				active: active,
+				pending: pending,
+				stalled: stalled,
+				completed: completed,
+				avgDurationMonths: rand(12, 48),
+				expectedCompletion: `Q${rand(1, 4)} ${new Date().getFullYear() + rand(0, 2)}`
+			};
+		}
+
+		// --- 3. Program Data Structure ---
+		const categories = [
+			{ code: 'GBV', name: 'Gender-Based Violence', icon: 'fas fa-hand-rock', color: 'red' },
+			{ code: 'AYPSRH', name: 'Adolescent & Youth SRH', icon: 'fas fa-baby', color: 'blue' },
+			{ code: 'MWH', name: 'Maternal & Women\'s Health', icon: 'fas fa-heartbeat', color: 'pink' },
+			{ code: 'FP', name: 'Family Planning', icon: 'fas fa-users', color: 'indigo' },
+			{ code: 'CH', name: 'Child Health', icon: 'fas fa-child', color: 'green' },
+			{ code: 'A', name: 'AIDS/HIV', icon: 'fas fa-ribbon', color: 'gray' },
+			{ code: 'AS', name: 'Adolescent Sexuality', icon: 'fas fa-venus-mars', color: 'purple' },
+			{ code: 'MONITORING_EVALUATION', name: 'Monitoring & Evaluation', icon: 'fas fa-chart-line', color: 'teal' },
+			{ code: 'RESEARCH_LEARNING', name: 'Research & Learning', icon: 'fas fa-search', color: 'cyan' },
+		];
+
+		// --- 4. KPI Definitions ---
+		const kpis = [
+			{ title: "Total Projects", value: rand(100, 500), unit: "", color: "indigo", change: rand(5, 15), isPositive: true },
+			{ title: "Investment (USD)", value: rand(10, 50), unit: "M", color: "green", change: rand(1, 5), isPositive: false, formatter: (val) => formatCurrency(val) },
+			{ title: "Beneficiaries Reached", value: rand(50000, 200000), unit: "", color: "yellow", change: rand(15, 30), isPositive: true, formatter: (val) => formatNumber(val) },
+			{ title: "Average Completion Rate", value: rand(60, 95), unit: "%", color: "red", change: 0, isPositive: false, formatter: (val) => val },
+		];
+
+
+		// --- 5. Main Rendering Logic ---
+		function renderDashboard() {
+			const lastUpdatedEl = document.getElementById('lastUpdated');
+			if (lastUpdatedEl) {
+				lastUpdatedEl.textContent = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' });
+			}
+
+			// A. Render KPI Cards
+			const kpiHTML = kpis.map(kpi => {
+				const changeColor = kpi.isPositive ? 'text-green-500' : 'text-red-500';
+				const changeIcon = kpi.isPositive ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+				const formattedValue = (kpi.formatter || formatNumber)(kpi.value);
+
+				return `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-${kpi.color}-500">
+                        <p class="text-sm font-medium text-gray-500">${kpi.title}</p>
+                        <p class="mt-1 text-3xl font-semibold text-gray-900">
+                            ${formattedValue}${kpi.unit}
                         </p>
-                        <p class="text-sm text-blue-600">New Project</p>
-                    </button>
-                    <div class="p-4 rounded-md fade fade-up bg-green-50">
-                        <p class="text-3xl font-bold text-green-700">800</p>
-                        <p class="text-sm text-green-600">Approved</p>
-                    </div>
-                    <div class="p-4 rounded-md fade fade-up bg-yellow-50">
-                        <p class="text-3xl font-bold text-yellow-700">200</p>
-                        <p class="text-sm text-yellow-600">Pending</p>
-                    </div>
-                    <div class="p-4 rounded-md fade fade-up bg-red-50">
-                        <p class="text-3xl font-bold text-red-700">150</p>
-                        <p class="text-sm text-red-600">Stalled</p>
-                    </div>
-                    <div class="p-4 rounded-md fade fade-up bg-gray-50">
-                        <p class="text-3xl font-bold text-gray-700">100</p>
-                        <p class="text-sm text-gray-600">Abandoned</p>
-                    </div>
-                </div>
-                <ul class="space-y-2 text-base text-gray-700 fade fade-left">
-                    <li>
-                        <span class="font-medium">
-                            Avg. Cost:
-                        </span>
-                        <span class="text-blue-600">
-                            <span class="text-xs opacity-75">
-                                KES
-                            </span>
-                            25,000,000
-                        </span>
-                    </li>
-                    <li>
-                        <span class="font-medium">
-                            Top County By Projects:
-                        </span>
-                        Mombasa , 378
-                    </li>
-                    <li>
-                        <span class="font-medium">
-                            Top County By Project Value:
-                        </span>
-                        Kisumu , <span class="ml-2 text-xs">KES</span> 1,200,000
-                    </li>
-                    <li>
-                        <span class="font-medium">
-                            Addressed Topics:
-                        </span>
-                        GBV , Community Empowerment , Community Health
-                    </li>
-                    <li>
-                        <span class="font-medium">
-                            Latest Start:
-                        </span>
-                        June 2025 , Nakuru
-                    </li>
-                </ul>
-                <div class="flex fade fade-up">
-                    <a href="projects.html"
-                        class="w-full text-center bg-indigo-600 text-white py-2.5 rounded-md hover:bg-indigo-700 transition duration-200 mt-5">
-                        <i class="mr-2 fas fa-cog"></i>
-                        Manage Projects
-                    </a>
-                </div>
-            </div>
-
-            <div class="p-6 my-4 bg-white rounded-lg shadow-md fade fade-right">
-                <h2 class="flex items-center mb-5 text-2xl font-light text-gray-900 uppercase fade fade-left">
-                    Stakeholder Overview
-                </h2>
-                <h3 class="flex items-center mb-5 text-sm font-light text-gray-900 uppercase fade fade-left">
-                    Organization Types
-                </h3>
-                <div id="orgChart" class="fade fade-up"></div>
-                <div class="grid grid-cols-2 gap-4 mb-6 text-center fade fade-up">
-                    <div class="p-4 rounded-md bg-blue-50">
-                        <p class="text-3xl font-bold text-blue-700">100</p>
-                        <p class="text-sm text-blue-600">Whitelisted</p>
-                    </div>
-                    <div class="p-4 rounded-md bg-yellow-50">
-                        <p class="text-3xl font-bold text-yellow-700">10</p>
-                        <p class="text-sm text-yellow-600">Pending</p>
-                    </div>
-                    <div class="p-4 rounded-md bg-red-50">
-                        <p class="text-3xl font-bold text-red-700">10</p>
-                        <p class="text-sm text-red-600">Restricted</p>
-                    </div>
-                </div>
-                <div class="flex fade fade-up">
-                    <a href="members.html"
-                        class="w-full bg-blue-600 text-center text-white py-2.5 rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="mr-2 fas fa-address-book"></i> Manage Members
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div id="kenyaMap" class="fade fade-up h-[450px] sm:h-[550px] z-0 w-full ">
-        </div>
-    </div>
-    <script>
-        var options = {
-            chart: {
-                type: 'donut',
-                height: 350
-            },
-            series: [65, 35],
-            labels: ['Implementing', 'Development'],
-            colors: ['#A08BFB', '#FFF560'],
-            legend: {
-                position: 'bottom'
-            },
-            dataLabels: {
-                enabled: true,
-                formatter: function (val, opts) {
-                    return opts.w.config.series[opts.seriesIndex];
-                }
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return val + " Oranizations";
-                    }
-                }
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#orgChart"), options);
-        chart.render();
-    </script>
-    <script>
-        var options = {
-            chart: {
-                type: 'donut',
-                height: 350
-            },
-            series: [65, 35], // Example: 65 males, 35 females
-            labels: ['Male', 'Female'],
-            colors: ['#008FFB', '#FF4560'],
-            legend: {
-                position: 'bottom'
-            },
-            dataLabels: {
-                enabled: true,
-                formatter: function (val, opts) {
-                    return opts.w.config.series[opts.seriesIndex];
-                }
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return val + " Members";
-                    }
-                }
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#teamChart"), options);
-        chart.render();
-    </script>
-    <script>
-        var options = {
-            chart: {
-                type: 'bar',
-                height: 400,
-                stacked: false
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '50%',
-                    dataLabels: {
-                        position: 'top'
-                    }
-                }
-            },
-            dataLabels: {
-                enabled: true,
-                offsetY: -20,
-                style: {
-                    fontSize: '12px',
-                    colors: ["#304758"]
-                }
-            },
-            series: [
-                {
-                    name: 'Implementing Projects',
-                    data: [8, 12, 9]
-                },
-                {
-                    name: 'Development Projects',
-                    data: [6, 10, 7]
-                }
-            ],
-            xaxis: {
-                categories: ['GBV', 'Community Empowerment', 'Community Health'],
-                title: { text: 'Category' }
-            },
-            yaxis: {
-                title: { text: 'Value (Millions / No. of Projects)' }
-            },
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                shared: true,
-                intersect: false,
-                y: {
-                    formatter: function (val, opts) {
-                        let seriesName = opts.seriesIndex < 2 ? "Investment (M)" : "Projects";
-                        return val + " " + seriesName;
-                    }
-                }
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#barChart"), options);
-        chart.render();
-    </script>
-
-    <script>
-        // Example data
-        var localData = [120, 150, 180, 200, 170, 220, 250];
-        var foreignData = [100, 130, 160, 140, 190, 210, 230];
-
-        // Extra info aligned with each data point
-        var localExtra = [
-            { stakeholders: 10, projects: 5 },
-            { stakeholders: 12, projects: 6 },
-            { stakeholders: 15, projects: 7 },
-            { stakeholders: 18, projects: 8 },
-            { stakeholders: 14, projects: 5 },
-            { stakeholders: 20, projects: 9 },
-            { stakeholders: 22, projects: 11 }
-        ];
-
-        var foreignExtra = [
-            { stakeholders: 8, projects: 3 },
-            { stakeholders: 11, projects: 4 },
-            { stakeholders: 13, projects: 6 },
-            { stakeholders: 12, projects: 4 },
-            { stakeholders: 15, projects: 7 },
-            { stakeholders: 17, projects: 8 },
-            { stakeholders: 19, projects: 9 }
-        ];
-
-        var options = {
-            chart: {
-                type: 'line',
-                height: 400,
-                toolbar: { show: true }
-            },
-            series: [
-                { name: 'Implementing Investment', data: localData },
-                { name: 'Development Investment', data: foreignData }
-            ],
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-                title: { text: 'Months' }
-            },
-            yaxis: {
-                title: { text: 'Investment (in Millions)' }
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
-            markers: {
-                size: 4
-            },
-            tooltip: {
-                shared: false,
-                custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                    let investment = series[seriesIndex][dataPointIndex];
-                    let extra =
-                        seriesIndex === 0
-                            ? localExtra[dataPointIndex]
-                            : foreignExtra[dataPointIndex];
-
-                    return `
-            <div style="padding:8px;">
-              <strong>${w.globals.seriesNames[seriesIndex]}</strong><br/>
-              Investment: ${investment} M<br/>
-              No. of Stakeholders: ${extra.stakeholders}<br/>
-              No. of Projects: ${extra.projects}
-            </div>
-          `;
-                }
-            },
-            legend: {
-                position: 'top'
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-    </script>
-
-    <script src="styles/effects.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        let map, selectedMarker = null;
-        const markers = [];
-        const icons = {
-            default: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [20, 20] }),
-            selected: (tag) => L.icon({ iconUrl: `resources/${tag}.png`, iconSize: [40, 40] })
-        };
-
-        const bgColors = {
-            active: 'bg-green-50',
-            pending: 'bg-yellow-50',
-            stalled: 'bg-red-50',
-            abandoned: 'bg-gray-100',
-            default: 'bg-white'
-        };
-
-        const statusBadge = (tag) => {
-            return {
-                active: 'bg-green-200 text-green-800',
-                pending: 'bg-yellow-200 text-yellow-800',
-                stalled: 'bg-red-200 text-red-800',
-                abandoned: 'bg-gray-300 text-gray-800',
-            }[tag] || 'bg-gray-200 text-gray-800';
-        };
-
-        let sortBy = 'name';
-        let sortOrder = 'asc';
-        let currentPage = 1;
-        const itemsPerPage = 5;
-        let currentFilter = 'all';
-
-        let searchQuery = '';
-        let dateRangeFrom = null;
-        let dateRangeTo = null;
-
-        document.addEventListener("DOMContentLoaded", function () {
-            map = L.map('kenyaMap', {
-                center: [-0.0236, 37.9062],
-                zoom: 6.3,
-                scrollWheelZoom: false,
-                dragging: true,
-                touchZoom: false,
-                doubleClickZoom: true,
-                boxZoom: false,
-                keyboard: false,
-                zoomControl: true // keeps the + / – buttons visible
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-
-
-            const markerData = [
-                { lat: -1.2921, lng: 36.8219, name: "Project 1", tag: "active" },
-                { lat: -0.1023, lng: 34.7619, name: "Project 2", tag: "pending" },
-                { lat: 0.3256, lng: 37.1231, name: "Project 3", tag: "stalled" },
-                { lat: -1.1504, lng: 36.8907, name: "Project 4", tag: "abandoned" },
-                { lat: 0.5673, lng: 35.2489, name: "Project 5", tag: "active" },
-                { lat: -0.7584, lng: 36.9684, name: "Project 6", tag: "pending" },
-                { lat: 1.0321, lng: 37.7456, name: "Project 7", tag: "stalled" },
-                { lat: -0.5648, lng: 35.6892, name: "Project 8", tag: "abandoned" },
-                { lat: -1.3201, lng: 36.9021, name: "Project 9", tag: "active" },
-                { lat: 0.8231, lng: 36.4562, name: "Project 10", tag: "pending" },
-                { lat: -0.8723, lng: 35.9231, name: "Project 11", tag: "stalled" },
-                { lat: 0.2974, lng: 36.8762, name: "Project 12", tag: "abandoned" },
-                { lat: 0.1492, lng: 37.5312, name: "Project 13", tag: "active" },
-                { lat: -1.6754, lng: 36.1212, name: "Project 14", tag: "pending" },
-                { lat: 0.9273, lng: 35.1342, name: "Project 15", tag: "stalled" },
-                { lat: 0.6284, lng: 36.3173, name: "Project 16", tag: "abandoned" },
-                { lat: -1.3627, lng: 36.5431, name: "Project 17", tag: "active" },
-                { lat: 0.7542, lng: 35.9751, name: "Project 18", tag: "pending" },
-                { lat: -0.8921, lng: 36.6519, name: "Project 19", tag: "stalled" },
-                { lat: -1.0234, lng: 37.0917, name: "Project 20", tag: "abandoned" },
-                { lat: 1.1023, lng: 36.8342, name: "Project 21", tag: "active" },
-                { lat: 0.4132, lng: 35.8423, name: "Project 22", tag: "pending" },
-                { lat: -0.5273, lng: 36.4398, name: "Project 23", tag: "stalled" },
-                { lat: -1.2573, lng: 37.2812, name: "Project 24", tag: "abandoned" },
-                { lat: 0.7632, lng: 35.1231, name: "Project 25", tag: "active" },
-                { lat: -0.2734, lng: 36.9781, name: "Project 26", tag: "pending" },
-                { lat: 1.0213, lng: 36.5341, name: "Project 27", tag: "stalled" },
-                { lat: 0.6842, lng: 36.8345, name: "Project 28", tag: "abandoned" },
-                { lat: -1.0214, lng: 37.2134, name: "Project 29", tag: "active" },
-                { lat: 0.8123, lng: 35.7481, name: "Project 30", tag: "pending" },
-                { lat: 0.9431, lng: 36.1934, name: "Project 31", tag: "stalled" },
-                { lat: -0.7421, lng: 36.0298, name: "Project 32", tag: "abandoned" },
-                { lat: -1.2419, lng: 36.7492, name: "Project 33", tag: "active" },
-                { lat: 0.4561, lng: 35.9021, name: "Project 34", tag: "pending" },
-                { lat: -0.6872, lng: 36.4983, name: "Project 35", tag: "stalled" },
-                { lat: 0.9812, lng: 37.3847, name: "Project 36", tag: "abandoned" },
-                { lat: -1.1023, lng: 36.9821, name: "Project 37", tag: "active" },
-                { lat: 0.7421, lng: 36.4213, name: "Project 38", tag: "pending" },
-                { lat: -0.3421, lng: 35.8741, name: "Project 39", tag: "stalled" },
-                { lat: 0.9843, lng: 36.1321, name: "Project 40", tag: "abandoned" },
-                { lat: 0.2142, lng: 37.8234, name: "Project 41", tag: "active" },
-                { lat: -0.9432, lng: 36.9431, name: "Project 42", tag: "pending" },
-                { lat: 1.1543, lng: 35.6212, name: "Project 43", tag: "stalled" },
-                { lat: 0.5324, lng: 36.0932, name: "Project 44", tag: "abandoned" },
-                { lat: -1.1932, lng: 36.8371, name: "Project 45", tag: "active" },
-                { lat: 0.8934, lng: 35.8232, name: "Project 46", tag: "pending" },
-                { lat: -0.4721, lng: 36.4731, name: "Project 47", tag: "stalled" },
-                { lat: 0.6231, lng: 36.9512, name: "Project 48", tag: "abandoned" },
-                { lat: -1.0132, lng: 36.3421, name: "Project 49", tag: "active" },
-                { lat: 0.3782, lng: 35.6491, name: "Project 50", tag: "pending" }
-            ];
-
-            markerData.forEach((data) => {
-                data.description = `This is a description for ${data.name}`;
-                data.region = `Region ${Math.ceil(Math.random() * 10)}`;
-                data.budget = `${(Math.random() * 100 + 10).toFixed(2)} million KES`;
-                data.team = `${Math.ceil(Math.random() * 15 + 5)} members`;
-                data.sponsor = `Sponsor for ${data.name}`;
-                data.participants = Math.ceil(Math.random() * 100);
-                data.start_date = new Date(Date.now() - Math.random() * 10000000000).toISOString();
-                data.status = data.tag;
-
-                const marker = L.marker([data.lat, data.lng], { icon: icons.default(data.tag) })
-                    .addTo(map)
-                    .bindTooltip(data.name)
-                    .on("click", function () {
-                        if (selectedMarker && selectedMarker !== this) {
-                            selectedMarker.setIcon(icons.default(selectedMarker.tag));
-                        }
-                        this.setIcon(icons.selected(data.tag));
-                        selectedMarker = this;
-                        showProjectInfo(data);
-                    });
-
-                marker.data = data;
-                marker.tag = data.tag;
-                markers.push(marker);
-            });
-
-            highlightMarkers('all');
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim().toLowerCase();
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateFrom').addEventListener('change', (e) => {
-                dateRangeFrom = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('dateTo').addEventListener('change', (e) => {
-                dateRangeTo = e.target.value ? new Date(e.target.value) : null;
-                currentPage = 1;
-                highlightMarkers(currentFilter);
-            });
-
-            document.getElementById('sortSelect').addEventListener('change', (e) => {
-                sortProjects(e.target.value);
-            });
-        });
-
-        function showProjectInfo(project) {
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.remove("hidden");
-            infoBox.innerHTML = `
-            <h3 class="mb-4 text-xl font-bold text-gray-800">${project.name}</h3>
-            <p><strong>Description:</strong> ${project.description}</p>
-            <p><strong>Region:</strong> ${project.region}</p>
-            <p><strong>Budget:</strong> ${project.budget}</p>
-            <p><strong>Team:</strong> ${project.team}</p>
-            <p><strong>Participants:</strong> ${project.participants}</p>
-            <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-            <p><strong>Start Date:</strong> ${new Date(project.start_date).toLocaleDateString()}</p>
-            <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
-        `;
-        }
-
-        function focusMarker(index) {
-            const marker = markers[index];
-            map.setView(marker.getLatLng(), 9);
-            marker.fire('click');
-            document.getElementById('kenyaMap').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function sortProjects(field) {
-            if (sortBy === field) {
-                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortBy = field;
-                sortOrder = 'asc';
-            }
-            currentPage = 1;
-            highlightMarkers(currentFilter);
-        }
-
-        function highlightMarkers(tag) {
-            currentFilter = tag;
-            const accordion = document.getElementById("projectAccordion");
-            const infoBox = document.getElementById("projectInfo");
-            infoBox.classList.add("hidden");
-            accordion.innerHTML = '';
-            accordion.classList.remove("hidden");
-            accordion.classList.add("opacity-0", "translate-y-4");
-
-            let filteredMarkers = markers.filter(marker => {
-                const p = marker.data;
-                if (tag !== 'all' && marker.tag !== tag) return false;
-                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                const pDate = new Date(p.start_date);
-                if (dateRangeFrom && pDate < dateRangeFrom) return false;
-                if (dateRangeTo && pDate > dateRangeTo) return false;
-                return true;
-            });
-
-            filteredMarkers.sort((a, b) => {
-                const aVal = sortBy === 'name' ? a.data.name : new Date(a.data.start_date);
-                const bVal = sortBy === 'name' ? b.data.name : new Date(b.data.start_date);
-                return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
-            });
-
-            const totalPages = Math.ceil(filteredMarkers.length / itemsPerPage);
-            const paginated = filteredMarkers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-            updatePaginationControls(totalPages);
-
-            markers.forEach(marker => {
-                marker.setOpacity(filteredMarkers.includes(marker) ? 1 : 0.1);
-            });
-
-            setTimeout(() => accordion.classList.remove("opacity-0", "translate-y-4"), 10);
-
-            paginated.forEach((marker, idx) => {
-                const i = markers.indexOf(marker);
-                const project = marker.data;
-                const bg = bgColors[project.status] || bgColors.default;
-
-                const item = document.createElement("div");
-                item.className = `rounded shadow-sm ${bg}`;
-
-                item.innerHTML = `
-                <button class="w-full px-6 py-4 text-left border-b focus:outline-none" data-toggle="collapse-${i}">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">${project.name}</h4>
-                            <p class="text-sm text-gray-600">${project.description}</p>
+                        <div class="text-sm ${changeColor} mt-2">
+                            ${kpi.change > 0 ? `<i class="${changeIcon}"></i> ${kpi.change}% Change` : `<i class="fas fa-equals"></i> Steady Performance`}
                         </div>
-                        <div class="mt-2 text-sm text-gray-500 sm:mt-0">${new Date(project.start_date).toLocaleDateString()}</div>
                     </div>
-                </button>
-                <div id="collapse-${i}" class="hidden px-6 py-4 bg-white">
-                    <p><strong>Region:</strong> ${project.region}</p>
-                    <p><strong>Budget:</strong> ${project.budget}</p>
-                    <p><strong>Team:</strong> ${project.team}</p>
-                    <p><strong>Participants:</strong> ${project.participants}</p>
-                    <p><strong>Sponsor:</strong> ${project.sponsor}</p>
-                    <p><strong>Status:</strong> <span class="inline-block px-2 py-1 rounded-full text-sm font-medium ${statusBadge(project.status)}">${project.status}</span></p>
-                    <button onclick="focusMarker(${i})" class="px-5 py-2 mt-3 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700 hover:scale-105">
-                        Show on Map
-                    </button>
-                </div>
-            `;
-
-                accordion.appendChild(item);
-
-                item.querySelector(`[data-toggle="collapse-${i}"]`).addEventListener("click", () => {
-                    document.getElementById(`collapse-${i}`).classList.toggle("hidden");
-                });
-            });
-        }
-
-        function updatePaginationControls(totalPages) {
-            const container = document.getElementById("paginationControls");
-            container.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement("button");
-                btn.textContent = i;
-                btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`;
-                btn.onclick = () => {
-                    currentPage = i;
-                    highlightMarkers(currentFilter);
-                };
-                container.appendChild(btn);
-            }
-        }
-
-        function exportCSV() {
-            const headers = ['Name', 'Description', 'Region', 'Budget', 'Team', 'Participants', 'Sponsor', 'Start Date', 'Status'];
-            const rows = markers
-                .map(m => m.data)
-                .filter(p => {
-                    if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
-                    const date = new Date(p.start_date);
-                    if (dateRangeFrom && date < dateRangeFrom) return false;
-                    if (dateRangeTo && date > dateRangeTo) return false;
-                    if (currentFilter !== 'all' && p.status !== currentFilter) return false;
-                    return true;
-                })
-                .map(p => [
-                    p.name, p.description, p.region, p.budget, p.team, p.participants,
-                    p.sponsor, new Date(p.start_date).toLocaleDateString(), p.status
-                ]);
-
-            let csvContent = [headers.join(',')];
-            rows.forEach(r => csvContent.push(r.map(field => `"${field}"`).join(',')));
-
-            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `projects_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <!-- Leaflet JS -->
+                `;
+			}).join('');
+			document.getElementById('kpi-container').innerHTML = kpiHTML;
 
 
+			// B. Render Detail Cards
+			const detailCardHTML = categories.map(cat => {
+				const data = generateCategoryAnalytics();
+
+				const completedPercent = ((data.completed / data.totalProjects) * 100).toFixed(0);
+
+				return `
+                    <div class="bg-white p-6 rounded-xl shadow-md transition duration-300 hover:shadow-xl border-t-4 border-${cat.color}-500">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-gray-500">${cat.name}</span>
+                                <h3 class="text-xl font-bold text-gray-900">
+                                    <i class="${cat.icon} mr-2 text-${cat.color}-600"></i> ${cat.code}
+                                </h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm text-gray-400">Total Cost</span>
+                                <p class="text-2xl font-extrabold text-green-600">
+                                    ${formatCurrency(data.totalCost)}M
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+
+                        <div class="mb-4">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">
+                                Status Breakdown (${data.totalProjects} Projects Total)
+                            </p>
+                            <div class="flex h-3 rounded overflow-hidden">
+                                <div style="width: ${((data.active / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-blue-500" title="${data.active} Active"></div>
+                                <div style="width: ${((data.pending / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-yellow-500" title="${data.pending} Pending"></div>
+                                <div style="width: ${((data.stalled / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-red-500" title="${data.stalled} Stalled"></div>
+                                <div style="width: ${((data.completed / data.totalProjects) * 100).toFixed(0)}%" 
+                                     class="bg-green-500" title="${data.completed} Completed"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 text-sm text-gray-700">
+                             <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-check-double mr-2 text-green-500"></i> Completed Rate:</span> 
+                                <span class="font-bold text-lg text-green-500">${completedPercent}%</span>
+                            </p>
+                            <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-clock mr-2 text-gray-500"></i> Avg Duration:</span> 
+                                <span class="font-bold">${data.avgDurationMonths} months</span>
+                            </p>
+                            <p class="flex justify-between items-center">
+                                <span class="font-medium flex items-center"><i class="fas fa-calendar-alt mr-2 text-indigo-500"></i> Next Milestone:</span> 
+                                <span class="font-bold">${data.expectedCompletion}</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+			}).join('');
+			document.getElementById('detail-card-container').innerHTML = detailCardHTML;
+		}
+
+
+		// --- 6. ApexCharts Initialization ---
+
+		// Bar Chart Data (Project Status by Area)
+		var barCategories = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
+		var activeData = [15, 20, 18, 12, 5, 25, 9, 7, 6];
+		var pendingData = [8, 10, 7, 5, 3, 15, 4, 3, 2];
+		var stalledData = [3, 4, 2, 1, 1, 5, 2, 1, 1];
+		var completedData = [30, 45, 35, 25, 10, 50, 20, 15, 10];
+
+		var barOptions = {
+			chart: {
+				type: "bar", height: 400, stacked: false, id: 'projectStatusChart'
+			},
+			plotOptions: { bar: { horizontal: false, columnWidth: "70%" } },
+			dataLabels: { enabled: false },
+			series: [
+				{ name: "Active", data: activeData },
+				{ name: "Pending", data: pendingData },
+				{ name: "Stalled", data: stalledData },
+				{ name: "Completed", data: completedData },
+			],
+			xaxis: {
+				categories: barCategories,
+				title: { text: "Programmatic Area" },
+				labels: { rotate: -45 }
+			},
+			yaxis: { title: { text: "Number of Projects/Interventions" } },
+			legend: { position: "top" },
+			colors: ['#3B82F6', '#F59E0B', '#EF4444', '#10B981'], // blue, yellow, red, green
+			tooltip: { y: { formatter: function (val) { return val.toFixed(0) + " Projects"; } } }
+		};
+
+		// Donut Chart Data (Resource Distribution)
+		var donutSeriesData = [8, 14, 27, 21, 3, 2, 17, 8, 5];
+		var donutLabels = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
+		var donutColors = ["#EF4444", "#3B82F6", "#EC4899", "#6366F1", "#10B981", "#6B7280", "#9333ea", "#14B8A6", "#06B6D4"];
+
+		var donutOptions = {
+			chart: { type: "donut", height: 350 },
+			series: donutSeriesData,
+			labels: donutLabels,
+			colors: donutColors,
+			legend: { position: "bottom" },
+			dataLabels: { enabled: true, formatter: function (val) { return val.toFixed(0) + "%"; } },
+			tooltip: { y: { formatter: function (val, opts) { return opts.w.config.series[opts.seriesIndex] + "% of Focus"; } } },
+		};
+
+		// --- 7. Initialization on Load ---
+		document.addEventListener('DOMContentLoaded', () => {
+			renderDashboard();
+
+			// Render Charts after the DOM is ready
+			var barChart = new ApexCharts(document.querySelector("#barChart"), barOptions);
+			barChart.render();
+
+			var donutChart = new ApexCharts(document.querySelector("#teamChart"), donutOptions);
+			donutChart.render();
+		});
+
+	</script>
+	<script>
+		async function apiFetch(endpoint, options = {}) {
+			const token = window.authManager.getToken();
+			if (!token) {
+				alert('Not authenticated. Please log in.');
+				window.location.href = 'index.html';
+				return;
+			}
+			return fetch(`${window.BASE_URL}${endpoint}`, {
+				...options,
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					...options.headers,
+				},
+			});
+		}
+
+		function renderTable(tabId, data, columns) {
+			const tbody = document.querySelector(`#${tabId} tbody`);
+			if (!tbody) return;
+			tbody.innerHTML = '';
+			if (!Array.isArray(data)) {
+				console.error('Data is not an array for', tabId, ':', data);
+				return;
+			}
+			data.forEach(item => {
+				const row = document.createElement('tr');
+				row.className = 'bg-white dark:bg-gray-900/50 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50';
+				columns.forEach((col, index) => {
+					const td = document.createElement('td');
+					td.className = 'px-6 py-4';
+					let value = getNestedValue(item, col) || '';
+					
+					// Special handling for collaborators table
+					if (tabId === 'tab-collaborators') {
+						if (col === 'user.name') {
+							// Add user name with avatar
+							const userName = value || 'Unknown User';
+							const userEmail = getNestedValue(item, 'user.email') || '';
+							const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+							td.innerHTML = `
+								<div class="flex items-center gap-3">
+									<div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold">
+										${initials}
+									</div>
+									<div>
+										<div class="font-medium text-gray-900">${userName}</div>
+										<div class="text-xs text-gray-500">${userEmail}</div>
+									</div>
+								</div>
+							`;
+							row.appendChild(td);
+							return;
+						} else if (col === 'project.title') {
+							// Add project title with link
+							const projectTitle = value || 'Unknown Project';
+							const projectId = getNestedValue(item, 'project.id');
+							if (projectId) {
+								td.innerHTML = `
+									<a href="projects.html?id=${projectId}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">
+										${projectTitle}
+									</a>
+								`;
+							} else {
+								td.textContent = projectTitle;
+							}
+							row.appendChild(td);
+							return;
+						} else if (col === 'organization.name') {
+							const orgName = value || 'N/A';
+							td.textContent = orgName;
+							row.appendChild(td);
+							return;
+						} else if (col === 'role') {
+							// Format role with badge
+							const roleColors = {
+								'VIEWER': 'bg-blue-100 text-blue-800',
+								'EDITOR': 'bg-green-100 text-green-800',
+								'CO_OWNER': 'bg-purple-100 text-purple-800'
+							};
+							const colorClass = roleColors[value] || 'bg-gray-100 text-gray-800';
+							td.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-semibold ${colorClass}">${value}</span>`;
+							row.appendChild(td);
+							return;
+						} else if (col === 'isActive') {
+							// Format active status with badge
+							const isActive = value === true || value === 'true';
+							const badge = isActive 
+								? '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Active</span>'
+								: '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Inactive</span>';
+							td.innerHTML = badge;
+							row.appendChild(td);
+							return;
+						}
+					}
+					
+					// Format dates
+					if ((col.includes('Date') || col.includes('At')) && value) {
+						const date = new Date(value);
+						if (!isNaN(date)) {
+							value = date.toLocaleDateString('en-GB') + ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+						}
+					}
+					// Format file sizes
+					if (col === 'size' && value) {
+						value = formatFileSize(value);
+					}
+					// Format locations
+					if (col === 'locations' && Array.isArray(value)) {
+						value = value.map(loc => loc.county).join(', ');
+					}
+					// Format themes
+					if (col === 'themes' && Array.isArray(value)) {
+						value = value.map(theme => theme.name || theme.code).join(', ');
+					}
+					td.textContent = value;
+					row.appendChild(td);
+				});
+				
+				// Add action buttons
+				const actionTd = document.createElement('td');
+				actionTd.className = 'px-6 py-4 text-right';
+				
+				if (tabId === 'tab-collaborators') {
+					const projectId = getNestedValue(item, 'project.id');
+					const userId = getNestedValue(item, 'user.id');
+					actionTd.innerHTML = `
+						<div class="flex items-center justify-end gap-2">
+							${projectId ? `<a href="projects.html?id=${projectId}" class="text-blue-600 hover:text-blue-800" title="View Project">
+								<span class="material-symbols-outlined text-lg">visibility</span>
+							</a>` : ''}
+							${userId ? `<a href="profile.html?id=${userId}" class="text-green-600 hover:text-green-800" title="View User Profile">
+								<span class="material-symbols-outlined text-lg">person</span>
+							</a>` : ''}
+						</div>
+					`;
+				} else {
+					actionTd.innerHTML = '';
+				}
+				
+				row.appendChild(actionTd);
+				tbody.appendChild(row);
+			});
+		}
+
+		function getNestedValue(obj, path) {
+			return path.split('.').reduce((current, key) => current && current[key], obj);
+		}
+
+		function formatFileSize(bytes) {
+			if (!bytes || bytes === 0) return '0 B';
+			const k = 1024;
+			const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+			const i = Math.floor(Math.log(bytes) / Math.log(k));
+			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+		}
+
+		// Global data storage for dashboard calculations
+		let originalData = {
+			projects: [],
+			users: [],
+			organizations: [],
+			pastProjects: [],
+			projectDocuments: [],
+			userDocuments: [],
+			projectReports: [],
+			collaborators: []
+		};
+
+		// Function to calculate dashboard stats from filtered data
+		function calculateDashboardStatsFromFilteredData() {
+			// Get filtered data from each tab
+			const filteredProjects = getFilteredData('tab-projects', originalData.projects);
+			const filteredUsers = getFilteredData('tab-users', originalData.users);
+			const filteredPastProjects = getFilteredData('tab-pastprojects', originalData.pastProjects);
+
+			// Calculate stats from filtered data
+			const partnersCount = filteredUsers.filter(user => user.role === 'PARTNER').length;
+
+			const thematicAreas = new Set();
+			const counties = new Set();
+			let totalBudget = 0;
+
+			// Include both current and past projects for thematic areas, counties, and budget
+			const allProjects = [...filteredProjects, ...filteredPastProjects];
+
+			allProjects.forEach(project => {
+				if (project.themes) {
+					project.themes.forEach(theme => thematicAreas.add(theme.code));
+				}
+				if (project.locations) {
+					project.locations.forEach(location => counties.add(location.county));
+				}
+				if (project.budget) {
+					totalBudget += parseFloat(project.budget) || 0;
+				}
+			});
+
+			// Update counters with animation
+			updateCounterWithAnimation('partners-count', partnersCount);
+			updateCounterWithAnimation('thematic-areas-count', thematicAreas.size);
+			updateCounterWithAnimation('counties-count', counties.size);
+			updateBudgetCounter(totalBudget);
+		}
+
+		// Function to update counter with animation
+		function updateCounterWithAnimation(elementId, newValue) {
+			const element = document.getElementById(elementId);
+			if (!element) return;
+
+			const currentValue = parseInt(element.textContent) || 0;
+			if (currentValue === newValue) return;
+
+			// Add highlight animation
+			element.style.transition = 'all 0.3s ease';
+			element.style.transform = 'scale(1.1)';
+			element.style.color = '#137fec';
+
+			setTimeout(() => {
+				element.textContent = newValue;
+				element.style.transform = 'scale(1)';
+				element.style.color = '';
+			}, 150);
+		}
+
+		// Function to update budget counter
+		function updateBudgetCounter(totalBudget) {
+			const element = document.getElementById('budget-count');
+			if (!element) return;
+
+			const currentValue = parseInt(element.textContent.replace(/[^\d]/g, '')) || 0;
+			if (currentValue === totalBudget) return;
+
+			// Add highlight animation
+			element.style.transition = 'all 0.3s ease';
+			element.style.transform = 'scale(1.1)';
+			element.style.color = '#137fec';
+
+			// Function to format the number
+			function formatNumber(number) {
+				let formattedNumber;
+				let suffix = '';
+
+				if (number >= 1e12) {
+					formattedNumber = (number / 1e12).toFixed(3);
+					suffix = 'Tr';
+				} else if (number >= 1e9) {
+					formattedNumber = (number / 1e9).toFixed(3);
+					suffix = 'Bn';
+				} else if (number >= 1e6) {
+					formattedNumber = (number / 1e6).toFixed(3);
+					suffix = 'Mn';
+				} else if (number >= 1e3) {
+					formattedNumber = (number / 1e3).toFixed(3);
+					suffix = 'k';
+				} else {
+					formattedNumber = number.toString();
+				}
+
+				// Return the formatted number with suffix inside a span
+				return `<span class="number">${formattedNumber}</span><span class="suffix font-normal text-lg">${suffix}</span>`;
+			}
+
+			setTimeout(() => {
+				element.innerHTML = `<span class="font-normal" style="font-size:0.5em;">KES</span> ${formatNumber(totalBudget)}`;
+				element.style.transform = 'scale(1)';
+				element.style.color = '';
+			}, 150);
+		}
+
+
+		// Function to update individual tab counters
+		function updateTabCounters() {
+			// Update Projects tab counter - count visible rows directly
+			const projectRows = document.querySelectorAll('#tab-projects tbody tr');
+			const visibleProjects = Array.from(projectRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-projects-count', visibleProjects);
+
+			// Update Users tab counter
+			const userRows = document.querySelectorAll('#tab-users tbody tr');
+			const visibleUsers = Array.from(userRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-users-count', visibleUsers);
+
+			// Update Organizations tab counter
+			const orgRows = document.querySelectorAll('#tab-organizations tbody tr');
+			const visibleOrgs = Array.from(orgRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-organizations-count', visibleOrgs);
+
+			// Update Past Projects tab counter
+			const pastProjectRows = document.querySelectorAll('#tab-pastprojects tbody tr');
+			const visiblePastProjects = Array.from(pastProjectRows).filter(row => row.style.display !== 'none').length;
+			updateCounterWithAnimation('tab-past-projects-count', visiblePastProjects);
+		}
+
+		// Function to get filtered data from a table
+		function getFilteredData(tabId, originalDataArray) {
+			const tbody = document.querySelector(`#${tabId} tbody`);
+			if (!tbody) return originalDataArray;
+
+			const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row =>
+				row.style.display !== 'none' && !row.classList.contains('hidden')
+			);
+
+			// If no filters applied (all rows visible), return original data
+			const totalRows = tbody.querySelectorAll('tr').length;
+			if (visibleRows.length === totalRows) {
+				return originalDataArray;
+			}
+
+			// Map visible rows back to original data
+			const visibleIndices = visibleRows.map(row => {
+				const cells = row.querySelectorAll('td');
+				// Use a combination of visible cell data to identify the row in original data
+				return Array.from(cells).slice(0, -1).map(cell => cell.textContent.trim());
+			});
+
+			// Filter original data based on visible rows
+			return originalDataArray.filter(item => {
+				// Create a signature for each item to match against visible rows
+				const itemSignature = getDataColumns(tabId).map(col => {
+					let value = getNestedValue(item, col) || '';
+					// Apply same formatting as renderTable
+					if ((col.includes('Date') || col.includes('At')) && value) {
+						const date = new Date(value);
+						if (!isNaN(date)) {
+							value = date.toLocaleDateString('en-GB') + ', ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+						}
+					}
+					if (col === 'size' && value) {
+						value = formatFileSize(value);
+					}
+					if (col === 'locations' && Array.isArray(value)) {
+						value = value.map(loc => loc.county).join(', ');
+					}
+					if (col === 'themes' && Array.isArray(value)) {
+						value = value.map(theme => theme.name || theme.code).join(', ');
+					}
+					return value;
+				});
+
+				// Check if this item's signature matches any visible row
+				return visibleIndices.some(visibleSig =>
+					visibleSig.every((val, idx) => val === itemSignature[idx])
+				);
+			});
+		}
+
+		function getDataColumns(tabId) {
+			const columnMap = {
+				'tab-projects': ['title', 'partnerName', 'projectNo', 'projectCategory', 'themes', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt'],
+				'tab-users': ['name', 'email', 'role', 'status', 'organization.name', 'createdAt'],
+				'tab-organizations': ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt'],
+				'tab-pastprojects': ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt'],
+				'tab-projectdocs': ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt'],
+				'tab-userdocs': ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt'],
+				'tab-projectreports': ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt'],
+				'tab-collaborators': ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']
+			};
+			return columnMap[tabId] || [];
+		}
+
+		async function fetchProjects() {
+			try {
+				const response = await apiFetch('/api/projects');
+				if (!response.ok) throw new Error('Failed to fetch projects');
+				const data = await response.json();
+				const projects = data.data?.projects || data.data?.content || data.data || data;
+				if (!Array.isArray(projects)) {
+					console.error('Projects data not array:', projects);
+					return;
+				}
+				// Store original data for filtering
+				originalData.projects = [...projects];
+				renderTable('tab-projects', projects, ['title', 'partnerName', 'projectNo', 'projectCategory', 'themes', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
+				
+				// Initialize thematic area filter
+				initThematicAreaFilter();
+				
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', function () {
+						applyAllFilters();
+					});
+				});
+				
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projects button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projects.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Partner Name', 'Project No', 'Category', 'Themes', 'Status', 'Start Date', 'End Date', 'Budget', 'Locations', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projects tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching projects:', error);
+			}
+		}
+
+		// Thematic Area Filter Functionality
+		let selectedThemes = [];
+		
+		async function initThematicAreaFilter() {
+			try {
+				// Fetch thematic areas from backend
+				const response = await apiFetch('/api/projects/thematic-areas');
+				if (!response.ok) throw new Error('Failed to fetch thematic areas');
+				const data = await response.json();
+				const themes = data.data || [];
+				
+				// Populate the select dropdown
+				const select = document.getElementById('thematic-area-filter');
+				select.innerHTML = '<option value="">All Thematic Areas</option>';
+				themes.forEach(theme => {
+					const option = document.createElement('option');
+					option.value = theme.code;
+					option.textContent = theme.displayName;
+					option.dataset.name = theme.name;
+					select.appendChild(option);
+				});
+				
+				// Load filter state from URL parameters
+				loadFilterStateFromURL();
+				
+				// Add event listener for filter changes
+				select.addEventListener('change', function() {
+					selectedThemes = Array.from(this.selectedOptions)
+						.map(opt => opt.value)
+						.filter(val => val !== '');
+					updateSelectedThemesDisplay();
+					applyAllFilters();
+					updateURLParameters();
+				});
+				
+				// Clear filter button
+				document.getElementById('clear-theme-filter').addEventListener('click', function() {
+					selectedThemes = [];
+					select.selectedIndex = -1;
+					updateSelectedThemesDisplay();
+					applyAllFilters();
+					updateURLParameters();
+				});
+				
+			} catch (error) {
+				console.error('Error initializing thematic area filter:', error);
+			}
+		}
+		
+		function updateSelectedThemesDisplay() {
+			const container = document.getElementById('selected-themes-container');
+			const select = document.getElementById('thematic-area-filter');
+			
+			if (selectedThemes.length === 0) {
+				container.style.display = 'none';
+				container.innerHTML = '';
+				return;
+			}
+			
+			container.style.display = 'flex';
+			container.innerHTML = selectedThemes.map(themeCode => {
+				const option = select.querySelector(`option[value="${themeCode}"]`);
+				const displayName = option ? option.textContent : themeCode;
+				return `
+					<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
+						<span>${displayName}</span>
+						<button onclick="removeThemeFilter('${themeCode}')" class="hover:bg-blue-200 rounded-full p-0.5 transition">
+							<span class="material-symbols-outlined text-sm">close</span>
+						</button>
+					</div>
+				`;
+			}).join('');
+		}
+		
+		function removeThemeFilter(themeCode) {
+			const select = document.getElementById('thematic-area-filter');
+			const option = select.querySelector(`option[value="${themeCode}"]`);
+			if (option) {
+				option.selected = false;
+			}
+			selectedThemes = selectedThemes.filter(t => t !== themeCode);
+			updateSelectedThemesDisplay();
+			applyAllFilters();
+			updateURLParameters();
+		}
+		
+		function applyAllFilters() {
+			const rows = document.querySelectorAll('#tab-projects tbody tr');
+			const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
+			const columnFilters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+			
+			rows.forEach(row => {
+				const cells = row.querySelectorAll('td');
+				let show = true;
+				
+				// Apply column filters
+				columnFilters.forEach((filter, index) => {
+					if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+						show = false;
+					}
+				});
+				
+				// Apply thematic area filter
+				if (show && selectedThemes.length > 0) {
+					const themesCell = cells[4]; // Themes column is index 4
+					if (themesCell) {
+						const projectThemes = themesCell.textContent.toLowerCase();
+						const hasMatchingTheme = selectedThemes.some(themeCode => {
+							const select = document.getElementById('thematic-area-filter');
+							const option = select.querySelector(`option[value="${themeCode}"]`);
+							if (option) {
+								const displayName = option.textContent.toLowerCase();
+								const themeName = option.dataset.name.toLowerCase();
+								return projectThemes.includes(displayName) || 
+								       projectThemes.includes(themeName) ||
+								       projectThemes.includes(themeCode.toLowerCase());
+							}
+							return false;
+						});
+						
+						if (!hasMatchingTheme) {
+							show = false;
+						}
+					}
+				}
+				
+				row.style.display = show ? '' : 'none';
+			});
+			
+			// Update counters after filtering
+			setTimeout(calculateDashboardStatsFromFilteredData, 100);
+			setTimeout(updateTabCounters, 100);
+		}
+		
+		function updateURLParameters() {
+			const url = new URL(window.location);
+			
+			if (selectedThemes.length > 0) {
+				url.searchParams.set('themes', selectedThemes.join(','));
+			} else {
+				url.searchParams.delete('themes');
+			}
+			
+			// Update URL without reloading page
+			window.history.replaceState({}, '', url);
+		}
+		
+		function loadFilterStateFromURL() {
+			const url = new URL(window.location);
+			const themesParam = url.searchParams.get('themes');
+			
+			if (themesParam) {
+				selectedThemes = themesParam.split(',').filter(t => t);
+				const select = document.getElementById('thematic-area-filter');
+				
+				// Select the options
+				selectedThemes.forEach(themeCode => {
+					const option = select.querySelector(`option[value="${themeCode}"]`);
+					if (option) {
+						option.selected = true;
+					}
+				});
+				
+				updateSelectedThemesDisplay();
+				// Apply filters after a short delay to ensure table is rendered
+				setTimeout(() => applyAllFilters(), 200);
+			}
+		}
+
+		async function fetchUsers() {
+			try {
+				const response = await apiFetch('/api/auth/admin/users');
+				if (!response.ok) throw new Error('Failed to fetch users');
+				const data = await response.json();
+				const users = data.data?.users || data.data?.content || data.data || data;
+				if (!Array.isArray(users)) {
+					console.error('Users data not array:', users);
+					return;
+				}
+				// Store original data for filtering
+				originalData.users = [...users];
+				renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization.name', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-users .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', function () {
+						filterTable();
+						// Update dashboard counters when filters change
+						setTimeout(calculateDashboardStatsFromFilteredData, 100);
+						// Update individual tab counters
+						setTimeout(updateTabCounters, 100);
+					});
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-users tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-users button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('users.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Name', 'Email', 'Role', 'Status', 'Organization', 'Created At'];
+					const rows = document.querySelectorAll('#tab-users tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching users:', error);
+			}
+		}
+
+		async function fetchOrganizations() {
+			try {
+				const response = await apiFetch('/api/organizations');
+				if (!response.ok) throw new Error('Failed to fetch organizations');
+				const data = await response.json();
+				const orgs = data.data?.organizations || data.data?.content || data.data || data;
+				if (!Array.isArray(orgs)) {
+					console.error('Organizations data not array:', orgs);
+					return;
+				}
+				// Store original data for filtering
+				originalData.organizations = [...orgs];
+				renderTable('tab-organizations', orgs, ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-organizations .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-organizations tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+					// Update individual tab counters when filters change
+					setTimeout(updateTabCounters, 100);
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-organizations button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('organizations.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Name', 'Type', 'Email', 'Location', 'Status', 'Created At'];
+					const rows = document.querySelectorAll('#tab-organizations tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching organizations:', error);
+			}
+		}
+
+		async function fetchAnnouncements() {
+			try {
+				const response = await apiFetch('/api/announcements');
+				if (!response.ok) throw new Error('Failed to fetch announcements');
+				const data = await response.json();
+				const announcements = data.data?.announcements || data.data?.content || data.data || data;
+				if (!Array.isArray(announcements)) {
+					console.error('Announcements data not array:', announcements);
+					return;
+				}
+				renderTable('tab-announcements', announcements, ['title', 'content', 'deadline', 'createdBy.name', 'status', 'collaborationType', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-announcements .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-announcements tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-announcements button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('announcements.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Content', 'Date', 'Created By', 'Status', 'Priority', 'Created At'];
+					const rows = document.querySelectorAll('#tab-announcements tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching announcements:', error);
+			}
+		}
+
+		async function fetchCollaborationRequests() {
+			try {
+				const response = await apiFetch('/api/collaboration-requests/admin/all');
+				if (!response.ok) throw new Error('Failed to fetch collaboration requests');
+				const data = await response.json();
+				const requests = data.data?.collaborationRequests || data.data?.content || data.data || data;
+				if (!Array.isArray(requests)) {
+					console.error('Collaboration requests data not array:', requests);
+					return;
+				}
+				renderTable('tab-collaboration', requests, ['requestingUser.name', 'announcement.title', 'requestingOrganization.name', 'status', 'message', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-collaboration .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-collaboration tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-collaboration button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('collaborationrequests.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Requester', 'Project', 'Organization', 'Status', 'Message', 'Date'];
+					const rows = document.querySelectorAll('#tab-collaboration tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching collaboration requests:', error);
+			}
+		}
+
+		async function fetchPastProjects() {
+			try {
+				const response = await apiFetch('/api/past-projects');
+				if (!response.ok) throw new Error('Failed to fetch past projects');
+				const data = await response.json();
+				const projects = data.data?.pastProjects || data.data?.content || data.data || data;
+				if (!Array.isArray(projects)) {
+					console.error('Past projects data not array:', projects);
+					return;
+				}
+				// Store original data for filtering
+				originalData.pastProjects = [...projects];
+				renderTable('tab-pastprojects', projects, ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt']);
+				// Update individual tab counters after loading
+				setTimeout(updateTabCounters, 100);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-pastprojects .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', function () {
+						filterTable();
+						// Update dashboard counters when filters change
+						setTimeout(calculateDashboardStatsFromFilteredData, 100);
+						// Update individual tab counters
+						setTimeout(updateTabCounters, 100);
+					});
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-pastprojects tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-pastprojects button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('pastprojects.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Objectives', 'Partner', 'Category', 'Status', 'Budget', 'End Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-pastprojects tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching past projects:', error);
+			}
+		}
+
+		async function fetchProjectReports() {
+			try {
+				const response = await apiFetch('/api/project-reports');
+				if (!response.ok) throw new Error('Failed to fetch project reports');
+				const data = await response.json();
+				const reports = data.data?.projectReports || data.data?.content || data.data || data;
+				if (!Array.isArray(reports)) {
+					console.error('Project reports data not array:', reports);
+					return;
+				}
+				// Store original data for filtering
+				originalData.projectReports = [...reports];
+				renderTable('tab-projectreports', reports, ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-projectreports tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projectreports button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectreports.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['Title', 'Project', 'Submitted By', 'Type', 'Status', 'Submitted At', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projectreports tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project reports:', error);
+			}
+		}
+
+		async function fetchProjectCollaborators() {
+			try {
+				const response = await apiFetch('/api/projects/admin/collaborators');
+				if (!response.ok) throw new Error('Failed to fetch project collaborators');
+				const data = await response.json();
+				const collaborators = data.data?.projectCollaborators || data.data?.content || data.data || data;
+				if (!Array.isArray(collaborators)) {
+					console.error('Project collaborators data not array:', collaborators);
+					return;
+				}
+				
+				// Update the counter
+				const counterEl = document.getElementById('tab-collaborators-count');
+				if (counterEl) {
+					counterEl.textContent = collaborators.length;
+				}
+				
+				// Handle empty state
+				const emptyState = document.getElementById('collaborators-empty-state');
+				const tbody = document.querySelector('#tab-collaborators tbody');
+				
+				if (collaborators.length === 0) {
+					if (emptyState) {
+						emptyState.style.display = '';
+					}
+				} else {
+					if (emptyState) {
+						emptyState.style.display = 'none';
+					}
+					
+					// Store original data for filtering
+					originalData.collaborators = [...collaborators];
+					renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
+					
+					// Add column-wise search functionality
+					const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
+					filterInputs.forEach(input => {
+						input.addEventListener('input', filterTable);
+					});
+					
+					function filterTable() {
+						const rows = document.querySelectorAll('#tab-collaborators tbody tr:not(#collaborators-empty-state)');
+						const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+						let visibleCount = 0;
+						
+						rows.forEach(row => {
+							const cells = row.querySelectorAll('td');
+							let show = true;
+							filters.forEach((filter, index) => {
+								if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+									show = false;
+								}
+							});
+							row.style.display = show ? '' : 'none';
+							if (show) visibleCount++;
+						});
+						
+						// Show/hide empty state based on filtered results
+						if (emptyState) {
+							emptyState.style.display = visibleCount === 0 ? '' : 'none';
+						}
+					}
+				}
+				
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-collaborators button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectcollaborators.csv');
+					});
+				}
+				
+				function exportTableToCSV(filename) {
+					const headers = ['User', 'Project', 'Organization', 'Role', 'Status', 'Date Added'];
+					const rows = document.querySelectorAll('#tab-collaborators tbody tr:not([style*="display: none"]):not(#collaborators-empty-state)');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project collaborators:', error);
+				// Show error state
+				const counterEl = document.getElementById('tab-collaborators-count');
+				if (counterEl) {
+					counterEl.textContent = '0';
+				}
+				const emptyState = document.getElementById('collaborators-empty-state');
+				if (emptyState) {
+					emptyState.style.display = '';
+				}
+			}
+		}
+
+		async function fetchDashboardStats() {
+			try {
+				// Fetch project counts from new endpoint
+				const projectCounts = await fetchProjectCounts();
+				
+				// Update total projects counter
+				const totalProjectsEl = document.getElementById('total-projects-count');
+				if (totalProjectsEl) {
+					totalProjectsEl.textContent = formatCount(projectCounts.total || 0);
+				}
+				
+				// Update active projects counter
+				const activeProjectsEl = document.getElementById('active-projects-count');
+				if (activeProjectsEl) {
+					activeProjectsEl.textContent = formatCount(projectCounts.active || 0);
+				}
+				
+				// Fetch user counts from new endpoint
+				const userCounts = await fetchUserCounts();
+				
+				// Update total users counter
+				const totalUsersEl = document.getElementById('total-users-count');
+				if (totalUsersEl) {
+					totalUsersEl.textContent = formatCount(userCounts.total || 0);
+				}
+				
+				// Update pending approvals counter
+				const pendingApprovalsEl = document.getElementById('pending-approvals-count');
+				if (pendingApprovalsEl) {
+					const totalPending = (projectCounts.pending || 0) + (userCounts.pending || 0);
+					pendingApprovalsEl.textContent = formatCount(totalPending);
+				}
+				
+				// Fetch projects for thematic areas, counties, budget
+				const projectsResponse = await apiFetch('/api/projects');
+				const projectsData = await projectsResponse.json();
+				const projects = projectsData.data?.projects || projectsData.data?.content || projectsData.data || [];
+				originalData.projects = [...projects];
+
+				// Fetch past projects
+				const pastProjectsResponse = await apiFetch('/api/past-projects');
+				const pastProjectsData = await pastProjectsResponse.json();
+				const pastProjects = pastProjectsData.data?.pastProjects || pastProjectsData.data?.content || pastProjectsData.data || [];
+				originalData.pastProjects = [...pastProjects];
+
+				// Fetch users for partners count
+				const usersResponse = await apiFetch('/api/auth/admin/users');
+				const usersData = await usersResponse.json();
+				const users = usersData.data?.users || usersData.data?.content || usersData.data || [];
+				originalData.users = [...users];
+
+				// Calculate and update stats
+				calculateDashboardStatsFromFilteredData();
+
+			} catch (error) {
+				console.error('Error fetching dashboard stats:', error);
+				// Set default values on error
+				const totalProjectsEl = document.getElementById('total-projects-count');
+				if (totalProjectsEl) totalProjectsEl.textContent = '0';
+				
+				const partnersEl = document.getElementById('partners-count');
+				if (partnersEl) partnersEl.textContent = '0';
+			}
+		}
+
+		async function fetchProjectDocuments() {
+			try {
+				const response = await apiFetch('/api/project-documents');
+				if (!response.ok) throw new Error('Failed to fetch project documents');
+				const data = await response.json();
+				const documents = data.data?.projectDocuments || data.data?.content || data.data || data;
+				if (!Array.isArray(documents)) {
+					console.error('Project documents data not array:', documents);
+					return;
+				}
+				// Store original data for filtering
+				originalData.projectDocuments = [...documents];
+				renderTable('tab-projectdocs', documents, ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-projectdocs .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-projectdocs tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-projectdocs button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('projectdocuments.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['File Name', 'Project', 'Uploaded By', 'Type', 'Size', 'Status', 'Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-projectdocs tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching project documents:', error);
+			}
+		}
+
+		async function fetchUserDocuments() {
+			try {
+				const response = await apiFetch('/api/user-documents');
+				if (!response.ok) throw new Error('Failed to fetch user documents');
+				const data = await response.json();
+				const documents = data.data?.userDocuments || data.data?.content || data.data || data;
+				if (!Array.isArray(documents)) {
+					console.error('User documents data not array:', documents);
+					return;
+				}
+				// Store original data for filtering
+				originalData.userDocuments = [...documents];
+				renderTable('tab-userdocs', documents, ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				// Add column-wise search functionality
+				const filterInputs = document.querySelectorAll('#tab-userdocs .filter-input');
+				filterInputs.forEach(input => {
+					input.addEventListener('input', filterTable);
+				});
+				function filterTable() {
+					const rows = document.querySelectorAll('#tab-userdocs tbody tr');
+					const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						let show = true;
+						filters.forEach((filter, index) => {
+							if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+								show = false;
+							}
+						});
+						row.style.display = show ? '' : 'none';
+					});
+				}
+				// Add export functionality
+				const exportBtn = document.querySelector('#tab-userdocs button');
+				if (exportBtn) {
+					exportBtn.addEventListener('click', () => {
+						exportTableToCSV('userdocuments.csv');
+					});
+				}
+				function exportTableToCSV(filename) {
+					const headers = ['File Name', 'User', 'Uploaded By', 'Type', 'Size', 'Status', 'Date', 'Created At'];
+					const rows = document.querySelectorAll('#tab-userdocs tbody tr:not([style*="display: none"])');
+					let csv = headers.join(',') + '\n';
+					rows.forEach(row => {
+						const cells = row.querySelectorAll('td');
+						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
+						csv += rowData.join(',') + '\n';
+					});
+					const blob = new Blob([csv], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				}
+			} catch (error) {
+				console.error('Error fetching user documents:', error);
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			// Tab definitions by role
+			const allTabs = [
+				{ key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+				{ key: 'projects', label: 'Projects', icon: 'folder' },
+				{ key: 'users', label: 'Users', icon: 'group' },
+				{ key: 'organizations', label: 'Organizations', icon: 'apartment' },
+				{ key: 'announcements', label: 'Announcements', icon: 'campaign' },
+				{ key: 'collaboration', label: 'Collaboration Requests', icon: 'handshake' },
+				{ key: 'pastprojects', label: 'Past Projects', icon: 'history' },
+				{ key: 'projectdocs', label: 'Project Documents', icon: 'description' },
+				{ key: 'projectreports', label: 'Project Reports', icon: 'assessment' },
+				{ key: 'userdocs', label: 'User Documents', icon: 'badge' },
+				{ key: 'collaborators', label: 'Project Collaborators', icon: 'groups' }
+			];
+			const roleTabs = {
+				SUPER_ADMIN: allTabs,
+				SUPER_ADMIN_APPROVER: allTabs,
+				SUPER_ADMIN_REVIEWER: allTabs,
+				DONOR: [
+					allTabs[0], // Dashboard
+					allTabs[1], // Projects
+					allTabs[3], // Organizations
+					allTabs[6], // Past Projects
+					allTabs[7], // Project Documents
+					allTabs[8], // Project Reports
+					allTabs[10] // Project Collaborators
+				],
+				PARTNER: [
+					allTabs[0], // Dashboard
+					allTabs[1], // Projects
+					allTabs[6], // Past Projects
+					allTabs[7], // Project Documents
+					allTabs[8], // Project Reports
+					allTabs[10] // Project Collaborators
+				]
+			};
+			// Get userRole from localStorage
+			const userRole = localStorage.getItem('userRole') || 'SUPER_ADMIN_REVIEWER';
+			const tabs = roleTabs[userRole] || roleTabs['PARTNER'];
+			// Render sidebar tabs
+			const sidebarTabsContainer = document.getElementById('sidebar-tabs');
+			sidebarTabsContainer.innerHTML = '';
+			tabs.forEach((tab, idx) => {
+				const a = document.createElement('a');
+				a.className = 'sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-text dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800';
+				a.setAttribute('data-tab', tab.key);
+				a.setAttribute('href', '#');
+				a.innerHTML = `<span class="material-symbols-outlined">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
+				if (idx === 0) {
+					a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+				}
+				sidebarTabsContainer.appendChild(a);
+			});
+			// Tab switching logic
+			const sidebarTabs = document.querySelectorAll('.sidebar-tab');
+			const tabSections = {
+				dashboard: document.getElementById('tab-dashboard'),
+				projects: document.getElementById('tab-projects'),
+				users: document.getElementById('tab-users'),
+				organizations: document.getElementById('tab-organizations'),
+				announcements: document.getElementById('tab-announcements'),
+				collaboration: document.getElementById('tab-collaboration'),
+				pastprojects: document.getElementById('tab-pastprojects'),
+				projectdocs: document.getElementById('tab-projectdocs'),
+				projectreports: document.getElementById('tab-projectreports'),
+				userdocs: document.getElementById('tab-userdocs'),
+				collaborators: document.getElementById('tab-collaborators')
+			};
+			function showTab(tab) {
+				Object.values(tabSections).forEach(section => {
+					if (section) section.style.display = 'none';
+				});
+				if (tabSections[tab]) {
+					tabSections[tab].style.display = '';
+					if (tab === 'dashboard') fetchDashboardStats();
+					else if (tab === 'projects') fetchProjects();
+					else if (tab === 'users') fetchUsers();
+					else if (tab === 'organizations') fetchOrganizations();
+					else if (tab === 'announcements') fetchAnnouncements();
+					else if (tab === 'pastprojects') fetchPastProjects();
+					else if (tab === 'collaboration') fetchCollaborationRequests();
+					else if (tab === 'projectreports') fetchProjectReports();
+					else if (tab === 'collaborators') fetchProjectCollaborators();
+					else if (tab === 'projectdocs') fetchProjectDocuments();
+					else if (tab === 'userdocs') fetchUserDocuments();
+				}
+				sidebarTabs.forEach(btn => btn.classList.remove('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
+				const activeBtn = Array.from(sidebarTabs).find(btn => btn.getAttribute('data-tab') === tab);
+				if (activeBtn) activeBtn.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+			}
+			sidebarTabs.forEach(btn => {
+				btn.addEventListener('click', function (e) {
+					e.preventDefault();
+					const tab = btn.getAttribute('data-tab');
+					showTab(tab);
+				});
+			});
+			// Show first tab by default
+			showTab(tabs[0].key);
+
+			// Announcement modal handlers
+			const createAnnouncementBtn = document.getElementById('create-announcement-btn');
+			const createAnnouncementModal = document.getElementById('create-announcement-modal');
+			const cancelAnnouncementBtn = document.getElementById('cancel-announcement-btn');
+			const createAnnouncementForm = document.getElementById('create-announcement-form');
+
+			createAnnouncementBtn.addEventListener('click', () => {
+				createAnnouncementModal.classList.remove('hidden');
+			});
+
+			cancelAnnouncementBtn.addEventListener('click', () => {
+				createAnnouncementModal.classList.add('hidden');
+				createAnnouncementForm.reset();
+			});
+
+			createAnnouncementForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const title = document.getElementById('announcement-title').value;
+				const content = document.getElementById('announcement-content').value;
+				const deadline = document.getElementById('announcement-deadline').value;
+				const collaborationType = document.getElementById('announcement-collaboration-type').value;
+
+				try {
+					const response = await apiFetch('/api/announcements', {
+						method: 'POST',
+						body: JSON.stringify({
+							title,
+							content,
+							deadline: deadline || null,
+							collaborationType
+						})
+					});
+					if (response.ok) {
+						alert('Announcement created successfully!');
+						createAnnouncementModal.classList.add('hidden');
+						createAnnouncementForm.reset();
+						fetchAnnouncements(); // Refresh the table
+					} else {
+						alert('Failed to create announcement');
+					}
+				} catch (error) {
+					console.error('Error creating announcement:', error);
+					alert('Error creating announcement');
+				}
+			});
+		});
+	</script>
 </body>
 
 </html>

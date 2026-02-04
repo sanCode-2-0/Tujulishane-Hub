@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS (with custom config using inline script) -->
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#1e40af',   // Custom Blue
+						secondary: '#f59e0b', // Custom Amber
+						accent: '#10b981',    // Custom Green
+						dark: '#1f2937',      // Gray-800
+					},
+					fontFamily: {
+						sans: ['Inter', 'sans-serif'],
+					}
+				}
+			}
+		}
+	</script>
+	<link rel="stylesheet" href="styles/main.css">
+	<!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+	<script src="config.js"></script>
+	<script src="set-base-url.js"></script>
+	<!-- Modal Utilities -->
+	<script src="modal-utils.js"></script>
+	<script src="auth.js"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="styles/main.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Leaflet CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<!-- Leaflet JS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha384-sA+RlRzF8YK8EeQx09sEtc06CXi1K06oBJJSM6Ox9B8JeN5aZzffR28E/zTGmLXN" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha384-O3FJxqIQW2STXQKKFePx5FKP8uXpTYBJ+Al9VwZpyaXx1V4u1ZbE1cBGTSrBocjz" crossorigin=""></script>
+
+
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
+
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+	</style>
+
+</head>
+
+<body x-data="announcementsApp()" x-init="init()" class="text-gray-800">
+	<script>
+		window.announcementsApp = function announcementsApp() {
+			return {
+				announcements: [],
+				myProjects: [],
+				organizations: [],
+				myCollaborationRequests: [], // Track user's submitted requests
+				chatMessages: [],
+				sendingMessage: false,
+				newMessage: "",
+				searchText: "",
+				filterStatus: "",
+				sortOrder: "NEWEST",
+				activeSlide: 0,
+				media: [
+					{ type: 'image', src: 'resources/images/main-1.jpg' },
+					{ type: 'image', src: 'resources/images/main-2.jpg' },
+					{ type: 'image', src: 'resources/images/main-3.jpg' }
+				],
+				loading: true,
+				creating: false,
+				submitting: false,
+				showCreateModal: false,
+				showDetailsModal: false,
+				showRequestModal: false,
+				selectedAnnouncement: null,
+				userRole: null, // Will be set in init from user object
+				currentUser: null, // Store current user data including email
+				newAnnouncement: {
+					projectId: "",
+					title: "",
+					content: "",
+					deadline: "",
+				},
+				collaborationRequest: {
+					organizationId: "",
+					proposedContribution: "",
+				},
+
+				async init() {
+					// Wait for auth.js to load user data and get it directly
+					const user = await this.waitForAuth();
+
+					// Set user role and store user data from the returned user object
+					if (user && user.role) {
+						this.userRole = user.role;
+						this.currentUser = user; // Store full user object
+					} else {
+						// Fallback: try to read from localStorage
+						const userStr = localStorage.getItem("currentUser");
+						if (userStr) {
+							try {
+								const parsedUser = JSON.parse(userStr);
+								this.userRole = parsedUser.role;
+								this.currentUser = parsedUser;
+							} catch (e) {
+								console.error("Error parsing user data:", e);
+							}
+						}
+						// Final fallback to userRole if it exists
+						if (!this.userRole) {
+							this.userRole = localStorage.getItem("userRole");
+						}
+					}
+					console.log("🔍 User Role:", this.userRole); // Debug log
+					console.log("🔍 Current User:", this.currentUser); // Debug log
+
+					// Populate user dropdown in navigation
+					if (this.currentUser) {
+						console.log("👤 Populating user dropdown...");
+						this.populateUserDropdown(this.currentUser);
+					}
+
+					await this.loadAnnouncements();
+
+					// Always try to load projects if user is authenticated
+					// The backend will handle authorization
+					const token = localStorage.getItem("accessToken");
+					if (token) {
+						console.log("🔍 User authenticated, loading projects...");
+						await this.loadMyProjects();
+						await this.loadOrganizations();
+						// Load user's collaboration requests to prevent duplicates
+						await this.loadMyCollaborationRequests();
+					} else {
+						console.warn("⚠️ No access token found, skipping project load");
+					}
+				},
+
+				// Populate user dropdown with current user data
+				populateUserDropdown(user) {
+					try {
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+
+						if (userDisplayName)
+							userDisplayName.textContent = user.name || "User";
+						if (userNameDisplay)
+							userNameDisplay.textContent = user.name || "Loading...";
+						if (userEmailDisplay)
+							userEmailDisplay.textContent = user.email || "";
+						if (userRoleDisplay)
+							userRoleDisplay.textContent = user.role || "N/A";
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent = user.status || "N/A";
+							// Update status color based on status
+							userStatusDisplay.className =
+								user.status === "ACTIVE"
+									? "font-medium text-green-600"
+									: "font-medium text-gray-600";
+						}
+
+						// Show role-based navs
+						if (
+							user.role === "ADMIN" ||
+							user.role === "SUPER_ADMIN" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER" ||
+							user.role === "SUPER_ADMIN_REVIEWER" ||
+							user.role === "SUPER_ADMIN_APPROVER"
+						) {
+							const adminNav = document.getElementById("adminNav");
+							if (adminNav) adminNav.classList.remove("hidden");
+						}
+						if (user.role === "DONOR") {
+							const donorNav = document.getElementById("donorNav");
+							if (donorNav) donorNav.classList.remove("hidden");
+						}
+
+						console.log("✅ User dropdown populated successfully!");
+					} catch (error) {
+						console.error("❌ Error populating user dropdown:", error);
+					}
+				},
+
+				async waitForAuth() {
+					// Wait for AuthManager to be available and initialized
+					let attempts = 0;
+					while (attempts < 50) {
+						// Max 5 seconds
+						if (
+							window.authManager &&
+							typeof window.authManager.getCurrentUser === "function"
+						) {
+							// Try to get current user and return it directly
+							try {
+								const user = await window.authManager.getCurrentUser();
+								return user; // Return the user object
+							} catch (e) {
+								// User not logged in or error
+								return null;
+							}
+						}
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						attempts++;
+					}
+					return null; // Timeout - no auth available
+				},
+
+				async loadAnnouncements() {
+					try {
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`
+						);
+						const data = await response.json();
+						if (data.status === 200) {
+							this.announcements = data.data;
+						}
+					} catch (error) {
+						console.error("Error loading announcements:", error);
+						await showAlert("Failed to load announcements", "Error", "error");
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async loadMyProjects() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						console.log(
+							"🔍 Loading my projects with token:",
+							token ? "Present" : "Missing"
+						);
+
+						const response = await fetch(
+							`${window.BASE_URL}/api/projects/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						console.log("🔍 My projects response status:", response.status);
+
+						if (!response.ok) {
+							console.error(
+								"❌ Failed to load projects. Status:",
+								response.status
+							);
+							if (response.status === 403) {
+								console.error(
+									"❌ 403 Forbidden - You may not have PARTNER role"
+								);
+							} else if (response.status === 401) {
+								console.error(
+									"❌ 401 Unauthorized - Token may be invalid or expired"
+								);
+							}
+							this.myProjects = [];
+							return;
+						}
+
+						const data = await response.json();
+						console.log("🔍 My projects response data:", data);
+
+						if (data.status === 200) {
+							this.myProjects = data.data || [];
+							console.log(
+								"✅ Loaded projects:",
+								this.myProjects.length,
+								"projects"
+							);
+							console.log("📋 Projects:", this.myProjects);
+						} else {
+							console.warn("⚠️ Unexpected response status:", data.status);
+							this.myProjects = [];
+						}
+					} catch (error) {
+						console.error("❌ Error loading projects:", error);
+						this.myProjects = [];
+					}
+				},
+
+				async loadOrganizations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/organizations`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							// Silently handle 403 - organizations endpoint may be restricted
+							this.organizations = []; // Set empty array
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.organizations = data.data;
+						}
+					} catch (error) {
+						// Silently handle errors - organizations are optional
+						this.organizations = []; // Set empty array on error
+					}
+				},
+
+				async loadMyCollaborationRequests() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/my-requests`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+
+						if (!response.ok) {
+							console.warn(
+								"Could not load collaboration requests:",
+								response.status
+							);
+							this.myCollaborationRequests = [];
+							return;
+						}
+
+						const data = await response.json();
+						if (data.status === 200) {
+							this.myCollaborationRequests = data.data || [];
+							console.log(
+								"✅ Loaded collaboration requests:",
+								this.myCollaborationRequests.length
+							);
+						} else {
+							this.myCollaborationRequests = [];
+						}
+					} catch (error) {
+						console.error("Error loading collaboration requests:", error);
+						this.myCollaborationRequests = [];
+					}
+				},
+
+				async createAnnouncement() {
+					this.creating = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${window.BASE_URL}/api/announcements`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(this.newAnnouncement),
+							}
+						);
+
+						// Check if response is OK before parsing JSON
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied. You may not have access to create announcements.",
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"You must be logged in to create announcements.",
+									"Authentication Required",
+									"warning"
+								);
+							} else {
+								await showAlert(
+									`Error: Server returned status ${response.status}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						const data = await response.json();
+
+						if (data.status === 201) {
+							await showAlert(
+								"Announcement created successfully!",
+								"Success",
+								"success"
+							);
+							this.showCreateModal = false;
+							this.newAnnouncement = {
+								projectId: "",
+								title: "",
+								content: "",
+								deadline: "",
+							};
+							await this.loadAnnouncements();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error creating announcement:", error);
+						await showAlert(
+							"Failed to create announcement. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.creating = false;
+					}
+				},
+
+				viewDetails(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showDetailsModal = true;
+					this.loadChatMessages(announcement.id);
+				},
+
+				requestCollaboration(announcement) {
+					this.selectedAnnouncement = announcement;
+					this.showRequestModal = true;
+					this.showDetailsModal = false;
+				},
+
+				async submitRequest() {
+					this.submitting = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+
+						// Prepare request payload - only include organizationId if it's not empty
+						const payload = {
+							proposedContribution:
+								this.collaborationRequest.proposedContribution,
+						};
+
+						// Only add organizationId if it's set (not empty string)
+						if (this.collaborationRequest.organizationId) {
+							payload.organizationId = parseInt(
+								this.collaborationRequest.organizationId
+							);
+						}
+
+						const response = await fetch(
+							`${window.BASE_URL}/api/collaboration-requests/announcements/${this.selectedAnnouncement.id}`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify(payload),
+							}
+						);
+
+						// Always try to parse JSON to get the error message
+						const data = await response.json();
+
+						// Check if response is OK
+						if (!response.ok) {
+							if (response.status === 403) {
+								await showAlert(
+									"Permission denied: " +
+									(data.message ||
+										"You may not have access to submit collaboration requests."),
+									"Permission Denied",
+									"error"
+								);
+							} else if (response.status === 401) {
+								await showAlert(
+									"Authentication required: " +
+									(data.message ||
+										"You must be logged in to submit a collaboration request."),
+									"Authentication Required",
+									"warning"
+								);
+							} else if (response.status === 400) {
+								await showAlert(
+									"Invalid request: " +
+									(data.message ||
+										"Please check your input and try again."),
+									"Invalid Request",
+									"error"
+								);
+							} else {
+								await showAlert(
+									`Error: ${data.message ||
+									"Server returned status " + response.status
+									}`,
+									"Error",
+									"error"
+								);
+							}
+							return;
+						}
+
+						if (data.status === 201) {
+							await showAlert(
+								"Collaboration request submitted successfully! The Ministry of Health will review your request.",
+								"Success",
+								"success"
+							);
+							this.showRequestModal = false;
+							this.collaborationRequest = {
+								organizationId: "",
+								proposedContribution: "",
+							};
+							// Reload collaboration requests to update the UI
+							await this.loadMyCollaborationRequests();
+						} else {
+							await showAlert(
+								"Error: " + (data.message || "Unknown error occurred"),
+								"Error",
+								"error"
+							);
+						}
+					} catch (error) {
+						console.error("Error submitting request:", error);
+						await showAlert(
+							"Failed to submit collaboration request. Please try again.",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.submitting = false;
+					}
+				},
+
+				// Helper method to check if announcement was created by current user
+				isOwnAnnouncement(announcement) {
+					if (!this.currentUser || !announcement || !announcement.createdBy) {
+						console.log("🔍 isOwnAnnouncement: Missing data", {
+							hasCurrentUser: !!this.currentUser,
+							hasAnnouncement: !!announcement,
+							hasCreatedBy: !!(announcement && announcement.createdBy),
+						});
+						return false;
+					}
+					// Compare by email as it's unique
+					const isOwn =
+						this.currentUser.email === announcement.createdBy.email;
+					console.log("🔍 isOwnAnnouncement:", {
+						currentUserEmail: this.currentUser.email,
+						createdByEmail: announcement.createdBy.email,
+						isOwn: isOwn,
+					});
+					return isOwn;
+				},
+
+				// Helper method to check if user has already requested collaboration for this announcement
+				hasAlreadyRequested(announcement) {
+					if (!announcement || !this.myCollaborationRequests) {
+						return false;
+					}
+
+					const hasRequested = this.myCollaborationRequests.some(
+						(request) =>
+							request.announcement &&
+							request.announcement.id === announcement.id
+					);
+
+					console.log("🔍 hasAlreadyRequested:", {
+						announcementId: announcement.id,
+						totalRequests: this.myCollaborationRequests.length,
+						hasRequested: hasRequested,
+					});
+
+					return hasRequested;
+				},
+
+				isDeadlineImminent(deadline) {
+					if (!deadline) return false;
+					const now = new Date();
+					const deadlineDate = new Date(deadline);
+					const diffTime = deadlineDate - now;
+					const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+					return diffDays <= 7 && diffDays >= 0; // Imminent if within 7 days and not past
+				},
+
+				async loadChatMessages(announcementId) {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${announcementId}/messages`, {
+							headers: { Authorization: `Bearer ${token}` }
+						});
+						if (response.ok) {
+							const data = await response.json();
+							this.chatMessages = data.data || [];
+						}
+					} catch (error) {
+						console.error("Error loading chat messages:", error);
+					}
+				},
+
+				async sendMessage() {
+					if (!this.newMessage.trim()) return;
+					this.sendingMessage = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${token}`
+							},
+							body: JSON.stringify({ message: this.newMessage })
+						});
+						if (response.ok) {
+							this.newMessage = "";
+							await this.loadChatMessages(this.selectedAnnouncement.id);
+						} else {
+							await showAlert("Failed to send message", "Error", "error");
+						}
+					} catch (error) {
+						console.error("Error sending message:", error);
+						await showAlert("Failed to send message", "Error", "error");
+					} finally {
+						this.sendingMessage = false;
+					}
+				},
+
+				async editMessage(msg) {
+					const newMessage = prompt("Edit message:", msg.message);
+					if (newMessage && newMessage.trim() && newMessage !== msg.message) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "PUT",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: `Bearer ${token}`
+								},
+								body: JSON.stringify({ message: newMessage })
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to edit message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error editing message:", error);
+							await showAlert("Failed to edit message", "Error", "error");
+						}
+					}
+				},
+
+				async deleteMessage(msg) {
+					if (confirm("Are you sure you want to delete this message?")) {
+						try {
+							const token = localStorage.getItem("accessToken");
+							const response = await fetch(`${window.BASE_URL}/api/announcements/${this.selectedAnnouncement.id}/messages/${msg.id}`, {
+								method: "DELETE",
+								headers: {
+									Authorization: `Bearer ${token}`
+								}
+							});
+							if (response.ok) {
+								await this.loadChatMessages(this.selectedAnnouncement.id);
+							} else {
+								await showAlert("Failed to delete message", "Error", "error");
+							}
+						} catch (error) {
+							console.error("Error deleting message:", error);
+							await showAlert("Failed to delete message", "Error", "error");
+						}
+					}
+				},
+			};
+		};
+	</script>
+	<div class="" id="nav-placeholder"></div>
+	<div x-data="collaborationsApp()" x-init="init()">
+
+		<!-- Main Content -->
+		<div class="container mx-auto px-4 py-8 mt-24">
+			<div class="mb-6">
+				<h2 class="text-3xl font-bold text-gray-800">
+					RMNCAH <span class="text-primary">Collaborations</span>
+				</h2>
+				<p class="text-gray-600 mt-2">
+					View and manage your collaborative projects
+				</p>
+			</div>
+
+			<!-- Loading State -->
+			<div x-show="loading" class="text-center py-12">
+				<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+				<p class="mt-4 text-gray-600">Loading your collaborations...</p>
+			</div>
+
+			<!-- Collaborations List -->
+			<div x-show="!loading" class="space-y-4">
+				<template x-for="collab in collaborations" :key="collab.id">
+					<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+						<div class="flex justify-between items-start">
+							<div class="flex-1">
+								<!-- Project Info -->
+								<div class="flex items-center mb-2">
+									<h3 class="text-xl font-bold text-gray-800" x-text="collab.project?.title"></h3>
+									<span :class="{
+                                        'bg-blue-100 text-blue-800': collab.role === 'VIEWER',
+                                        'bg-green-100 text-green-800': collab.role === 'EDITOR',
+                                        'bg-purple-100 text-purple-800': collab.role === 'CO_OWNER'
+                                    }" class="ml-3 px-3 py-1 rounded-full text-sm font-semibold"
+										x-text="collab.role"></span>
+								</div>
+
+								<p class="text-gray-600 mb-2" x-text="collab.project?.partner"></p>
+
+								<!-- Project Details -->
+								<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+									<div>
+										<span class="text-gray-500">Theme:</span>
+										<p class="font-semibold" x-text="collab.project?.projectTheme"></p>
+									</div>
+									<div>
+										<span class="text-gray-500">Location:</span>
+										<p class="font-semibold" x-text="collab.project?.county"></p>
+									</div>
+									<div>
+										<span class="text-gray-500">Added:</span>
+										<p class="font-semibold" x-text="new Date(collab.addedAt).toLocaleDateString()">
+										</p>
+									</div>
+									<div>
+										<span class="text-gray-500">Added By:</span>
+										<p class="font-semibold" x-text="collab.addedBy?.name"></p>
+									</div>
+								</div>
+
+								<!-- Last Modified Info -->
+								<div x-show="collab.project?.lastModifiedBy"
+									class="mt-4 pt-4 border-t border-gray-200 text-sm">
+									<span class="text-gray-500">Last modified by:</span>
+									<span class="font-semibold text-gray-700 ml-2"
+										x-text="collab.project?.lastModifiedBy"></span>
+									<span class="text-gray-500 ml-2">on</span>
+									<span class="text-gray-700 ml-1"
+										x-text="collab.project?.lastModifiedAt ? new Date(collab.project.lastModifiedAt).toLocaleString() : ''"></span>
+								</div>
+
+								<!-- Notes -->
+								<div x-show="collab.notes" class="mt-3 bg-blue-50 p-3 rounded">
+									<p class="text-sm text-gray-600">
+										<i class="fas fa-sticky-note mr-2"></i><span x-text="collab.notes"></span>
+									</p>
+								</div>
+							</div>
+
+							<!-- Actions -->
+							<div class="ml-4 flex flex-col space-y-2">
+								<a :href="`projects.html?id=${collab.project?.id}`"
+									class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center transition">
+									<i class="fas fa-eye mr-2"></i>View Project
+								</a>
+								<button x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
+									@click="editProject(collab.project)"
+									class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+									<i class="fas fa-edit mr-2"></i>Edit Project
+								</button>
+							</div>
+						</div>
+
+						<!-- Role Permissions Info -->
+						<div class="mt-4 pt-4 border-t">
+							<p class="text-sm text-gray-600 font-semibold mb-2">
+								Your Permissions:
+							</p>
+							<div class="flex flex-wrap gap-2">
+								<span class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+									<i class="fas fa-eye mr-1"></i>View Project
+								</span>
+								<span x-show="collab.role === 'EDITOR' || collab.role === 'CO_OWNER'"
+									class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+									<i class="fas fa-edit mr-1"></i>Edit Project
+								</span>
+								<span x-show="collab.role === 'CO_OWNER'"
+									class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+									<i class="fas fa-users-cog mr-1"></i>Manage Collaborators
+								</span>
+							</div>
+						</div>
+					</div>
+				</template>
+			</div>
+
+			<!-- Empty State -->
+			<div x-show="!loading && collaborations.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+				<i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+				<h3 class="text-xl font-semibold text-gray-600 mb-2">
+					No Collaborations Yet
+				</h3>
+				<p class="text-gray-500 mb-6">
+					You haven't been added as a collaborator on any projects
+				</p>
+				<a href="announcements.html"
+					class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+					<i class="fas fa-search mr-2"></i>Browse Collaboration Opportunities
+				</a>
+			</div>
+
+			<!-- Statistics Card -->
+			<div x-show="!loading && collaborations.length > 0" class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">Total Collaborations</p>
+							<p class="text-3xl font-bold text-gray-800" x-text="collaborations.length"></p>
+						</div>
+						<i class="fas fa-handshake text-4xl text-blue-500"></i>
+					</div>
+				</div>
+
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">As Editor</p>
+							<p class="text-3xl font-bold text-gray-800"
+								x-text="collaborations.filter(c => c.role === 'EDITOR').length"></p>
+						</div>
+						<i class="fas fa-edit text-4xl text-green-500"></i>
+					</div>
+				</div>
+
+				<div class="bg-white p-6 rounded-lg shadow">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-gray-500 text-sm">As Co-Owner</p>
+							<p class="text-3xl font-bold text-gray-800"
+								x-text="collaborations.filter(c => c.role === 'CO_OWNER').length"></p>
+						</div>
+						<i class="fas fa-crown text-4xl text-purple-500"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="styles/effects.js"></script>
+	<script src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+	<script>
+		// Try to load a local config override (frontend/config.local.js) if present.
+		(function () {
+			try {
+				var s = document.createElement("script");
+				s.src = "./config.local.js";
+				s.async = false;
+				document.head.appendChild(s);
+			} catch (e) { }
+		})();
+	</script>
+	<script type="module">
+		// Use window.BASE_URL which is already set by config.js loaded via script tag
+		const BASE_URL = window.BASE_URL;
+
+		// Define and expose collaborationsApp to global scope for Alpine.js
+		window.collaborationsApp = function collaborationsApp() {
+			return {
+				collaborations: [],
+				loading: true,
+
+				async init() {
+					await this.loadCollaborations();
+				},
+
+				async loadCollaborations() {
+					try {
+						const token = localStorage.getItem("accessToken");
+						const response = await fetch(
+							`${BASE_URL}/api/projects/collaborations/my-projects`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+						const data = await response.json();
+
+						if (data.status === 200) {
+							this.collaborations = data.data;
+						} else {
+							console.error("Error:", data.message);
+						}
+					} catch (error) {
+						console.error("Error loading collaborations:", error);
+						await showAlert(
+							"Failed to load your collaborations",
+							"Error",
+							"error"
+						);
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				editProject(project) {
+					// Redirect to project edit page or open edit modal
+					window.location.href = `Forms/Admin/new-project.html?id=${project.id}&mode=edit`;
+				},
+			};
+		};
+
+		// Show/hide admin menu items and load pending count
+		document.addEventListener("DOMContentLoaded", async function () {
+			let userRole = null;
+			let user = null;
+			const userStr = localStorage.getItem("user");
+			if (userStr) {
+				try {
+					user = JSON.parse(userStr);
+					userRole = user.role;
+				} catch (e) {
+					userRole = localStorage.getItem("userRole"); // Fallback
+				}
+			}
+
+			// Populate user dropdown if user data exists
+			if (user) {
+				console.log("👤 Populating user dropdown...");
+				const userDisplayName = document.getElementById("userDisplayName");
+				const userNameDisplay = document.getElementById("userNameDisplay");
+				const userEmailDisplay = document.getElementById("userEmailDisplay");
+				const userRoleDisplay = document.getElementById("userRoleDisplay");
+				const userStatusDisplay =
+					document.getElementById("userStatusDisplay");
+
+				if (userDisplayName)
+					userDisplayName.textContent = user.name || "User";
+				if (userNameDisplay)
+					userNameDisplay.textContent = user.name || "Loading...";
+				if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
+				if (userRoleDisplay) userRoleDisplay.textContent = user.role || "N/A";
+				if (userStatusDisplay) {
+					userStatusDisplay.textContent = user.status || "N/A";
+					userStatusDisplay.className =
+						user.status === "ACTIVE"
+							? "font-medium text-green-600"
+							: "font-medium text-gray-600";
+				}
+				console.log("✅ User dropdown populated!");
+			} else {
+				// Try to get user from authManager if available
+				if (
+					window.authManager &&
+					typeof window.authManager.getCurrentUser === "function"
+				) {
+					try {
+						user = await window.authManager.getCurrentUser();
+						if (user) {
+							const userDisplayName =
+								document.getElementById("userDisplayName");
+							const userNameDisplay =
+								document.getElementById("userNameDisplay");
+							const userEmailDisplay =
+								document.getElementById("userEmailDisplay");
+							const userRoleDisplay =
+								document.getElementById("userRoleDisplay");
+							const userStatusDisplay =
+								document.getElementById("userStatusDisplay");
+
+							if (userDisplayName)
+								userDisplayName.textContent = user.name || "User";
+							if (userNameDisplay)
+								userNameDisplay.textContent = user.name || "Loading...";
+							if (userEmailDisplay)
+								userEmailDisplay.textContent = user.email || "";
+							if (userRoleDisplay)
+								userRoleDisplay.textContent = user.role || "N/A";
+							if (userStatusDisplay) {
+								userStatusDisplay.textContent = user.status || "N/A";
+								userStatusDisplay.className =
+									user.status === "ACTIVE"
+										? "font-medium text-green-600"
+										: "font-medium text-gray-600";
+							}
+							userRole = user.role;
+						}
+					} catch (e) {
+						console.log("⚠️ Could not load user from authManager:", e);
+					}
+				}
+			}
+
+			if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+				const adminMenu = document.getElementById("admin-collab-menu");
+				const adminMobile = document.getElementById("admin-collab-mobile");
+				if (adminMenu) adminMenu.style.display = "block";
+				if (adminMobile) adminMobile.style.display = "block";
+
+				loadPendingCount();
+			}
+		});
+
+		async function loadPendingCount() {
+			try {
+				const token = localStorage.getItem("token");
+				const response = await fetch(
+					`${window.BASE_URL}/api/collaboration-requests/admin/pending`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				);
+				const data = await response.json();
+
+				if (data.status === 200 && data.data.length > 0) {
+					const badge = document.getElementById("pending-count");
+					if (badge) {
+						badge.textContent = data.data.length;
+						badge.style.display = "inline-block";
+					}
+				}
+			} catch (error) {
+				console.error("Error loading pending count:", error);
+			}
+		}
+	</script>
+</body>
+
+</html>

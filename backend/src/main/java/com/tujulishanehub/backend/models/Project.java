@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,11 +20,15 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Project {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
+    private String projectNo;
     
     @Column(nullable = false)
     private String partner;
@@ -28,45 +37,52 @@ public class Project {
     private String title;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "project_theme")
-    private ProjectTheme projectTheme;
+    @Column(name = "project_category", nullable = false)
+    private ProjectCategory projectCategory;
     
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
     @Column(name = "end_date")
     private LocalDate endDate;
     
-    @Column(name = "activity_type")
+    @Column(name = "activity_type", nullable = false, columnDefinition = "TEXT")
     private String activityType;
     
+    @Column
     private String county;
     
-    @Column(name = "sub_county")
-    private String subCounty;
+    // Multiple themes relationship
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<ProjectThemeAssignment> themes = new HashSet<>();
     
-    @Column(name = "maps_address", columnDefinition = "TEXT")
-    private String mapsAddress;
+    // Multiple locations relationship
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<ProjectLocation> locations = new HashSet<>();
     
-    @Column(name = "contact_person_name")
+    @Column(name = "contact_person_name", nullable = false)
     private String contactPersonName;
     
-    @Column(name = "contact_person_role")
+    @Column(name = "contact_person_role", nullable = false)
     private String contactPersonRole;
     
     @Column(name = "contact_person_email")
     private String contactPersonEmail;
     
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String objectives;
     
-    @Column(precision = 15, scale = 2)
+    @Column(precision = 15, scale = 2, nullable = false)
     private java.math.BigDecimal budget;
     
-    // New latitude and longitude fields extracted from maps_address
-    private Double latitude;
-    
-    private Double longitude;
+        // Supporting documents (files as blobs) - LAZY loading to avoid performance issues
+        @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @JsonIgnore // Never serialize documents in project responses
+        private java.util.List<ProjectDocument> supportingDocuments = new java.util.ArrayList<>();
     
     // Additional metadata fields
     @Column(name = "created_at", updatable = false)
@@ -86,9 +102,14 @@ public class Project {
     @Column(name = "has_reports")
     private Boolean hasReports = false;
     
-    @Enumerated(EnumType.STRING)
+    @jakarta.persistence.Convert(converter = com.tujulishanehub.backend.converters.ApprovalStatusConverter.class)
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+    
+    // Two-tier approval workflow status (new system)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_workflow_status")
+    private ApprovalWorkflowStatus approvalWorkflowStatus = ApprovalWorkflowStatus.PENDING_REVIEW;
     
     @Column(name = "approved_by")
     private Long approvedBy;
@@ -99,30 +120,68 @@ public class Project {
     @Column(name = "rejection_reason")
     private String rejectionReason;
     
+    // Two-tier approval workflow fields
+    @Column(name = "reviewed_by")
+    private Long reviewedBy; // Thematic reviewer who did initial review
+    
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+    
+    @Column(name = "reviewer_comments")
+    private String reviewerComments; // Comments from the thematic reviewer
+    
+    // Collaboration tracking fields
+    @Column(name = "last_modified_by")
+    private String lastModifiedBy; // Email of the user who last modified
+    
+    @Column(name = "last_modified_at")
+    private LocalDateTime lastModifiedAt;
+    
     // Bidirectional relationship with ProjectReports
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "project-reports")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<ProjectReport> reports = new HashSet<>();
     
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
     }
     
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
     }
     
-    // Helper method to check if coordinates are available
+    // Helper method to check if any location has coordinates
     public boolean hasCoordinates() {
-        return latitude != null && longitude != null;
+        return locations != null && locations.stream().anyMatch(ProjectLocation::hasCoordinates);
     }
-    
-    // Helper method to get formatted coordinate string
-    public String getCoordinatesString() {
-        if (hasCoordinates()) {
-            return String.format("%.6f,%.6f", latitude, longitude);
+
+    // Helper method to get formatted coordinate strings for all locations
+    public Set<String> getCoordinatesStrings() {
+        Set<String> coords = new HashSet<>();
+        if (locations != null) {
+            locations.stream()
+                .map(ProjectLocation::getCoordinatesString)
+                .filter(coord -> coord != null)
+                .forEach(coords::add);
+        }
+        return coords;
+    }
+
+    // Helper method to get primary location coordinates (first location with coordinates)
+    public String getPrimaryCoordinatesString() {
+        if (locations != null) {
+            return locations.stream()
+                .filter(ProjectLocation::hasCoordinates)
+                .findFirst()
+                .map(ProjectLocation::getCoordinatesString)
+                .orElse(null);
         }
         return null;
     }
@@ -134,6 +193,14 @@ public class Project {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setProjectNo(String projectNo){
+        this.projectNo = projectNo;
+    }
+
+    public String getProjectNo(){
+        return projectNo;
     }
 
     public String getTitle() {
@@ -159,6 +226,14 @@ public class Project {
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
     }
+    
+    public ApprovalWorkflowStatus getApprovalWorkflowStatus() {
+        return approvalWorkflowStatus;
+    }
+    
+    public void setApprovalWorkflowStatus(ApprovalWorkflowStatus approvalWorkflowStatus) {
+        this.approvalWorkflowStatus = approvalWorkflowStatus;
+    }
 
     public Long getApprovedBy() {
         return approvedBy;
@@ -183,6 +258,30 @@ public class Project {
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
     }
+    
+    public Long getReviewedBy() {
+        return reviewedBy;
+    }
+    
+    public void setReviewedBy(Long reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+    
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+    
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+    
+    public String getReviewerComments() {
+        return reviewerComments;
+    }
+    
+    public void setReviewerComments(String reviewerComments) {
+        this.reviewerComments = reviewerComments;
+    }
 
     public String getStatus() {
         return status;
@@ -192,30 +291,6 @@ public class Project {
         this.status = status;
     }
 
-    public String getMapsAddress() {
-        return mapsAddress;
-    }
-
-    public void setMapsAddress(String mapsAddress) {
-        this.mapsAddress = mapsAddress;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -223,13 +298,13 @@ public class Project {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    
-    public ProjectTheme getProjectTheme() {
-        return projectTheme;
+
+    public ProjectCategory getProjectCategory() {
+        return projectCategory;
     }
-    
-    public void setProjectTheme(ProjectTheme projectTheme) {
-        this.projectTheme = projectTheme;
+
+    public void setProjectCategory(ProjectCategory projectCategory) {
+        this.projectCategory = projectCategory;
     }
     
     // Helper methods for project completion
@@ -284,5 +359,82 @@ public class Project {
     public void setReports(Set<ProjectReport> reports) {
         this.reports = reports;
         this.hasReports = reports != null && !reports.isEmpty();
+    }
+
+    // Helper methods for multiple themes
+    public void addTheme(ProjectTheme theme) {
+        if (themes == null) {
+            themes = new HashSet<>();
+        }
+        ProjectThemeAssignment assignment = new ProjectThemeAssignment();
+        assignment.setProject(this);
+        assignment.setProjectTheme(theme);
+        themes.add(assignment);
+    }
+
+    public void removeTheme(ProjectTheme theme) {
+        if (themes != null) {
+            themes.removeIf(assignment -> assignment.getProjectTheme() == theme);
+        }
+    }
+
+    public Set<ProjectTheme> getProjectThemes() {
+        Set<ProjectTheme> themeSet = new HashSet<>();
+        if (themes != null) {
+            themes.forEach(assignment -> themeSet.add(assignment.getProjectTheme()));
+        }
+        return themeSet;
+    }
+
+    // Helper methods for multiple locations
+    public void addLocation(String county, String subCounty, String mapsAddress, Double latitude, Double longitude) {
+        if (locations == null) {
+            locations = new HashSet<>();
+        }
+        ProjectLocation location = new ProjectLocation();
+        location.setProject(this);
+        location.setCounty(county);
+        location.setSubCounty(subCounty);
+        location.setMapsAddress(mapsAddress);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        locations.add(location);
+    }
+
+    public void removeLocation(ProjectLocation location) {
+        if (locations != null) {
+            locations.remove(location);
+        }
+    }
+
+    // Get primary location (first one)
+    public ProjectLocation getPrimaryLocation() {
+        if (locations != null && !locations.isEmpty()) {
+            return locations.iterator().next();
+        }
+        return null;
+    }
+
+    // Get all location strings
+    public Set<String> getLocationStrings() {
+        Set<String> locationStrings = new HashSet<>();
+        if (locations != null) {
+            locations.forEach(location -> {
+                String locStr = location.getFullLocationString();
+                if (locStr != null && !locStr.isEmpty()) {
+                    locationStrings.add(locStr);
+                }
+            });
+        }
+        return locationStrings;
+    }
+
+    // Getter and setter for supporting documents
+    public java.util.List<ProjectDocument> getSupportingDocuments() {
+        return supportingDocuments;
+    }
+
+    public void setSupportingDocuments(java.util.List<ProjectDocument> supportingDocuments) {
+        this.supportingDocuments = supportingDocuments;
     }
 }

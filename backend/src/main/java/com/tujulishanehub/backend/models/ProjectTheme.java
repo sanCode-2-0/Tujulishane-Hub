@@ -9,7 +9,10 @@ public enum ProjectTheme {
     MNH("Maternity and Newborn Health", "MNH"),
     FP("Family Planning", "FP"),
     CH("Child Health", "CH"),
-    AH("Adolescent Health", "AH");
+    AH("Adolescent Health", "AH"),
+    ADV_SBC("Advocacy and SBC", "ADV_SBC"),
+    MONITORING_EVALUATION("Monitoring and Evaluation", "MONITORING_EVALUATION"),
+    RESEARCH_LEARNING("Research and Learning", "RESEARCH_LEARNING");
     
     private final String displayName;
     private final String code;

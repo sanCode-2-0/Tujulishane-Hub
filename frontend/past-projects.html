@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Past Projects - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#1e40af", // Custom Blue
+						secondary: "#f59e0b", // Custom Amber
+						accent: "#10b981", // Custom Green
+						dark: "#1f2937", // Gray-800
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<!-- Backend URL Configuration -->
+	<script src="./config.js"></script>
+	<script src="./set-base-url.js"></script>
+	<script src="auth.js"></script>
+	<!-- Project Status Filter Utility -->
+	<script src="./src/utils/project-status-filter.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<!-- Alpine.js -->
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<!-- Leaflet CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<!-- Leaflet JS -->
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<!-- Optional: Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+	<script src="src/utils/counter-utils.js"></script>
+	<style>
+		.fade-slide-enter {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		.fade-slide-enter-active {
+			opacity: 1;
+			transform: translateY(0);
+			transition: all 0.4s ease;
+		}
+
+		.fade-slide-leave {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.fade-slide-leave-active {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+	</style>
+
+
+	<script src="auth.js"></script>
+	<script>
+		// Populate user dropdown with data from authManager
+		document.addEventListener("DOMContentLoaded", function () {
+			(async function () {
+				let user = authManager.getCachedUser();
+				if (!user) {
+					try {
+						await authManager.getCurrentUser();
+						user = authManager.getCachedUser();
+					} catch (err) {
+						console.error("[ERROR] Could not fetch user profile:", err);
+					}
+				}
+				// Wait a bit for authManager to initialize
+				setTimeout(() => {
+					const user = authManager.getCachedUser();
+					console.log("[DEBUG] Loading user data for dropdown:", user);
+
+					if (user) {
+						// Update user display name in button
+						const userDisplayName =
+							document.getElementById("userDisplayName");
+						if (userDisplayName) {
+							userDisplayName.textContent = user.name || user.email || "User";
+						}
+
+						// Update user name in dropdown
+						const userNameDisplay =
+							document.getElementById("userNameDisplay");
+						if (userNameDisplay) {
+							userNameDisplay.textContent = user.name || "User";
+						}
+
+						// Update email
+						const userEmailDisplay =
+							document.getElementById("userEmailDisplay");
+						if (userEmailDisplay) {
+							userEmailDisplay.textContent = user.email || "";
+						}
+
+						// Update role
+						const userRoleDisplay =
+							document.getElementById("userRoleDisplay");
+						if (userRoleDisplay) {
+							userRoleDisplay.textContent = user.role || "USER";
+						}
+
+						// Update status
+						const userStatusDisplay =
+							document.getElementById("userStatusDisplay");
+						if (userStatusDisplay) {
+							userStatusDisplay.textContent =
+								user.approvalStatus || "PENDING";
+						}
+
+						// Show admin nav if user is admin
+						console.log("[DEBUG] DOMContentLoaded - User role:", user.role);
+						if (user.role === "ADMIN" || user.role === "SUPER_ADMIN" || user.role === "SUPER_ADMIN_REVIEWER" || user.role === "SUPER_ADMIN_APPROVER") {
+							console.log(
+								"[DEBUG] DOMContentLoaded - User is admin, showing admin elements"
+							);
+
+							const adminNavItems = document.querySelectorAll("#adminNav");
+							adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+
+							// Show admin collaboration menu item
+							const adminCollabItem =
+								document.getElementById("admin-collab-item");
+							if (adminCollabItem) {
+								adminCollabItem.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabItem display to block"
+								);
+							}
+
+							const adminCollabMobile = document.getElementById(
+								"admin-collab-mobile"
+							);
+							if (adminCollabMobile) {
+								adminCollabMobile.style.display = "block";
+								console.log(
+									"[DEBUG] DOMContentLoaded - Set adminCollabMobile display to block"
+								);
+							}
+
+							// Load pending requests count
+							loadPendingRequestsCount();
+						} else if (user.role === "DONOR") {
+							const donorNavItems = document.querySelectorAll("#donorNav");
+							donorNavItems.forEach((nav) => nav.classList.remove("hidden"));
+						}
+					} else {
+						console.warn("[DEBUG] No user data found in cache");
+					}
+				}, 500);
+			})();
+		});
+	</script>
+</head>
+
+<body class="text-gray-800 bg-gray-50 w-full" x-data="pastProjectsApp()">
+
+	<div class="" id="nav-placeholder"></div>
+
+	<!-- Main Content -->
+	<div class="max-w-7xl mt-20 mx-auto py-6 sm:px-6 lg:px-8">
+		<!-- Header -->
+		<div class="md:flex md:items-center md:justify-between mb-6">
+			<div class="flex-1 min-w-0">
+				<h2 class="mb-2 text-3xl text-blue-900 font-semibold md:text-3xl">
+					Past Projects Repository
+				</h2>
+				<p class="mt-1 text-sm text-gray-500">
+					Past projects (completed and stalled) for learning and reference
+				</p>
+			</div>
+			<div class="">
+				<a class="inline-flex items-center justify-center rounded-lg bg-blue-800 px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+					href="new-past-project.html">
+					<i class="fas fa-plus-circle mr-2"></i>Add Past Project
+				</a>
+			</div>
+		</div>
+		<div class="grid lg:grid-cols-4 gap-6">
+			<!-- Filters and Search -->
+			<div class="bg-white shadow rounded-lg mb-6">
+				<div class="px-4 py-5 sm:p-6">
+					<!-- Active Filters Display -->
+					<div x-show="hasActiveFilters()" class="mb-4">
+						<div class="flex flex-wrap gap-2 items-center">
+							<span class="text-sm font-medium text-gray-700">Active filters:</span>
+
+							<!-- Search Filter Chip -->
+							<span x-show="filters.search"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+								Search: <span x-text="filters.search" class="ml-1 font-medium"></span>
+								<button @click="filters.search = ''; loadPastProjects()"
+									class="ml-2 text-blue-600 hover:text-blue-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Status Filter Chip -->
+							<span x-show="filters.finalStatus"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+								Status: <span x-text="filters.finalStatus" class="ml-1 font-medium"></span>
+								<button @click="filters.finalStatus = ''; loadPastProjects()"
+									class="ml-2 text-green-600 hover:text-green-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- County Filter Chip -->
+							<span x-show="filters.county"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800">
+								County: <span x-text="filters.county" class="ml-1 font-medium"></span>
+								<button @click="filters.county = ''; loadPastProjects()"
+									class="ml-2 text-purple-600 hover:text-purple-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Theme Filter Chip -->
+							<span x-show="filters.theme"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
+								Theme: <span x-text="filters.theme" class="ml-1 font-medium"></span>
+								<button @click="filters.theme = ''; loadPastProjects()"
+									class="ml-2 text-indigo-600 hover:text-indigo-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Budget Range Filter Chip -->
+							<span x-show="filters.minBudget || filters.maxBudget"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">
+								Budget: <span x-text="formatBudgetRange()" class="ml-1 font-medium"></span>
+								<button @click="filters.minBudget = ''; filters.maxBudget = ''; loadPastProjects()"
+									class="ml-2 text-yellow-600 hover:text-yellow-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Date Range Filter Chip -->
+							<span x-show="filters.startDateFrom || filters.endDateTo"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-pink-100 text-pink-800">
+								Date: <span
+									x-text="(filters.startDateFrom ? 'From ' + filters.startDateFrom : '') + (filters.startDateFrom && filters.endDateTo ? ' to ' : '') + (filters.endDateTo ? 'To ' + filters.endDateTo : '')"
+									class="ml-1 font-medium"></span>
+								<button @click="filters.startDateFrom = ''; filters.endDateTo = ''; loadPastProjects()"
+									class="ml-2 text-pink-600 hover:text-pink-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Partner Filter Chip -->
+							<span x-show="filters.partner"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-teal-100 text-teal-800">
+								Partner: <span x-text="filters.partner" class="ml-1 font-medium"></span>
+								<button @click="filters.partner = ''; loadPastProjects()"
+									class="ml-2 text-teal-600 hover:text-teal-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Contact Person Filter Chip -->
+							<span x-show="filters.contactPerson"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-800">
+								Contact: <span x-text="filters.contactPerson" class="ml-1 font-medium"></span>
+								<button @click="filters.contactPerson = ''; loadPastProjects()"
+									class="ml-2 text-orange-600 hover:text-orange-800">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"></path>
+									</svg>
+								</button>
+							</span>
+
+							<!-- Clear All Button -->
+							<button @click="clearFilters()"
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
+								Clear all
+								<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+										d="M6 18L18 6M6 6l12 12"></path>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div class="grid gap-4">
+						<!-- Search -->
+						<div class="">
+							<label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+							<div class="relative">
+								<input type="text" id="search" x-model="filters.search"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Project title, partner, description..." />
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-search text-gray-400"></i>
+								</div>
+							</div>
+						</div>
+
+						<!-- Status Filter -->
+						<div>
+							<label for="status" class="block text-sm font-medium text-gray-700">Final Status</label>
+							<select id="status" x-model="filters.finalStatus" @change="applyFilters"
+								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+								<option value="">All Statuses</option>
+								<option value="completed">Completed</option>
+								<option value="stalled">Stalled</option>
+								<option value="abandoned">Abandoned</option>
+							</select>
+						</div>
+
+						<!-- County Filter -->
+						<div>
+							<label for="county" class="block text-sm font-medium text-gray-700">County</label>
+							<input type="text" id="county" x-model="filters.county" @input.debounce.300ms="applyFilters"
+								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+								placeholder="County name" />
+						</div>
+
+						<!-- Theme Filter -->
+						<div>
+							<label for="theme" class="block text-sm font-medium text-gray-700">Theme</label>
+							<select id="theme" x-model="filters.theme" @change="applyFilters"
+								class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+								<option value="">All Themes</option>
+								<option value="GBV">Gender Based Violence</option>
+								<option value="AYPSRH">Adolescent & Young People SRH</option>
+								<option value="MNH">Maternal & Newborn Health</option>
+								<option value="FP">Family Planning</option>
+								<option value="CH">Child Health</option>
+								<option value="AH">Adolescent Health</option>
+								<option value="RMNCH">RMNCH</option>
+								<option value="ADV_SBC">Advocacy and SBC</option>
+								<option value="MONITORING_EVALUATION">Monitoring and Evaluation</option>
+								<option value="RESEARCH_LEARNING">Research and Learning</option>
+							</select>
+						</div>
+
+						<!-- Budget Range -->
+						<div>
+							<label class="block text-sm font-medium text-gray-700">Budget Range (KES)</label>
+							<div class="grid gap-2">
+								<input type="number" x-model="filters.minBudget" @input.debounce.500ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Min" />
+								<input type="number" x-model="filters.maxBudget" @input.debounce.500ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Max" />
+							</div>
+						</div>
+					</div>
+
+					<!-- Advanced Filters Toggle -->
+					<div class="mt-4">
+						<button @click="showAdvancedFilters = !showAdvancedFilters"
+							class="text-sm text-primary hover:text-blue-700 font-medium flex items-center">
+							<i class="fas fa-sliders-h mr-2"></i>
+							<span
+								x-text="showAdvancedFilters ? 'Hide Advanced Filters' : 'Show Advanced Filters'"></span>
+							<i class="fas fa-chevron-down ml-2 transition-transform"
+								:class="showAdvancedFilters ? 'rotate-180' : ''"></i>
+						</button>
+					</div>
+
+					<!-- Advanced Filters -->
+					<div x-show="showAdvancedFilters" x-transition class="mt-4 pt-4 border-t border-gray-200">
+						<div class="grid  gap-4">
+							<!-- Start Date -->
+							<div>
+								<label for="startDate" class="block text-sm font-medium text-gray-700">Start Date
+									From</label>
+								<input type="date" id="startDate" x-model="filters.startDateFrom" @change="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
+							</div>
+
+							<!-- End Date -->
+							<div>
+								<label for="endDate" class="block text-sm font-medium text-gray-700">End Date To</label>
+								<input type="date" id="endDate" x-model="filters.endDateTo" @change="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" />
+							</div>
+
+							<!-- Partner Filter -->
+							<div>
+								<label for="partner" class="block text-sm font-medium text-gray-700">Partner</label>
+								<input type="text" id="partner" x-model="filters.partner"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Partner name" />
+							</div>
+
+							<!-- Contact Person -->
+							<div>
+								<label for="contactPerson" class="block text-sm font-medium text-gray-700">Contact
+									Person</label>
+								<input type="text" id="contactPerson" x-model="filters.contactPerson"
+									@input.debounce.300ms="applyFilters"
+									class="mt-1 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+									placeholder="Contact name" />
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-4 flex flex-wrap justify-between items-center">
+						<div class="text-sm text-gray-600">
+							<span x-show="totalItems > 0"
+								x-text="`Showing ${Math.min((currentPage + 1) * size, totalItems)} of ${totalItems} projects`"></span>
+							<span x-show="totalItems === 0 && !loading"
+								x-text="'No projects match your filters'"></span>
+						</div>
+						<div class="flex space-x-2 mt-2 flex-wrap">
+							<button @click="clearFilters"
+								class="bg-gray-500 whitespace-nowrap hover:bg-gray-600 text-white px-2 py-2 rounded-md text-sm font-normal transition duration-200">
+								<i class="fas fa-times mr-2"></i>Clear All
+							</button>
+							<button @click="applyFilters"
+								class="bg-primary whitespace-nowrap hover:bg-blue-700 text-white px-2 py-2 rounded-md text-sm font-normal transition duration-200">
+								<i class="fas fa-search mr-2"></i>Apply Filters
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Projects List -->
+			<div class="lg:col-span-3 shadow overflow-hidden sm:rounded-md">
+				<div x-show="loading" class="text-center py-12">
+					<i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+					<p class="mt-4 text-gray-500">Loading past projects...</p>
+				</div>
+
+				<div x-show="!loading && pastProjects.length === 0" class="text-center py-12">
+					<i class="fas fa-archive text-4xl text-gray-400"></i>
+					<h3 class="mt-2 text-sm font-medium text-gray-900">
+						No past projects
+					</h3>
+					<p class="mt-1 text-sm text-gray-500">
+						No archived projects match your criteria.
+					</p>
+				</div>
+
+				<ul x-show="!loading && pastProjects.length > 0" class="" x-html="renderProjectsList()">
+
+					<!-- Pagination -->
+					<div x-show="!loading && pastProjects.length > 0"
+						class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+						<div class="flex-1 flex justify-between sm:hidden">
+							<button @click="prevPage" :disabled="currentPage === 0"
+								class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+								Previous
+							</button>
+							<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
+								class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+								Next
+							</button>
+						</div>
+						<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+							<div>
+								<p class="text-sm text-gray-700">
+									Showing
+									<span class="font-medium" x-text="currentPage * size + 1"></span>
+									to
+									<span class="font-medium"
+										x-text="Math.min((currentPage + 1) * size, totalItems)"></span>
+									of <span class="font-medium" x-text="totalItems"></span> results
+								</p>
+							</div>
+							<div>
+								<nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+									<button @click="prevPage" :disabled="currentPage === 0"
+										class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+										<i class="fas fa-chevron-left"></i>
+									</button>
+									<button @click="nextPage" :disabled="currentPage >= totalPages - 1"
+										class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+										<i class="fas fa-chevron-right"></i>
+									</button>
+								</nav>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Project Details Modal -->
+	<div x-show="selectedProject" x-cloak class="fixed inset-0 backdrop-blur-md z-50 overflow-y-auto"
+		aria-labelledby="modal-title" role="dialog" aria-modal="true">
+		<div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+			<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeModal"></div>
+
+			<div
+				class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+				<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+					<div class="sm:flex sm:items-start">
+						<div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+							<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4"
+								x-text="selectedProject?.title || 'Project Details'"></h3>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<!-- Basic Information -->
+								<div>
+									<h4 class="text-md font-medium text-gray-900 mb-3">
+										Project Information
+									</h4>
+									<dl class="space-y-2">
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Project Number
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.projectNo || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Partner
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.partnerName || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">Theme</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.themes?.join(', ') || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Location
+											</dt>
+											<dd class="text-sm text-gray-900">
+												<span
+													x-text="selectedProject?.locations && selectedProject.locations.length > 0 ? selectedProject.locations[0].county : selectedProject?.county || 'N/A'"></span>
+												<span
+													x-show="selectedProject?.locations && selectedProject.locations.length > 0 && selectedProject.locations[0].subCounty"
+													x-text="', ' + selectedProject.locations[0].subCounty"></span>
+											</dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Duration
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="(selectedProject?.startDate ? formatDate(selectedProject.startDate) : 'N/A') + ' - ' + (selectedProject?.endDate ? formatDate(selectedProject.endDate) : 'N/A')">
+											</dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Budget
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="selectedProject?.budget ? 'KES ' + Number(selectedProject.budget).toLocaleString() : 'N/A'">
+											</dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Final Status
+											</dt>
+											<dd class="text-sm text-gray-900">
+												<span
+													class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+													:class="getStatusBadge(selectedProject?.status?.toLowerCase())"
+													x-text="selectedProject?.status || 'N/A'">
+												</span>
+											</dd>
+										</div>
+										<div>
+											<dt class="text-sm font-medium text-gray-500">
+												Completion %
+											</dt>
+											<dd class="text-sm text-gray-900"
+												x-text="(selectedProject?.completionPercentage || 0) + '%'">
+											</dd>
+										</div>
+									</dl>
+								</div>
+
+								<!-- Project Description/Objectives -->
+								<div class="mt-6">
+									<h4 class="text-md font-medium text-gray-900 mb-2">
+										Description & Objectives
+									</h4>
+									<p class="text-sm text-gray-700"
+										x-text="selectedProject?.objectives || selectedProject?.description || 'Not available'">
+									</p>
+
+									<h4 class="text-md font-medium text-gray-900 mb-2 mt-4">
+										Contact Information
+									</h4>
+									<dl class="space-y-1 text-sm text-gray-700">
+										<div>
+											<dt class="font-medium text-gray-500">Contact Person:</dt>
+											<dd x-text="selectedProject?.contactPersonName || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="font-medium text-gray-500">Role:</dt>
+											<dd x-text="selectedProject?.contactPersonRole || 'N/A'"></dd>
+										</div>
+										<div>
+											<dt class="font-medium text-gray-500">Email:</dt>
+											<dd x-text="selectedProject?.contactPersonEmail || 'N/A'"></dd>
+										</div>
+									</dl>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+					<button type="button" @click="closeModal"
+						class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="styles/loadNav.js"></script>
+	<script src="auth.js"></script>
+	<script>
+		function pastProjectsApp() {
+			return {
+				pastProjects: [],
+				loading: false,
+				currentPage: 0,
+				totalPages: 0,
+				totalItems: 0,
+				size: 10,
+				showAdvancedFilters: false,
+				filters: {
+					search: "",
+					finalStatus: "",
+					county: "",
+					theme: "",
+					minBudget: "",
+					maxBudget: "",
+					startDateFrom: "",
+					endDateTo: "",
+					partner: "",
+					contactPerson: "",
+				},
+				selectedProject: null,
+				userEmail: "",
+				showAddForm: false,
+				newProject: {
+					title: "",
+					partner: "",
+					county: "",
+					finalStatus: "completed",
+					startDate: "",
+					endDate: "",
+					lessonsLearned: "",
+					successFactors: "",
+					challenges: "",
+					recommendations: "",
+				},
+
+				init() {
+					this.loadUserInfo();
+					this.loadPastProjects();
+				},
+
+				loadUserInfo() {
+					console.log("Loading user info...");
+					const token = localStorage.getItem("accessToken");
+					console.log(
+						"Token check in loadUserInfo:",
+						token ? "present" : "not found"
+					);
+
+					if (token) {
+						console.log("Decoding token...");
+						// Decode token to get user info (simplified)
+						try {
+							const payload = JSON.parse(atob(token.split(".")[1]));
+							this.userEmail = payload.sub || "User";
+							console.log("User email set to:", this.userEmail);
+						} catch (e) {
+							console.error("Error decoding token:", e);
+							this.userEmail = "User";
+						}
+					} else {
+						console.log("No token found, setting userEmail to Guest");
+						this.userEmail = "Guest";
+					}
+				},
+
+				showAuthError() {
+					// Show authentication required message without clearing the page
+					const errorDiv = document.createElement("div");
+					errorDiv.style =
+						"background: #ffebee; color: #c62828; padding: 2em; margin: 2em; border-radius: 8px; text-align: center; border: 1px solid #ffcdd2;";
+					errorDiv.innerHTML = `
+              <i class="fas fa-lock" style="font-size: 3em; margin-bottom: 1em;"></i>
+              <h3 style="margin-bottom: 1em;">Authentication Required</h3>
+              <p>You must be logged in to access the Past Projects Repository.</p>
+              <p>This feature requires authentication to view archived project data.</p>
+              <button onclick="window.location.href='index.html'" style="margin-top: 1em; padding: 0.5em 1em; background: #c62828; color: white; border: none; border-radius: 4px; cursor: pointer;">Go to Login</button>
+            `;
+
+					// Insert after the header
+					const header = document.querySelector("nav");
+					if (header) {
+						header.insertAdjacentElement("afterend", errorDiv);
+					} else {
+						document.body.insertBefore(errorDiv, document.body.firstChild);
+					}
+				},
+
+				async loadPastProjects() {
+					console.log("=== loadPastProjects called ===");
+					console.log("Current state:", {
+						pastProjects: this.pastProjects,
+						loading: this.loading,
+						currentPage: this.currentPage,
+						totalItems: this.totalItems,
+					});
+
+					this.loading = true;
+					try {
+						const token = localStorage.getItem("accessToken");
+						console.log(
+							"Auth token from localStorage:",
+							token ? "present" : "not found"
+						);
+
+						if (!token) {
+							console.log("No auth token found, showing auth error");
+							this.showAuthError();
+							return;
+						}
+
+						console.log("Making API request to /api/projects for past projects");
+						console.log(
+							"Request URL:",
+							`/api/projects?page=${this.currentPage}&size=${this.size}`
+						);
+
+						const response = await fetch(
+							`https://api-tujulishane-hub.onrender.com/api/projects?page=0&size=1000&sortBy=id&sortDir=desc`,
+							{
+								headers: {
+									Authorization: `Bearer ${token}`,
+									"Content-Type": "application/json",
+								},
+							}
+						);
+
+						console.log("API response status:", response.status);
+						console.log("API response ok:", response.ok);
+
+						if (response.ok) {
+							const data = await response.json();
+							console.log(
+								"Full API response data:",
+								JSON.stringify(data, null, 2)
+							);
+
+							if (data && data.data && data.data.projects) {
+								console.log("Filtering for past projects...");
+								// Filter for past projects (completed, stalled, abandoned)
+								let allProjects = data.data.projects;
+								
+								// First, filter by approval status for non-admin users
+								// Non-admin users only see APPROVED projects
+								const currentUser = authManager.getCachedUser();
+								allProjects = filterProjectsByApprovalStatus(allProjects, currentUser);
+								console.log("After approval filter:", allProjects.length);
+								
+								// Then filter for past projects (completed, stalled, abandoned)
+								let pastProjectsFiltered = allProjects.filter(project =>
+									project.status &&
+									['completed', 'stalled', 'abandoned'].includes(project.status.toLowerCase())
+								);
+
+								// Apply additional filters
+								if (this.filters.search) {
+									const searchTerm = this.filters.search.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										(project.title && project.title.toLowerCase().includes(searchTerm)) ||
+										(project.projectNo && project.projectNo.toLowerCase().includes(searchTerm)) ||
+										(project.partnerName && project.partnerName.toLowerCase().includes(searchTerm)) ||
+										(project.objectives && project.objectives.toLowerCase().includes(searchTerm)) ||
+										(project.description && project.description.toLowerCase().includes(searchTerm))
+									);
+								}
+
+								if (this.filters.finalStatus) {
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										project.status && project.status.toLowerCase() === this.filters.finalStatus.toLowerCase()
+									);
+								}
+
+								if (this.filters.county) {
+									const countyTerm = this.filters.county.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (project.locations && project.locations.length > 0) {
+											return project.locations.some(loc =>
+												loc.county && loc.county.toLowerCase().includes(countyTerm)
+											);
+										}
+										return project.county && project.county.toLowerCase().includes(countyTerm);
+									});
+								}
+
+								if (this.filters.theme) {
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (project.themes && Array.isArray(project.themes)) {
+											return project.themes.some(theme =>
+												theme.toLowerCase().includes(this.filters.theme.toLowerCase())
+											);
+										}
+										return false;
+									});
+								}
+
+								if (this.filters.minBudget || this.filters.maxBudget) {
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (!project.budget) return false;
+										const budget = parseFloat(project.budget);
+										if (isNaN(budget)) return false;
+
+										const minBudget = this.filters.minBudget ? parseFloat(this.filters.minBudget) : 0;
+										const maxBudget = this.filters.maxBudget ? parseFloat(this.filters.maxBudget) : Infinity;
+
+										return budget >= minBudget && budget <= maxBudget;
+									});
+								}
+
+								if (this.filters.startDateFrom) {
+									const startDate = new Date(this.filters.startDateFrom);
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (!project.startDate) return false;
+										const projectStartDate = new Date(project.startDate);
+										return projectStartDate >= startDate;
+									});
+								}
+
+								if (this.filters.endDateTo) {
+									const endDate = new Date(this.filters.endDateTo);
+									pastProjectsFiltered = pastProjectsFiltered.filter(project => {
+										if (!project.endDate) return false;
+										const projectEndDate = new Date(project.endDate);
+										return projectEndDate <= endDate;
+									});
+								}
+
+								if (this.filters.partner) {
+									const partnerTerm = this.filters.partner.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										project.partnerName && project.partnerName.toLowerCase().includes(partnerTerm)
+									);
+								}
+
+								if (this.filters.contactPerson) {
+									const contactTerm = this.filters.contactPerson.toLowerCase();
+									pastProjectsFiltered = pastProjectsFiltered.filter(project =>
+										(project.contactPersonName && project.contactPersonName.toLowerCase().includes(contactTerm)) ||
+										(project.contactPersonEmail && project.contactPersonEmail.toLowerCase().includes(contactTerm))
+									);
+								}
+
+								// Apply pagination
+								const totalFiltered = pastProjectsFiltered.length;
+								const startIndex = this.currentPage * this.size;
+								const endIndex = startIndex + this.size;
+								const paginatedProjects = pastProjectsFiltered.slice(startIndex, endIndex);
+
+								console.log("Setting pastProjects array...");
+								// Clear and repopulate the array to ensure reactivity
+								this.pastProjects.splice(0);
+								for (let i = 0; i < paginatedProjects.length; i++) {
+									this.pastProjects.push(paginatedProjects[i]);
+								}
+
+								this.totalItems = totalFiltered;
+								this.totalPages = Math.ceil(totalFiltered / this.size);
+								console.log(
+									`Successfully loaded ${this.pastProjects.length} past projects (${totalFiltered} total filtered)`
+								);
+								console.log("Past projects data:", this.pastProjects);
+
+								// Force Alpine.js to update
+								this.$nextTick(() => {
+									console.log("After nextTick - pastProjects:", this.pastProjects);
+									// Trigger re-render
+									this.renderProjectsList();
+									// Small delay to ensure DOM updates
+									setTimeout(() => {
+										console.log("After timeout - forcing update");
+									}, 100);
+								});
+							} else {
+								console.error("Invalid response structure:", data);
+								this.pastProjects = [];
+							}
+						} else {
+							console.error(
+								"Projects API not available:",
+								response.status,
+								response.statusText
+							);
+							const errorText = await response.text();
+							console.error("Error response body:", errorText);
+							this.pastProjects = [];
+							// Try to show a user-friendly error
+							alert(
+								`Failed to load past projects: ${response.status} ${response.statusText}`
+							);
+						}
+					} catch (error) {
+						console.error("Exception in loadPastProjects:", error);
+						console.error("Error stack:", error.stack);
+						this.pastProjects = [];
+						alert(`Error loading past projects: ${error.message}`);
+					} finally {
+						console.log("Setting loading to false...");
+						this.loading = false;
+						console.log("Loading state after setting:", this.loading);
+						console.log("=== loadPastProjects completed ===");
+					}
+				},
+
+
+
+				applyFilters() {
+					this.currentPage = 0;
+					this.loadPastProjects();
+				},
+
+				clearFilters() {
+					this.filters = {
+						search: "",
+						finalStatus: "",
+						county: "",
+						theme: "",
+						minBudget: "",
+						maxBudget: "",
+						startDateFrom: "",
+						endDateTo: "",
+						partner: "",
+						contactPerson: "",
+					};
+					this.showAdvancedFilters = false;
+					this.currentPage = 0;
+					this.loadPastProjects();
+				},
+
+				prevPage() {
+					if (this.currentPage > 0) {
+						this.currentPage--;
+						this.loadPastProjects();
+					}
+				},
+
+				nextPage() {
+					if (this.currentPage < this.totalPages - 1) {
+						this.currentPage++;
+						this.loadPastProjects();
+					}
+				},
+
+				viewProjectDetails(project) {
+					console.log("viewProjectDetails called with:", project);
+					this.selectedProject = project || null;
+				},
+
+				renderProjectsList() {
+					console.log("renderProjectsList called, projects:", this.pastProjects);
+					if (!this.pastProjects || this.pastProjects.length === 0) {
+						return '<li class="p-4 text-center text-gray-500">No past projects to display</li>';
+					}
+
+					return this.pastProjects.map((project, index) => {
+						const color = this.getStatusColor(project.status);
+						const bg = this.getStatusBg(project.status);
+						const statusBadge = this.getStatusBadge(project.status?.toLowerCase());
+
+						return `
+							<li class="p-4 sm:p-6 hover:bg-gray-50 bg-white cursor-pointer " 
+								@click="viewProjectDetails(pastProjects[${index}])">
+								<div class="flex items-start justify-between">
+									<div class="flex-shrink-0 h-10 w-10 mr-4 mt-1">
+										<div class="h-10 w-10 rounded-lg flex items-center justify-center text-white text-lg font-bold" 
+											style="background-color: ${color};">
+											${project.status?.charAt(0).toUpperCase() || 'P'}
+										</div>
+									</div>
+
+									<div class="flex-1 min-w-0">
+										<div class="flex items-center justify-between mb-2">
+											<div class="text-xl font-bold text-gray-900 truncate">
+												${project.title || project.projectName || "Untitled Project"}
+												<span class="text-lg font-medium text-gray-500 ml-1">${project.projectNo ? `(${project.projectNo})` : ''}</span>
+											</div>
+											<span class="ml-4 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold ${statusBadge}">
+												${project.status || "Unknown"}
+											</span>
+										</div>
+
+										<p class="text-sm text-gray-600 mb-3 line-clamp-2">
+											${project.objectives || project.description || "This project currently has no description provided."}
+										</p>
+
+										<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500 border-t pt-3 mt-3">
+											<span class="flex items-center text-gray-700 font-medium">
+												<i class="far fa-user mr-1 text-xs"></i> ${project.partnerName || "N/A"}
+											</span>
+											<span class="flex items-center">
+												<i class="fas fa-map-marker-alt mr-1 text-xs"></i> ${project.locations?.[0]?.county ||
+							project.county || "N/A"}
+											</span>
+											<span class="flex items-center">
+												<i class="fas fa-calendar-alt mr-1 text-xs"></i> ${project.startDate
+								? new Date(project.startDate).toLocaleDateString()
+								: "N/A"}
+															– 
+											${project.endDate
+								? new Date(project.endDate).toLocaleDateString()
+								: "N/A"
+							}
+											</span>
+											<span class="flex items-center text-green-600 font-semibold">
+												<i class="fas fa-dollar-sign mr-1 text-sm"></i> ${project.budget
+								? "KES " + Number(project.budget).toLocaleString()
+								: "N/A"
+							}
+											</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							`;
+
+
+
+					}).join('');
+				},
+
+				closeModal() {
+					this.selectedProject = null;
+				},
+
+				formatDate(dateString) {
+					if (!dateString) return "N/A";
+					return new Date(dateString).toLocaleDateString();
+				},
+
+				getStatusColor(status) {
+					const colors = {
+						'completed': '#10b981',
+						'stalled': '#ef4444',
+						'abandoned': '#6b7280',
+						'active': '#22c55e',
+						'pending': '#eab308'
+					};
+					return colors[status?.toLowerCase()] || '#6b7280';
+				},
+
+				getStatusBg(status) {
+					const colors = {
+						'completed': 'bg-green-50',
+						'stalled': 'bg-red-50',
+						'abandoned': 'bg-gray-50',
+						'active': 'bg-green-50',
+						'pending': 'bg-yellow-50'
+					};
+					return colors[status?.toLowerCase()] || 'bg-gray-50';
+				},
+
+				getStatusBadge(status) {
+					const badges = {
+						'completed': 'bg-green-100 text-green-800',
+						'stalled': 'bg-red-100 text-red-800',
+						'abandoned': 'bg-gray-100 text-gray-800',
+						'active': 'bg-green-100 text-green-800',
+						'pending': 'bg-yellow-100 text-yellow-800'
+					};
+					return badges[status] || 'bg-gray-100 text-gray-800';
+				},
+
+				hasActiveFilters() {
+					return this.filters.search ||
+						this.filters.finalStatus ||
+						this.filters.county ||
+						this.filters.theme ||
+						this.filters.minBudget ||
+						this.filters.maxBudget ||
+						this.filters.startDateFrom ||
+						this.filters.endDateTo ||
+						this.filters.partner ||
+						this.filters.contactPerson;
+				},
+
+				formatBudgetRange() {
+					const min = this.filters.minBudget ? `KES ${Number(this.filters.minBudget).toLocaleString()}` : '';
+					const max = this.filters.maxBudget ? `KES ${Number(this.filters.maxBudget).toLocaleString()}` : '';
+					if (min && max) return `${min} - ${max}`;
+					if (min) return `Min: ${min}`;
+					if (max) return `Max: ${max}`;
+					return '';
+				},
+			};
+		}
+	</script>
+</body>
+
+</html>

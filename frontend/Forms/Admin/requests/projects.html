@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Project Requests</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="frontend/styles/main.css" />
+    <script src="projects.js" defer></script>
+  </head>
+  <body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen">
+    <div class="max-w-3xl mx-auto py-10 px-4">
+      <div
+        class="bg-white border-2 border-blue-200 rounded-2xl shadow-2xl p-10"
+      >
+        <h1
+          class="text-4xl font-black mb-8 text-center tracking-tight drop-shadow-lg uppercase border-b-4 border-blue-200 pb-4"
+        >
+          Pending Project Approvals
+        </h1>
+        <div id="projectList" class="space-y-6">
+          <!-- Example fallback for empty state -->
+          <div id="emptyState" class="hidden text-center text-gray-400 py-12">
+            <svg
+              class="mx-auto mb-4 w-12 h-12 text-blue-200"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 17v-2a4 4 0 018 0v2m-4-4a4 4 0 100-8 4 4 0 000 8zm0 0v2m0 4h.01"
+              ></path>
+            </svg>
+            <span>No pending project requests.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
