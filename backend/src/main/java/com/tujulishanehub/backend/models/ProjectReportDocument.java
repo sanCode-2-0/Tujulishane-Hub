@@ -16,8 +16,7 @@ public class ProjectReportDocument {
     @Column(name = "file_size")
     private Long fileSize; // in bytes
 
-    @Lob
-    @Column(length = 20971520) // 20MB max
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)
