@@ -234,8 +234,8 @@
       const API_BASE =
         window.location.hostname === "localhost" ||
         window.location.hostname === "127.0.0.1"
-          ? "https://api-tujulishane-hub.onrender.com/api/organizations"
-          : "https://api-tujulishane-hub.onrender.com/api/organizations";
+          ? "http://localhost:8080/api/organizations"
+          : "http://localhost:8080/api/organizations";
       const messageDiv = document.getElementById("org-message");
       const orgList = document.getElementById("orgList");
       const orgSearchResults = document.getElementById("orgSearchResults");

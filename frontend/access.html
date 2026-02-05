@@ -557,6 +557,8 @@
         });
     </script>
     <script>
+        const apiBase = "http://localhost:8080/api"
+
         async function requestOtp() {
             const email = document.getElementById("loginEmail").value;
             if (!email) {
@@ -581,9 +583,11 @@
 
             // Request OTP from backend
             try {
-                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "https://api-tujulishane-hub.onrender.com"
-                    : "https://api-tujulishane-hub.onrender.com";
+                // const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                //     // ? "http://localhost:8080"
+                //     // : "http://localhost:8080";
+                //     ? "http://localhost:8000": "http://localhost:8000"
+                const apiBase = "http://localhost:8080"
 
                 // Enhanced logging for login request debugging
                 console.log("[access.html] Login request debug info:", {
@@ -678,19 +682,19 @@
                 });
 
                 // Log error to network debugger
-                if (window.networkDebugger) {
-                    window.networkDebugger.logError(
-                        'login',
-                        {
-                            url: `${apiBase}/api/auth/login`,
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: requestBody
-                        },
-                        err,
-                        0 // Duration not available due to error before completion
-                    );
-                }
+                // if (window.networkDebugger) {
+                //     window.networkDebugger.logError(
+                //         'login',
+                //         {
+                //             url: `${apiBase}/api/auth/login`,
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json" },
+                //             body: requestBody
+                //         },
+                //         err,
+                //         0 // Duration not available due to error before completion
+                //     );
+                // }
 
                 await showAlert(err.message || "Failed to send OTP", "Error", "error");
 
@@ -728,8 +732,8 @@
 
             try {
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "https://api-tujulishane-hub.onrender.com"
-                    : "https://api-tujulishane-hub.onrender.com";
+                    ? "http://localhost:8080"
+                    : "http://localhost:8080";
 
                 console.log("API BASE", apiBase);
 

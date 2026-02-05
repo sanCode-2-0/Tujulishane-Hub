@@ -7,10 +7,10 @@
 // --- Toggle ---
 // true  => use production backend (Heroku)
 // false => use local dev backend (localhost:8080)
-const USE_PROD = true; // <--- flip this boolean to switch environments
+const USE_PROD = false; // <--- flip this boolean to switch environments
 
 // Backend endpoints - SET THESE ONCE FOR YOUR WHOLE APP
-const PROD_URL = "https://api-tujulishane-hub.onrender.com";
+const PROD_URL = "http://localhost:8080";
 const DEV_URL = "http://localhost:8080"; // Local development backend
 
 // Compute base URL from toggle. If a runtime global override is set (by a
