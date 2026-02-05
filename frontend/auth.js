@@ -142,6 +142,28 @@ class AuthManager {
     const isFormData = options.isFormData || false;
     const additionalHeaders = options.headers || {};
 
+    // Enhanced browser fingerprinting for debugging
+    const browserInfo = {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      platform: navigator.platform,
+      cookieEnabled: navigator.cookieEnabled,
+      onLine: navigator.onLine,
+      doNotTrack: navigator.doNotTrack,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      referrer: document.referrer,
+      screen: `${screen.width}x${screen.height}`,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      localStorageAvailable: this.isLocalStorageAvailable(),
+      sessionStorageAvailable: this.isSessionStorageAvailable()
+    };
+
+    console.log(`[auth.js] apiCall: Browser environment:`, browserInfo);
+    console.log(`[auth.js] apiCall: Request origin: ${window.location.origin}`);
+    console.log(`[auth.js] apiCall: Target URL: ${url}`);
+
     const config = {
       method,
       headers: {
@@ -169,8 +191,17 @@ class AuthManager {
       }
     }
 
+    const startTime = performance.now();
+
     try {
       console.log(`[auth.js] apiCall: Making ${method} request to ${url}`);
+      console.log(`[auth.js] apiCall: Full request config:`, {
+        method: config.method,
+        headers: config.headers,
+        bodySize: config.body ? config.body.length : 0,
+        url: url
+      });
+      
       // Log outgoing payload for debugging (if present)
       if (config.body) {
         try {
@@ -186,10 +217,36 @@ class AuthManager {
         }
       }
       console.log(`[auth.js] apiCall: Request headers:`, config.headers);
+      
       const response = await fetch(url, config);
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      
       console.log(
-        `[auth.js] apiCall: Response status: ${response.status}, ok: ${response.ok}`
+        `[auth.js] apiCall: Response received - Status: ${response.status}, OK: ${response.ok}, Duration: ${duration.toFixed(2)}ms`
       );
+
+      // Log to network debugger if available
+      if (window.networkDebugger) {
+        window.networkDebugger.logRequest(
+          `apiCall-${method}`,
+          { ...config, url },
+          response,
+          duration
+        );
+      }
+
+      // Log response headers for debugging
+      console.log(`[auth.js] apiCall: Response headers:`, {
+        'content-type': response.headers.get('content-type'),
+        'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+        'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
+        'access-control-allow-headers': response.headers.get('access-control-allow-headers'),
+        'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
+        'content-length': response.headers.get('content-length'),
+        'server': response.headers.get('server'),
+        'date': response.headers.get('date')
+      });
 
       // If unauthorized, redirect to login
       if (response.status === 401) {
@@ -205,6 +262,7 @@ class AuthManager {
           status: response.status,
           statusText: response.statusText,
           url: url,
+          duration: `${duration.toFixed(2)}ms`,
         });
         try {
           // Clone response, read and store the body text for later use
@@ -218,8 +276,59 @@ class AuthManager {
 
       return response;
     } catch (error) {
-      console.error("[auth.js] apiCall: Network or fetch error:", error);
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      console.error(`[auth.js] apiCall: Network or fetch error after ${duration.toFixed(2)}ms:`, error);
+      console.error(`[auth.js] apiCall: Error details:`, {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        url: url,
+        method: method,
+        browserInfo: browserInfo
+      });
+
+      // Log error to network debugger if available
+      if (window.networkDebugger) {
+        window.networkDebugger.logError(
+          `apiCall-${method}`,
+          { ...config, url },
+          error,
+          duration
+        );
+      }
+
       throw error;
+    }
+  }
+
+  /**
+   * Check if localStorage is available
+   * @returns {boolean}
+   */
+  isLocalStorageAvailable() {
+    try {
+      const test = '__test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Check if sessionStorage is available
+   * @returns {boolean}
+   */
+  isSessionStorageAvailable() {
+    try {
+      const test = '__test__';
+      sessionStorage.setItem(test, test);
+      sessionStorage.removeItem(test);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

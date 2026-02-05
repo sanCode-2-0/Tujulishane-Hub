@@ -27,6 +27,7 @@
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <script src="./network-debugger.js"></script>
     <!-- Session Configuration -->
     <script src="./session-config.js"></script>
     <!-- Modal Utilities -->
@@ -583,20 +584,114 @@
                 const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
                     ? "https://api-tujulishane-hub.onrender.com"
                     : "https://api-tujulishane-hub.onrender.com";
+
+                // Enhanced logging for login request debugging
+                console.log("[access.html] Login request debug info:", {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    currentUrl: window.location.href,
+                    origin: window.location.origin,
+                    targetApi: apiBase,
+                    email: email,
+                    endpoint: `${apiBase}/api/auth/login`,
+                    method: "POST",
+                    contentType: "application/json",
+                    browserLanguage: navigator.language,
+                    cookieEnabled: navigator.cookieEnabled,
+                    localStorageAvailable: typeof(Storage) !== "undefined" && typeof(localStorage) !== "undefined",
+                    sessionStorageAvailable: typeof(Storage) !== "undefined" && typeof(sessionStorage) !== "undefined"
+                });
+
+                const startTime = performance.now();
+                const requestBody = JSON.stringify({ email });
+                
+                console.log("[access.html] Making login request:", {
+                    url: `${apiBase}/api/auth/login`,
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: requestBody,
+                    bodySize: requestBody.length
+                });
+
                 const res = await fetch(`${apiBase}/api/auth/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
+                    body: requestBody
                 });
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Login failed");
+                const endTime = performance.now();
+                const duration = endTime - startTime;
 
+                console.log("[access.html] Login response received:", {
+                    status: res.status,
+                    ok: res.ok,
+                    statusText: res.statusText,
+                    duration: `${duration.toFixed(2)}ms`,
+                    headers: {
+                        'content-type': res.headers.get('content-type'),
+                        'access-control-allow-origin': res.headers.get('access-control-allow-origin'),
+                        'access-control-allow-credentials': res.headers.get('access-control-allow-credentials'),
+                        'server': res.headers.get('server')
+                    }
+                });
+
+                // Log to network debugger
+                if (window.networkDebugger) {
+                    window.networkDebugger.logRequest(
+                        'login',
+                        {
+                            url: `${apiBase}/api/auth/login`,
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: requestBody
+                        },
+                        res,
+                        duration
+                    );
+                }
+
+                const data = await res.json();
+                console.log("[access.html] Response data:", data);
+
+                if (!res.ok) {
+                    console.error("[access.html] Login failed:", {
+                        status: res.status,
+                        statusText: res.statusText,
+                        data: data,
+                        duration: `${duration.toFixed(2)}ms`
+                    });
+                    throw new Error(data.message || "Login failed");
+                }
+
+                console.log("[access.html] Login successful, redirecting to OTP page");
                 await showAlert("OTP sent to your email. Please check your inbox.", "Success", "success");
                 localStorage.setItem("pendingEmail", email);
                 localStorage.setItem("isLogin", "true");
                 window.location.href = "otp.html";
             } catch (err) {
+                console.error("[access.html] Login request failed:", {
+                    error: err,
+                    message: err.message,
+                    stack: err.stack,
+                    email: email,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Log error to network debugger
+                if (window.networkDebugger) {
+                    window.networkDebugger.logError(
+                        'login',
+                        {
+                            url: `${apiBase}/api/auth/login`,
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: requestBody
+                        },
+                        err,
+                        0 // Duration not available due to error before completion
+                    );
+                }
+
                 await showAlert(err.message || "Failed to send OTP", "Error", "error");
 
                 // Reset button state on error

@@ -8,6 +8,7 @@
     <!-- Backend URL Configuration -->
     <script src="./config.js"></script>
     <script src="./set-base-url.js"></script>
+    <script src="./network-debugger.js"></script>
     <!-- Session Configuration -->
     <script src="./session-config.js"></script>
 
@@ -208,14 +209,88 @@
             payload = { email, otp: code };
           }
 
+          // Enhanced logging for OTP verification
+          console.log("[otp.html] OTP verification request debug info:", {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            currentUrl: window.location.href,
+            origin: window.location.origin,
+            targetEndpoint: endpoint,
+            method: "POST",
+            payload: { ...payload, otp: '[REDACTED]' }, // Don't log actual OTP
+            contentType: "application/json",
+            browserLanguage: navigator.language,
+            cookieEnabled: navigator.cookieEnabled,
+            isLogin: isLogin,
+            email: email
+          });
+
+          const startTime = performance.now();
+          const requestBody = JSON.stringify(payload);
+
+          console.log("[otp.html] Making OTP verification request:", {
+            url: endpoint,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            bodySize: requestBody.length,
+            isLogin: isLogin
+          });
+
           const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: requestBody,
           });
 
+          const endTime = performance.now();
+          const duration = endTime - startTime;
+
+          console.log("[otp.html] OTP verification response received:", {
+            status: res.status,
+            ok: res.ok,
+            statusText: res.statusText,
+            duration: `${duration.toFixed(2)}ms`,
+            headers: {
+                'content-type': res.headers.get('content-type'),
+                'access-control-allow-origin': res.headers.get('access-control-allow-origin'),
+                'access-control-allow-credentials': res.headers.get('access-control-allow-credentials'),
+                'server': res.headers.get('server')
+            }
+          });
+
+          // Log to network debugger
+          if (window.networkDebugger) {
+            window.networkDebugger.logRequest(
+                isLogin ? 'otp-verify-login' : 'otp-verify-register',
+                {
+                    url: endpoint,
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: requestBody
+                },
+                res,
+                duration
+            );
+          }
+
           const data = await res.json();
+          console.log("[otp.html] OTP verification response data:", {
+            success: !!data.data,
+            hasToken: !!(data.data && data.data.token),
+            message: data.message,
+            status: res.status
+          });
+
           if (!res.ok || !data.data || !data.data.token) {
+            console.error("[otp.html] OTP verification failed:", {
+                status: res.status,
+                statusText: res.statusText,
+                data: data,
+                hasData: !!data.data,
+                hasToken: !!(data.data && data.data.token),
+                duration: `${duration.toFixed(2)}ms`,
+                isLogin: isLogin
+            });
             throw new Error(data.message || "OTP verification failed");
           }
 
@@ -224,14 +299,30 @@
           console.log("Remember Me preference:", rememberMe);
 
           // Store the real JWT with Remember Me preference
+          console.log("[otp.html] Storing authentication token:", {
+            hasToken: !!data.data.token,
+            tokenLength: data.data.token ? data.data.token.length : 0,
+            rememberMe: rememberMe,
+            authManagerAvailable: !!(window.authManager && window.authManager.setToken),
+            sessionConfigAvailable: !!window.SESSION_CONFIG
+          });
+
           if (window.authManager && window.authManager.setToken) {
+            console.log("[otp.html] Using authManager to store token");
             window.authManager.setToken(data.data.token, rememberMe);
             try {
-              await window.authManager.getCurrentUser();
+              console.log("[otp.html] Fetching user profile after login");
+              const user = await window.authManager.getCurrentUser();
+              console.log("[otp.html] User profile fetched successfully:", {
+                user: user,
+                role: user ? user.role : null,
+                approvalStatus: user ? user.approvalStatus : null
+              });
             } catch (e) {
-              console.error("Failed to fetch user profile after login:", e);
+              console.error("[otp.html] Failed to fetch user profile after login:", e);
             }
           } else {
+            console.log("[otp.html] Using localStorage fallback to store token");
             localStorage.setItem("accessToken", data.data.token);
             // Set login time for session management
             if (window.SESSION_CONFIG) {
@@ -239,6 +330,8 @@
               localStorage.setItem(window.SESSION_CONFIG.KEYS.REMEMBER_ME, rememberMe.toString());
             }
           }
+
+          console.log("[otp.html] Authentication token stored successfully");
 
           // Clean up temporary storage (but NOT the session Remember Me key which was set by extendSession)
           localStorage.removeItem("isLogin");
