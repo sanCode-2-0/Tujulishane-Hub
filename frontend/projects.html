@@ -1512,9 +1512,7 @@
                         <div id="paginationControls" class="my-4"></div>
                         <!-- Scripts already included in <head> -->
                         <script>
-                            let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                                ? 'http://localhost:8080/api'
-                                : 'http://localhost:8080/api';
+                            let API_BASE = `${window.BASE_URL}/api`;
 
                             const rejectModalEl = document.getElementById('rejectProjectModal');
                             const rejectReasonSelect = document.getElementById('rejectReasonSelect');

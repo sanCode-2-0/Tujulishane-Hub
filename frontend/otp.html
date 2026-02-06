@@ -195,12 +195,7 @@
         // Real backend OTP verification
         try {
           let endpoint, payload;
-          const baseUrl = window.authManager
-            ? window.authManager.baseUrl
-            : window.location.hostname === "localhost" ||
-              window.location.hostname === "127.0.0.1"
-            ? "http://localhost:8080"
-            : "http://localhost:8080";
+          const baseUrl = window.BASE_URL || (window.authManager ? window.authManager.baseUrl : "");
           if (isLogin) {
             endpoint = `${baseUrl}/api/auth/verify/login`;
             payload = { email, otp: code };
@@ -509,12 +504,7 @@
 
           try {
             let endpoint;
-            const baseUrl = window.authManager
-              ? window.authManager.baseUrl
-              : window.location.hostname === "localhost" ||
-                window.location.hostname === "127.0.0.1"
-              ? "http://localhost:8080"
-              : "http://localhost:8080";
+            const baseUrl = window.BASE_URL || (window.authManager ? window.authManager.baseUrl : "");
             if (isLogin) {
               // For login, resend using login endpoint
               endpoint = `${baseUrl}/api/auth/send-login-otp`;

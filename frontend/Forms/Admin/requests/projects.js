@@ -1,11 +1,7 @@
 // Super Admin Project Approval/Reject Logic
 
-// Auto-detect environment and set API base URL
-const API_BASE =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://localhost:8080"
-    : "http://localhost:8080";
+// Use BASE_URL from config.js
+const API_BASE = window.BASE_URL || "";
 
 document.addEventListener("DOMContentLoaded", () => {
   const projectList = document.getElementById("projectList");

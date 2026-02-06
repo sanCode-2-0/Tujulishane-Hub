@@ -2331,7 +2331,7 @@
 				console.log("📡 Submitting to API...");
 				// Submit to API using fetch and FormData
 				const response = await fetch(
-					"http://localhost:8080/api/projects",
+					`${window.BASE_URL}/api/projects`,
 					{
 						method: "POST",
 						headers: {

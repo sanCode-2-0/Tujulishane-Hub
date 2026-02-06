@@ -557,8 +557,6 @@
         });
     </script>
     <script>
-        const apiBase = "http://localhost:8080/api"
-
         async function requestOtp() {
             const email = document.getElementById("loginEmail").value;
             if (!email) {
@@ -583,38 +581,16 @@
 
             // Request OTP from backend
             try {
-                // const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                //     // ? "http://localhost:8080"
-                //     // : "http://localhost:8080";
-                //     ? "http://localhost:8000": "http://localhost:8000"
-                const apiBase = "http://localhost:8080"
+                const apiBase = window.BASE_URL;
 
-                // Enhanced logging for login request debugging
-                console.log("[access.html] Login request debug info:", {
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent,
-                    currentUrl: window.location.href,
-                    origin: window.location.origin,
-                    targetApi: apiBase,
-                    email: email,
-                    endpoint: `${apiBase}/api/auth/login`,
-                    method: "POST",
-                    contentType: "application/json",
-                    browserLanguage: navigator.language,
-                    cookieEnabled: navigator.cookieEnabled,
-                    localStorageAvailable: typeof(Storage) !== "undefined" && typeof(localStorage) !== "undefined",
-                    sessionStorageAvailable: typeof(Storage) !== "undefined" && typeof(sessionStorage) !== "undefined"
-                });
+                console.log("[access.html] Login request - using BASE_URL:", apiBase);
 
                 const startTime = performance.now();
                 const requestBody = JSON.stringify({ email });
-                
+
                 console.log("[access.html] Making login request:", {
                     url: `${apiBase}/api/auth/login`,
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: requestBody,
-                    bodySize: requestBody.length
+                    method: "POST"
                 });
 
                 const res = await fetch(`${apiBase}/api/auth/login`, {
@@ -626,33 +602,10 @@
                 const endTime = performance.now();
                 const duration = endTime - startTime;
 
-                console.log("[access.html] Login response received:", {
+                console.log("[access.html] Login response:", {
                     status: res.status,
-                    ok: res.ok,
-                    statusText: res.statusText,
-                    duration: `${duration.toFixed(2)}ms`,
-                    headers: {
-                        'content-type': res.headers.get('content-type'),
-                        'access-control-allow-origin': res.headers.get('access-control-allow-origin'),
-                        'access-control-allow-credentials': res.headers.get('access-control-allow-credentials'),
-                        'server': res.headers.get('server')
-                    }
+                    duration: `${duration.toFixed(2)}ms`
                 });
-
-                // Log to network debugger
-                if (window.networkDebugger) {
-                    window.networkDebugger.logRequest(
-                        'login',
-                        {
-                            url: `${apiBase}/api/auth/login`,
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: requestBody
-                        },
-                        res,
-                        duration
-                    );
-                }
 
                 const data = await res.json();
                 console.log("[access.html] Response data:", data);
@@ -731,11 +684,8 @@
             btnSpinner.classList.remove("hidden");
 
             try {
-                const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-                    ? "http://localhost:8080"
-                    : "http://localhost:8080";
-
-                console.log("API BASE", apiBase);
+                const apiBase = window.BASE_URL;
+                console.log("[access.html] Registration - using BASE_URL:", apiBase);
 
                 // Create FormData to support file uploads
                 const formData = new FormData();

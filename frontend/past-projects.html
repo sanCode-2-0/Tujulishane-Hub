@@ -782,7 +782,7 @@
 						);
 
 						const response = await fetch(
-							`http://localhost:8080/api/projects?page=0&size=1000&sortBy=id&sortDir=desc`,
+							`${window.BASE_URL}/api/projects?page=0&size=1000&sortBy=id&sortDir=desc`,
 							{
 								headers: {
 									Authorization: `Bearer ${token}`,

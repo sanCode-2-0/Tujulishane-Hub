@@ -35,14 +35,10 @@
     />
     <!-- Modal Utilities -->
     <script src="../../modal-utils.js"></script>
+    <script src="../../config.js"></script>
     <script src="../../auth.js"></script>
     <script>
-      // Set the BASE_URL - you may need to adjust this to match your config
-      window.BASE_URL =
-        window.location.origin.includes("localhost") ||
-        window.location.origin.includes("127.0.0.1")
-          ? "http://localhost:8080"
-          : "http://localhost:8080";
+      // BASE_URL is set by config.js
 
       // Define adminCollaborationsApp function globally before Alpine.js initializes
       window.adminCollaborationsApp = function adminCollaborationsApp() {
