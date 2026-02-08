@@ -438,7 +438,7 @@
 
 					<!-- Accordion -->
 					<div id="projectAccordion"
-						class="hidden w-full space-y-4 transition-opacity duration-500 ease-in-out transform translate-y-4 opacity-0">
+						class="hidden w-full space-y-4">
 						<h3 class="mb-4 text-xl font-semibold text-gray-800" id="projectsTitle">
 							All Projects
 						</h3>
@@ -1025,10 +1025,8 @@
 					console.log("Loaded projects for map:", projectsData.length);
 					console.log("Projects data (with coordinates):", projectsData);
 
-					// Set global projects array for search functionality
-					projects = projectsData;
-
 					// Process projects for map display
+					// NOTE: Do NOT set global projects here - loadProjects() manages the accordion data
 					addMarkersToMap(projectsData);
 
 					// Initialize map search functionality
@@ -1076,7 +1074,7 @@
 					status: "COMPLETED",
 				},
 			];
-			projects = sampleProjects;
+			// NOTE: Do NOT set global projects here - loadProjects() manages the accordion data
 			addMarkersToMap(sampleProjects);
 			initializeMapSearch();
 		}
@@ -1580,14 +1578,15 @@
 			currentFilter = tag;
 			console.log("highlightMarkers called with tag:", tag);
 			console.log("Total projects available:", projects.length);
-			console.log("Projects:", projects);
 
 			const accordion = document.getElementById("projectAccordion");
 			const infoBox = document.getElementById("projectInfo");
 			infoBox.classList.add("hidden");
 			accordion.innerHTML = "";
-			accordion.classList.remove("hidden");
-			accordion.classList.add("opacity-0", "translate-y-4");
+			// Make accordion visible - remove hidden and any opacity/transform classes
+			accordion.classList.remove("hidden", "opacity-0", "translate-y-4");
+			accordion.style.opacity = "1";
+			accordion.style.transform = "none";
 
 			let filteredProjects = projects.filter((project) => {
 				if (tag !== "all" && project.status?.toLowerCase() !== tag)
@@ -1656,7 +1655,17 @@
 			});
 
 			console.log("Filtered projects count:", filteredProjects.length);
-			console.log("Filtered projects:", filteredProjects);
+
+			if (filteredProjects.length === 0) {
+				accordion.innerHTML = `
+					<div class="text-center py-8">
+						<i class="fas fa-folder-open text-gray-400 text-4xl mb-4"></i>
+						<p class="text-gray-600">No projects found matching your filters.</p>
+						<p class="text-gray-400 text-sm mt-2">Total loaded: ${projects.length} projects</p>
+					</div>`;
+				updatePaginationControls(0);
+				return;
+			}
 
 			filteredProjects.sort((a, b) => {
 				const aVal =
@@ -1688,12 +1697,7 @@
 				}
 			});
 
-			setTimeout(
-				() => accordion.classList.remove("opacity-0", "translate-y-4"),
-				10
-			);
-
-			// ✅ New full-display design (no accordion)
+			// Render project cards
 			paginated.forEach((project, idx) => {
 				const i = projects.indexOf(project);
 				const color = getStatusColor(project.status);
@@ -2682,14 +2686,9 @@
 						// Update the global projects array
 						projects = allProjects;
 
-						// Update the projects display (accordion)
+						// Update the projects display (accordion + pagination)
+						// updateProjectsDisplay handles calling highlightMarkers internally
 						updateProjectsDisplay(allProjects);
-
-						// NOTE: Map markers are managed by loadProjectsForMap() which loads only projects with coordinates
-						// Don't add markers here to avoid conflicts
-
-						// Trigger the accordion display
-						highlightMarkers("all");
 					}
 				} else {
 					showProjectsError();
@@ -2964,12 +2963,14 @@
 				"projects"
 			);
 
-			// Update global projects variable
-			window.projects = projectsData;
+			// Update both block-scoped and window-level projects variables
+			// (highlightMarkers reads from block-scoped `projects`)
+			projects = projectsData;
 			window.filteredProjects = projectsData;
 
-			// Render accordion with projects
-			renderProjectsList(projectsData);
+			// Render using highlightMarkers which handles pagination properly
+			currentPage = 1;
+			highlightMarkers(currentFilter);
 
 			console.log(
 				"Projects display updated with",
