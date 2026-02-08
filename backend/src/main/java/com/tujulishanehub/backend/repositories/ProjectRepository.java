@@ -84,6 +84,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // Find projects by contact person email
     List<Project> findByContactPersonEmail(String email);
     
+    // Find all projects with locations eagerly fetched (for statistics)
+    @EntityGraph(attributePaths = {"locations"})
+    @Query("SELECT p FROM Project p")
+    List<Project> findAllWithLocations();
+
     // Find projects by approval status
     List<Project> findByApprovalStatus(ApprovalStatus approvalStatus);
     

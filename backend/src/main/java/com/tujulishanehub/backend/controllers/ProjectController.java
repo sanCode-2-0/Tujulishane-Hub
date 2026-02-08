@@ -364,15 +364,17 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> getPublicStatistics() {
         try {
             Map<String, Object> stats = new HashMap<>();
-            
-            // Get total approved projects count
-            long totalProjects = projectRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
+
+            // Get total projects count (all projects)
+            long totalProjects = projectRepository.count();
             stats.put("totalProjects", totalProjects);
-            
+
+            // Get all projects with locations eagerly loaded
+            List<Project> allProjects = projectRepository.findAllWithLocations();
+
             // Get unique counties count
-            List<Project> approvedProjects = projectRepository.findByApprovalStatus(ApprovalStatus.APPROVED);
             Set<String> uniqueCounties = new HashSet<>();
-            for (Project project : approvedProjects) {
+            for (Project project : allProjects) {
                 if (project.getLocations() != null && !project.getLocations().isEmpty()) {
                     for (ProjectLocation location : project.getLocations()) {
                         if (location.getCounty() != null && !location.getCounty().trim().isEmpty()) {
@@ -382,20 +384,20 @@ public class ProjectController {
                 }
             }
             stats.put("totalCounties", uniqueCounties.size());
-            
-            // Get unique partners/stakeholders count  
+
+            // Get unique partners/stakeholders count
             Set<String> uniquePartners = new HashSet<>();
-            for (Project project : approvedProjects) {
+            for (Project project : allProjects) {
                 if (project.getPartner() != null && !project.getPartner().trim().isEmpty()) {
                     uniquePartners.add(project.getPartner());
                 }
             }
             stats.put("totalStakeholders", uniquePartners.size());
-            
-            // Get counts by category (manual count from approved projects)
+
+            // Get counts by category
             Map<String, Long> categoryCount = new HashMap<>();
             for (ProjectCategory category : ProjectCategory.values()) {
-                long count = approvedProjects.stream()
+                long count = allProjects.stream()
                     .filter(p -> p.getProjectCategory() == category)
                     .count();
                 categoryCount.put(category.name(), count);
