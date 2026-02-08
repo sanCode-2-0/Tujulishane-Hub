@@ -34,7 +34,7 @@ async function fetchProjectCounts() {
     try {
         const response = await fetch(`${window.BASE_URL}/api/projects/counts`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -65,7 +65,7 @@ async function fetchUserCounts() {
     try {
         const response = await fetch(`${window.BASE_URL}/api/auth/counts`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -97,7 +97,7 @@ async function fetchProjectStatistics() {
     try {
         const response = await fetch(`${window.BASE_URL}/api/projects/statistics`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-Type': 'application/json'
             }
         });

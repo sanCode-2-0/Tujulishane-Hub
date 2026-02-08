@@ -8,15 +8,19 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then((data) => {
             console.log("Navigation HTML loaded, length:", data.length);
-            document.getElementById("nav-placeholder").innerHTML = data;
-            console.log("Navigation inserted into DOM");
-            // Initialize Alpine.js on the newly loaded content
+            const placeholder = document.getElementById("nav-placeholder");
+            // Use Alpine.mutateDom so Alpine properly tracks the new DOM nodes
             if (window.Alpine) {
-                console.log("Alpine.js found, initializing tree");
-                window.Alpine.initTree(document.getElementById("nav-placeholder"));
+                console.log("Alpine.js found, inserting nav with mutateDom");
+                Alpine.mutateDom(() => {
+                    placeholder.innerHTML = data;
+                });
+                Alpine.initTree(placeholder);
             } else {
-                console.log("Alpine.js not found");
+                console.log("Alpine.js not found, inserting nav directly");
+                placeholder.innerHTML = data;
             }
+            console.log("Navigation inserted into DOM");
             // Trigger navigation loaded event
             window.dispatchEvent(new CustomEvent("navLoaded"));
             console.log("Navigation loaded event dispatched");

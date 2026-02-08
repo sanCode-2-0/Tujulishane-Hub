@@ -30,21 +30,37 @@ function showStep(step) {
   }`;
 
   prevBtn.style.display = step === 1 ? "none" : "inline-flex";
-  nextBtn.textContent = step === totalSteps ? "Submit" : "Next";
+  const isLastStep = step === totalSteps;
+  nextBtn.textContent = isLastStep ? "Submit" : "Next";
+  console.log("📍 Step", step, "of", totalSteps, "- button text:", nextBtn.textContent, "- is last step:", isLastStep);
 }
 
 nextBtn.addEventListener("click", () => {
-  if (currentStep < totalSteps) {
-    currentStep++;
-    showStep(currentStep);
-  } else {
-    // On last step, trigger form submission
-    const form = document.getElementById("projectForm");
-    if (form) {
-      form.dispatchEvent(
-        new Event("submit", { bubbles: true, cancelable: true })
-      );
+  console.log("🔘 Next button clicked!");
+  console.log("🔘 current step:", currentStep, "total steps:", totalSteps);
+  
+  try {
+    if (currentStep < totalSteps) {
+      console.log("🔘 Going to next step");
+      currentStep++;
+      showStep(currentStep);
+    } else {
+      console.log("🔘 On last step, triggering form submission");
+      // On last step, trigger form submission
+      const form = document.getElementById("projectForm");
+      console.log("🔘 Form lookup result:", form);
+      if (form) {
+        console.log("🔘 Form found, dispatching submit event");
+        const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
+        console.log("🔘 Submit event created:", submitEvent);
+        const dispatchResult = form.dispatchEvent(submitEvent);
+        console.log("🔘 Submit event dispatched, result:", dispatchResult);
+      } else {
+        console.error("🔘 Form not found!");
+      }
     }
+  } catch (error) {
+    console.error("🔘 Error in next button click handler:", error);
   }
 });
 

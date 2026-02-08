@@ -1250,8 +1250,75 @@
 	<script src="kenya-locations.js"></script>
 	<script src="set-base-url.js"></script>
 	<script>
+		// Define showAlert function globally before it's used
+		window.showAlert = function(message, title = "Alert", type = "info") {
+			console.log(`showAlert called: ${title} - ${message} (${type})`);
+
+			// Create modal element
+			const modal = document.createElement('div');
+			modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+
+			// Set icon and color based on type
+			let iconClass = 'fas fa-info-circle text-blue-500';
+			let buttonClass = 'bg-blue-600 hover:bg-blue-700';
+
+			if (type === 'error') {
+				iconClass = 'fas fa-exclamation-triangle text-red-500';
+				buttonClass = 'bg-red-600 hover:bg-red-700';
+			} else if (type === 'success') {
+				iconClass = 'fas fa-check-circle text-green-500';
+				buttonClass = 'bg-green-600 hover:bg-green-700';
+			} else if (type === 'warning') {
+				iconClass = 'fas fa-exclamation-circle text-yellow-500';
+				buttonClass = 'bg-yellow-600 hover:bg-yellow-700';
+			}
+
+			modal.innerHTML = `
+				<div class='bg-white rounded-lg p-6 max-w-md mx-4'>
+					<div class='flex items-center mb-4'>
+						<i class='${iconClass} text-xl mr-3'></i>
+						<h3 class='text-lg font-semibold text-gray-900'>${title}</h3>
+					</div>
+					<p class='text-gray-600 mb-4'>${message}</p>
+					<button onclick='this.closest(".fixed").remove()' class='w-full ${buttonClass} text-white px-4 py-2 rounded-lg transition-colors'>
+						Close
+					</button>
+				</div>
+			`;
+
+			// Add to page
+			document.body.appendChild(modal);
+
+			// Auto-close after 5 seconds for success messages
+			if (type === 'success') {
+				setTimeout(() => {
+					if (modal.parentNode) {
+						modal.remove();
+					}
+				}, 5000);
+			}
+		};
+
 		// Initialize everything when DOM is loaded
 		document.addEventListener("DOMContentLoaded", function () {
+			// Add global error handler
+			window.addEventListener('error', function(event) {
+				console.error('Global JavaScript error:', event.error);
+				console.error('Error details:', {
+					message: event.error.message,
+					filename: event.error.filename,
+					lineno: event.error.lineno,
+					colno: event.error.colno,
+					stack: event.error.stack
+				});
+			});
+
+			// Add unhandled promise rejection handler
+			window.addEventListener('unhandledrejection', function(event) {
+				console.error('Unhandled promise rejection:', event.reason);
+				console.error('Promise rejection details:', event);
+			});
+
 			initializeMap();
 			initializeMapSearch();
 			initializeThemeSelection();
@@ -1314,7 +1381,7 @@
 				const locationDiv = document.createElement("div");
 				locationDiv.className =
 					"flex items-center justify-between bg-white p-2 rounded border";
-				
+
 				// Check if we have a pre-defined name (from search)
 				if (location.name) {
 					locationDiv.innerHTML = `
@@ -1327,7 +1394,7 @@
 						</button>
 					`;
 					container.appendChild(locationDiv);
-					
+
 					// Reverse geocode to get county/subcounty data
 					fetch(
 						`https://api.mapbox.com/geocoding/v5/mapbox.places/${location.lng},${location.lat}.json?access_token=${mapboxgl.accessToken}&types=place,region,district,locality`
@@ -1353,7 +1420,7 @@
 								if (district || place) {
 									location.subCounty = (district || place).text;
 								}
-								
+
 								// Update form data with new info
 								updateFormData();
 							}
@@ -1428,7 +1495,7 @@
 									<i class="fas fa-times"></i>
 								</button>
 							`;
-							
+
 							// Update form data with new info
 							updateFormData();
 						})
@@ -1698,7 +1765,7 @@
 					<div class="p-2">
 						<div class="font-semibold text-gray-900">${feature.text}</div>
 						<div class="text-sm text-gray-600">${feature.place_name}</div>
-						<button 
+						<button
 							onclick="addSearchLocationToProject(${lat}, ${lng}, '${feature.text}')"
 							class="mt-2 w-full px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
 						>
@@ -2151,7 +2218,7 @@
 				const loadingEl = document.getElementById('collaboratorsLoading');
 				const errorEl = document.getElementById('collaboratorsError');
 				const listEl = document.getElementById('availableCollaboratorsList');
-				
+
 				loadingEl.classList.remove('hidden');
 				errorEl.classList.add('hidden');
 
@@ -2166,10 +2233,10 @@
 				}
 
 				const data = await response.json();
-				
+
 				if (data.status === 200 && data.data) {
 					availablePartners = data.data;
-					console.log('✅ Loaded available partners:', availablePartners.length);
+					console.log('Loaded available partners:', availablePartners.length);
 					displayAvailableCollaborators();
 				} else {
 					throw new Error(data.message || 'Failed to load partners');
@@ -2177,13 +2244,13 @@
 
 				loadingEl.classList.add('hidden');
 			} catch (error) {
-				console.error('❌ Error loading collaborators:', error);
-				
+				console.error('Error loading collaborators:', error);
+
 				// Show error state
 				const loadingEl = document.getElementById('collaboratorsLoading');
 				const errorEl = document.getElementById('collaboratorsError');
 				const errorMessageEl = document.getElementById('collaboratorsErrorMessage');
-				
+
 				loadingEl.classList.add('hidden');
 				errorEl.classList.remove('hidden');
 				errorMessageEl.textContent = error.message || 'Failed to load available partners. You can skip this step and add collaborators later.';
@@ -2193,16 +2260,16 @@
 		function displayAvailableCollaborators(searchTerm = '') {
 			const listEl = document.getElementById('availableCollaboratorsList');
 			const noCollaboratorsEl = document.getElementById('noCollaboratorsMessage');
-			
+
 			// Filter partners by search term
 			const filteredPartners = availablePartners.filter(partner => {
 				const searchLower = searchTerm.toLowerCase();
-				return partner.name.toLowerCase().includes(searchLower) || 
+				return partner.name.toLowerCase().includes(searchLower) ||
 					   partner.email.toLowerCase().includes(searchLower);
 			});
 
 			// Filter out already selected collaborators
-			const availableToSelect = filteredPartners.filter(partner => 
+			const availableToSelect = filteredPartners.filter(partner =>
 				!selectedCollaborators.find(sc => sc.email === partner.email)
 			);
 
@@ -2247,7 +2314,7 @@
 
 			// Add to selected list
 			selectedCollaborators.push(partner);
-			
+
 			// Update displays
 			displaySelectedCollaborators();
 			displayAvailableCollaborators(document.getElementById('collaboratorSearch').value);
@@ -2286,7 +2353,7 @@
 							${collab.organization ? `<p class="text-xs text-gray-400">${collab.organization.name}</p>` : ''}
 						</div>
 					</div>
-					<button type="button" onclick="removeCollaborator('${collab.email}')" 
+					<button type="button" onclick="removeCollaborator('${collab.email}')"
 						class="text-red-500 hover:text-red-700 transition-colors">
 						<i class="fas fa-times"></i>
 					</button>
@@ -2316,41 +2383,41 @@
 		// Initialize real-time validation
 		function initializeRealTimeValidation() {
 			const validator = new FormValidator('projectForm');
-			
+
 			// Add real-time validation for all input fields
 			const formFields = document.querySelectorAll('#projectForm input, #projectForm textarea, #projectForm select');
-			
+
 			formFields.forEach(field => {
 				// Validate on blur (when user leaves field)
 				field.addEventListener('blur', function() {
 					validator.validateField(this);
 				});
-				
+
 				// Clear error on focus (when user enters field)
 				field.addEventListener('focus', function() {
 					validator.clearFieldError(this);
 				});
 			});
-			
+
 			// Validate date range when dates change
 			const startDateInput = document.getElementById('starttime_period');
 			const endDateInput = document.getElementById('endtime_period');
-			
+
 			if (startDateInput && endDateInput) {
 				startDateInput.addEventListener('change', () => validator.validateDateRange());
 				endDateInput.addEventListener('change', () => validator.validateDateRange());
 			}
-			
+
 			// Validate budget and currency together
 			const budgetInput = document.getElementById('budget');
 			const currencySelect = document.getElementById('currency');
-			
+
 			if (budgetInput && currencySelect) {
 				budgetInput.addEventListener('blur', () => validator.validateBudget());
 				currencySelect.addEventListener('change', () => validator.validateBudget());
 			}
-			
-			console.log('✅ Real-time validation initialized');
+
+			console.log('Real-time validation initialized');
 		}
 
 		// Add event listeners for county/sub-county dropdowns to zoom map
@@ -2400,19 +2467,19 @@
 
 				// Initialize form validator
 				const validator = new FormValidator('projectForm');
-				
+
 				// Validate all fields before submission
-				console.log("🔍 Running form validation...");
+				console.log("Running form validation...");
 				const isValid = validator.validateAll();
-				
+
 				if (!isValid) {
-					console.error("❌ Form validation failed:", validator.getErrors());
+					console.error("Form validation failed:", validator.getErrors());
 					validator.showErrorSummary();
 					validator.scrollToFirstError();
 					return;
 				}
-				
-				console.log("✅ Form validation passed");
+
+				console.log("Form validation passed");
 
 				// Don't use FormData(this) to avoid including empty file inputs
 				// Instead, collect form data manually
@@ -2550,7 +2617,7 @@
 					const response = await fetch(`${window.BASE_URL}/api/projects`, {
 						method: "POST",
 						headers: {
-							Authorization: `Bearer ${localStorage.getItem("token")}`,
+							Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
 						},
 						body: finalFormData,
 					});
@@ -2559,16 +2626,16 @@
 					console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
 					if (response.ok) {
-						console.log("✅ Project created successfully!");
-						
+						console.log("Project created successfully!");
+
 						// Get the created project data
 						const projectResponse = await response.json();
 						const createdProject = projectResponse.data;
-						
+
 						// Add collaborators if any were selected
 						if (selectedCollaborators.length > 0 && createdProject && createdProject.id) {
-							console.log(`📝 Adding ${selectedCollaborators.length} collaborators to project ${createdProject.id}...`);
-							
+							console.log(`Adding ${selectedCollaborators.length} collaborators to project ${createdProject.id}...`);
+
 							// Add each collaborator
 							const collaboratorPromises = selectedCollaborators.map(async (collaborator) => {
 								try {
@@ -2577,29 +2644,29 @@
 										{
 											method: 'POST',
 											headers: {
-												'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('accessToken')}`
+												'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
 											}
 										}
 									);
-									
+
 									if (!collabResponse.ok) {
-										console.warn(`⚠️ Failed to add collaborator ${collaborator.email}:`, await collabResponse.text());
+										console.warn(`Failed to add collaborator ${collaborator.email}:`, await collabResponse.text());
 										return { success: false, email: collaborator.email };
 									}
-									
-									console.log(`✅ Successfully added collaborator: ${collaborator.email}`);
+
+									console.log(`Successfully added collaborator: ${collaborator.email}`);
 									return { success: true, email: collaborator.email };
 								} catch (error) {
-									console.error(`❌ Error adding collaborator ${collaborator.email}:`, error);
+									console.error(`Error adding collaborator ${collaborator.email}:`, error);
 									return { success: false, email: collaborator.email };
 								}
 							});
-							
+
 							const results = await Promise.all(collaboratorPromises);
 							const failedCollaborators = results.filter(r => !r.success);
-							
+
 							if (failedCollaborators.length > 0) {
-								console.warn(`⚠️ ${failedCollaborators.length} collaborators could not be added`);
+								console.warn(`${failedCollaborators.length} collaborators could not be added`);
 								alert(`Project created successfully!\n\nNote: ${failedCollaborators.length} out of ${selectedCollaborators.length} collaborators could not be added. You can add them later from the project page.`);
 							} else {
 								alert("Project created successfully with all collaborators!");
@@ -2607,7 +2674,7 @@
 						} else {
 							alert("Project created successfully!");
 						}
-						
+
 						window.location.href = "index-post-login.html";
 					} else {
 						let errorMessage = "Unknown error";

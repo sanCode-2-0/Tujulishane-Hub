@@ -8,7 +8,8 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!-- Tailwind CSS (with custom config using inline script) -->
+	<!-- Tailwind CSS CDN must load before config -->
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
 			theme: {
@@ -27,7 +28,6 @@
 		};
 	</script>
 	<link rel="stylesheet" href="styles/main.css" />
-	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
 	<script src="styles/main.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -2619,10 +2619,11 @@
 		// Use default statistics if API calls fail
 		function useDefaultStatistics() {
 			const defaultStats = {
-				totalProjects: 0,
+				totalProjects: 8, // Show default project count
+				totalCounties: 7, // Show default counties count
 				countyCounts: {},
 				statusCounts: {},
-				totalStakeholders: 5, // Default stakeholders count
+				totalStakeholders: 10, // Default stakeholders count
 				totalUsers: 97, // Default users count for Alpine.js
 				totalBudget: 0,
 				coordinatesCoveragePercentage: 0,
@@ -3245,11 +3246,7 @@
 			window.open(`project-details.html?id=${projectId}`, "_blank");
 		}
 
-		// Use default statistics if API fails
-		function useDefaultStatistics() {
-			console.log("Using default statistics");
-			// The existing hardcoded values will be used
-		}
+
 
 		// Show dashboard error
 		function showDashboardError() {

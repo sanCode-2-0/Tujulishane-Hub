@@ -754,6 +754,13 @@ public class ProjectService {
             }
             
             project.setStartDate(request.getStartDate());
+            project.setEndDate(request.getEndDate());
+            project.setActivityType(request.getActivityType());
+            project.setBudget(request.getBudget());
+            project.setObjectives(request.getObjectives());
+            project.setContactPersonName(request.getContactPersonName());
+            project.setContactPersonRole(request.getContactPersonRole());
+            project.setContactPersonEmail(request.getContactPersonEmail());
 
             logger.debug("About to call replaceThemes with themes: {}", request.getThemes());
             replaceThemes(project, request.getThemes());

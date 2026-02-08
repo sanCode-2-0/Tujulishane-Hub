@@ -9,22 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // --------------------------
       // Populate user info
       // --------------------------
-      const userDisplayName = document.getElementById("userDisplayName");
-      if (userDisplayName)
-        userDisplayName.textContent = user.name || user.email || "User";
-
-      const userNameDisplay = document.getElementById("userNameDisplay");
-      if (userNameDisplay) userNameDisplay.textContent = user.name || "User";
-
-      const userEmailDisplay = document.getElementById("userEmailDisplay");
-      if (userEmailDisplay) userEmailDisplay.textContent = user.email || "";
-
-      const userRoleDisplay = document.getElementById("userRoleDisplay");
-      if (userRoleDisplay) userRoleDisplay.textContent = user.role || "USER";
-
-      const userStatusDisplay = document.getElementById("userStatusDisplay");
-      if (userStatusDisplay)
-        userStatusDisplay.textContent = user.approvalStatus || "PENDING";
+      document.querySelectorAll("#userDisplayName").forEach(el => el.textContent = user.name || user.email || "User");
+      document.querySelectorAll("#userNameDisplay").forEach(el => el.textContent = user.name || "User");
+      document.querySelectorAll("#userEmailDisplay").forEach(el => el.textContent = user.email || "");
+      document.querySelectorAll("#userRoleDisplay").forEach(el => el.textContent = user.role || "USER");
+      document.querySelectorAll("#userStatusDisplay").forEach(el => el.textContent = user.approvalStatus || "PENDING");
 
       // --------------------------
       // Role-based navigation logic
@@ -43,11 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // SUPER_ADMIN_REVIEWER
       else if (user.role === "SUPER_ADMIN_REVIEWER") {
-        const reviewerNav = document.querySelectorAll("#superAdminReviewerNav");
-        reviewerNav.forEach((nav) => nav.classList.remove("hidden"));
-        console.log(
-          "[DEBUG] Showing superAdminReviewerNav for SUPER_ADMIN_REVIEWER"
-        );
+        const adminNavItems = document.querySelectorAll("#adminNav");
+        adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+        console.log("[DEBUG] Showing adminNav for SUPER_ADMIN_REVIEWER");
         if (typeof loadPendingRequestsCount === "function") {
           loadPendingRequestsCount();
         }
@@ -59,11 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // SUPER_ADMIN_APPROVER
       else if (user.role === "SUPER_ADMIN_APPROVER") {
-        const approverNav = document.querySelectorAll("#superAdminApproverNav");
-        approverNav.forEach((nav) => nav.classList.remove("hidden"));
-        console.log(
-          "[DEBUG] Showing superAdminApproverNav for SUPER_ADMIN_APPROVER"
-        );
+        const adminNavItems = document.querySelectorAll("#adminNav");
+        adminNavItems.forEach((nav) => nav.classList.remove("hidden"));
+        console.log("[DEBUG] Showing adminNav for SUPER_ADMIN_APPROVER");
         if (typeof loadPendingRequestsCount === "function") {
           loadPendingRequestsCount();
         }
