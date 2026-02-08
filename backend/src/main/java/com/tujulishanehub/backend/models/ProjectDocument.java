@@ -13,8 +13,7 @@ public class ProjectDocument {
     private String fileType;
     private Long fileSize; // Size in bytes
 
-    @Lob
-    @Column(length = 10485760) // 10MB max, adjust as needed
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -46,7 +46,7 @@ public class Organization {
     @Column(name = "registration_number")
     private String registrationNumber;
     
-    @Column(name = "logo_data", columnDefinition = "LONGBLOB")
+    @Column(name = "logo_data", columnDefinition = "bytea")
     private byte[] logoData;
     
     @Column(name = "logo_content_type")
