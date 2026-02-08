@@ -175,3 +175,4 @@ frontend/CURL_DOCUMENT_TEST.md
 frontend/test-document-fetch.bat
 frontend/test-document-fetch.ps1
 dump_all_data.sql
+frontend/config.js
