@@ -185,23 +185,21 @@
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
 									<i class="fad fa-tasks text-lg lg:text-2xl"></i>
 									<div class="mt-2">
-										<span id="totalProjectsCount" class="font-bold tracking-wider">
-											8
-										</span>
+										<span id="totalProjectsCount" class="font-bold tracking-wider"><i class="fas fa-spinner fa-spin text-sm"></i></span>
 										<span class="font-thin">Projects</span>
 									</div>
 								</div>
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
 									<i class="fad fa-map-marker-alt text-lg lg:text-2xl"></i>
 									<div class="mt-2">
-										<span id="totalCountiesCount" class="font-bold tracking-wider">7</span>
+										<span id="totalCountiesCount" class="font-bold tracking-wider"><i class="fas fa-spinner fa-spin text-sm"></i></span>
 										<span class="font-thin">Counties</span>
 									</div>
 								</div>
 								<div class="flex flex-col items-center w-1/2 sm:w-auto">
 									<i class="fad fa-handshake text-lg lg:text-2xl"></i>
 									<div class="mt-2">
-										<span id="totalStakeholdersCount" class="font-bold tracking-wider">10</span>
+										<span id="totalStakeholdersCount" class="font-bold tracking-wider"><i class="fas fa-spinner fa-spin text-sm"></i></span>
 										<span class="font-thin">Stakeholders</span>
 									</div>
 								</div>
@@ -2471,30 +2469,12 @@
 				console.log("[DEBUG] Current user for statistics:", user);
 				console.log("[DEBUG] User role:", user?.role);
 
-				if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+				const adminRoles = ["ADMIN", "SUPER_ADMIN", "SUPER_ADMIN_APPROVER", "SUPER_ADMIN_REVIEWER"];
+				if (!user || !adminRoles.includes(user.role)) {
 					console.log(
-						"[DEBUG] User is not admin, using estimated stakeholders count. Role:",
+						"[DEBUG] User is not admin, skipping user statistics load. Role:",
 						user?.role
 					);
-					// For non-admin users, estimate stakeholders as a portion of total projects
-					// or use a default value
-					const estimatedStakeholders = Math.max(
-						1,
-						Math.floor((statsData.totalProjects || 0) * 0.3)
-					); // Estimate 30% of projects have stakeholders
-					statsData.totalStakeholders = estimatedStakeholders;
-
-					// Update the display
-					const totalStakeholdersElement = document.getElementById(
-						"totalStakeholdersCount"
-					);
-					if (totalStakeholdersElement) {
-						totalStakeholdersElement.textContent = estimatedStakeholders;
-						console.log(
-							"✅ Updated total stakeholders count (estimated):",
-							estimatedStakeholders
-						);
-					}
 					return;
 				}
 
@@ -2619,19 +2599,18 @@
 		// Use default statistics if API calls fail
 		function useDefaultStatistics() {
 			const defaultStats = {
-				totalProjects: 8, // Show default project count
-				totalCounties: 7, // Show default counties count
+				totalProjects: 0,
+				totalCounties: 0,
 				countyCounts: {},
 				statusCounts: {},
-				totalStakeholders: 10, // Default stakeholders count
-				totalUsers: 97, // Default users count for Alpine.js
+				totalStakeholders: 0,
+				totalUsers: 0,
 				totalBudget: 0,
 				coordinatesCoveragePercentage: 0,
 			};
 
-			// Show message about using defaults
 			console.warn(
-				"⚠️ Using default statistics due to API failure - this should show 0 for all stats"
+				"⚠️ Using default statistics due to API failure"
 			);
 			showApiConnectionWarning();
 
