@@ -1254,49 +1254,47 @@
 		window.showAlert = function(message, title = "Alert", type = "info") {
 			console.log(`showAlert called: ${title} - ${message} (${type})`);
 
-			// Create modal element
-			const modal = document.createElement('div');
-			modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+			return new Promise((resolve) => {
+				// Create modal element
+				const modal = document.createElement('div');
+				modal.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50';
 
-			// Set icon and color based on type
-			let iconClass = 'fas fa-info-circle text-blue-500';
-			let buttonClass = 'bg-blue-600 hover:bg-blue-700';
+				// Set icon and color based on type
+				let iconClass = 'fas fa-info-circle text-blue-500';
+				let buttonClass = 'bg-blue-600 hover:bg-blue-700';
 
-			if (type === 'error') {
-				iconClass = 'fas fa-exclamation-triangle text-red-500';
-				buttonClass = 'bg-red-600 hover:bg-red-700';
-			} else if (type === 'success') {
-				iconClass = 'fas fa-check-circle text-green-500';
-				buttonClass = 'bg-green-600 hover:bg-green-700';
-			} else if (type === 'warning') {
-				iconClass = 'fas fa-exclamation-circle text-yellow-500';
-				buttonClass = 'bg-yellow-600 hover:bg-yellow-700';
-			}
+				if (type === 'error') {
+					iconClass = 'fas fa-exclamation-triangle text-red-500';
+					buttonClass = 'bg-red-600 hover:bg-red-700';
+				} else if (type === 'success') {
+					iconClass = 'fas fa-check-circle text-green-500';
+					buttonClass = 'bg-green-600 hover:bg-green-700';
+				} else if (type === 'warning') {
+					iconClass = 'fas fa-exclamation-circle text-yellow-500';
+					buttonClass = 'bg-yellow-600 hover:bg-yellow-700';
+				}
 
-			modal.innerHTML = `
-				<div class='bg-white rounded-lg p-6 max-w-md mx-4'>
-					<div class='flex items-center mb-4'>
-						<i class='${iconClass} text-xl mr-3'></i>
-						<h3 class='text-lg font-semibold text-gray-900'>${title}</h3>
+				modal.innerHTML = `
+					<div class='bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl'>
+						<div class='flex items-center mb-4'>
+							<i class='${iconClass} text-xl mr-3'></i>
+							<h3 class='text-lg font-semibold text-gray-900'>${title}</h3>
+						</div>
+						<div class='text-gray-600 mb-4'>${message}</div>
+						<button id='modalCloseBtn' class='w-full ${buttonClass} text-white px-4 py-2 rounded-lg transition-colors'>
+							OK
+						</button>
 					</div>
-					<p class='text-gray-600 mb-4'>${message}</p>
-					<button onclick='this.closest(".fixed").remove()' class='w-full ${buttonClass} text-white px-4 py-2 rounded-lg transition-colors'>
-						Close
-					</button>
-				</div>
-			`;
+				`;
 
-			// Add to page
-			document.body.appendChild(modal);
+				document.body.appendChild(modal);
 
-			// Auto-close after 5 seconds for success messages
-			if (type === 'success') {
-				setTimeout(() => {
-					if (modal.parentNode) {
-						modal.remove();
-					}
-				}, 5000);
-			}
+				// Resolve only when user clicks OK
+				modal.querySelector('#modalCloseBtn').addEventListener('click', () => {
+					modal.remove();
+					resolve();
+				});
+			});
 		};
 
 		// Initialize everything when DOM is loaded
@@ -2559,7 +2557,7 @@
 					}
 
 					if (!data.locations || data.locations.length === 0) {
-						alert("Please select at least one location on the map.");
+						await showAlert("Please select at least one location on the map.", "Missing Location", "warning");
 						return;
 					}
 
@@ -2667,12 +2665,24 @@
 
 							if (failedCollaborators.length > 0) {
 								console.warn(`${failedCollaborators.length} collaborators could not be added`);
-								alert(`Project created successfully!\n\nNote: ${failedCollaborators.length} out of ${selectedCollaborators.length} collaborators could not be added. You can add them later from the project page.`);
+								await showAlert(
+									buildProjectSuccessMessage(createdProject.projectNo, `Note: ${failedCollaborators.length} out of ${selectedCollaborators.length} collaborators could not be added. You can add them later from the project page.`),
+									"Project Created",
+									"success"
+								);
 							} else {
-								alert("Project created successfully with all collaborators!");
+								await showAlert(
+									buildProjectSuccessMessage(createdProject.projectNo),
+									"Project Created",
+									"success"
+								);
 							}
 						} else {
-							alert("Project created successfully!");
+							await showAlert(
+								buildProjectSuccessMessage(createdProject ? createdProject.projectNo : null),
+								"Project Created",
+								"success"
+							);
 						}
 
 						window.location.href = "index-post-login.html";
@@ -2699,16 +2709,45 @@
 						console.error("Final error message:", errorMessage);
 						console.error("Full error details:", errorDetails);
 
-						alert(
-							"Failed to create project: " + errorMessage
-						);
+						await showAlert("Failed to create project: " + errorMessage, "Error", "error");
 					}
 				} catch (error) {
 					console.error("Error processing form data:", error);
 					console.error("Error stack:", error.stack);
-					alert("Error processing form data. Please try again. Check console for details.");
+					await showAlert("Error processing form data. Please try again. Check console for details.", "Error", "error");
 				}
 			});
+
+	function copyProjectNo(btn, projectNo) {
+		navigator.clipboard.writeText(projectNo).then(() => {
+			btn.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+			setTimeout(() => {
+				btn.innerHTML = '<i class="far fa-copy"></i>';
+			}, 2000);
+		});
+	}
+
+	function buildProjectSuccessMessage(projectNo, extraNote) {
+		let html = '<div class="text-center">';
+		html += '<p class="text-gray-700 mb-4">Your project has been created successfully!</p>';
+		if (projectNo) {
+			html += '<div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3">';
+			html += '<p class="text-sm text-gray-500 mb-1">Project Number</p>';
+			html += '<div class="flex items-center justify-center gap-2">';
+			html += '<span class="text-xl font-bold text-teal-700">' + projectNo + '</span>';
+			html += '<button onclick="copyProjectNo(this, \'' + projectNo + '\')" class="p-1.5 text-gray-400 hover:text-teal-600 transition rounded hover:bg-gray-100" title="Copy project number">';
+			html += '<i class="far fa-copy"></i>';
+			html += '</button>';
+			html += '</div>';
+			html += '</div>';
+		}
+		if (extraNote) {
+			html += '<p class="text-sm text-amber-600 mt-2"><i class="fas fa-exclamation-triangle mr-1"></i>' + extraNote + '</p>';
+		}
+		html += '</div>';
+		return html;
+	}
+
 	</script>
 
 	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
