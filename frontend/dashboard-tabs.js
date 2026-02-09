@@ -123,11 +123,11 @@ function initDashboardTabs() {
                 // Add click handlers for mobile tabs
                 const mobileTabs = container.querySelectorAll('.mobile-sidebar-tab');
                 mobileTabs.forEach(btn => {
-                    btn.addEventListener('click', function(e) {
+                    btn.addEventListener('click', async function(e) {
                         e.preventDefault();
                         const tab = btn.getAttribute('data-tab');
                         console.log('Mobile tab clicked:', tab);
-                        showTab(tab);
+                        await showTab(tab);
                     });
                 });
                 

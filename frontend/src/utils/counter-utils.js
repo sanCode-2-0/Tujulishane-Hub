@@ -63,7 +63,15 @@ async function fetchProjectCounts() {
  */
 async function fetchUserCounts() {
     try {
-        const response = await fetch(`${window.BASE_URL}/api/auth/counts`, {
+        const userRole = localStorage.getItem('userRole') || 'PARTNER';
+        
+        // Use appropriate endpoint based on user role
+        let endpoint = '/api/auth/counts';
+        if (['SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER'].includes(userRole)) {
+            endpoint = '/api/auth/admin/users-counts'; // Use admin-specific endpoint
+        }
+        
+        const response = await fetch(`${window.BASE_URL}${endpoint}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-Type': 'application/json'
@@ -71,11 +79,27 @@ async function fetchUserCounts() {
         });
         
         if (!response.ok) {
-            throw new Error(`Failed to fetch user counts: ${response.status}`);
+            console.warn(`Failed to fetch user counts from ${endpoint}: ${response.status}`);
+            // Return default values for non-admin users instead of throwing error
+            return {
+                total: 0,
+                partners: 0,
+                donors: 0,
+                admins: 0,
+                active: 0,
+                pending: 0
+            };
         }
         
         const result = await response.json();
-        return result.data || {};
+        return result.data || {
+            total: 0,
+            partners: 0,
+            donors: 0,
+            admins: 0,
+            active: 0,
+            pending: 0
+        };
     } catch (error) {
         console.error('Error fetching user counts:', error);
         return {

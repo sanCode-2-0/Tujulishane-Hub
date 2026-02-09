@@ -1663,14 +1663,19 @@
 		}
 
 		function renderTable(tabId, data, columns) {
+			console.log(`renderTable called for ${tabId} with ${data.length} items`);
 			const tbody = document.querySelector(`#${tabId} tbody`);
-			if (!tbody) return;
+			if (!tbody) {
+				console.error(`Table body not found for ${tabId}`);
+				return;
+			}
 			tbody.innerHTML = '';
 			if (!Array.isArray(data)) {
 				console.error('Data is not an array for', tabId, ':', data);
 				return;
 			}
-			data.forEach(item => {
+			console.log(`About to render ${data.length} rows for ${tabId}`);
+			data.forEach((item, index) => {
 				const row = document.createElement('tr');
 				row.className = 'bg-white dark:bg-gray-900/50 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50';
 				columns.forEach((col, index) => {
