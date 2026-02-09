@@ -1668,7 +1668,7 @@
 					
 					${project.projectName || project.title || "Untitled Project"}</h4>
 				
-				<p class="text-sm text-gray-700 leading-relaxed mb-3">
+				<p class="text-sm text-gray-700 leading-relaxed mb-3 break-all">
 					${project.description ||
 					project.objectives ||
 					"This project currently has no description provided."
@@ -1702,9 +1702,9 @@
 							? locationParts.join(", ")
 							: "location not specified";
 					})()}</strong>,
-					this project ${project.partner && project.partner !== 'UNSPECIFIED' && project.partner !== 'TO_BE_ANNOUNCED'
-						? `is supported by <strong>${project.partner}</strong>`
-						: "has implementation partners"
+					this project ${project.organizationName && project.organizationName !== 'UNSPECIFIED' && project.organizationName !== 'TO_BE_ANNOUNCED'
+						? `is supported by <strong>${project?.organizationName}</strong>`
+						: "organisations in partnership with Ministry of Health"
 					} 
 					with an estimated budget of <strong>${project.budget && project.budget !== 0 && project.budget !== 'N/A'
 						? "KES " + Number(project.budget).toLocaleString()
