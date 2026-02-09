@@ -235,27 +235,13 @@ public class ProjectController {
             @RequestParam(defaultValue = "desc") String sortDir) {
         
         try {
-            // Get current user to determine filtering
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            boolean isAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().contains("SUPER_ADMIN"));
-            
-            Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+            Sort sort = sortDir.equalsIgnoreCase("desc") ?
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-            
+
             Pageable pageable = PageRequest.of(page, size, sort);
         Page<Project> projectPage = projectService.getProjects(pageable);
-        
-        // Filter projects based on user role and approval status
+
         List<ProjectResponse> projectResponses = projectPage.getContent().stream()
-            .filter(project -> {
-                // Admin users see all projects
-                if (isAdmin) {
-                    return true;
-                }
-                // Non-admin users only see approved projects (not rejected or inactive)
-                return project.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED;
-            })
             .map(projectService::toProjectResponse)
             .collect(Collectors.toList());
 
@@ -356,6 +342,42 @@ public class ProjectController {
         }
     }
     
+    /**
+     * Get a project by its project number
+     */
+    @GetMapping("/by-number/{projectNo}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<ProjectResponse>> getProjectByNumber(@PathVariable String projectNo) {
+        try {
+            Optional<Project> project = projectRepository.findByProjectNo(projectNo);
+
+            if (project.isPresent()) {
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Project found",
+                    projectService.toProjectResponse(project.get())
+                );
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Project not found with number: " + projectNo,
+                    null
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error retrieving project by number {}: {}", projectNo, e.getMessage(), e);
+            ApiResponse<ProjectResponse> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Failed to retrieve project: " + e.getMessage(),
+                null
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     /**
      * Get public statistics (no authentication required)
      */
@@ -696,20 +718,8 @@ public class ProjectController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects() {
         try {
-            // Get current user to determine filtering
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            boolean isAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().contains("SUPER_ADMIN"));
-            
             List<Project> projects = projectRepository.findAll();
-            
-            // Filter projects based on user role and approval status
-            if (!isAdmin) {
-                projects = projects.stream()
-                    .filter(project -> project.getApprovalWorkflowStatus() == com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED)
-                    .collect(Collectors.toList());
-            }
-            
+
             ApiResponse<List<ProjectResponse>> response = new ApiResponse<>(
                 HttpStatus.OK.value(), 
                 "All projects retrieved successfully", 

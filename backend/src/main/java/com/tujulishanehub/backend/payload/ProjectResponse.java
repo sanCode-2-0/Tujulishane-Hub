@@ -2,6 +2,7 @@ package com.tujulishanehub.backend.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.ApprovalWorkflowStatus;
 import com.tujulishanehub.backend.models.ProjectCategory;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class ProjectResponse {
     private String projectNo;
     private String partner;
     private String partnerName;
+    private String organizationName;
     private String createdByRole;
     private String title;
     private ProjectCategory projectCategory;
@@ -33,6 +35,7 @@ public class ProjectResponse {
     private Integer completionPercentage;
     private Boolean hasReports;
     private ApprovalStatus approvalStatus;
+    private ApprovalWorkflowStatus approvalWorkflowStatus;
     private Long approvedBy;
     private LocalDateTime approvedAt;
     private String rejectionReason;
@@ -69,6 +72,14 @@ public class ProjectResponse {
 
     public void setPartnerName(String partnerName) {
         this.partnerName = partnerName;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     public String getCreatedByRole() {
@@ -213,6 +224,14 @@ public class ProjectResponse {
 
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
+    }
+
+    public ApprovalWorkflowStatus getApprovalWorkflowStatus() {
+        return approvalWorkflowStatus;
+    }
+
+    public void setApprovalWorkflowStatus(ApprovalWorkflowStatus approvalWorkflowStatus) {
+        this.approvalWorkflowStatus = approvalWorkflowStatus;
     }
 
     public Long getApprovedBy() {

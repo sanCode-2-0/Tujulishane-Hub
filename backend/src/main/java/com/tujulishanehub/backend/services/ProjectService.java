@@ -654,6 +654,9 @@ public class ProjectService {
             if (partnerUser.isPresent()) {
                 response.setPartnerName(partnerUser.get().getName());
                 response.setCreatedByRole(partnerUser.get().getRole().name());
+                if (partnerUser.get().getOrganization() != null) {
+                    response.setOrganizationName(partnerUser.get().getOrganization().getName());
+                }
             }
             response.setTitle(project.getTitle());
             response.setProjectCategory(project.getProjectCategory());
@@ -670,6 +673,7 @@ public class ProjectService {
             response.setCompletionPercentage(project.getCompletionPercentage());
             response.setHasReports(project.getHasReports());
             response.setApprovalStatus(project.getApprovalStatus());
+            response.setApprovalWorkflowStatus(project.getApprovalWorkflowStatus());
             response.setApprovedBy(project.getApprovedBy());
             response.setApprovedAt(project.getApprovedAt());
             response.setRejectionReason(project.getRejectionReason());
