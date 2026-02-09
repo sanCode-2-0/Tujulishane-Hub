@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Project Details - RMNCAH</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: "#272E28",
+						secondary: "#f59e0b",
+						accent: "#00474C",
+						button: "#14B04C",
+						button_two: "#3482FF",
+					},
+					fontFamily: {
+						sans: ["Inter", "sans-serif"],
+					},
+				},
+			},
+		};
+	</script>
+	<link rel="stylesheet" href="styles/main.css" />
+	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+	<!-- Mapbox -->
+	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+	<script src="./config.js"></script>
+	<script src="./set-base-url.js"></script>
+	<script src="./session-config.js"></script>
+	<script src="./modal-utils.js"></script>
+	<script src="auth.js"></script>
+	<script src="./session-manager.js"></script>
+</head>
+
+<body class="text-gray-800 bg-gray-50 overflow-x-hidden">
+	<!-- Nav -->
+	<div id="nav-placeholder"></div>
+
+	<!-- Loading State -->
+	<div id="loadingState" class="flex items-center justify-center min-h-[60vh] mt-24">
+		<div class="text-center">
+			<i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+			<p class="text-gray-500">Loading project details...</p>
+		</div>
+	</div>
+
+	<!-- Error State -->
+	<div id="errorState" class="hidden flex items-center justify-center min-h-[60vh] mt-24">
+		<div class="text-center max-w-md">
+			<i class="fas fa-exclamation-triangle text-5xl text-red-400 mb-4"></i>
+			<h2 class="text-xl font-semibold text-gray-700 mb-2">Project Not Found</h2>
+			<p id="errorMessage" class="text-gray-500 mb-6">The project you're looking for could not be found.</p>
+			<a href="index-post-login.html"
+				class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">
+				<i class="fas fa-arrow-left mr-2"></i>Back to Projects
+			</a>
+		</div>
+	</div>
+
+	<!-- Project Details Content -->
+	<div id="projectContent" class="hidden mt-24">
+		<!-- Header -->
+		<section class="bg-white border-b">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+				<div class="flex items-center mb-4">
+					<a href="index-post-login.html"
+						class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">
+						<i class="fas fa-arrow-left mr-1"></i> Back to Projects
+					</a>
+				</div>
+				<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+					<div class="min-w-0">
+						<h1 id="projectTitle" class="text-2xl sm:text-3xl font-bold text-gray-900 break-words"></h1>
+						<p class="text-sm text-gray-500 mt-1">
+							Project No: <span id="projectNo" class="font-mono font-semibold text-gray-700"></span>
+						</p>
+					</div>
+					<div class="flex-shrink-0">
+						<span id="projectApproval"
+							class="px-4 py-1.5 rounded-full text-sm font-semibold"></span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Body -->
+		<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 overflow-hidden">
+				<!-- Left Column: Main Info -->
+				<div class="lg:col-span-2 space-y-6 min-w-0">
+					<!-- Overview -->
+					<div class="bg-white rounded-xl shadow-sm border p-6">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">
+							<i class="fas fa-info-circle text-blue-600 mr-2"></i>Overview
+						</h2>
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Organisation</span>
+								<p id="projectOrganisation" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Category</span>
+								<p id="projectCategory" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Activity Type</span>
+								<p id="projectActivityType" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">County</span>
+								<p id="projectCounty" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Start Date</span>
+								<p id="projectStartDate" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+							<div class="min-w-0">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">End Date</span>
+								<p id="projectEndDate" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Objectives -->
+					<div id="objectivesCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">
+							<i class="fas fa-bullseye text-green-600 mr-2"></i>Objectives
+						</h2>
+						<p id="projectObjectives" class="text-gray-700 leading-relaxed whitespace-pre-line break-words"></p>
+					</div>
+
+					<!-- Themes -->
+					<div id="themesCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">
+							<i class="fas fa-tags text-purple-600 mr-2"></i>Thematic Areas
+						</h2>
+						<div id="projectThemes" class="flex flex-wrap gap-2"></div>
+					</div>
+
+					<!-- Locations -->
+					<div id="locationsCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">
+							<i class="fas fa-map-marker-alt text-red-600 mr-2"></i>Locations
+						</h2>
+						<div id="projectLocations" class="space-y-3"></div>
+					</div>
+
+					<!-- Map -->
+					<div id="mapCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">
+							<i class="fas fa-map text-blue-600 mr-2"></i>Project Location
+						</h2>
+						<div id="projectMap" class="w-full h-[400px] rounded-lg overflow-hidden"></div>
+					</div>
+				</div>
+
+				<!-- Right Column: Sidebar -->
+				<div class="space-y-6 min-w-0">
+					<!-- Budget -->
+					<div id="budgetCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-3">
+							<i class="fas fa-wallet text-yellow-600 mr-2"></i>Budget
+						</h2>
+						<p id="projectBudget" class="text-3xl font-bold text-gray-900 break-words"></p>
+					</div>
+
+					<!-- Completion -->
+					<div id="completionCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-3">
+							<i class="fas fa-chart-pie text-blue-600 mr-2"></i>Completion
+						</h2>
+						<div class="relative pt-1">
+							<div class="flex items-center justify-between mb-2">
+								<span id="completionText" class="text-sm font-semibold text-gray-700"></span>
+							</div>
+							<div class="overflow-hidden h-3 text-xs flex rounded-full bg-gray-200">
+								<div id="completionBar"
+									class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 rounded-full transition-all duration-500">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Contact Person -->
+					<div id="contactCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
+						<h2 class="text-lg font-semibold text-gray-900 mb-3">
+							<i class="fas fa-user text-teal-600 mr-2"></i>Contact Person
+						</h2>
+						<div class="space-y-2">
+							<p id="contactName" class="text-gray-800 font-medium"></p>
+							<p id="contactRole" class="text-sm text-gray-500"></p>
+							<p id="contactEmail" class="text-sm">
+								<a id="contactEmailLink" href="" class="text-blue-600 hover:underline"></a>
+							</p>
+						</div>
+					</div>
+
+					<!-- Timestamps -->
+					<div class="bg-white rounded-xl shadow-sm border p-6">
+						<h2 class="text-lg font-semibold text-gray-900 mb-3">
+							<i class="fas fa-clock text-gray-500 mr-2"></i>Timeline
+						</h2>
+						<div class="space-y-2 text-sm">
+							<div class="flex justify-between">
+								<span class="text-gray-500">Created</span>
+								<span id="projectCreatedAt" class="text-gray-700 font-medium">-</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-gray-500">Updated</span>
+								<span id="projectUpdatedAt" class="text-gray-700 font-medium">-</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<script src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", async () => {
+			if (!authManager.isAuthenticated()) {
+				window.location.href = "index.html";
+				return;
+			}
+
+			const params = new URLSearchParams(window.location.search);
+			const projectNumber = params.get("project_number");
+
+			if (!projectNumber) {
+				showError("No project number provided in the URL.");
+				return;
+			}
+
+			try {
+				const response = await authManager.apiCall(
+					`/api/projects/by-number/${encodeURIComponent(projectNumber)}`,
+					"GET"
+				);
+
+				if (!response.ok) {
+					showError("Project not found with number: " + projectNumber);
+					return;
+				}
+
+				const result = await response.json();
+				if (result.status === 200 && result.data) {
+					renderProject(result.data);
+				} else {
+					showError(result.message || "Failed to load project.");
+				}
+			} catch (err) {
+				console.error("Error loading project:", err);
+				showError("An error occurred while loading the project.");
+			}
+		});
+
+		function showError(message) {
+			document.getElementById("loadingState").classList.add("hidden");
+			document.getElementById("errorMessage").textContent = message;
+			document.getElementById("errorState").classList.remove("hidden");
+		}
+
+		function renderProject(project) {
+			document.getElementById("loadingState").classList.add("hidden");
+			document.getElementById("projectContent").classList.remove("hidden");
+
+			// Title & header
+			document.title = `${project.title} - RMNCAH`;
+			document.getElementById("projectTitle").textContent = project.title || "Untitled Project";
+			document.getElementById("projectNo").textContent = project.projectNo || "-";
+
+			// Approval badge
+			const approvalEl = document.getElementById("projectApproval");
+			const approvalText = formatApprovalStatus(project.approvalWorkflowStatus || project.approvalStatus);
+			approvalEl.textContent = approvalText;
+			approvalEl.className = `px-4 py-1.5 rounded-full text-sm font-semibold ${getApprovalClass(project.approvalWorkflowStatus || project.approvalStatus)}`;
+
+			// Overview fields
+			document.getElementById("projectOrganisation").textContent = project.organizationName || project.partnerName || "-";
+			document.getElementById("projectCategory").textContent = formatCategory(project.projectCategory) || "-";
+			document.getElementById("projectActivityType").textContent = project.activityType || "-";
+			document.getElementById("projectCounty").textContent = project.county || "-";
+			document.getElementById("projectStartDate").textContent = formatDate(project.startDate);
+			document.getElementById("projectEndDate").textContent = formatDate(project.endDate);
+
+			// Objectives
+			if (project.objectives) {
+				document.getElementById("objectivesCard").classList.remove("hidden");
+				document.getElementById("projectObjectives").textContent = project.objectives;
+			}
+
+			// Themes
+			if (project.themes && project.themes.length > 0) {
+				document.getElementById("themesCard").classList.remove("hidden");
+				const themesContainer = document.getElementById("projectThemes");
+				themesContainer.innerHTML = project.themes.map(theme => {
+					const name = theme.displayName || theme.name || theme.code || theme;
+					const code = theme.code || theme;
+					return `<span class="px-3 py-1.5 rounded-full text-sm font-medium ${getThemeClass(code)}">${name}</span>`;
+				}).join("");
+			}
+
+			// Locations & Map
+			const locsWithCoords = (project.locations || []).filter(l => l.latitude && l.longitude);
+
+			if (project.locations && project.locations.length > 0) {
+				document.getElementById("locationsCard").classList.remove("hidden");
+				const locContainer = document.getElementById("projectLocations");
+				locContainer.innerHTML = project.locations.map(loc => `
+					<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+						<i class="fas fa-map-pin text-red-500 mt-1"></i>
+						<div>
+							<p class="font-medium text-gray-800">${loc.subCounty || loc.county || loc.name || "Location"}</p>
+							${loc.county && loc.subCounty ? `<p class="text-sm text-gray-500">${loc.county}</p>` : ""}
+							${loc.mapsAddress || loc.address ? `<p class="text-xs text-gray-400">${loc.mapsAddress || loc.address}</p>` : ""}
+							${loc.latitude && loc.longitude ? `<p class="text-xs text-gray-400">Coordinates: ${loc.latitude}, ${loc.longitude}</p>` : ""}
+						</div>
+					</div>
+				`).join("");
+			}
+
+			if (locsWithCoords.length > 0) {
+				document.getElementById("mapCard").classList.remove("hidden");
+				initMap(locsWithCoords, project.title);
+			}
+
+			// Budget
+			if (project.budget) {
+				document.getElementById("budgetCard").classList.remove("hidden");
+				document.getElementById("projectBudget").textContent = "KES " + Number(project.budget).toLocaleString();
+			}
+
+			// Completion
+			if (project.completionPercentage != null) {
+				document.getElementById("completionCard").classList.remove("hidden");
+				const pct = project.completionPercentage;
+				document.getElementById("completionText").textContent = pct + "%";
+				document.getElementById("completionBar").style.width = pct + "%";
+			}
+
+			// Contact
+			if (project.contactPersonName) {
+				document.getElementById("contactCard").classList.remove("hidden");
+				document.getElementById("contactName").textContent = project.contactPersonName;
+				document.getElementById("contactRole").textContent = project.contactPersonRole || "";
+				if (project.contactPersonEmail) {
+					document.getElementById("contactEmailLink").textContent = project.contactPersonEmail;
+					document.getElementById("contactEmailLink").href = "mailto:" + project.contactPersonEmail;
+				}
+			}
+
+			// Timestamps
+			document.getElementById("projectCreatedAt").textContent = formatDateTime(project.createdAt);
+			document.getElementById("projectUpdatedAt").textContent = formatDateTime(project.updatedAt);
+		}
+
+		// Helpers
+		function formatDate(dateStr) {
+			if (!dateStr) return "-";
+			const d = new Date(dateStr);
+			return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+		}
+
+		function formatDateTime(dateStr) {
+			if (!dateStr) return "-";
+			const d = new Date(dateStr);
+			return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+		}
+
+		function formatCategory(cat) {
+			if (!cat) return null;
+			return cat.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+		}
+
+		function formatApprovalStatus(status) {
+			const map = {
+				PENDING_REVIEW: "Pending Review",
+				UNDER_REVIEW: "Under Review",
+				REVIEWED: "Reviewed",
+				PENDING_FINAL_APPROVAL: "Pending Approval",
+				APPROVED: "Approved",
+				REJECTED_BY_REVIEWER: "Rejected",
+				REJECTED_BY_APPROVER: "Rejected",
+				PENDING: "Pending",
+			};
+			return map[status] || status || "Unknown";
+		}
+
+		function getStatusClass(status) {
+			const map = {
+				active: "bg-green-100 text-green-800",
+				pending: "bg-yellow-100 text-yellow-800",
+				completed: "bg-blue-100 text-blue-800",
+				stalled: "bg-red-100 text-red-800",
+				abandoned: "bg-gray-200 text-gray-600",
+			};
+			return map[(status || "").toLowerCase()] || "bg-gray-100 text-gray-800";
+		}
+
+		function getApprovalClass(status) {
+			const map = {
+				APPROVED: "bg-green-100 text-green-800",
+				PENDING_REVIEW: "bg-yellow-100 text-yellow-800",
+				UNDER_REVIEW: "bg-blue-100 text-blue-800",
+				REVIEWED: "bg-indigo-100 text-indigo-800",
+				PENDING_FINAL_APPROVAL: "bg-orange-100 text-orange-800",
+				REJECTED_BY_REVIEWER: "bg-red-100 text-red-800",
+				REJECTED_BY_APPROVER: "bg-red-100 text-red-800",
+				PENDING: "bg-yellow-100 text-yellow-800",
+			};
+			return map[status] || "bg-gray-100 text-gray-800";
+		}
+
+		function getThemeClass(code) {
+			const map = {
+				MNH: "bg-pink-100 text-pink-800",
+				FP: "bg-blue-100 text-blue-800",
+				CHILD_HEALTH: "bg-green-100 text-green-800",
+				NUTRITION: "bg-yellow-100 text-yellow-800",
+				ADOLESCENT_HEALTH: "bg-purple-100 text-purple-800",
+				GBV: "bg-red-100 text-red-800",
+				WASH: "bg-teal-100 text-teal-800",
+			};
+			return map[code] || "bg-gray-100 text-gray-800";
+		}
+
+		function initMap(locations, projectTitle) {
+			mapboxgl.accessToken =
+				"pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+			const firstLoc = locations[0];
+			const map = new mapboxgl.Map({
+				container: "projectMap",
+				style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+				center: [parseFloat(firstLoc.longitude), parseFloat(firstLoc.latitude)],
+				zoom: locations.length === 1 ? 12 : 7,
+			});
+
+			map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+			const bounds = new mapboxgl.LngLatBounds();
+
+			locations.forEach(loc => {
+				const lng = parseFloat(loc.longitude);
+				const lat = parseFloat(loc.latitude);
+				const label = loc.subCounty || loc.county || loc.name || projectTitle || "Location";
+
+				const el = document.createElement("div");
+				el.className = "project-marker";
+				el.style.cssText = "width:32px;height:32px;background:#1e40af;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;";
+
+				const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+					`<div style="padding:8px;font-family:Inter,sans-serif;">
+						<p style="font-weight:600;margin:0 0 4px;">${label}</p>
+						${loc.county ? `<p style="margin:0;font-size:12px;color:#6b7280;">${loc.county}</p>` : ""}
+						${loc.mapsAddress || loc.address ? `<p style="margin:4px 0 0;font-size:11px;color:#9ca3af;">${loc.mapsAddress || loc.address}</p>` : ""}
+					</div>`
+				);
+
+				new mapboxgl.Marker(el)
+					.setLngLat([lng, lat])
+					.setPopup(popup)
+					.addTo(map);
+
+				bounds.extend([lng, lat]);
+			});
+
+			if (locations.length > 1) {
+				map.fitBounds(bounds, { padding: 60, maxZoom: 14 });
+			}
+		}
+	</script>
+</body>
+
+</html>

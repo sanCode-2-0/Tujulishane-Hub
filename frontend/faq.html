@@ -1590,8 +1590,7 @@
             }</p>
                   <p style="margin: 4px 0;"><strong>Budget:</strong> ${project.budget || "N/A"
             }</p>
-                  <button onclick="viewProject(${project.id
-            })" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
+                  <button onclick="viewProject('${project.projectNo}')" style="margin-top: 8px; padding: 6px 12px; background-color: #0ea5e9; color: white; border-radius: 6px; cursor: pointer; border: none;">View Details</button>
                 </div>
               `);
 
@@ -2632,7 +2631,7 @@
                     <span class="px-2 py-1 rounded text-xs font-medium ${themeClass}">
                         ${project.projectTheme}
                     </span>
-                    <button onclick="viewProject(${project.id})" 
+                    <button onclick="viewProject('${project.projectNo}')"
                         class="text-blue-600 hover:text-blue-800 text-base font-medium">
                         View Details →
                     </button>
@@ -2667,8 +2666,8 @@
     }
 
     // View project details
-    function viewProject(projectId) {
-      window.open(`project-details.html?id=${projectId}`, "_blank");
+    function viewProject(projectNo) {
+      window.location.href = `project-details.html?project_number=${encodeURIComponent(projectNo)}`;
     }
 
     // Use default statistics if API fails
@@ -3022,9 +3021,8 @@
     }
 
     // View project details
-    function viewProjectDetails(projectId) {
-      // Navigate to project details page or show modal
-      window.location.href = `project-details.html?id=${projectId}`;
+    function viewProjectDetails(projectNo) {
+      window.location.href = `project-details.html?project_number=${encodeURIComponent(projectNo)}`;
     }
   </script>
 

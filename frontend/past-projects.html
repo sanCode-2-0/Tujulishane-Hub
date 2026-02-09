@@ -661,6 +661,7 @@
 	</div>
 
 	<script src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
 	<script src="auth.js"></script>
 	<script>
 		function pastProjectsApp() {
@@ -806,13 +807,7 @@
 								// Filter for past projects (completed, stalled, abandoned)
 								let allProjects = data.data.projects;
 								
-								// First, filter by approval status for non-admin users
-								// Non-admin users only see APPROVED projects
-								const currentUser = authManager.getCachedUser();
-								allProjects = filterProjectsByApprovalStatus(allProjects, currentUser);
-								console.log("After approval filter:", allProjects.length);
-								
-								// Then filter for past projects (completed, stalled, abandoned)
+								// Filter for past projects (completed, stalled, abandoned)
 								let pastProjectsFiltered = allProjects.filter(project =>
 									project.status &&
 									['completed', 'stalled', 'abandoned'].includes(project.status.toLowerCase())

@@ -1201,12 +1201,6 @@
             projectsData = data;
           }
 
-          // Filter projects based on user role and approval status
-          // Non-admin users only see APPROVED projects
-          const currentUser = authManager.getCachedUser();
-          projectsData = filterProjectsByApprovalStatus(projectsData, currentUser);
-          console.log("Filtered projects for map:", projectsData.length);
-
           console.log("Loaded all projects:", projectsData.length);
           console.log("All projects data:", projectsData);
 

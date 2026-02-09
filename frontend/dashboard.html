@@ -40,7 +40,10 @@
 		}
 	</script>
 	<script src="config.js"></script>
+	<script src="set-base-url.js"></script>
+	<script src="session-config.js"></script>
 	<script src="auth.js"></script>
+	<script src="session-manager.js"></script>
 
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -53,6 +56,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<link rel="stylesheet" href="styles/main.css">
 	<script defer src="styles/loadNav.js"></script>
+	<script src="styles/authnav.js"></script>
+	<script src="dashboard-tabs.js"></script>
 	<script src="src/utils/counter-utils.js"></script>
 	<style>
 		/* Popup container styles */
@@ -136,16 +141,20 @@
 			popup.classList.remove('show'); // Use CSS transition for smooth disappearance
 		}
 
-		// Close popup when the close button is clicked
-		document.getElementById('close-popup').addEventListener('click', closePopup);
-
-		// Show the popup when the page is loaded
-		window.addEventListener('load', showDesktopPopup);
+		// Close popup when the close button is clicked, and show popup on load
+		document.addEventListener('DOMContentLoaded', () => {
+			const closeBtn = document.getElementById('close-popup');
+			if (closeBtn) closeBtn.addEventListener('click', closePopup);
+			showDesktopPopup();
+		});
 
 	</script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-neutral-text dark:text-gray-200">
+	<!-- Nav -->
+	<div id="nav-placeholder"></div>
+
 	<div id="desktop-popup" class="popup">
 		<div class="popup-content">
 			<p>Please switch to desktop view for a better experience.</p>
@@ -153,42 +162,16 @@
 		</div>
 	</div>
 
-	<div class="relative flex h-auto min-h-screen w-full group/design-root">
+	<div class="relative flex h-auto min-h-screen w-full group/design-root mt-24">
 		<div class="md:flex md:min-h-screen">
 
 			<!-- SIDEBAR -->
-			<div x-data="{ open: false }" @click.away="open = false" class="w-full md:w-64 bg-white flex-shrink-0 
-                sticky top-0 md:h-screen border-r">
-
-				<!-- HEADER -->
-				<div class="flex items-center justify-between px-6 py-4 border-b">
-					<a href="#" class="text-lg font-bold text-purple-900 flex items-center uppercase tracking-wide">
-						<img src="resources/images/logo.png" class=" mr-1 h-12" alt="">
-						RMNCAH Dashboard
-					</a>
-
-					<!-- Mobile Menu Button -->
-					<button class="md:hidden p-2 rounded-lg hover:bg-gray-100" @click="open = !open">
-						<svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-							<path x-show="!open" fill-rule="evenodd"
-								d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
-								clip-rule="evenodd"></path>
-
-							<path x-show="open" fill-rule="evenodd"
-								d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-								clip-rule="evenodd"></path>
-						</svg>
-					</button>
-				</div>
-
-				<!-- MENU -->
-				<div class="px-4 py-4 w-full md:py-4 md:block overflow-y-auto"
-					:class="{ 'block': open, 'hidden': !open }">
-
+			<div class="hidden md:block md:w-64 bg-white flex-shrink-0 sticky top-0 md:h-screen border-r">
+				<!-- Desktop MENU -->
+				<div class="px-4 py-4 overflow-y-auto">
 					<div class="grid gap-2" id="sidebar-tabs">
 						<!-- JS injects tabs here -->
 					</div>
-
 				</div>
 			</div>
 
@@ -198,8 +181,7 @@
 
 			<main class="flex-1 px-6 md:px-10 py-8">
 				<div class="layout-content-container flex flex-col mx-auto w-full">
-					<!-- <div class="absolute" id="nav-placeholder"></div> -->
-					<div class="layout-content-container flex flex-col mx-auto w-full" id="tab-content-container">
+						<div class="layout-content-container flex flex-col mx-auto w-full" id="tab-content-container">
 						<!-- Tab content will be injected by JS -->
 					</div>
 
@@ -1602,14 +1584,22 @@
 
 		// --- 7. Initialization on Load ---
 		document.addEventListener('DOMContentLoaded', () => {
-			renderDashboard();
+			// Only render analytics if the elements exist (not commented out)
+			if (document.getElementById('kpi-container')) {
+				renderDashboard();
+			}
 
-			// Render Charts after the DOM is ready
-			var barChart = new ApexCharts(document.querySelector("#barChart"), barOptions);
-			barChart.render();
+			const barEl = document.querySelector("#barChart");
+			if (barEl) {
+				var barChart = new ApexCharts(barEl, barOptions);
+				barChart.render();
+			}
 
-			var donutChart = new ApexCharts(document.querySelector("#teamChart"), donutOptions);
-			donutChart.render();
+			const donutEl = document.querySelector("#teamChart");
+			if (donutEl) {
+				var donutChart = new ApexCharts(donutEl, donutOptions);
+				donutChart.render();
+			}
 		});
 
 	</script>
