@@ -72,7 +72,7 @@ function initDashboardTabs() {
         });
     }
     
-// Render mobile navigation tabs (in nav dropdown)
+    // Render mobile navigation tabs (in nav dropdown)
     const mobileSidebarTabsContainer = document.getElementById('mobile-sidebar-tabs');
     const mobileDashboardTabs = document.getElementById('mobile-dashboard-tabs');
     
@@ -81,39 +81,71 @@ function initDashboardTabs() {
     console.log('Is dashboard page:', isDashboardPage, 'Path:', window.location.pathname);
     console.log('Mobile sidebar tabs container:', mobileSidebarTabsContainer);
     console.log('Mobile dashboard tabs container:', mobileDashboardTabs);
+    console.log('Available tabs:', tabs);
     
-    if (mobileSidebarTabsContainer && isDashboardPage) {
-        console.log('Creating mobile sidebar tabs...');
-        mobileSidebarTabsContainer.innerHTML = '';
-        tabs.forEach((tab, idx) => {
-            const a = document.createElement('a');
-            a.className = 'mobile-sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-text dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800';
-            a.setAttribute('data-tab', tab.key);
-            a.setAttribute('href', '#');
-            a.innerHTML = `<span class="material-symbols-outlined text-lg">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
-            if (idx === 0) {
-                a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+    // Always try to create mobile tabs if on dashboard page, even if container check fails initially
+    if (isDashboardPage) {
+        console.log('On dashboard page, attempting to create mobile sidebar tabs...');
+        
+        // Try to get the container multiple times in case of timing issues
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        function tryCreateMobileTabs() {
+            attempts++;
+            const container = document.getElementById('mobile-sidebar-tabs');
+            const parentContainer = document.getElementById('mobile-dashboard-tabs');
+            
+            console.log(`Attempt ${attempts}: Container found:`, !!container, 'Parent found:', !!parentContainer);
+            
+            if (container) {
+                console.log('Creating mobile sidebar tabs...');
+                container.innerHTML = '';
+                tabs.forEach((tab, idx) => {
+                    const a = document.createElement('a');
+                    a.className = 'mobile-sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-text dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800';
+                    a.setAttribute('data-tab', tab.key);
+                    a.setAttribute('href', '#');
+                    a.innerHTML = `<span class="material-symbols-outlined text-lg">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
+                    if (idx === 0) {
+                        a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+                    }
+                    container.appendChild(a);
+                    console.log(`Added tab: ${tab.label}`);
+                });
+                
+                // Show mobile dashboard tabs container since we're on dashboard page
+                if (parentContainer) {
+                    console.log('Showing mobile dashboard tabs container');
+                    parentContainer.classList.remove('hidden');
+                }
+                
+                // Add click handlers for mobile tabs
+                const mobileTabs = container.querySelectorAll('.mobile-sidebar-tab');
+                mobileTabs.forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const tab = btn.getAttribute('data-tab');
+                        console.log('Mobile tab clicked:', tab);
+                        showTab(tab);
+                    });
+                });
+                
+                return; // Success, exit the function
             }
-            mobileSidebarTabsContainer.appendChild(a);
-        });
-        
-        // Show mobile dashboard tabs container since we're on dashboard page
-        if (mobileDashboardTabs) {
-            console.log('Showing mobile dashboard tabs container');
-            mobileDashboardTabs.classList.remove('hidden');
+            
+            if (attempts < maxAttempts) {
+                setTimeout(tryCreateMobileTabs, 100);
+            } else {
+                console.error('Could not find mobile-sidebar-tabs container after', maxAttempts, 'attempts');
+            }
         }
+        
+        tryCreateMobileTabs();
     } else {
-        console.log('Not creating mobile tabs - either not on dashboard page or container not found');
+        console.log('Not creating mobile tabs - not on dashboard page');
     }
-            mobileSidebarTabsContainer.appendChild(a);
-        });
-        
-        // Show mobile dashboard tabs container since we're on the dashboard page
-        const mobileDashboardTabs = document.getElementById('mobile-dashboard-tabs');
-        if (mobileDashboardTabs) {
-            mobileDashboardTabs.classList.remove('hidden');
-        }
-    }
+    
     // Tab switching logic
     const sidebarTabs = document.querySelectorAll('.sidebar-tab, .mobile-sidebar-tab');
     const tabSections = {
@@ -145,7 +177,7 @@ function initDashboardTabs() {
         
         // Close mobile navigation after selection
         setTimeout(() => {
-            // Find the Alpine navigation component and close it
+            // Find Alpine navigation component and close it
             const navComponent = document.querySelector('nav[x-data*="open"]');
             if (navComponent && window.Alpine) {
                 window.Alpine.$data(navComponent).open = false;

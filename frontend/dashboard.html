@@ -127,6 +127,16 @@
 		function isMobile() {
 			return window.innerWidth <= 768; // Check if screen width is less than or equal to 768px (Mobile width)
 		}
+		
+		// Enhanced API fetch with better error handling
+		async function apiFetchWithErrorHandling(endpoint, options = {}) {
+			try {
+				return await apiFetch(endpoint, options);
+			} catch (error) {
+				console.warn(`Permission denied for ${endpoint}, skipping...`, error);
+				return { ok: false, data: null };
+			}
+		}
 
 		// Function to show the popup
 		function showDesktopPopup() {
@@ -152,6 +162,117 @@
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-neutral-text dark:text-gray-200">
+	<script>
+	// Force show mobile dashboard tabs when on dashboard page
+	function showMobileDashboardTabs() {
+		const isDashboardPage = window.location.pathname.includes('dashboard.html') || 
+							  window.location.pathname.endsWith('/dashboard') ||
+							  window.location.pathname.endsWith('/dashboard/');
+		
+		const mobileDashboardTabs = document.getElementById('mobile-dashboard-tabs');
+		if (mobileDashboardTabs && isDashboardPage) {
+			console.log('Forcing mobile dashboard tabs to show');
+			mobileDashboardTabs.classList.remove('hidden');
+		}
+	}
+	
+	// Try immediately
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', showMobileDashboardTabs);
+	} else {
+		showMobileDashboardTabs();
+	}
+	
+	// Also try after navigation loads
+	window.addEventListener('navLoaded', showMobileDashboardTabs);
+	
+	// Try multiple times in case of race conditions
+	setTimeout(showMobileDashboardTabs, 100);
+	setTimeout(showMobileDashboardTabs, 500);
+	setTimeout(showMobileDashboardTabs, 1000);
+	
+	// Backup: Create mobile tabs directly
+	setTimeout(() => {
+		const isDashboardPage = window.location.pathname.includes('dashboard.html') || 
+							  window.location.pathname.endsWith('/dashboard') ||
+							  window.location.pathname.endsWith('/dashboard/');
+		
+		if (isDashboardPage) {
+			console.log('Backup: Creating mobile tabs directly...');
+			const container = document.getElementById('mobile-sidebar-tabs');
+			const parentContainer = document.getElementById('mobile-dashboard-tabs');
+			
+			if (container && !container.innerHTML.trim()) {
+				// Define tabs for mobile
+				const tabs = [
+					{ key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+					{ key: 'projects', label: 'Projects', icon: 'folder' },
+					{ key: 'users', label: 'Users', icon: 'group' },
+					{ key: 'organizations', label: 'Organizations', icon: 'apartment' },
+					{ key: 'announcements', label: 'Announcements', icon: 'campaign' },
+					{ key: 'collaboration', label: 'Collaboration Requests', icon: 'handshake' },
+					{ key: 'pastprojects', label: 'Past Projects', icon: 'history' },
+					{ key: 'projectdocs', label: 'Project Documents', icon: 'description' },
+					{ key: 'projectreports', label: 'Project Reports', icon: 'assessment' },
+					{ key: 'userdocs', label: 'User Documents', icon: 'badge' },
+					{ key: 'collaborators', label: 'Project Collaborators', icon: 'groups' }
+				];
+				
+				container.innerHTML = '';
+				tabs.forEach((tab, idx) => {
+					const a = document.createElement('a');
+					a.className = 'mobile-sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-text dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800';
+					a.setAttribute('data-tab', tab.key);
+					a.setAttribute('href', '#');
+					a.innerHTML = `<span class="material-symbols-outlined text-lg">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
+					if (idx === 0) {
+						a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+					}
+					container.appendChild(a);
+					
+					// Add click handler
+					a.addEventListener('click', function(e) {
+						e.preventDefault();
+						const tabKey = this.getAttribute('data-tab');
+						console.log('Mobile tab clicked (backup):', tabKey);
+						
+						// Hide all tab sections
+						const sections = ['dashboard', 'projects', 'users', 'organizations', 'announcements', 'collaboration', 'pastprojects', 'projectdocs', 'projectreports', 'userdocs', 'collaborators'];
+						sections.forEach(sectionKey => {
+							const section = document.getElementById('tab-' + sectionKey);
+							if (section) section.style.display = 'none';
+						});
+						
+						// Show selected tab
+						const selectedSection = document.getElementById('tab-' + tabKey);
+						if (selectedSection) selectedSection.style.display = '';
+						
+						// Update active state for all tabs
+						const allMobileTabs = document.querySelectorAll('.mobile-sidebar-tab');
+						allMobileTabs.forEach(t => t.classList.remove('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
+						this.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+						
+						// Update desktop tabs too
+						const desktopTabs = document.querySelectorAll('.sidebar-tab');
+						desktopTabs.forEach(t => t.classList.remove('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
+						const matchingDesktopTab = Array.from(desktopTabs).find(t => t.getAttribute('data-tab') === tabKey);
+						if (matchingDesktopTab) matchingDesktopTab.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+						
+						// Close mobile nav
+						setTimeout(() => {
+							const nav = document.querySelector('nav[x-data*="open"]');
+							if (nav && window.Alpine) {
+								window.Alpine.$data(nav).open = false;
+							}
+						}, 100);
+					});
+				});
+				
+				console.log(`Created ${tabs.length} mobile tabs`);
+			}
+		}
+	}, 1500);
+	</script>
 	<!-- Nav -->
 	<div id="nav-placeholder"></div>
 

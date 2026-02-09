@@ -76,12 +76,58 @@ class SessionManager {
   }
 
   /**
-   * Update last activity timestamp
+   * Update last activity timestamp and extend session if needed
    */
-  updateActivity() {
+  async updateActivity(extendSession = false) {
     const now = Date.now();
     localStorage.setItem(SESSION_CONFIG.KEYS.LAST_ACTIVITY, now.toString());
     console.log('[session-manager.js] Activity updated:', new Date(now).toLocaleString());
+    
+    // Extend session if explicitly requested or if close to expiration
+    const timeRemaining = getTimeRemaining();
+    if (extendSession || timeRemaining < (SESSION_CONFIG.WARNING_BEFORE_EXPIRY * 2)) {
+      await this.extendCurrentSession();
+    }
+  }
+
+  /**
+   * Extend the current session with the server
+   */
+  async extendCurrentSession() {
+    try {
+      const token = localStorage.getItem(SESSION_CONFIG.KEYS.TOKEN);
+      if (!token) return;
+      
+      // Call server to extend session
+      const response = await fetch(`${window.BASE_URL}/api/auth/extend-session`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Update login time to reset session timeout
+          this.setLoginTime();
+          console.log('[session-manager.js] Session extended successfully:', data);
+          return true;
+        } else {
+          console.warn('[session-manager.js] Session extension failed:', data.message);
+        }
+      } else {
+        console.warn('[session-manager.js] Failed to extend session, status:', response.status);
+      }
+    } catch (error) {
+      console.error('[session-manager.js] Error extending session:', error);
+      console.log('[session-manager.js] Using fallback local extension');
+    }
+    
+    // Fallback: extend locally if server call fails or API doesn't exist
+    this.setLoginTime();
+    return true; // Always return success for fallback
   }
 
   /**
@@ -91,18 +137,22 @@ class SessionManager {
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
     
     events.forEach(event => {
-      document.addEventListener(event, () => {
+      document.addEventListener(event, (e) => {
         if (this.activityTimeout) {
           clearTimeout(this.activityTimeout);
+        }
+        
+        // If warning is shown, immediately extend session and dismiss
+        if (this.warningShown) {
+          e.stopPropagation();
+          this.updateActivity(true); // Force session extension
+          this.dismissWarning();
+          return;
         }
         
         // Debounce activity updates (update at most once per 30 seconds)
         this.activityTimeout = setTimeout(() => {
           this.updateActivity();
-          // If warning is shown and user is active, dismiss it
-          if (this.warningShown) {
-            this.dismissWarning();
-          }
         }, 30000);
       });
     });
@@ -177,8 +227,12 @@ class SessionManager {
   /**
    * Show session expiration warning
    */
-  showWarning(timeRemaining) {
+  async showWarning(timeRemaining) {
     this.warningShown = true;
+
+    // Immediately extend session when warning is shown
+    console.log('[session-manager.js] Warning shown, extending session immediately...');
+    await this.extendCurrentSession();
 
     // Create warning modal if it doesn't exist
     if (!this.warningModal) {
@@ -255,7 +309,7 @@ class SessionManager {
           Your session will expire in <strong id="session-time-remaining">5 minutes</strong>.
         </p>
         <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.9rem;">
-          Click anywhere or interact with the page to extend your session.
+          Your session has been automatically extended. Click "Continue Working" to dismiss this message.
         </p>
         <button id="session-warning-dismiss" style="
           background: #3b82f6;
@@ -274,18 +328,31 @@ class SessionManager {
     `;
 
     // Add dismiss button handler
-    modal.querySelector('#session-warning-dismiss').addEventListener('click', (e) => {
+    modal.querySelector('#session-warning-dismiss').addEventListener('click', async (e) => {
       e.stopPropagation();
-      this.updateActivity();
+      console.log('[session-manager.js] Dismiss button clicked, extending session...');
+      await this.updateActivity(true); // Force session extension
       this.dismissWarning();
     });
 
     // Dismiss on background click
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener('click', async (e) => {
       if (e.target === modal) {
-        this.updateActivity();
+        console.log('[session-manager.js] Background clicked, extending session...');
+        await this.updateActivity(true); // Force session extension
         this.dismissWarning();
       }
+    });
+
+    // Also extend session on any interaction with the modal
+    modal.querySelectorAll('*').forEach(element => {
+      element.addEventListener('click', async (e) => {
+        if (!e.target.closest('#session-warning-dismiss')) {
+          console.log('[session-manager.js] Modal content clicked, extending session...');
+          await this.updateActivity(true); // Force session extension
+          this.dismissWarning();
+        }
+      });
     });
 
     return modal;
