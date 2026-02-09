@@ -162,9 +162,20 @@
 
 					<!-- Map -->
 					<div id="mapCard" class="bg-white rounded-xl shadow-sm border p-6 hidden">
-						<h2 class="text-lg font-semibold text-gray-900 mb-4">
-							<i class="fas fa-map text-blue-600 mr-2"></i>Project Location
-						</h2>
+						<div class="flex items-center justify-between mb-4">
+							<h2 class="text-lg font-semibold text-gray-900">
+								<i class="fas fa-map text-blue-600 mr-2"></i>Project Location
+							</h2>
+							<div class="relative">
+								<select id="mapStyleSelect"
+									class="appearance-none text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg pl-3 pr-7 py-1.5 cursor-pointer border-none focus:ring-2 focus:ring-blue-300 transition">
+									<option value="default">Streets</option>
+									<option value="satellite">Satellite</option>
+									<option value="outdoors">Terrain</option>
+								</select>
+								<i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+							</div>
+						</div>
 						<div id="projectMap" class="w-full h-[400px] rounded-lg overflow-hidden"></div>
 					</div>
 				</div>
@@ -340,7 +351,7 @@
 
 			if (locsWithCoords.length > 0) {
 				document.getElementById("mapCard").classList.remove("hidden");
-				initMap(locsWithCoords, project.title);
+				initMap(locsWithCoords, project);
 			}
 
 			// Budget
@@ -443,46 +454,103 @@
 			return map[code] || "bg-gray-100 text-gray-800";
 		}
 
-		function initMap(locations, projectTitle) {
+		function initMap(locations, project) {
 			mapboxgl.accessToken =
 				"pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+
+			const projectTitle = project.title || project.projectName || "Project";
+			const projectNo = project.projectNo || "";
+
+			const statusColors = {
+				active: "#22c55e",
+				pending: "#eab308",
+				stalled: "#ef4444",
+				completed: "#06b6d4",
+			};
+			const color = statusColors[(project.status || "").toLowerCase()] || "#6b7280";
+
+			const mapStyles = {
+				default: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+				satellite: "mapbox://styles/mapbox/satellite-streets-v12",
+				outdoors: "mapbox://styles/mapbox/outdoors-v12",
+			};
 
 			const firstLoc = locations[0];
 			const map = new mapboxgl.Map({
 				container: "projectMap",
-				style: "mapbox://styles/lomogantech/clsa1f16r00wt01qqbnf741n6",
+				style: mapStyles.default,
 				center: [parseFloat(firstLoc.longitude), parseFloat(firstLoc.latitude)],
 				zoom: locations.length === 1 ? 12 : 7,
 			});
 
 			map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-			const bounds = new mapboxgl.LngLatBounds();
-
-			locations.forEach(loc => {
-				const lng = parseFloat(loc.longitude);
-				const lat = parseFloat(loc.latitude);
-				const label = loc.subCounty || loc.county || loc.name || projectTitle || "Location";
-
-				const el = document.createElement("div");
-				el.className = "project-marker";
-				el.style.cssText = "width:32px;height:32px;background:#1e40af;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;";
-
-				const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-					`<div style="padding:8px;font-family:Inter,sans-serif;">
-						<p style="font-weight:600;margin:0 0 4px;">${label}</p>
-						${loc.county ? `<p style="margin:0;font-size:12px;color:#6b7280;">${loc.county}</p>` : ""}
-						${loc.mapsAddress || loc.address ? `<p style="margin:4px 0 0;font-size:11px;color:#9ca3af;">${loc.mapsAddress || loc.address}</p>` : ""}
-					</div>`
-				);
-
-				new mapboxgl.Marker(el)
-					.setLngLat([lng, lat])
-					.setPopup(popup)
-					.addTo(map);
-
-				bounds.extend([lng, lat]);
+			// Map style switcher
+			document.getElementById("mapStyleSelect").addEventListener("change", (e) => {
+				map.setStyle(mapStyles[e.target.value] || mapStyles.default);
+				// Re-add markers after style change
+				map.once("style.load", () => addMarkers());
 			});
+
+			const bounds = new mapboxgl.LngLatBounds();
+			const markers = [];
+
+			function addMarkers() {
+				markers.forEach(m => m.remove());
+				markers.length = 0;
+
+				locations.forEach((loc, idx) => {
+					const lng = parseFloat(loc.longitude);
+					const lat = parseFloat(loc.latitude);
+					const label = loc.subCounty || loc.county || loc.name || projectTitle || "Location";
+					const badgeLabel = projectNo || `#${idx + 1}`;
+
+					const el = document.createElement("div");
+					el.textContent = badgeLabel;
+					el.style.cssText = `
+						display:flex;align-items:center;justify-content:center;
+						padding:3px 6px;max-width:48px;border-radius:9999px;
+						color:#fff;font-size:11px;font-weight:700;letter-spacing:0.5px;
+						white-space:nowrap;cursor:pointer;position:relative;
+						background:linear-gradient(135deg,${color}cc,${color});
+						filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+					`;
+
+					const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, maxWidth: "260px" }).setHTML(
+						`<div style="font-family:Inter,sans-serif;overflow:hidden;border-radius:8px;">
+							<div style="padding:10px 12px;background:linear-gradient(135deg,${color}18,${color}08);border-bottom:1px solid ${color}20;">
+								<div style="display:flex;align-items:center;gap:6px;">
+									<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span>
+									<span style="font-weight:700;font-size:13px;color:#1f2937;">${label}</span>
+								</div>
+								${projectNo ? `<span style="font-size:10px;color:#6b7280;margin-left:14px;">${projectNo}</span>` : ""}
+							</div>
+							<div style="padding:8px 12px;">
+								${loc.county && loc.county !== label ? `
+								<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+									<i class="fas fa-map-pin" style="font-size:10px;color:#9ca3af;width:12px;text-align:center;"></i>
+									<span style="font-size:12px;color:#6b7280;">${loc.county}</span>
+								</div>` : ""}
+								${loc.mapsAddress || loc.address ? `
+								<div style="display:flex;align-items:center;gap:6px;">
+									<i class="fas fa-location-arrow" style="font-size:9px;color:#9ca3af;width:12px;text-align:center;"></i>
+									<span style="font-size:11px;color:#9ca3af;">${loc.mapsAddress || loc.address}</span>
+								</div>` : ""}
+							</div>
+						</div>`
+					);
+
+					const marker = new mapboxgl.Marker(el)
+						.setLngLat([lng, lat])
+						.setPopup(popup)
+						.addTo(map);
+
+					markers.push(marker);
+					bounds.extend([lng, lat]);
+				});
+			}
+
+			addMarkers();
 
 			if (locations.length > 1) {
 				map.fitBounds(bounds, { padding: 60, maxZoom: 14 });

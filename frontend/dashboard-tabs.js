@@ -175,6 +175,9 @@ function initDashboardTabs() {
         const activeTabs = Array.from(allTabs).filter(btn => btn.getAttribute('data-tab') === tab);
         activeTabs.forEach(btn => btn.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
         
+        // Notify dashboard.html to fetch data for this tab
+        window.dispatchEvent(new CustomEvent('dashboardTabChange', { detail: { tab } }));
+
         // Close mobile navigation after selection
         setTimeout(() => {
             // Find Alpine navigation component and close it

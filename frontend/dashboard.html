@@ -1765,15 +1765,45 @@
 					if (col === 'themes' && Array.isArray(value)) {
 						value = value.map(theme => theme.name || theme.code).join(', ');
 					}
+					// Format status as badge for projects
+					if (col === 'status' && (tabId === 'tab-projects' || tabId === 'tab-pastprojects') && value) {
+						const statusColors = {
+							'ACTIVE': 'bg-green-100 text-green-800',
+							'PENDING': 'bg-yellow-100 text-yellow-800',
+							'STALLED': 'bg-red-100 text-red-800',
+							'COMPLETED': 'bg-blue-100 text-blue-800',
+							'ABANDONED': 'bg-gray-200 text-gray-600',
+						};
+						const colorClass = statusColors[String(value).toUpperCase()] || 'bg-gray-100 text-gray-800';
+						td.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-semibold ${colorClass}">${value}</span>`;
+						row.appendChild(td);
+						return;
+					}
+					// Format budget as currency
+					if (col === 'budget' && value) {
+						const num = Number(value);
+						if (!isNaN(num)) {
+							value = 'KES ' + num.toLocaleString();
+						}
+					}
 					td.textContent = value;
 					row.appendChild(td);
 				});
-				
+
 				// Add action buttons
 				const actionTd = document.createElement('td');
 				actionTd.className = 'px-6 py-4 text-right';
-				
-				if (tabId === 'tab-collaborators') {
+
+				if (tabId === 'tab-projects' || tabId === 'tab-pastprojects') {
+					const projectNo = getNestedValue(item, 'projectNo');
+					actionTd.innerHTML = `
+						<a href="project-details.html?project_number=${encodeURIComponent(projectNo || '')}"
+							class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
+							<span class="material-symbols-outlined text-sm">visibility</span>
+							View
+						</a>
+					`;
+				} else if (tabId === 'tab-collaborators') {
 					const projectId = getNestedValue(item, 'project.id');
 					const userId = getNestedValue(item, 'user.id');
 					actionTd.innerHTML = `
@@ -2017,9 +2047,11 @@
 				const userRole = localStorage.getItem('userRole') || 'PARTNER';
 				
 				// Use appropriate endpoint based on user role
-				let endpoint = '/api/projects';
+				let endpoint;
 				if (['SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER'].includes(userRole)) {
 					endpoint = '/api/auth/admin/projects';
+				} else {
+					endpoint = '/api/projects/my-projects';
 				}
 				
 				const response = await apiFetch(endpoint);
@@ -3014,28 +3046,35 @@
 				userdocs: document.getElementById('tab-userdocs'),
 				collaborators: document.getElementById('tab-collaborators')
 			};
+			function fetchTabData(tab) {
+				if (tab === 'dashboard') fetchDashboardStats();
+				else if (tab === 'projects') fetchProjects();
+				else if (tab === 'users') fetchUsers();
+				else if (tab === 'organizations') fetchOrganizations();
+				else if (tab === 'announcements') fetchAnnouncements();
+				else if (tab === 'pastprojects') fetchPastProjects();
+				else if (tab === 'collaboration') fetchCollaborationRequests();
+				else if (tab === 'projectreports') fetchProjectReports();
+				else if (tab === 'collaborators') fetchProjectCollaborators();
+				else if (tab === 'projectdocs') fetchProjectDocuments();
+				else if (tab === 'userdocs') fetchUserDocuments();
+			}
 			function showTab(tab) {
 				Object.values(tabSections).forEach(section => {
 					if (section) section.style.display = 'none';
 				});
 				if (tabSections[tab]) {
 					tabSections[tab].style.display = '';
-					if (tab === 'dashboard') fetchDashboardStats();
-					else if (tab === 'projects') fetchProjects();
-					else if (tab === 'users') fetchUsers();
-					else if (tab === 'organizations') fetchOrganizations();
-					else if (tab === 'announcements') fetchAnnouncements();
-					else if (tab === 'pastprojects') fetchPastProjects();
-					else if (tab === 'collaboration') fetchCollaborationRequests();
-					else if (tab === 'projectreports') fetchProjectReports();
-					else if (tab === 'collaborators') fetchProjectCollaborators();
-					else if (tab === 'projectdocs') fetchProjectDocuments();
-					else if (tab === 'userdocs') fetchUserDocuments();
+					fetchTabData(tab);
 				}
 				sidebarTabs.forEach(btn => btn.classList.remove('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
 				const activeBtn = Array.from(sidebarTabs).find(btn => btn.getAttribute('data-tab') === tab);
 				if (activeBtn) activeBtn.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
 			}
+			// Listen for tab changes from dashboard-tabs.js (mobile + desktop)
+			window.addEventListener('dashboardTabChange', function(e) {
+				fetchTabData(e.detail.tab);
+			});
 			sidebarTabs.forEach(btn => {
 				btn.addEventListener('click', function (e) {
 					e.preventDefault();
