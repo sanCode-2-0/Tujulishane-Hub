@@ -54,6 +54,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <style>
+        [x-cloak] { display: none !important; }
         .fade-slide-enter {
             opacity: 0;
             transform: translateY(20px);
@@ -77,6 +78,10 @@
         }
 
         /* Custom table tweaks for professional look */
+        .modern-table {
+            width: 100%;
+            table-layout: auto;
+        }
         .modern-table thead th {
             position: sticky;
             top: 0;
@@ -94,6 +99,27 @@
 
         .modern-table tbody tr:hover {
             background: #e0e7ef;
+        }
+
+        /* Loading spinner */
+        .projects-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            gap: 1rem;
+        }
+        .projects-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Custom map marker styles */
@@ -142,6 +168,7 @@
                     { type: 'image', src: 'resources/images/main-3.jpg' }
                 ],
                 loading: true,
+                projectsLoading: true,
                 creating: false,
                 submitting: false,
                 showCreateModal: false,
@@ -202,12 +229,15 @@
                     const token = localStorage.getItem("accessToken");
                     if (token) {
                         console.log("🔍 User authenticated, loading projects...");
+                        this.projectsLoading = true;
                         await this.loadMyProjects();
+                        this.projectsLoading = false;
                         await this.loadOrganizations();
                         // Load user's collaboration requests to prevent duplicates
                         await this.loadMyCollaborationRequests();
                     } else {
                         console.warn("⚠️ No access token found, skipping project load");
+                        this.projectsLoading = false;
                     }
                 },
 
@@ -913,7 +943,13 @@
             </div>
         </div>
 
-        <div class="max-w-full p-8 mx-auto">
+        <!-- Loading Spinner -->
+        <div x-show="projectsLoading" class="projects-loading">
+            <div class="spinner"></div>
+            <p class="text-sm text-gray-500 font-medium">Loading projects...</p>
+        </div>
+
+        <div x-show="!projectsLoading" x-cloak class="max-w-full p-8 mx-auto">
             <div class="p-6 mb-6 bg-white rounded-lg shadow-md fade fade-up">
                 <div class="flex items-center mb-5 gap-4">
                     <h2 id="pageTitle"
@@ -1029,7 +1065,7 @@
                                     <div class="py-4 overflow-x-auto">
                                         <div class="inline-block min-w-full overflow-hidden rounded-lg">
                                             <table
-                                                class="modern-table leading-normal border-separate border-spacing-0 rounded-2xl">
+                                                class="modern-table min-w-full leading-normal border-separate border-spacing-0 rounded-2xl">
                                                 <thead>
                                                     <tr>
                                                         <th

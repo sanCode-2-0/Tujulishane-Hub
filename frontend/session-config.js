@@ -10,12 +10,13 @@ const SESSION_CONFIG = {
     MEDIUM: 2 * 60 * 60 * 1000,     // 2 hours
     LONG: 8 * 60 * 60 * 1000,       // 8 hours
     FULL_DAY: 24 * 60 * 60 * 1000,  // 24 hours
+    EXTENDED: 30 * 60 * 60 * 1000,  // 30 hours
     REMEMBER_ME: 30 * 24 * 60 * 60 * 1000  // 30 days
   },
 
   // Active timeout setting (change this to configure session length)
-  // Options: 'SHORT', 'MEDIUM', 'LONG', 'FULL_DAY'
-  ACTIVE_TIMEOUT: 'SHORT',  // Default: 1 hour
+  // Options: 'SHORT', 'MEDIUM', 'LONG', 'FULL_DAY', 'EXTENDED'
+  ACTIVE_TIMEOUT: 'EXTENDED',  // Default: 30 hours
 
   // Warning before session expiration (in milliseconds)
   WARNING_BEFORE_EXPIRY: 5 * 60 * 1000,  // 5 minutes

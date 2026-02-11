@@ -44,6 +44,8 @@
 	<script src="session-config.js"></script>
 	<script src="auth.js"></script>
 	<script src="session-manager.js"></script>
+	<!-- SheetJS for Excel export -->
+	<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -437,7 +439,7 @@
 								<button
 									class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									Export CSV
+									Export Excel
 								</button>
 							</div>
 
@@ -560,7 +562,7 @@
 								<button
 									class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									Export CSV
+									Export Excel
 								</button>
 							</div>
 
@@ -653,7 +655,7 @@
 								<button
 									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									Export CSV
+									Export Excel
 								</button>
 							</div>
 
@@ -748,7 +750,7 @@
 									<button
 										class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
 										<span class="material-symbols-outlined text-base">file_download</span>
-										Export CSV
+										Export Excel
 									</button>
 								</div>
 							</div>
@@ -888,7 +890,7 @@
 								<button
 									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
 									<span class="material-symbols-outlined">file_download</span>
-									Export CSV
+									Export Excel
 								</button>
 							</div>
 
@@ -982,7 +984,7 @@
 								<button
 									class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									Export CSV
+									Export Excel
 								</button>
 							</div>
 
@@ -1066,7 +1068,7 @@
 								<button
 									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export CSV</span>
+									<span>Export Excel</span>
 								</button>
 							</div>
 
@@ -1144,7 +1146,7 @@
 								<button
 									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export CSV</span>
+									<span>Export Excel</span>
 								</button>
 							</div>
 
@@ -1216,7 +1218,7 @@
 								<button
 									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export CSV</span>
+									<span>Export Excel</span>
 								</button>
 							</div>
 
@@ -1283,7 +1285,7 @@
 								<button
 									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export CSV</span>
+									<span>Export Excel</span>
 								</button>
 							</div>
 
@@ -1361,7 +1363,7 @@
 								<button
 									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
 									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export CSV</span>
+									<span>Export Excel</span>
 								</button>
 							</div>
 
@@ -1662,7 +1664,26 @@
 			});
 		}
 
-		function renderTable(tabId, data, columns) {
+		function exportToExcel(tabId, sheetName) {
+		const table = document.querySelector(`#${tabId} table`);
+		if (!table) return;
+		const headers = Array.from(table.querySelectorAll('thead tr:first-child th'))
+			.map(th => th.textContent.trim())
+			.filter(h => h);
+		const rows = table.querySelectorAll('tbody tr:not([style*="display: none"])');
+		const sheetData = [headers];
+		rows.forEach(row => {
+			const cells = Array.from(row.querySelectorAll('td')).slice(0, headers.length);
+			sheetData.push(cells.map(cell => cell.textContent.trim()));
+		});
+		const ws = XLSX.utils.aoa_to_sheet(sheetData);
+		ws['!cols'] = headers.map(() => ({ wch: 18 }));
+		const wb = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(wb, ws, sheetName || 'Sheet1');
+		XLSX.writeFile(wb, `${(sheetName || 'export').toLowerCase().replace(/\s+/g, '_')}.xlsx`);
+	}
+
+	function renderTable(tabId, data, columns) {
 			console.log(`renderTable called for ${tabId} with ${data.length} items`);
 			const tbody = document.querySelector(`#${tabId} tbody`);
 			if (!tbody) {
@@ -1677,12 +1698,64 @@
 			console.log(`About to render ${data.length} rows for ${tabId}`);
 			data.forEach((item, index) => {
 				const row = document.createElement('tr');
-				row.className = 'bg-white dark:bg-gray-900/50 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50';
-				columns.forEach((col, index) => {
+				row.className = 'bg-white border-b border-gray-100 hover:bg-blue-50/30 transition-colors duration-150';
+				columns.forEach((col, colIdx) => {
 					const td = document.createElement('td');
-					td.className = 'px-6 py-4';
+					td.className = 'px-6 py-4 text-sm';
 					let value = getNestedValue(item, col) || '';
-					
+
+					// Projects table: rich formatting for key columns
+					if (tabId === 'tab-projects' || tabId === 'tab-pastprojects') {
+						if (col === 'title') {
+							td.innerHTML = `<span class="font-semibold text-gray-900">${value || 'Untitled'}</span>`;
+							row.appendChild(td);
+							return;
+						}
+						if (col === 'projectNo' && value) {
+							td.innerHTML = `<span class="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">${value}</span>`;
+							row.appendChild(td);
+							return;
+						}
+						if (col === 'projectCategory' && value) {
+							const catColors = {
+								'IMPLEMENTING': 'bg-indigo-50 text-indigo-700',
+								'FUNDING': 'bg-emerald-50 text-emerald-700',
+								'RESEARCH': 'bg-violet-50 text-violet-700',
+							};
+							const catClass = catColors[String(value).toUpperCase()] || 'bg-gray-100 text-gray-700';
+							const label = String(value).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+							td.innerHTML = `<span class="px-2.5 py-1 rounded-md text-xs font-medium ${catClass}">${label}</span>`;
+							row.appendChild(td);
+							return;
+						}
+						if (col === 'partnerName' && value) {
+							const initials = String(value).split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+							td.innerHTML = `
+								<div class="flex items-center gap-2.5">
+									<div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold flex-shrink-0">${initials}</div>
+									<span class="text-gray-700">${value}</span>
+								</div>`;
+							row.appendChild(td);
+							return;
+						}
+						if (col === 'themes' && Array.isArray(value)) {
+							td.innerHTML = value.map(t => {
+								const name = t.name || t.code || '';
+								return `<span class="inline-block px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600 mr-1 mb-1">${name}</span>`;
+							}).join('');
+							row.appendChild(td);
+							return;
+						}
+						if (col === 'locations' && Array.isArray(value)) {
+							td.innerHTML = value.map(loc => {
+								const name = loc.county || loc.subCounty || '';
+								return name ? `<span class="inline-flex items-center gap-1 text-xs text-gray-600"><i class="fas fa-map-pin text-gray-300 text-[10px]"></i>${name}</span>` : '';
+							}).filter(Boolean).join('<br>');
+							row.appendChild(td);
+							return;
+						}
+					}
+
 					// Special handling for collaborators table
 					if (tabId === 'tab-collaborators') {
 						if (col === 'user.name') {
@@ -2111,25 +2184,8 @@
 				const exportBtn = document.querySelector('#tab-projects button');
 				if (exportBtn) {
 					exportBtn.addEventListener('click', () => {
-						exportTableToCSV('projects.csv');
+						exportToExcel('tab-projects', 'Projects');
 					});
-				}
-				function exportTableToCSV(filename) {
-					const headers = ['Title', 'Partner Name', 'Project No', 'Category', 'Themes', 'Status', 'Start Date', 'End Date', 'Budget', 'Locations', 'Created At'];
-					const rows = document.querySelectorAll('#tab-projects tbody tr:not([style*="display: none"])');
-					let csv = headers.join(',') + '\n';
-					rows.forEach(row => {
-						const cells = row.querySelectorAll('td');
-						const rowData = Array.from(cells).slice(0, -1).map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"');
-						csv += rowData.join(',') + '\n';
-					});
-					const blob = new Blob([csv], { type: 'text/csv' });
-					const url = URL.createObjectURL(blob);
-					const a = document.createElement('a');
-					a.href = url;
-					a.download = filename;
-					a.click();
-					URL.revokeObjectURL(url);
 				}
 			} catch (error) {
 				console.error('Error fetching projects:', error);
