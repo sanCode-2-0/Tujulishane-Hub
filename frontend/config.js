@@ -20,6 +20,10 @@ if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
   BASE_URL = window.__BASE_URL_OVERRIDE;
 }
 
+// Mapbox token - loaded from gitignored config.local.js via window.__MAPBOX_TOKEN
+// Create frontend/config.local.js with: window.__MAPBOX_TOKEN = "pk.your_token_here";
+const MAPBOX_TOKEN = (typeof window !== "undefined" && window.__MAPBOX_TOKEN) || "";
+
 console.log("BASE URL", BASE_URL);
 
 // Set as global variables for non-module scripts
@@ -27,6 +31,7 @@ window.BASE_URL = BASE_URL;
 window.DEV_URL = DEV_URL;
 window.PROD_URL = PROD_URL;
 window.USE_PROD = USE_PROD;
+window.MAPBOX_TOKEN = MAPBOX_TOKEN;
 
 // Also export for module scripts (if needed)
 if (typeof module !== "undefined" && module.exports) {

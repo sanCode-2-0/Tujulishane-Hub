@@ -1245,8 +1245,9 @@
 	<script src="styles/loadNav.js"></script>
 	<script src="styles/authnav.js"></script>
 	<script src="styles/projectSteps.js"></script>
-	<script src="auth.js"></script>
+	<script src="config.local.js"></script>
 	<script src="config.js"></script>
+	<script src="auth.js"></script>
 	<script src="kenya-locations.js"></script>
 	<script src="set-base-url.js"></script>
 	<script>
@@ -1530,8 +1531,7 @@
 
 		function initializeMap() {
 			try {
-				mapboxgl.accessToken =
-					"pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+				mapboxgl.accessToken = window.MAPBOX_TOKEN;
 
 				map = new mapboxgl.Map({
 					container: "newProjectMap",

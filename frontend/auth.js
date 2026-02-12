@@ -416,8 +416,8 @@ class AuthManager {
         console.log("[auth.js] init: user loaded", user);
       } catch (error) {
         console.error("Failed to load user data:", error);
-        // If token is invalid, clear it
-        this.removeToken();
+        // Only clear token on auth errors, not network failures
+        // The apiCall method already handles 401 by calling logout()
       }
     } else {
       console.log("[auth.js] init: not authenticated, skipping getCurrentUser");
