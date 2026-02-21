@@ -889,8 +889,7 @@
 
       function initializeMap() {
         try {
-          mapboxgl.accessToken =
-            "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+          mapboxgl.accessToken = window.MAPBOX_TOKEN;
 
           map = new mapboxgl.Map({
             container: "newProjectMap",

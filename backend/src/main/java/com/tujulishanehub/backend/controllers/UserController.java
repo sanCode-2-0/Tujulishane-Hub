@@ -129,7 +129,7 @@ public class UserController {
                 logger.info("No supporting documents provided for user: {} (this is optional)", email);
             }
             
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Registration received. Check your email for the verification OTP.", null);
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "you'll receive a confirmation email within 12 hours", null);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             // Log full stacktrace for diagnostics (EmailService will also log)

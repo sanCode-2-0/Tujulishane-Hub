@@ -1107,9 +1107,8 @@
       );
     };
 
-    // Set Mapbox access token globally
-    mapboxgl.accessToken =
-      "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+    // Set Mapbox access token globally (from config.local.js)
+    mapboxgl.accessToken = window.MAPBOX_TOKEN;
 
     document.addEventListener("DOMContentLoaded", function () {
       // Initialize Mapbox map

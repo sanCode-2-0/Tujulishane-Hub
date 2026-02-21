@@ -994,9 +994,8 @@
       };
 
       document.addEventListener("DOMContentLoaded", async function () {
-        // Set Mapbox access token
-        mapboxgl.accessToken =
-          "pk.eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9.sIWvONzgGPF2rtAcECsrJQ";
+        // Set Mapbox access token (from config.local.js)
+        mapboxgl.accessToken = window.MAPBOX_TOKEN;
 
         // Initialize Mapbox map
         map = new mapboxgl.Map({

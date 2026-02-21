@@ -125,6 +125,15 @@
 					console.log("🔍 User Role:", this.userRole); // Debug log
 					console.log("🔍 Current User:", this.currentUser); // Debug log
 
+					// Show Priority option only for SUPER_ADMIN users
+					const categorySelect = document.getElementById('project_category');
+					if (this.userRole && this.userRole.startsWith('SUPER_ADMIN')) {
+						const priorityOption = document.createElement('option');
+						priorityOption.value = 'PRIORITY';
+						priorityOption.textContent = 'Priority Project';
+						categorySelect.appendChild(priorityOption);
+					}
+
 					// Populate user dropdown in navigation
 					if (this.currentUser) {
 						console.log("👤 Populating user dropdown...");
@@ -813,6 +822,22 @@
 							Provide essential details about your project
 						</p>
 						<hr class="mt-4">
+					</div>
+					<!-- Project Category -->
+					<div class="mb-6">
+						<label for="project_category" class="block text-sm font-medium text-gray-700">Project Category *</label>
+						<select required id="project_category" name="project_category"
+							class="block w-full p-2 mt-1 text-black border border-gray-200 rounded-sm rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+							<option value="IMPLEMENTING">Implementing Project</option>
+							<option value="RESEARCH">Research Project</option>
+						</select>
+						<p class="mt-2 text-xs text-gray-600">
+							<strong class="text-purple-700">Research:</strong> Systematic study and data collection to advance knowledge<br>
+							<strong class="text-green-700">Implementing:</strong> Operational programs delivering services on the ground<br>
+							<span id="priority-notice" class="hidden">
+								<strong class="text-orange-700">Priority:</strong> Government-led initiatives addressing critical health needs
+							</span>
+						</p>
 					</div>
 					<!-- Title -->
 					<div class="mb-6">
@@ -2584,7 +2609,7 @@
 						contactPersonName: data.contact_person_name,
 						contactPersonRole: data.contact_person_role,
 						contactPersonEmail: data.contact_person_mail,
-						projectCategory: "IMPLEMENTING" // Default category for new projects
+						projectCategory: data.project_category || "IMPLEMENTING"
 					};
 
 					console.log("Project data object to send:", projectData);

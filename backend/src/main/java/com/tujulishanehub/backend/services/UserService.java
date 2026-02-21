@@ -110,22 +110,6 @@ public class UserService {
         }
         User savedUser = userRepository.save(user);
         
-        // Send OTP via email
-        String accountType = role == User.Role.DONOR ? "Donor" : "Partner";
-        String subject = "RMCAH Hub - " + accountType + " Account Email Verification";
-        String body = String.format(
-            "Hello %s,\n\n" +
-            "Thank you for registering as a %s with RMCAH Hub!\n\n" +
-            "Your verification OTP is: %s\n\n" +
-            "This OTP will expire in 10 minutes.\n\n" +
-            "Please note: Your account is pending approval by the MOH administrator. " +
-            "You will receive another email once your account is approved.\n\n" +
-            "Best regards,\n" +
-            "RMCAH Hub Team",
-            name, accountType.toLowerCase(), otp
-        );
-        emailService.sendEmail(email, subject, body);
-        
         return savedUser;
     }
     
