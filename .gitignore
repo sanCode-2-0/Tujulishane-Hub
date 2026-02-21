@@ -177,3 +177,8 @@ frontend/test-document-fetch.ps1
 dump_all_data.sql
 frontend/config.js
 frontend/config.js
+
+
+backend/bin
+.claude
+.factorypath
