@@ -33,8 +33,6 @@
 	<script src="modal-utils.js"></script>
 	<script src="auth.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
 		rel="stylesheet" />
 	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
@@ -1409,7 +1407,7 @@
 
 						<div class="mb-6">
 							<label for="final-comments" class="block text-sm font-bold text-gray-700 mb-2">
-								<i class="fas fa-comment-alt mr-1 text-gray-500"></i>
+								<i class="fas fa-message mr-1 text-gray-500"></i>
 								Final Comments (Optional):
 							</label>
 							<textarea id="final-comments" x-model="finalComments" rows="3"
@@ -1664,7 +1662,7 @@
 						<!-- Comments/Reason Dropdown & Textarea -->
 						<div class="mb-6">
 						<label for="approval-comments-dropdown" class="block text-sm font-bold text-gray-700 mb-2">
-						<i class="fas fa-comment-alt mr-1 text-gray-500"></i>
+						<i class="fas fa-message mr-1 text-gray-500"></i>
 						<span x-show="approvalAction === 'approve'">Comments (Optional):</span>
 						<span x-show="approvalAction === 'reject'">Rejection Reason (Required): <span class="text-red-500">*</span></span>
 						<span x-show="approvalAction === 'request_changes'">Changes Requested (Required): <span class="text-red-500">*</span></span>

@@ -30,8 +30,6 @@
 	<link rel="stylesheet" href="styles/main.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
 		rel="stylesheet" />
 	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
@@ -1598,7 +1596,7 @@
 			} catch (error) {
 				console.error("Map initialization failed:", error);
 				document.getElementById("newProjectMap").innerHTML =
-					'<div class="flex items-center justify-center h-full text-gray-500"><div class="text-center"><i class="fas fa-map-marked-alt text-4xl mb-2"></i><p>Map unavailable</p><p class="text-sm">Please check Mapbox configuration</p></div></div>';
+					'<div class="flex items-center justify-center h-full text-gray-500"><div class="text-center"><i class="fas fa-map-location-dot text-4xl mb-2"></i><p>Map unavailable</p><p class="text-sm">Please check Mapbox configuration</p></div></div>';
 			}
 		}
 
@@ -1761,7 +1759,7 @@
 					locality: "fas fa-map-marker-alt",
 					neighborhood: "fas fa-home",
 					address: "fas fa-map-pin",
-					poi: "fas fa-map-marked-alt",
+					poi: "fas fa-map-location-dot",
 					region: "fas fa-map",
 					district: "fas fa-map-signs",
 					country: "fas fa-flag",

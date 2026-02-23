@@ -23,8 +23,6 @@
 	</style>
 
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
 		rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
@@ -133,7 +131,7 @@
 							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 text-black hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
 							:class="(isSidebarOpen && currentSidebarTab == 'linksTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
 							<span class="sr-only">Toggle sidebar</span>
-							<i class="far fa-home p-1"></i>
+							<i class="fas fa-house p-1"></i>
 						</button>
 						<!-- Messages button -->
 						<button
@@ -141,7 +139,7 @@
 							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
 							:class="(isSidebarOpen && currentSidebarTab == 'messagesTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
 							<span class="sr-only">Toggle message panel</span>
-							<i class="far fa-comment-alt p-1"></i>
+							<i class="far fa-message p-1"></i>
 						</button>
 						<!-- Notifications button -->
 						<button
@@ -149,7 +147,7 @@
 							class="p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
 							:class="(isSidebarOpen && currentSidebarTab == 'notificationsTab') ? 'text-primary bg-indigo-600' : 'text-black bg-white'">
 							<span class="sr-only">Toggle notifications panel</span>
-							<i class="far fa-users p-1"></i>
+							<i class="fas fa-users p-1"></i>
 						</button>
 					</div>
 
@@ -157,7 +155,7 @@
 					<div class="relative flex items-center flex-shrink-0 p-2" x-data="{ isOpen: false }">
 						<button @click="isOpen = !isOpen; $nextTick(() => {isOpen ? $refs.userMenu.focus() : null})"
 							class="transition-opacity bg-primary p-2 rounded-lg opacity-80 hover:opacity-100 focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2">
-							<i class="far fa-user-crown text-white p-1"></i>
+							<i class="fas fa-user-shield text-white p-1"></i>
 							<span class="sr-only">User menu</span>
 						</button>
 						<div x-show="isOpen" @click.away="isOpen = false" @keydown.escape="isOpen = false"

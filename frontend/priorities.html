@@ -32,8 +32,6 @@
     }
   </script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
@@ -46,6 +44,7 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
   <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
+  <script src="./config.local.js"></script>
   <script src="./config.js"></script>
   <script src="./set-base-url.js"></script>
 
@@ -217,15 +216,14 @@
 
           await this.loadAnnouncements();
 
-          // Always try to load projects if user is authenticated
-          // The backend will handle authorization
           const token = localStorage.getItem("accessToken");
           if (token) {
-            console.log("🔍 User authenticated, loading projects...");
-            await this.loadMyProjects();
             await this.loadOrganizations();
-            // Load user's collaboration requests to prevent duplicates
-            await this.loadMyCollaborationRequests();
+            // my-projects and my-requests are PARTNER-only endpoints
+            if (this.userRole === "PARTNER" || this.userRole === "USER") {
+              await this.loadMyProjects();
+              await this.loadMyCollaborationRequests();
+            }
           } else {
             console.warn("⚠️ No access token found, skipping project load");
           }
@@ -825,7 +823,7 @@
               <!-- Icon Buttons / Stats -->
               <div class="flex justify-between text-white text-xl lg:text-3xl w-full flex-wrap text-center gap-y-6">
                 <div class="flex flex-col items-center w-1/2 sm:w-auto">
-                  <i class="fad fa-tasks text-lg lg:text-2xl"></i>
+                  <i class="fas fa-tasks text-lg lg:text-2xl"></i>
                   <div class="mt-2">
                     <span id="totalProjectsCount" class="font-bold tracking-wider">
                       8
@@ -834,14 +832,14 @@
                   </div>
                 </div>
                 <div class="flex flex-col items-center w-1/2 sm:w-auto">
-                  <i class="fad fa-map-marked-alt text-lg lg:text-2xl"></i>
+                  <i class="fas fa-map-location-dot text-lg lg:text-2xl"></i>
                   <div class="mt-2">
                     <span id="totalCountiesCount" class="font-bold tracking-wider">7</span>
                     <span class="font-thin">Counties</span>
                   </div>
                 </div>
                 <div class="flex flex-col items-center w-1/2 sm:w-auto">
-                  <i class="fad fa-handshake text-lg lg:text-2xl"></i>
+                  <i class="fas fa-handshake text-lg lg:text-2xl"></i>
                   <div class="mt-2">
                     <span id="totalStakeholdersCount" class="font-bold tracking-wider">10</span>
                     <span class="font-thin">Stakeholders</span>
