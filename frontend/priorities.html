@@ -88,6 +88,46 @@
     };
   </script>
   <style>
+    .map-marker-wrapper {
+      width: 0;
+      height: 0;
+      overflow: visible;
+      cursor: pointer;
+    }
+    .map-marker-pin {
+      width: 34px;
+      height: 34px;
+      border-radius: 50% 50% 50% 0;
+      position: absolute;
+      left: -17px;
+      top: -41px;
+      transform: rotate(-45deg);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.2s ease;
+    }
+    .map-marker-wrapper:hover .map-marker-pin {
+      transform: rotate(-45deg) scale(1.2);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 8px 20px rgba(0,0,0,0.45);
+    }
+    .map-marker-pin .marker-icon {
+      transform: rotate(45deg);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1;
+      pointer-events: none;
+    }
+    @keyframes markerPulse {
+      0%   { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 0 var(--pulse-color); }
+      70%  { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 12px transparent; }
+      100% { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 0 transparent; }
+    }
+    .map-marker-pin.marker-active { animation: markerPulse 2s infinite; }
+    .map-marker-pin.marker-dimmed { opacity: 0.3; }
+    .map-marker-pin.marker-selected { transform: rotate(-45deg) scale(1.3) !important; }
+
     .fade-slide-enter {
       opacity: 0;
       transform: translateY(20px);
@@ -1117,8 +1157,9 @@
         zoom: 6.3,
       });
 
-      // Add zoom and rotation controls to the map
       map.addControl(new mapboxgl.NavigationControl(), "top-right");
+      map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+      map.addControl(new mapboxgl.ScaleControl({ unit: "metric" }), "bottom-left");
 
       // Load projects after map is initialized
       map.on("load", () => {
@@ -1479,11 +1520,7 @@
           }
 
           // Create marker element
-          const el = document.createElement("div");
-          el.className = "marker";
-          el.innerHTML = `<i class="fas fa-map-marker-alt" style="font-size: 32px; color: ${getStatusColor(project.status)};"></i>`;
-          el.style.cursor = "pointer";
-          el.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.3))";
+          const { el } = createMarkerElement(project.status, project.projectNo);
 
           // Create popup — include location-specific info when available
           const statusColor =
@@ -1883,9 +1920,8 @@
         // Find the project this marker belongs to
         const project = projects.find((p) => p.id === markerData.id);
         const isVisible = project && filtered.includes(project);
-        if (marker.getElement()) {
-          marker.getElement().style.opacity = isVisible ? "1" : "0.2";
-        }
+        const pin = marker.getElement()?.querySelector(".map-marker-pin");
+        if (pin) pin.classList.toggle("marker-dimmed", !isVisible);
       });
 
       setTimeout(
@@ -2032,6 +2068,31 @@
         COMPLETED: "#06b6d4",
       };
       return colors[status] || "#6b7280";
+    }
+
+    function createMarkerElement(status, projectNo) {
+      const iconMap = {
+        ACTIVE:    { icon: "fa-play",                  pulse: true  },
+        COMPLETED: { icon: "fa-check",                 pulse: false },
+        PENDING:   { icon: "fa-clock",                 pulse: false },
+        STALLED:   { icon: "fa-triangle-exclamation",  pulse: false },
+      };
+      const key = status?.toUpperCase();
+      const cfg = iconMap[key] || { icon: "fa-circle", pulse: false };
+      const color = getStatusColor(key);
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "map-marker-wrapper";
+      if (projectNo) wrapper.title = projectNo;
+
+      const pin = document.createElement("div");
+      pin.className = "map-marker-pin" + (cfg.pulse ? " marker-active" : "");
+      pin.style.background = color;
+      pin.style.setProperty("--pulse-color", color + "66");
+      pin.innerHTML = `<i class="fas ${cfg.icon} marker-icon"></i>`;
+
+      wrapper.appendChild(pin);
+      return { el: wrapper, color };
     }
 
     // Comes From DB
