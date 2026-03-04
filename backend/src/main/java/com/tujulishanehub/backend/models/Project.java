@@ -39,6 +39,9 @@ public class Project {
     @Enumerated(EnumType.STRING)
     @Column(name = "project_category", nullable = false)
     private ProjectCategory projectCategory;
+
+    @Column(name = "lacoste_number")
+    private String lacosteNumber;
     
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -305,6 +308,14 @@ public class Project {
 
     public void setProjectCategory(ProjectCategory projectCategory) {
         this.projectCategory = projectCategory;
+    }
+
+    public String getLacosteNumber(){
+        return lacosteNumber;
+    }
+    
+    public void setLacosteNumber(String lacosteNumber){
+        this.lacosteNumber = lacosteNumber;
     }
     
     // Helper methods for project completion

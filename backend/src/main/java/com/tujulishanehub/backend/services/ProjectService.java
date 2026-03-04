@@ -742,6 +742,12 @@ public class ProjectService {
             }
             
             project.setProjectCategory(request.getProjectCategory());
+
+            // Set lacoste number for research projects
+            if(request.getLacosteNumber() != null && !request.getLacosteNumber().trim().isEmpty()){
+                project.setLacosteNumber(request.getLacosteNumber().trim());
+                logger.debug("Set lacoste number: {}",request.getLacosteNumber());
+            }
             
             // Special handling for PRIORITY projects created by super admins
             if (project.getProjectCategory() == ProjectCategory.PRIORITY && currentUser != null && currentUser.isSuperAdmin()) {

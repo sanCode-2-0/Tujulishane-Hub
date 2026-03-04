@@ -1,14 +1,16 @@
 package com.tujulishanehub.backend.payload;
 
-import com.tujulishanehub.backend.models.ProjectCategory;
-import com.tujulishanehub.backend.models.ProjectTheme;
-import lombok.Data;
-
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+
+import com.tujulishanehub.backend.models.ProjectCategory;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Data
 public class ProjectCreateRequest {
@@ -24,6 +26,8 @@ public class ProjectCreateRequest {
 
     @NotNull(message = "Project category is required")
     private ProjectCategory projectCategory;
+
+    private String lacosteNumber;
 
     @NotNull(message = "Start date is required")
     private LocalDate startDate;
@@ -95,6 +99,9 @@ public class ProjectCreateRequest {
 
     public ProjectCategory getProjectCategory() { return projectCategory; }
     public void setProjectCategory(ProjectCategory projectCategory) { this.projectCategory = projectCategory; }
+
+    public String getLacosteNumber() {return lacosteNumber;}
+    public void setLacosteNumber(String lacosteNumber) {this.lacosteNumber = lacosteNumber;}
 
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }

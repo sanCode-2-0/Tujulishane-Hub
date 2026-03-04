@@ -1,14 +1,15 @@
 package com.tujulishanehub.backend.payload;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
 import com.tujulishanehub.backend.models.ProjectCategory;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 
 public class ProjectUpdateRequest {
 
@@ -47,6 +48,9 @@ public class ProjectUpdateRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Budget must be greater than 0")
     private BigDecimal budget;
 
+    private String lacosteNumber;
+
+
     public String getTitle() {
         return title;
     }
@@ -62,6 +66,9 @@ public class ProjectUpdateRequest {
     public void setProjectCategory(ProjectCategory projectCategory) {
         this.projectCategory = projectCategory;
     }
+
+    public String getLacosteNumber(){return lacosteNumber;}
+    public void setLacosteNumber(String lacosteNumber){this.lacosteNumber = lacosteNumber;}
 
     public LocalDate getStartDate() {
         return startDate;
