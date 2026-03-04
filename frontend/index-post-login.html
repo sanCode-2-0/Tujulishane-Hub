@@ -3026,11 +3026,20 @@
 				projectsData.length,
 				"projects"
 			);
-
-			// Filter out pending projects - they should not be shown on index-post-login
+			// Filter out pending projects - only show APPROVED projects
+			// This filters based on both legacy status and approvalWorkflowStatus
 			const filteredProjects = projectsData.filter(project => {
+				// Check legacy status field
 				const status = project.status ? project.status.toLowerCase() : '';
-				return status !== 'pending';
+				if (status === 'pending') return false;
+
+				// Check approvalWorkflowStatus - only show APPROVED
+				const workflowStatus = project.approvalWorkflowStatus;
+				if (workflowStatus && workflowStatus !== 'APPROVED') {
+					return false;
+				}
+
+				return true;
 			});
 
 			console.log(
@@ -3040,23 +3049,18 @@
 				projectsData.length,
 				")"
 			);
-
 			// Update both block-scoped and window-level projects variables
-			// (highlightMarkers reads from block-scoped `projects`)
-			projects = projectsData;
-			window.filteredProjects = projectsData;
-
+			projects = filteredProjects;
+			window.filteredProjects = filteredProjects;
 			// Render using highlightMarkers which handles pagination properly
 			currentPage = 1;
 			highlightMarkers(currentFilter);
-
 			console.log(
 				"Projects display updated with",
-				projectsData.length,
+				filteredProjects.length,
 				"projects"
 			);
 		}
-
 		// Render projects accordion in the UI
 		function renderProjectsList(projects) {
 			console.log(
