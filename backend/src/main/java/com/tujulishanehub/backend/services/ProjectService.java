@@ -660,6 +660,7 @@ public class ProjectService {
             }
             response.setTitle(project.getTitle());
             response.setProjectCategory(project.getProjectCategory());
+            response.setLacosteNumber(project.getLacosteNumber());
             response.setStartDate(project.getStartDate());
             response.setEndDate(project.getEndDate());
             response.setActivityType(project.getActivityType());

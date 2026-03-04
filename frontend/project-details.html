@@ -76,8 +76,7 @@
 		<section class="bg-white border-b">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 				<div class="flex items-center mb-4">
-					<a href="index-post-login.html"
-						class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">
+					<a href="index-post-login.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">
 						<i class="fas fa-arrow-left mr-1"></i> Back to Projects
 					</a>
 				</div>
@@ -89,8 +88,7 @@
 						</p>
 					</div>
 					<div class="flex-shrink-0">
-						<span id="projectApproval"
-							class="px-4 py-1.5 rounded-full text-sm font-semibold"></span>
+						<span id="projectApproval" class="px-4 py-1.5 rounded-full text-sm font-semibold"></span>
 					</div>
 				</div>
 			</div>
@@ -108,15 +106,24 @@
 						</h2>
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div class="min-w-0">
-								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Organisation</span>
+								<span
+									class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Organisation</span>
 								<p id="projectOrganisation" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
 							<div class="min-w-0">
-								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Category</span>
+								<span
+									class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Category</span>
 								<p id="projectCategory" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
+							<!-- Lacoste Number - Only for Research Projects -->
+							<div id="lacosteNumberRow" class="min-w-0 hidden">
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Lacoste
+									Number</span>
+								<p id="projectLacosteNumber" class="text-gray-800 font-medium mt-1 break-words">-</p>
+							</div>
 							<div class="min-w-0">
-								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Activity Type</span>
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Activity
+									Type</span>
 								<p id="projectActivityType" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
 							<div class="min-w-0">
@@ -124,11 +131,13 @@
 								<p id="projectCounty" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
 							<div class="min-w-0">
-								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Start Date</span>
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Start
+									Date</span>
 								<p id="projectStartDate" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
 							<div class="min-w-0">
-								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">End Date</span>
+								<span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">End
+									Date</span>
 								<p id="projectEndDate" class="text-gray-800 font-medium mt-1 break-words">-</p>
 							</div>
 						</div>
@@ -139,7 +148,8 @@
 						<h2 class="text-lg font-semibold text-gray-900 mb-4">
 							<i class="fas fa-bullseye text-green-600 mr-2"></i>Objectives
 						</h2>
-						<p id="projectObjectives" class="text-gray-700 leading-relaxed whitespace-pre-line break-words"></p>
+						<p id="projectObjectives" class="text-gray-700 leading-relaxed whitespace-pre-line break-words">
+						</p>
 					</div>
 
 					<!-- Themes -->
@@ -171,7 +181,8 @@
 									<option value="satellite">Satellite</option>
 									<option value="outdoors">Terrain</option>
 								</select>
-								<i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+								<i
+									class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
 							</div>
 						</div>
 						<div id="projectMap" class="w-full h-[400px] rounded-lg overflow-hidden"></div>
@@ -296,6 +307,15 @@
 			document.title = `${project.title} - RMNCAH`;
 			document.getElementById("projectTitle").textContent = project.title || "Untitled Project";
 			document.getElementById("projectNo").textContent = project.projectNo || "-";
+
+			// Lacoste Number - only for Research projects
+			const lacosteRow = document.getElementById("lacosteNumberRow");
+			if (project.projectCategory === 'RESEARCH' && project.lacosteNumber) {
+				lacosteRow.classList.remove("hidden");
+				document.getElementById("projectLacosteNumber").textContent = project.lacosteNumber;
+			} else {
+				lacosteRow.classList.add("hidden");
+			}
 
 			// Approval badge
 			const approvalEl = document.getElementById("projectApproval");

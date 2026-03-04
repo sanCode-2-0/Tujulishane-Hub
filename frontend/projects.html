@@ -52,7 +52,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
+
         .fade-slide-enter {
             opacity: 0;
             transform: translateY(20px);
@@ -80,6 +83,7 @@
             width: 100%;
             table-layout: auto;
         }
+
         .modern-table thead th {
             position: sticky;
             top: 0;
@@ -108,6 +112,7 @@
             padding: 4rem 2rem;
             gap: 1rem;
         }
+
         .projects-loading .spinner {
             width: 40px;
             height: 40px;
@@ -116,10 +121,13 @@
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Custom map marker styles */
         .custom-marker-icon {
             background: transparent;
@@ -127,16 +135,16 @@
             cursor: pointer;
             transition: transform 0.2s ease, filter 0.2s ease;
         }
-        
+
         .custom-marker-icon:hover {
             transform: scale(1.1);
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
         }
-        
+
         .custom-marker-icon svg {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
-        
+
         /* Ensure markers are visible at all zoom levels */
         .leaflet-marker-icon {
             z-index: 1000 !important;
@@ -1957,7 +1965,7 @@
                                                 if (userObj) {
                                                     // Support different shapes: userObj may be the API response wrapper ({status,message,data: {...}})
                                                     const maybe = userObj.data && typeof userObj.data === 'object' ? userObj.data : userObj;
-                                                    
+
                                                     // Prioritize new many-to-many thematicAreas array
                                                     if (Array.isArray(maybe.thematicAreas) && maybe.thematicAreas.length > 0) {
                                                         themeListRaw = maybe.thematicAreas;
@@ -1973,7 +1981,7 @@
                                                     else if (maybe.themesManaged) {
                                                         themeListRaw = maybe.themesManaged;
                                                     }
-                                                    
+
                                                     console.log('[Reviewer] Extracted thematic areas:', themeListRaw);
                                                 }
                                                 const themeNames = (themeListRaw || []).map(t => typeof t === 'string' ? t.toLowerCase() : ((t.name || t.code || '') + '').toLowerCase()).filter(Boolean);
@@ -2134,7 +2142,7 @@
                                                 </tr>
                                             `;
                                         });
-                                        
+
                                         // Update the appropriate counter based on the status
                                         const counterId = `count-${status}`;
                                         const counterElement = document.getElementById(counterId);
@@ -2142,7 +2150,7 @@
                                             counterElement.textContent = projects.length;
                                             console.log(`[Counter Update] ${status}: ${projects.length} projects`);
                                         }
-                                        
+
                                         // Add empty state message if no projects
                                         if (tbody.innerHTML === '') {
                                             tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-3 text-sm text-gray-700">No ${status} projects found</td></tr>`;
@@ -2506,9 +2514,9 @@
                             async function autoFillSearchFromURL() {
                                 const urlParams = new URLSearchParams(window.location.search);
                                 const projectId = urlParams.get('id');
-                                
+
                                 if (!projectId) return;
-                                
+
                                 try {
                                     // Fetch project details
                                     const token = localStorage.getItem('accessToken');
@@ -2516,19 +2524,19 @@
                                         'Authorization': `Bearer ${token}`,
                                         'Content-Type': 'application/json'
                                     };
-                                    
+
                                     const response = await fetch(`${API_BASE}/projects/${projectId}`, {
                                         headers: headers
                                     });
-                                    
+
                                     if (!response.ok) {
                                         console.warn('Failed to fetch project details for auto-fill');
                                         return;
                                     }
-                                    
+
                                     const data = await response.json();
                                     const project = data.data || data;
-                                    
+
                                     if (project && project.title) {
                                         // Fill all search input fields with project title
                                         const searchInputs = [
@@ -2537,7 +2545,7 @@
                                             'project-search-stalled',
                                             'project-search-completed'
                                         ];
-                                        
+
                                         searchInputs.forEach(inputId => {
                                             const input = document.getElementById(inputId);
                                             if (input) {
@@ -2547,7 +2555,7 @@
                                                 filterProjectTables(tbodyId);
                                             }
                                         });
-                                        
+
                                         console.log(`Auto-filled search with project: ${project.title}`);
                                     }
                                 } catch (error) {
@@ -2624,7 +2632,7 @@
                                 }
 
                                 refreshProjectTables();
-                                
+
                                 // Auto-fill search after a short delay to ensure tables are loaded
                                 setTimeout(() => {
                                     autoFillSearchFromURL();
@@ -2719,7 +2727,7 @@
 
 
         const markers = [];
-        
+
         // Create colorful SVG icons for markers
         function createMarkerIcon(color, size = 32) {
             return L.divIcon({
@@ -2736,7 +2744,7 @@
                 popupAnchor: [0, -size * 1.2]
             });
         }
-        
+
         // Define colors for different project statuses
         const markerColors = {
             active: '#10B981',      // Green
@@ -2745,7 +2753,7 @@
             completed: '#06B6D4',   // Cyan
             default: '#6B7280'      // Gray
         };
-        
+
         const icons = {
             default: (tag) => createMarkerIcon(markerColors[tag] || markerColors.default, 32),
             selected: (tag) => createMarkerIcon(markerColors[tag] || markerColors.default, 48)
@@ -3862,6 +3870,9 @@
                                     <div><strong class="text-gray-700">End Date:</strong> <span class="text-gray-900">${project.endDate || 'N/A'}</span></div>
                                     <div><strong class="text-gray-700">Activity Type:</strong> <span class="text-gray-900">${project.activityType || 'N/A'}</span></div>
                                     <div><strong class="text-gray-700">Category:</strong> <span class="text-gray-900">${project.projectCategory || 'N/A'}</span></div>
+                                    ${project.projectCategory === 'RESEARCH' && project.lacosteNumber
+                                ? `<div><strong class="text-gray-700">Lacoste Number:</strong> <span class="text-gray-900">${project.lacosteNumber}</span></div>`
+                                : ''}
                                 </div>
                                 
                                 <div><strong class="text-gray-700">Title:</strong> <p class="text-gray-900 mt-1">${project.title || 'N/A'}</p></div>
@@ -3882,15 +3893,15 @@
                                         <strong class="text-gray-700">Locations:</strong>
                                         <div class="mt-2 space-y-1">
                                             ${project.locations.map(loc => {
-                            // Check if mapsAddress is a meaningful address (not just coordinates)
-                            const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
-                            // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county
-                            const displayName = (loc.mapsAddress && !isCoordinatesOnly)
-                                ? loc.mapsAddress
-                                : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
-                            const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-2">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
-                            return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}${coordinates}</div>`;
-                        }).join('')}
+                                    // Check if mapsAddress is a meaningful address (not just coordinates)
+                                    const isCoordinatesOnly = loc.mapsAddress && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(loc.mapsAddress.trim());
+                                    // Show mapsAddress if available and NOT just coordinates, otherwise fallback to county
+                                    const displayName = (loc.mapsAddress && !isCoordinatesOnly)
+                                        ? loc.mapsAddress
+                                        : (loc.county ? `${loc.county}${loc.subCounty ? ', ' + loc.subCounty : ''}` : 'Unknown');
+                                    const coordinates = (loc.latitude && loc.longitude) ? `<span class="text-xs text-gray-500 ml-2">(${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)})</span>` : '';
+                                    return `<div class="text-gray-900"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${displayName}${coordinates}</div>`;
+                                }).join('')}
                                         </div>
                                     </div>
                                 ` : ''}
@@ -4051,6 +4062,9 @@
                                         <dt class="text-gray-500">Category:</dt>
                                         <dd class="text-gray-900">${project.projectCategory || 'N/A'}</dd>
                                     </div>
+                                    ${project.projectCategory === 'RESEARCH' && project.lacosteNumber
+                            ? `<div class="flex justify-between"><dt class="text-gray-500">Lacoste Number:</dt><dd class="text-gray-900">${project.lacosteNumber}</dd></div>`
+                            : ''}
                                 </dl>
                                 
                                 <div class="pt-4 border-t">

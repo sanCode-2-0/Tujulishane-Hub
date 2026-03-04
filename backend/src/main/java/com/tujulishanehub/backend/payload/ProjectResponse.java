@@ -12,6 +12,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectResponse {
+
     private Long id;
     private String projectNo;
     private String partner;
@@ -20,6 +21,7 @@ public class ProjectResponse {
     private String createdByRole;
     private String title;
     private ProjectCategory projectCategory;
+    private String lacosteNumber;
     private LocalDate startDate;
     private LocalDate endDate;
     private String activityType;
@@ -104,6 +106,14 @@ public class ProjectResponse {
 
     public void setProjectCategory(ProjectCategory projectCategory) {
         this.projectCategory = projectCategory;
+    }
+
+    public String getLacosteNumber() {
+        return lacosteNumber;
+    }
+
+    public void setLacosteNumber(String lacosteNumber) {
+        this.lacosteNumber = lacosteNumber;
     }
 
     public LocalDate getStartDate() {

@@ -214,12 +214,12 @@
 						const response = await fetch(
 							`${window.BASE_URL}/api/announcements`
 						);
-						
+
 						if (!response.ok) {
 							console.warn("Failed to load announcements:", response.status);
 							return; // Silently fail - announcements are not critical
 						}
-						
+
 						const data = await response.json();
 						if (data.status === 200) {
 							this.announcements = data.data;
@@ -1127,54 +1127,56 @@
 													</p>
 												</td>
 
-											<td class="px-6 py-4 text-sm text-gray-600">
-												<div class="flex flex-wrap gap-1">
-													<template x-if="project.themes && project.themes.length > 0">
-														<template x-for="theme in project.themes" :key="theme.code">
-															<span
-																class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap"
-																x-text="theme.displayName || theme.name || theme"></span>
+												<td class="px-6 py-4 text-sm text-gray-600">
+													<div class="flex flex-wrap gap-1">
+														<template x-if="project.themes && project.themes.length > 0">
+															<template x-for="theme in project.themes" :key="theme.code">
+																<span
+																	class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs whitespace-nowrap"
+																	x-text="theme.displayName || theme.name || theme"></span>
+															</template>
 														</template>
-													</template>
-													<template x-if="!project.themes || project.themes.length === 0">
-														<span class="text-xs text-gray-400 italic">No themes</span>
-													</template>
-												</div>
-											</td>
+														<template x-if="!project.themes || project.themes.length === 0">
+															<span class="text-xs text-gray-400 italic">No themes</span>
+														</template>
+													</div>
+												</td>
 
-											<td class="px-6 py-4 whitespace-nowrap text-sm">
-												<!-- Review Status Badge -->
-												<div class="flex items-center gap-2">
-													<!-- Rejected by Reviewer -->
-													<span x-show="project.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER' || project.approvalStatus === 'REJECTED' || project.status === 'rejected'"
-														class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center gap-1">
-														<i class="fas fa-times-circle"></i>
-														Rejected
-													</span>
-													<!-- Approved by Reviewer -->
-													<span x-show="project.approvalWorkflowStatus === 'PENDING_FINAL_APPROVAL' || (project.approvalWorkflowStatus?.includes('PENDING_FINAL') && project.reviewedBy) || project.approvalStatus === 'APPROVED'"
-														class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center gap-1">
-														<i class="fas fa-check-circle"></i>
-														Approved
-													</span>
-													<!-- Not Yet Reviewed -->
-													<span x-show="project.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER' && project.approvalWorkflowStatus !== 'PENDING_FINAL_APPROVAL' && !project.approvalWorkflowStatus?.includes('PENDING_FINAL') && project.approvalStatus !== 'REJECTED' && project.approvalStatus !== 'APPROVED' && project.status !== 'rejected' && !project.reviewedBy"
-														class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
-														<i class="fas fa-clock"></i>
-														Not Reviewed
-													</span>
-												</div>
-											</td>											<td class="px-6 py-4 whitespace-nowrap text-sm">
-												<span
-													class="px-3 py-1 rounded-full text-xs font-medium"
-													:class="{
+												<td class="px-6 py-4 whitespace-nowrap text-sm">
+													<!-- Review Status Badge -->
+													<div class="flex items-center gap-2">
+														<!-- Rejected by Reviewer -->
+														<span
+															x-show="project.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER' || project.approvalStatus === 'REJECTED' || project.status === 'rejected'"
+															class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center gap-1">
+															<i class="fas fa-times-circle"></i>
+															Rejected
+														</span>
+														<!-- Approved by Reviewer -->
+														<span
+															x-show="project.approvalWorkflowStatus === 'PENDING_FINAL_APPROVAL' || (project.approvalWorkflowStatus?.includes('PENDING_FINAL') && project.reviewedBy) || project.approvalStatus === 'APPROVED'"
+															class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center gap-1">
+															<i class="fas fa-check-circle"></i>
+															Approved
+														</span>
+														<!-- Not Yet Reviewed -->
+														<span
+															x-show="project.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER' && project.approvalWorkflowStatus !== 'PENDING_FINAL_APPROVAL' && !project.approvalWorkflowStatus?.includes('PENDING_FINAL') && project.approvalStatus !== 'REJECTED' && project.approvalStatus !== 'APPROVED' && project.status !== 'rejected' && !project.reviewedBy"
+															class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
+															<i class="fas fa-clock"></i>
+															Not Reviewed
+														</span>
+													</div>
+												</td>
+												<td class="px-6 py-4 whitespace-nowrap text-sm">
+													<span class="px-3 py-1 rounded-full text-xs font-medium" :class="{
 														'bg-blue-100 text-blue-800': project.approvalWorkflowStatus?.includes('PENDING_FINAL'),
 														'bg-green-100 text-green-800': project.approvalWorkflowStatus === 'REVIEWED',
 														'bg-red-100 text-red-800': project.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER',
 														'bg-gray-100 text-gray-600': !project.approvalWorkflowStatus
-													}"
-													x-text="project.approvalWorkflowStatus || 'PENDING'"></span>
-											</td>												<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+													}" x-text="project.approvalWorkflowStatus || 'PENDING'"></span>
+												</td>
+												<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 													<div class="flex gap-2 justify-end">
 														<button @click="viewProjectDetails(project.id)"
 															class="text-gray-600 hover:text-gray-900 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
@@ -1207,10 +1209,8 @@
 				<div class="bg-white rounded-lg shadow p-6">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="text-xl font-bold">Manage Reviewers</h2>
-						<button
-							@click="openAddReviewerModal()"
-							class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 shadow-md"
-						>
+						<button @click="openAddReviewerModal()"
+							class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 shadow-md">
 							<i class="fas fa-user-plus"></i> Add New Reviewer
 						</button>
 					</div>
@@ -1262,12 +1262,16 @@
 										<td class="px-6 py-4">
 											<!-- Display multiple thematic areas -->
 											<div class="flex flex-wrap gap-1">
-												<template x-if="reviewer.thematicAreas && reviewer.thematicAreas.length > 0">
+												<template
+													x-if="reviewer.thematicAreas && reviewer.thematicAreas.length > 0">
 													<template x-for="area in reviewer.thematicAreas" :key="area">
-														<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs" x-text="area"></span>
+														<span
+															class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+															x-text="area"></span>
 													</template>
 												</template>
-												<template x-if="!reviewer.thematicAreas || reviewer.thematicAreas.length === 0">
+												<template
+													x-if="!reviewer.thematicAreas || reviewer.thematicAreas.length === 0">
 													<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
 														<span x-text="reviewer.thematicArea || 'Not Assigned'"></span>
 													</span>
@@ -1303,12 +1307,13 @@
 					<div class="mb-6">
 						<label class="block text-sm font-medium mb-3">Your Decision:</label>
 						<div class="space-y-3">
-							<label class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+							<label
+								class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
 								:class="{
 									'border-green-500 bg-green-50': reviewDecision === 'approve',
 									'border-gray-300': reviewDecision !== 'approve'
 								}">
-								<input type="radio" x-model="reviewDecision" value="approve" 
+								<input type="radio" x-model="reviewDecision" value="approve"
 									class="mt-1 h-5 w-5 text-green-600 border-gray-300 focus:ring-green-500" />
 								<div class="ml-3 flex-1">
 									<span class="text-base font-semibold text-gray-900 flex items-center">
@@ -1318,12 +1323,13 @@
 									<p class="text-sm text-gray-600 mt-1">Send to approver for final decision</p>
 								</div>
 							</label>
-							<label class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+							<label
+								class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
 								:class="{
 									'border-red-500 bg-red-50': reviewDecision === 'reject',
 									'border-gray-300': reviewDecision !== 'reject'
 								}">
-								<input type="radio" x-model="reviewDecision" value="reject" 
+								<input type="radio" x-model="reviewDecision" value="reject"
 									class="mt-1 h-5 w-5 text-red-600 border-gray-300 focus:ring-red-500" />
 								<div class="ml-3 flex-1">
 									<span class="text-base font-semibold text-gray-900 flex items-center">
@@ -1338,23 +1344,28 @@
 
 					<div class="mb-6">
 						<label class="block text-sm font-medium mb-2">Comments:</label>
-						<select x-model="reviewComments" 
+						<select x-model="reviewComments"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition">
 							<option value="">Select a comment...</option>
-							<option value="Project meets all requirements and is ready for final approval.">Project meets all requirements</option>
-							<option value="Excellent project design and implementation plan.">Excellent project design</option>
+							<option value="Project meets all requirements and is ready for final approval.">Project
+								meets all requirements</option>
+							<option value="Excellent project design and implementation plan.">Excellent project design
+							</option>
 							<option value="Good alignment with thematic priorities.">Good thematic alignment</option>
-							<option value="Budget needs clarification and more detail.">Budget needs clarification</option>
-							<option value="Project scope needs to be more specific.">Project scope needs refinement</option>
+							<option value="Budget needs clarification and more detail.">Budget needs clarification
+							</option>
+							<option value="Project scope needs to be more specific.">Project scope needs refinement
+							</option>
 							<option value="Missing key project documentation.">Missing documentation</option>
 							<option value="Project timeline is unrealistic.">Timeline unrealistic</option>
 							<option value="Thematic alignment needs improvement.">Thematic alignment issues</option>
-							<option value="Please provide more detailed implementation plan.">Need detailed implementation plan</option>
+							<option value="Please provide more detailed implementation plan.">Need detailed
+								implementation plan</option>
 							<option value="Custom">Custom comment...</option>
 						</select>
-						
+
 						<!-- Custom comment textarea (shown when "Custom" is selected) -->
-						<textarea x-show="reviewComments === 'Custom'" x-model="customReviewComment" rows="4" 
+						<textarea x-show="reviewComments === 'Custom'" x-model="customReviewComment" rows="4"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition mt-3"
 							placeholder="Enter your custom comment..."></textarea>
 					</div>
@@ -1559,39 +1570,43 @@
 						</div>
 
 						<!-- Warning for Rejected Projects -->
-						<div x-show="selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'" 
+						<div x-show="selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'"
 							class="mb-6 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
 							<p class="text-sm font-bold text-red-800 mb-2">
 								<i class="fas fa-exclamation-triangle mr-2"></i>
 								This project was rejected by the reviewer
 							</p>
 							<p class="text-xs text-red-700">
-								As the approver, you can override the reviewer's decision if you believe the project has merit, or you can confirm the rejection.
+								As the approver, you can override the reviewer's decision if you believe the project has
+								merit, or you can confirm the rejection.
 							</p>
 						</div>
 
 						<!-- Reviewer Details (if available) -->
-						<div x-show="selectedProject?.reviewedBy" class="mb-6 p-3 rounded-lg border"
-							:class="{
+						<div x-show="selectedProject?.reviewedBy" class="mb-6 p-3 rounded-lg border" :class="{
 								'bg-green-50 border-green-200': selectedProject?.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER',
 								'bg-red-50 border-red-200': selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'
 							}">
-							<p class="text-sm font-semibold mb-2"
-								:class="{
+							<p class="text-sm font-semibold mb-2" :class="{
 									'text-green-800': selectedProject?.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER',
 									'text-red-800': selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'
 								}">
-								<i class="fas mr-1"
-									:class="{
+								<i class="fas mr-1" :class="{
 										'fa-user-check': selectedProject?.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER',
 										'fa-user-times': selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'
 									}"></i>
-								<span x-show="selectedProject?.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER'">Reviewer Feedback:</span>
-								<span x-show="selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'">Reviewer Rejection Reason:</span>
+								<span
+									x-show="selectedProject?.approvalWorkflowStatus !== 'REJECTED_BY_REVIEWER'">Reviewer
+									Feedback:</span>
+								<span
+									x-show="selectedProject?.approvalWorkflowStatus === 'REJECTED_BY_REVIEWER'">Reviewer
+									Rejection Reason:</span>
 							</p>
 							<p class="text-xs text-gray-700">
-								<span class="font-medium" x-text="getReviewerName(selectedProject?.reviewedBy) || `User #${selectedProject?.reviewedBy}`"></span>
-								<span x-show="selectedProject?.reviewedAt"> - <span x-text="formatDate(selectedProject?.reviewedAt)"></span></span>
+								<span class="font-medium"
+									x-text="getReviewerName(selectedProject?.reviewedBy) || `User #${selectedProject?.reviewedBy}`"></span>
+								<span x-show="selectedProject?.reviewedAt"> - <span
+										x-text="formatDate(selectedProject?.reviewedAt)"></span></span>
 							</p>
 							<p class="text-sm text-gray-600 mt-2 italic" x-show="selectedProject?.reviewerComments"
 								x-text="selectedProject?.reviewerComments">
@@ -1599,7 +1614,7 @@
 							<p class="text-sm text-gray-400 mt-2 italic" x-show="!selectedProject?.reviewerComments">
 								No comments provided.
 							</p>
-						</div>						<!-- Action Selection - Radio Buttons -->
+						</div> <!-- Action Selection - Radio Buttons -->
 						<div class="mb-6">
 							<label class="block text-sm font-bold text-gray-700 mb-3">
 								<i class="fas fa-hand-pointer mr-1"></i>
@@ -1607,7 +1622,8 @@
 							</label>
 							<div class="space-y-3">
 								<!-- Approve Option -->
-								<label class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+								<label
+									class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
 									:class="{
 										'border-green-500 bg-green-50': approvalAction === 'approve',
 										'border-gray-300': approvalAction !== 'approve'
@@ -1624,7 +1640,8 @@
 								</label>
 
 								<!-- Reject Option -->
-								<label class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+								<label
+									class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
 									:class="{
 										'border-red-500 bg-red-50': approvalAction === 'reject',
 										'border-gray-300': approvalAction !== 'reject'
@@ -1641,19 +1658,22 @@
 								</label>
 
 								<!-- Request Changes Option -->
-								<label class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+								<label
+									class="flex items-start p-4 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
 									:class="{
 										'border-yellow-500 bg-yellow-50': approvalAction === 'request_changes',
 										'border-gray-300': approvalAction !== 'request_changes'
 									}">
-									<input type="radio" name="approval-action" value="request_changes" x-model="approvalAction"
+									<input type="radio" name="approval-action" value="request_changes"
+										x-model="approvalAction"
 										class="mt-1 h-5 w-5 text-yellow-600 border-gray-300 focus:ring-yellow-500">
 									<div class="ml-3 flex-1">
 										<span class="text-base font-semibold text-gray-900 flex items-center">
 											<i class="fas fa-edit text-yellow-600 mr-2"></i>
 											Request Changes
 										</span>
-										<p class="text-sm text-gray-600 mt-1">Ask for revisions before final decision</p>
+										<p class="text-sm text-gray-600 mt-1">Ask for revisions before final decision
+										</p>
 									</div>
 								</label>
 							</div>
@@ -1661,88 +1681,116 @@
 
 						<!-- Comments/Reason Dropdown & Textarea -->
 						<div class="mb-6">
-						<label for="approval-comments-dropdown" class="block text-sm font-bold text-gray-700 mb-2">
-						<i class="fas fa-message mr-1 text-gray-500"></i>
-						<span x-show="approvalAction === 'approve'">Comments (Optional):</span>
-						<span x-show="approvalAction === 'reject'">Rejection Reason (Required): <span class="text-red-500">*</span></span>
-						<span x-show="approvalAction === 'request_changes'">Changes Requested (Required): <span class="text-red-500">*</span></span>
-						</label>
-						
-						<!-- Dropdown with preset options -->
-						<select id="approval-comments-dropdown" x-model="selectedCommentOption" 
-						@change="if (selectedCommentOption !== 'custom') { approvalComments = selectedCommentOption; }"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition mb-3"
-						:class="{
+							<label for="approval-comments-dropdown" class="block text-sm font-bold text-gray-700 mb-2">
+								<i class="fas fa-message mr-1 text-gray-500"></i>
+								<span x-show="approvalAction === 'approve'">Comments (Optional):</span>
+								<span x-show="approvalAction === 'reject'">Rejection Reason (Required): <span
+										class="text-red-500">*</span></span>
+								<span x-show="approvalAction === 'request_changes'">Changes Requested (Required): <span
+										class="text-red-500">*</span></span>
+							</label>
+
+							<!-- Dropdown with preset options -->
+							<select id="approval-comments-dropdown" x-model="selectedCommentOption"
+								@change="if (selectedCommentOption !== 'custom') { approvalComments = selectedCommentOption; }"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition mb-3"
+								:class="{
 						'border-red-300 focus:border-red-500 focus:ring-red-500': approvalAction === 'reject' && !approvalComments.trim(),
 						'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500': approvalAction === 'request_changes' && !approvalComments.trim()
 						}">
-						<option value="">-- Select an option --</option>
-						
-						<!-- Approval Comments -->
-						<template x-if="approvalAction === 'approve'">
-						<optgroup label="Approval Comments">
-						<option value="Project meets all requirements and is approved for implementation">Project meets all requirements and is approved for implementation</option>
-						<option value="Well-structured project with clear objectives and outcomes">Well-structured project with clear objectives and outcomes</option>
-						<option value="Budget and timeline are reasonable and well-justified">Budget and timeline are reasonable and well-justified</option>
-						<option value="Strong community impact potential">Strong community impact potential</option>
-						<option value="Approved with minor recommendations for implementation phase">Approved with minor recommendations for implementation phase</option>
-						<option value="custom">Custom comment...</option>
-						</optgroup>
-						</template>
-						
-						<!-- Rejection Reasons -->
-						<template x-if="approvalAction === 'reject'">
-						<optgroup label="Rejection Reasons">
-						<option value="Insufficient budget justification or unrealistic cost estimates">Insufficient budget justification or unrealistic cost estimates</option>
-						<option value="Project objectives not clearly defined or measurable">Project objectives not clearly defined or measurable</option>
-						<option value="Inadequate risk assessment or mitigation strategies">Inadequate risk assessment or mitigation strategies</option>
-						<option value="Timeline is not realistic for proposed activities">Timeline is not realistic for proposed activities</option>
-						<option value="Does not align with current organizational priorities">Does not align with current organizational priorities</option>
-						<option value="Insufficient stakeholder engagement or community buy-in">Insufficient stakeholder engagement or community buy-in</option>
-						<option value="Missing critical supporting documentation">Missing critical supporting documentation</option>
-						<option value="Sustainability plan is inadequate or unclear">Sustainability plan is inadequate or unclear</option>
-						<option value="custom">Custom reason...</option>
-						</optgroup>
-						</template>
-						
-						<!-- Change Requests -->
-						<template x-if="approvalAction === 'request_changes'">
-						<optgroup label="Changes Requested">
-						<option value="Please provide more detailed budget breakdown and justification">Please provide more detailed budget breakdown and justification</option>
-						<option value="Clarify project objectives and expected outcomes with specific metrics">Clarify project objectives and expected outcomes with specific metrics</option>
-						<option value="Revise timeline to be more realistic for proposed activities">Revise timeline to be more realistic for proposed activities</option>
-						<option value="Add or update risk assessment and mitigation strategies">Add or update risk assessment and mitigation strategies</option>
-						<option value="Provide missing supporting documentation">Provide missing supporting documentation</option>
-						<option value="Enhance sustainability plan with more concrete strategies">Enhance sustainability plan with more concrete strategies</option>
-						<option value="Improve stakeholder engagement and community involvement plan">Improve stakeholder engagement and community involvement plan</option>
-						<option value="Align project activities more closely with organizational priorities">Align project activities more closely with organizational priorities</option>
-						<option value="custom">Custom changes...</option>
-						</optgroup>
-						</template>
-						</select>
-						
-						<!-- Custom comment textarea (shown when "custom" is selected) -->
-						<div x-show="selectedCommentOption === 'custom'">
-						<textarea id="approval-comments-custom" x-model="approvalComments" rows="4"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
-						:class="{
+								<option value="">-- Select an option --</option>
+
+								<!-- Approval Comments -->
+								<template x-if="approvalAction === 'approve'">
+									<optgroup label="Approval Comments">
+										<option
+											value="Project meets all requirements and is approved for implementation">
+											Project meets all requirements and is approved for implementation</option>
+										<option value="Well-structured project with clear objectives and outcomes">
+											Well-structured project with clear objectives and outcomes</option>
+										<option value="Budget and timeline are reasonable and well-justified">Budget and
+											timeline are reasonable and well-justified</option>
+										<option value="Strong community impact potential">Strong community impact
+											potential</option>
+										<option value="Approved with minor recommendations for implementation phase">
+											Approved with minor recommendations for implementation phase</option>
+										<option value="custom">Custom comment...</option>
+									</optgroup>
+								</template>
+
+								<!-- Rejection Reasons -->
+								<template x-if="approvalAction === 'reject'">
+									<optgroup label="Rejection Reasons">
+										<option value="Insufficient budget justification or unrealistic cost estimates">
+											Insufficient budget justification or unrealistic cost estimates</option>
+										<option value="Project objectives not clearly defined or measurable">Project
+											objectives not clearly defined or measurable</option>
+										<option value="Inadequate risk assessment or mitigation strategies">Inadequate
+											risk assessment or mitigation strategies</option>
+										<option value="Timeline is not realistic for proposed activities">Timeline is
+											not realistic for proposed activities</option>
+										<option value="Does not align with current organizational priorities">Does not
+											align with current organizational priorities</option>
+										<option value="Insufficient stakeholder engagement or community buy-in">
+											Insufficient stakeholder engagement or community buy-in</option>
+										<option value="Missing critical supporting documentation">Missing critical
+											supporting documentation</option>
+										<option value="Sustainability plan is inadequate or unclear">Sustainability plan
+											is inadequate or unclear</option>
+										<option value="custom">Custom reason...</option>
+									</optgroup>
+								</template>
+
+								<!-- Change Requests -->
+								<template x-if="approvalAction === 'request_changes'">
+									<optgroup label="Changes Requested">
+										<option value="Please provide more detailed budget breakdown and justification">
+											Please provide more detailed budget breakdown and justification</option>
+										<option
+											value="Clarify project objectives and expected outcomes with specific metrics">
+											Clarify project objectives and expected outcomes with specific metrics
+										</option>
+										<option value="Revise timeline to be more realistic for proposed activities">
+											Revise timeline to be more realistic for proposed activities</option>
+										<option value="Add or update risk assessment and mitigation strategies">Add or
+											update risk assessment and mitigation strategies</option>
+										<option value="Provide missing supporting documentation">Provide missing
+											supporting documentation</option>
+										<option value="Enhance sustainability plan with more concrete strategies">
+											Enhance sustainability plan with more concrete strategies</option>
+										<option value="Improve stakeholder engagement and community involvement plan">
+											Improve stakeholder engagement and community involvement plan</option>
+										<option
+											value="Align project activities more closely with organizational priorities">
+											Align project activities more closely with organizational priorities
+										</option>
+										<option value="custom">Custom changes...</option>
+									</optgroup>
+								</template>
+							</select>
+
+							<!-- Custom comment textarea (shown when "custom" is selected) -->
+							<div x-show="selectedCommentOption === 'custom'">
+								<textarea id="approval-comments-custom" x-model="approvalComments" rows="4"
+									class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
+									:class="{
 						'border-red-300 focus:border-red-500 focus:ring-red-500': approvalAction === 'reject' && !approvalComments.trim(),
 						'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500': approvalAction === 'request_changes' && !approvalComments.trim()
-						}"
-						:placeholder="approvalAction === 'approve' ? 'Add any final comments for the records...' : 
+						}" :placeholder="approvalAction === 'approve' ? 'Add any final comments for the records...' : 
 						 approvalAction === 'reject' ? 'Provide detailed, constructive reason for rejection...' : 
-						 'Specify what changes are needed...'"
-						:required="approvalAction !== 'approve'"></textarea>
-						</div>
-						
-						<p x-show="approvalAction === 'reject' && !approvalComments.trim()" class="text-xs text-red-600 mt-1">
-						<i class="fas fa-exclamation-circle mr-1"></i>
-						Rejection reason is required
-						</p>
-						<p x-show="approvalAction === 'request_changes' && !approvalComments.trim()" class="text-xs text-yellow-600 mt-1">
-						<i class="fas fa-exclamation-circle mr-1"></i>
-						Please specify what changes are needed
-						</p>
+						 'Specify what changes are needed...'" :required="approvalAction !== 'approve'"></textarea>
+							</div>
+
+							<p x-show="approvalAction === 'reject' && !approvalComments.trim()"
+								class="text-xs text-red-600 mt-1">
+								<i class="fas fa-exclamation-circle mr-1"></i>
+								Rejection reason is required
+							</p>
+							<p x-show="approvalAction === 'request_changes' && !approvalComments.trim()"
+								class="text-xs text-yellow-600 mt-1">
+								<i class="fas fa-exclamation-circle mr-1"></i>
+								Please specify what changes are needed
+							</p>
 						</div>
 					</div>
 
@@ -1914,19 +1962,20 @@
 						</p>
 
 
-					<div class="mb-4">
-						<label class="block text-sm font-medium mb-2">Select User <span
-								class="text-red-500">*</span></label>
-						<select
-							x-model.number="selectedUserToConvertId"
-							class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-600">
-							<option value="">-- Select a user --</option>
-							<template x-for="user in userSearchResults" :key="user.id">
-								<option :value="user.id" x-text="`${user.name} (${user.email}) - ${user.role}`"></option>
-							</template>
-						</select>
-						<p class="text-xs text-gray-500 mt-1">Only users who are not already reviewers or approvers are shown</p>
-					</div>
+						<div class="mb-4">
+							<label class="block text-sm font-medium mb-2">Select User <span
+									class="text-red-500">*</span></label>
+							<select x-model.number="selectedUserToConvertId"
+								class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-600">
+								<option value="">-- Select a user --</option>
+								<template x-for="user in userSearchResults" :key="user.id">
+									<option :value="user.id" x-text="`${user.name} (${user.email}) - ${user.role}`">
+									</option>
+								</template>
+							</select>
+							<p class="text-xs text-gray-500 mt-1">Only users who are not already reviewers or approvers
+								are shown</p>
+						</div>
 						<div class="mb-4">
 							<label class="block text-sm font-medium mb-2">Assign Thematic Areas <span
 									class="text-red-500">*</span></label>
@@ -2306,11 +2355,11 @@
 							// Handle both response structures: data.data or direct data
 							const userData = data.data || data;
 							this.userRole = userData.role;
-							
+
 							// Support both legacy single thematic area and new multiple thematic areas
 							this.userThematicArea = userData.thematicArea || "Not Assigned";
 							this.userThematicAreas = userData.thematicAreas || [];
-							
+
 							console.log("User thematic areas:", this.userThematicAreas);
 
 							// Set initial tab based on role
@@ -2581,22 +2630,22 @@
 					this.showUnifiedApprovalModal = true;
 				},
 
-			openAssignThemeModal(reviewer) {
-				this.selectedReviewer = reviewer;
-				// Clear and repopulate assignedThemes for proper Alpine reactivity
-				this.assignedThemes.length = 0;
-				if (reviewer.thematicAreas && Array.isArray(reviewer.thematicAreas)) {
-					// New many-to-many relationship
-					reviewer.thematicAreas.forEach(area => this.assignedThemes.push(area));
-				} else if (reviewer.thematicArea) {
-					// Legacy single thematic area
-					this.assignedThemes.push(reviewer.thematicArea);
-				}
-				this.showAssignThemeModal = true;
-			},				async submitReview() {
+				openAssignThemeModal(reviewer) {
+					this.selectedReviewer = reviewer;
+					// Clear and repopulate assignedThemes for proper Alpine reactivity
+					this.assignedThemes.length = 0;
+					if (reviewer.thematicAreas && Array.isArray(reviewer.thematicAreas)) {
+						// New many-to-many relationship
+						reviewer.thematicAreas.forEach(area => this.assignedThemes.push(area));
+					} else if (reviewer.thematicArea) {
+						// Legacy single thematic area
+						this.assignedThemes.push(reviewer.thematicArea);
+					}
+					this.showAssignThemeModal = true;
+				}, async submitReview() {
 					// Determine the final comment to send
-					const finalComment = this.reviewComments === "Custom" 
-						? this.customReviewComment 
+					const finalComment = this.reviewComments === "Custom"
+						? this.customReviewComment
 						: this.reviewComments;
 
 					if (!finalComment.trim()) {
@@ -3057,6 +3106,9 @@
                           <dd class="text-gray-900">${project.projectCategory || "N/A"
 								}</dd>
                         </div>
+						${project.projectCategory === 'RESEARCH' && project.lacosteNumber
+									? `<div class="flex justify-between"><dt class="text-gray-500">Lacoste Number:</dt><dd class="text-gray-900">${project.lacosteNumber}</dd></div>`
+									: ''}
                       </dl>
                       
                       <div class="pt-4 border-t">
