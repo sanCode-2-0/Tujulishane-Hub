@@ -23,7 +23,7 @@ services:
         sync: false
       - key: GEOCODING_API_KEY
         sync: false
-    healthCheckPath: /api/projects
+    healthCheckPath: /api/projects/thematic-areas
 
   - type: web
     name: tujulishane-hub-frontend
