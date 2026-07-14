@@ -771,6 +771,11 @@
                 }
 
                 console.log("[access.html] Login successful, redirecting to OTP page");
+                if (data.data && data.data.otp) {
+                    localStorage.setItem("testOtp", data.data.otp);
+                } else {
+                    localStorage.removeItem("testOtp");
+                }
                 await showAlert("OTP sent to your email. Please check your inbox.", "Success", "success");
                 localStorage.setItem("pendingEmail", email);
                 localStorage.setItem("isLogin", "true");

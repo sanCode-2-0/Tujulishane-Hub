@@ -64,6 +64,10 @@
         </p>
       </header>
 
+      <div id="testOtpBanner" class="hidden my-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-indigo-800 text-sm font-medium text-center">
+        ℹ️ For testing, your OTP is: <span id="testOtpCode" class="font-bold underline tracking-wider text-base text-indigo-950">------</span>
+      </div>
+
       <form id="otpForm" class="space-y-6" onsubmit="return false;">
         <div class="flex items-center justify-center gap-3 md:gap-4">
           <!-- 6 inputs -->
@@ -360,6 +364,13 @@
         // Focus first input on load
         inputs[0].focus();
 
+        // Check for testing OTP
+        const testOtp = localStorage.getItem("testOtp");
+        if (testOtp) {
+          document.getElementById("testOtpCode").textContent = testOtp;
+          document.getElementById("testOtpBanner").classList.remove("hidden");
+        }
+
         // Helpers
         function updateVerifyState() {
           const filled = inputs.every((i) => i.value.trim().length === 1);
@@ -524,9 +535,18 @@
               body: JSON.stringify({ email }),
             });
 
+            const data = await res.json();
             if (!res.ok) {
-              const data = await res.json();
               throw new Error(data.message || "Failed to resend OTP");
+            }
+
+            if (data.data && data.data.otp) {
+              localStorage.setItem("testOtp", data.data.otp);
+              document.getElementById("testOtpCode").textContent = data.data.otp;
+              document.getElementById("testOtpBanner").classList.remove("hidden");
+            } else {
+              localStorage.removeItem("testOtp");
+              document.getElementById("testOtpBanner").classList.add("hidden");
             }
 
             showMessage("A new code has been sent to your email.", "success");

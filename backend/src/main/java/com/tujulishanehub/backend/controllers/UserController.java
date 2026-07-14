@@ -183,8 +183,14 @@ public class UserController {
 
         // Send a fresh login OTP
         try {
-            userService.sendLoginOtp(email);
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
+            String otp = userService.sendLoginOtp(email);
+            Map<String, Object> data = null;
+            String testingMode = System.getenv("OTP_TESTING_MODE");
+            if ("true".equalsIgnoreCase(testingMode)) {
+                data = new java.util.HashMap<>();
+                data.put("otp", otp);
+            }
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", data);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);
@@ -265,8 +271,14 @@ public class UserController {
         }
 
         try {
-            userService.sendLoginOtp(email);
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", null);
+            String otp = userService.sendLoginOtp(email);
+            Map<String, Object> data = null;
+            String testingMode = System.getenv("OTP_TESTING_MODE");
+            if ("true".equalsIgnoreCase(testingMode)) {
+                data = new java.util.HashMap<>();
+                data.put("otp", otp);
+            }
+            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK.value(), "Login OTP sent to your email.", data);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             logger.error("Failed to send login OTP to {}: {}", email, e.getMessage(), e);

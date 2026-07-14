@@ -194,7 +194,7 @@ public class UserService {
     }
 
     // Helper to (re)send login OTP for ACTIVE and APPROVED users
-    public void sendLoginOtp(String email) {
+    public String sendLoginOtp(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
@@ -229,6 +229,7 @@ public class UserService {
             user.getName(), otp
         );
         emailService.sendEmail(email, subject, body);
+        return otp;
     }
 
     // ========== ADMIN METHODS ==========

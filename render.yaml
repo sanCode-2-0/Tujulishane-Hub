@@ -23,6 +23,8 @@ services:
         sync: false
       - key: GEOCODING_API_KEY
         sync: false
+      - key: OTP_TESTING_MODE
+        value: "true"
     healthCheckPath: /api/projects/thematic-areas
 
   - type: web
