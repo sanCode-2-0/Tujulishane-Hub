@@ -21,56 +21,42 @@
             </li>
 
             <!-- Projects Dropdown -->
-            <li x-data="{ showprojectDropdown: false }" class="relative">
-                <button @click="showprojectDropdown = !showprojectDropdown"
+            <li class="relative">
+                <button onclick="navDrop('dd-projects')"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     Projects <i class="ml-2 fas fa-chevron-down"></i>
                 </button>
-                <div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-                    class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="dd-projects" class="nav-dropdown hidden absolute z-[999] w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-800">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="new-project.html">
-                                <i class="fas fa-plus mr-2 text-emerald-500"></i> New Project
-                            </a>
+                            <a href="new-project.html"><i class="fas fa-plus mr-2 text-emerald-500"></i> New Project</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="projects.html#my-projects">
-                                <i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects
-                            </a>
+                            <a href="projects.html#my-projects"><i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="past-projects.html">
-                                <i class="fas fa-clock-rotate-left mr-2 text-gray-500"></i> Past Projects
-                            </a>
+                            <a href="past-projects.html"><i class="fas fa-clock-rotate-left mr-2 text-gray-500"></i> Past Projects</a>
                         </li>
                     </ul>
                 </div>
             </li>
 
             <!-- Collaborations Dropdown -->
-            <li x-data="{ collabDropdown: false }" class="relative">
-                <button @click="collabDropdown = !collabDropdown"
+            <li class="relative">
+                <button onclick="navDrop('dd-collab')"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     Collaborations <i class="ml-2 fas fa-chevron-down"></i>
                 </button>
-                <div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-                    class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="dd-collab" class="nav-dropdown hidden absolute z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-700">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="priorities.html">
-                                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Priorities
-                            </a>
+                            <a href="priorities.html"><i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Priorities</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="my-collaborations.html">
-                                <i class="fas fa-users mr-2 text-fuchsia-600"></i> My Collaborations
-                            </a>
+                            <a href="my-collaborations.html"><i class="fas fa-users mr-2 text-fuchsia-600"></i> My Collaborations</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="announcements.html">
-                                <i class="fas fa-magnifying-glass mr-2 text-cyan-500"></i> Find Projects
-                            </a>
+                            <a href="announcements.html"><i class="fas fa-magnifying-glass mr-2 text-cyan-500"></i> Find Projects</a>
                         </li>
                     </ul>
                 </div>
@@ -87,7 +73,6 @@
         <!-- Desktop - Right-aligned Items -->
         <ul class="flex items-center space-x-4 text-sm hidden lg:flex font-medium text-gray-800">
 
-            <!-- Dashboard quick link -->
             <li>
                 <a href="dashboard.html"
                     class="font-medium inline-flex items-center gap-2 px-3 py-2 uppercase transition rounded-lg hover:bg-gray-100 hover:text-lime-600">
@@ -95,35 +80,26 @@
                 </a>
             </li>
 
-            <!-- Admin Dropdown (hidden until role is checked) -->
-            <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-                <button @click="showDropdown = !showDropdown"
+            <!-- Admin Dropdown -->
+            <li class="relative hidden" id="adminNav">
+                <button onclick="navDrop('dd-admin')"
                     class="font-medium inline-flex items-center gap-2 px-3 py-2 uppercase transition rounded-lg hover:bg-gray-100 hover:text-lime-600">
                     <i class="fas fa-shield-halved text-lime-500"></i> Admin
                     <i class="fas fa-chevron-down text-xs"></i>
                 </button>
-                <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                    class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="dd-admin" class="nav-dropdown hidden absolute right-0 z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-700">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="projects.html">
-                                <i class="far fa-folder mr-2 text-lime-500"></i> Project Management
-                            </a>
+                            <a href="projects.html"><i class="far fa-folder mr-2 text-lime-500"></i> Project Management</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="admin-approvals.html">
-                                <i class="fas fa-list-check mr-2 text-lime-500"></i> Two-Tier Approvals
-                            </a>
+                            <a href="admin-approvals.html"><i class="fas fa-list-check mr-2 text-lime-500"></i> Two-Tier Approvals</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="members.html">
-                                <i class="fas fa-users mr-2 text-lime-500"></i> Stakeholder Management
-                            </a>
+                            <a href="members.html"><i class="fas fa-users mr-2 text-lime-500"></i> Stakeholder Management</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="donor-management.html">
-                                <i class="fas fa-file-invoice mr-2 text-lime-500"></i> Donor Management
-                            </a>
+                            <a href="donor-management.html"><i class="fas fa-file-invoice mr-2 text-lime-500"></i> Donor Management</a>
                         </li>
                     </ul>
                 </div>
@@ -139,15 +115,18 @@
             </li>
 
             <!-- User Dropdown -->
-            <li x-data="{ showUserDropdown: false }" class="relative">
-                <button @click="showUserDropdown = !showUserDropdown"
+            <li class="relative">
+                <button onclick="navDrop('dd-user')"
                     class="font-medium uppercase inline-flex items-center gap-2 px-3 py-2 text-sm transition rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-circle-user text-teal-600"></i>
+                    <!-- Avatar: shows photo if set, otherwise icon -->
+                    <span class="relative inline-flex items-center justify-center w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                        <img id="navUserAvatar" src="" alt="" class="hidden w-full h-full object-cover" />
+                        <i id="navUserInitials" class="fas fa-circle-user text-teal-600 text-xl"></i>
+                    </span>
                     <span id="userDisplayName">User</span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
-                <div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-                    class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+                <div id="dd-user" class="nav-dropdown hidden absolute right-0 z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
                     <div class="px-4 py-3">
                         <div class="text-base font-medium text-teal-900" id="userNameDisplay">Loading...</div>
                         <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
@@ -169,8 +148,7 @@
                             </a>
                         </li>
                         <li id="donorNav" class="hidden">
-                            <a href="donor-management.html"
-                                class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                            <a href="donor-management.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
                                 <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
                             </a>
                         </li>
@@ -194,62 +172,47 @@
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-6 pb-6 lg:hidden">
         <ul class="items-center text-sm gap-3 grid font-medium text-gray-800">
-
             <li>
                 <a href="index.html" class="uppercase transition hover:text-lime-600">Home</a>
             </li>
 
-            <!-- Projects Dropdown -->
-            <li x-data="{ showprojectDropdown: false }" class="relative">
-                <button @click="showprojectDropdown = !showprojectDropdown"
+            <!-- Projects (mobile) -->
+            <li class="relative">
+                <button onclick="navDrop('m-dd-projects')"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     Projects <i class="ml-2 fas fa-chevron-down"></i>
                 </button>
-                <div x-show="showprojectDropdown" @click.outside="showprojectDropdown = false" x-transition
-                    class="absolute z-50 w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="m-dd-projects" class="nav-dropdown hidden absolute z-[999] w-64 mt-2 bg-white/90 backdrop-blur-md divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-800">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="new-project.html">
-                                <i class="fas fa-plus mr-2 text-emerald-500"></i> New Project
-                            </a>
+                            <a href="new-project.html"><i class="fas fa-plus mr-2 text-emerald-500"></i> New Project</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="projects.html#my-projects">
-                                <i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects
-                            </a>
+                            <a href="projects.html#my-projects"><i class="fas fa-user-check mr-2 text-sky-500"></i> My Projects</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="past-projects.html">
-                                <i class="fas fa-clock-rotate-left mr-2 text-gray-500"></i> Past Projects
-                            </a>
+                            <a href="past-projects.html"><i class="fas fa-clock-rotate-left mr-2 text-gray-500"></i> Past Projects</a>
                         </li>
                     </ul>
                 </div>
             </li>
 
-            <!-- Collaborations Dropdown -->
-            <li x-data="{ collabDropdown: false }" class="relative">
-                <button @click="collabDropdown = !collabDropdown"
+            <!-- Collaborations (mobile) -->
+            <li class="relative">
+                <button onclick="navDrop('m-dd-collab')"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     Collaborations <i class="ml-2 fas fa-chevron-down"></i>
                 </button>
-                <div x-show="collabDropdown" @click.outside="collabDropdown = false" x-transition
-                    class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="m-dd-collab" class="nav-dropdown hidden absolute z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-700">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="priorities.html">
-                                <i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Priorities
-                            </a>
+                            <a href="priorities.html"><i class="far fa-star mr-2 text-orange-600"></i> RMNCAH Priorities</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="my-collaborations.html">
-                                <i class="fas fa-users mr-2 text-fuchsia-600"></i> My Collaborations
-                            </a>
+                            <a href="my-collaborations.html"><i class="fas fa-users mr-2 text-fuchsia-600"></i> My Collaborations</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="announcements.html">
-                                <i class="fas fa-magnifying-glass mr-2 text-cyan-500"></i> Find Projects
-                            </a>
+                            <a href="announcements.html"><i class="fas fa-magnifying-glass mr-2 text-cyan-500"></i> Find Projects</a>
                         </li>
                     </ul>
                 </div>
@@ -267,60 +230,48 @@
                 </a>
             </li>
 
-            <!-- Dashboard Sidebar Tabs - Only show on dashboard page -->
+            <!-- Dashboard Sidebar Tabs -->
             <li id="mobile-dashboard-tabs" class="hidden">
                 <div class="border-t border-gray-200 pt-3 mt-1">
                     <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Dashboard Sections</h4>
-                    <div class="grid gap-2" id="mobile-sidebar-tabs">
-                        <!-- Dashboard tabs injected by dashboard-tabs.js -->
-                    </div>
+                    <div class="grid gap-2" id="mobile-sidebar-tabs"></div>
                 </div>
             </li>
 
-            <!-- Admin Dropdown (hidden until role is checked) -->
-            <li x-data="{ showDropdown: false }" class="relative hidden" id="adminNav">
-                <button @click="showDropdown = !showDropdown"
+            <!-- Admin (mobile) -->
+            <li class="relative hidden" id="adminNav">
+                <button onclick="navDrop('m-dd-admin')"
                     class="font-medium inline-flex items-center uppercase transition hover:text-lime-600">
                     <i class="fas fa-shield-halved mr-2 text-lime-500"></i> Admin
                     <i class="ml-2 fas fa-chevron-down"></i>
                 </button>
-                <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                    class="absolute z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
+                <div id="m-dd-admin" class="nav-dropdown hidden absolute z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-md rounded-xl">
                     <ul class="py-2 text-sm text-left text-teal-700">
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="projects.html">
-                                <i class="far fa-folder mr-2 text-blue-500"></i> Project Management
-                            </a>
+                            <a href="projects.html"><i class="far fa-folder mr-2 text-blue-500"></i> Project Management</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="admin-approvals.html">
-                                <i class="fas fa-list-check mr-2 text-blue-500"></i> Two-Tier Approvals
-                            </a>
+                            <a href="admin-approvals.html"><i class="fas fa-list-check mr-2 text-blue-500"></i> Two-Tier Approvals</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="members.html">
-                                <i class="fas fa-users mr-2 text-blue-500"></i> Stakeholder Management
-                            </a>
+                            <a href="members.html"><i class="fas fa-users mr-2 text-blue-500"></i> Stakeholder Management</a>
                         </li>
                         <li class="px-4 py-2 hover:bg-lime-50 text-[12px] uppercase">
-                            <a href="donor-management.html">
-                                <i class="fas fa-file-invoice mr-2 text-blue-500"></i> Donor Management
-                            </a>
+                            <a href="donor-management.html"><i class="fas fa-file-invoice mr-2 text-blue-500"></i> Donor Management</a>
                         </li>
                     </ul>
                 </div>
             </li>
 
-            <!-- User Dropdown -->
-            <li x-data="{ showUserDropdown: false }" class="relative">
-                <button @click="showUserDropdown = !showUserDropdown"
+            <!-- User (mobile) -->
+            <li class="relative">
+                <button onclick="navDrop('m-dd-user')"
                     class="font-medium uppercase inline-flex items-center text-sm transition rounded-lg hover:bg-gray-100">
                     <i class="mr-2 fas fa-circle-user text-teal-600"></i>
                     <span id="userDisplayName">User</span>
                     <i class="ml-2 fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
-                <div x-show="showUserDropdown" @click.outside="showUserDropdown = false" x-transition
-                    class="absolute right-0 z-50 w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
+                <div id="m-dd-user" class="nav-dropdown hidden absolute right-0 z-[999] w-64 mt-2 bg-white divide-y divide-gray-100 shadow-lg rounded-xl">
                     <div class="px-4 py-3">
                         <div class="text-base font-medium text-teal-900" id="userNameDisplay">Loading...</div>
                         <div class="text-sm text-slate-500" id="userEmailDisplay"></div>
@@ -342,8 +293,7 @@
                             </a>
                         </li>
                         <li id="donorNav" class="hidden">
-                            <a href="donor-management.html"
-                                class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
+                            <a href="donor-management.html" class="block px-4 py-2 hover:bg-lime-50 hover:text-lime-600">
                                 <i class="mr-2 fas fa-hand-holding-heart"></i> Donor Management
                             </a>
                         </li>
@@ -365,3 +315,33 @@
         </ul>
     </div>
 </nav>
+
+<script>
+// Apply saved avatar to nav as soon as nav is injected
+(function() {
+    var avatar = localStorage.getItem('userAvatar');
+    if (avatar) {
+        var img = document.getElementById('navUserAvatar');
+        var icon = document.getElementById('navUserInitials');
+        if (img && icon) {
+            img.src = avatar;
+            img.classList.remove('hidden');
+            icon.classList.add('hidden');
+        }
+    }
+})();
+
+function navDrop(id) {
+    document.querySelectorAll('.nav-dropdown').forEach(function(el) {
+        if (el.id !== id) el.classList.add('hidden');
+    });
+    document.getElementById(id).classList.toggle('hidden');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('nav')) {
+        document.querySelectorAll('.nav-dropdown').forEach(function(el) {
+            el.classList.add('hidden');
+        });
+    }
+});
+</script>

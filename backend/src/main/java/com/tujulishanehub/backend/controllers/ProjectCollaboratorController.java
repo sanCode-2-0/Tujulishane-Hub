@@ -106,7 +106,7 @@ public class ProjectCollaboratorController {
             
             // Check if user is admin, super admin, or project owner
             boolean isAdmin = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+                    .anyMatch(a -> a.getAuthority().startsWith("ROLE_SUPER_ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
             boolean isOwner = projectService.isProjectOwner(projectId, addedByEmail);
             
             if (!isAdmin && !isOwner) {
@@ -170,7 +170,7 @@ public class ProjectCollaboratorController {
             
             // Check if user is admin, super admin, or project owner
             boolean isAdmin = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+                    .anyMatch(a -> a.getAuthority().startsWith("ROLE_SUPER_ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
             boolean isOwner = projectService.isProjectOwner(projectId, userEmail);
             
             if (!isAdmin && !isOwner) {
@@ -227,7 +227,7 @@ public class ProjectCollaboratorController {
             
             // Check if user is admin, super admin, or project owner
             boolean isAdmin = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+                    .anyMatch(a -> a.getAuthority().startsWith("ROLE_SUPER_ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
             boolean isOwner = projectService.isProjectOwner(projectId, userEmail);
             
             if (!isAdmin && !isOwner) {

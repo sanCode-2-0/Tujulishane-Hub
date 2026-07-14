@@ -26,8 +26,8 @@
     </script>
     <link rel="stylesheet" href="styles/main.css">
     <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-    <script src="./config.js"></script>
-    <script src="./set-base-url.js"></script>
+    <script src="./app-config.js?v=3"></script>
+    <script src="./set-base-url.js?v=3"></script>
     <script src="./network-debugger.js"></script>
     <!-- Session Configuration -->
     <script src="./session-config.js"></script>
@@ -91,18 +91,37 @@
                     RMNCAH Coordination Hub
                 </p>
                 <!--Tabs navigation-->
-                <ul class="flex list-none w-full flex-row flex-wrap border-b-0 ps-0" role="tablist" data-twe-nav-ref>
+                <ul class="flex list-none w-full flex-row flex-wrap border-b border-gray-200 mb-4 ps-0" role="tablist" data-twe-nav-ref>
                     <li role="presentation" class="flex-grow basis-0 text-center">
                         <a href="#tabs-home02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
+                            class="my-2 mx-1 flex items-center justify-center rounded-lg py-3 px-4 text-xs font-semibold uppercase tracking-wider leading-tight text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-blue-700 data-[twe-nav-active]:bg-blue-50 data-[twe-nav-active]:text-blue-700 data-[twe-nav-active]:shadow-sm border border-transparent data-[twe-nav-active]:border-blue-200"
                             data-twe-toggle="pill" data-twe-target="#tabs-home02" data-twe-nav-active role="tab"
-                            aria-controls="tabs-home02" aria-selected="true">Login</a>
+                            aria-controls="tabs-home02" aria-selected="true">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Login
+                        </a>
                     </li>
                     <li role="presentation" class="flex-grow basis-0 text-center">
                         <a href="#tabs-profile02"
-                            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-4 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-blue-200 focus:isolate focus:border-transparent data-[twe-nav-active]:text-primary bg-gray-50 data-[twe-nav-active]:bg-gray-300"
+                            class="my-2 mx-1 flex items-center justify-center rounded-lg py-3 px-4 text-xs font-semibold uppercase tracking-wider leading-tight text-gray-500 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-700 data-[twe-nav-active]:bg-emerald-500 data-[twe-nav-active]:text-white data-[twe-nav-active]:shadow-md border border-transparent data-[twe-nav-active]:border-emerald-600 relative overflow-hidden"
                             data-twe-toggle="pill" data-twe-target="#tabs-profile02" role="tab"
-                            aria-controls="tabs-profile02" aria-selected="false">Become a Member</a>
+                            aria-controls="tabs-profile02" aria-selected="false">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                            Become a Member
+                            <span class="absolute top-0 right-0 flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li role="presentation" class="flex-grow basis-0 text-center">
+                        <a href="#tabs-faq"
+                            class="my-2 mx-1 flex items-center justify-center rounded-lg py-3 px-4 text-xs font-semibold uppercase tracking-wider leading-tight text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-amber-700 data-[twe-nav-active]:bg-amber-50 data-[twe-nav-active]:text-amber-700 data-[twe-nav-active]:shadow-sm border border-transparent data-[twe-nav-active]:border-amber-200"
+                            data-twe-toggle="pill" data-twe-target="#tabs-faq" role="tab"
+                            aria-controls="tabs-faq" aria-selected="false">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            FAQs
+                        </a>
                     </li>
                 </ul>
 
@@ -139,7 +158,7 @@
                             
                             <div class="flex w-full">
                                 <button type="button" onclick="requestOtp()" id="loginBtn"
-                                    class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700">
+                                    class="w-full py-2 text-center text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700 font-semibold shadow-sm">
                                     <span id="loginBtnText">Get OTP</span>
                                     <span id="loginBtnSpinner" class="hidden">
                                         <svg class="inline w-5 h-5 mr-2 text-white animate-spin"
@@ -154,6 +173,25 @@
                                         Sending...
                                     </span>
                                 </button>
+                            </div>
+
+                            <!-- CTA for Higher Visibility (Membership and FAQs) -->
+                            <div class="mt-6 text-center border-t border-gray-200 pt-5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+                                <p class="text-sm text-gray-600 flex items-center justify-center flex-wrap gap-1">
+                                    <span>New to the coordination hub?</span>
+                                    <button type="button" onclick="switchTab('#tabs-profile02')" class="inline-flex items-center font-bold text-emerald-600 hover:text-emerald-800 transition duration-150 hover:underline">
+                                        Become a Member
+                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                    </button>
+                                </p>
+                                <span class="hidden sm:inline text-gray-300">|</span>
+                                <p class="text-sm text-gray-600 flex items-center justify-center flex-wrap gap-1">
+                                    <span>Have questions?</span>
+                                    <button type="button" onclick="switchTab('#tabs-faq')" class="inline-flex items-center font-bold text-amber-600 hover:text-amber-800 transition duration-150 hover:underline">
+                                        View FAQs
+                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                    </button>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -284,6 +322,98 @@
                             </form>
                         </div>
                     </div>
+
+                    <!-- FAQ Tab Panel -->
+                    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+                        id="tabs-faq" role="tabpanel" aria-labelledby="tabs-faq-tab">
+                        <!-- FAQ Accordion Content -->
+                        <div id="faqCard" class="py-6 w-full mb-4 space-y-4 transition-all duration-500 ease-in-out rounded-xl" x-data="{ activeFaq: null }">
+                            <div class="flex items-center justify-between border-b pb-3 mb-4">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-800">Frequently Asked Questions</h2>
+                                    <p class="text-xs text-gray-500">Quick answers to common questions about RMNCAH coordination</p>
+                                </div>
+                                <a href="faq.html" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 hover:underline">
+                                    Full FAQ Page
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </div>
+
+                            <!-- FAQ items using Alpine.js -->
+                            <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                                <!-- FAQ 1 -->
+                                <div class="border border-gray-200 rounded-lg bg-white overflow-hidden transition-all duration-200" :class="{ 'ring-1 ring-blue-500 border-blue-200': activeFaq === 1 }">
+                                    <button @click="activeFaq = activeFaq === 1 ? null : 1" type="button" class="flex justify-between items-center w-full p-4 text-left font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="text-sm">What is the RMNCAH Coordination Hub?</span>
+                                        <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180 text-blue-500': activeFaq === 1 }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="activeFaq === 1" x-transition.duration.200ms class="border-t border-gray-200 bg-blue-50/30 p-4">
+                                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                            The RMNCAH Coordination Hub is an official Ministry of Health digital platform designed to enhance visibility, coordination, and accountability among stakeholders implementing projects in Reproductive, Maternal, Newborn, Child, and Adolescent Health (RMNCAH). It enables partners and donors to register, submit projects, collaborate, and align efforts with national health priorities.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 2 -->
+                                <div class="border border-gray-200 rounded-lg bg-white overflow-hidden transition-all duration-200" :class="{ 'ring-1 ring-blue-500 border-blue-200': activeFaq === 2 }">
+                                    <button @click="activeFaq = activeFaq === 2 ? null : 2" type="button" class="flex justify-between items-center w-full p-4 text-left font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="text-sm">Who is eligible to become a member?</span>
+                                        <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180 text-blue-500': activeFaq === 2 }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="activeFaq === 2" x-transition.duration.200ms class="border-t border-gray-200 bg-blue-50/30 p-4">
+                                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                            Approved RMNCAH stakeholders including partner organizations (NGOs, CBOs, private sector implementers), donor organizations, and Ministry of Health (MOH) staff can register. Each account type requires verification and approval by the MOH admin to ensure authenticity and relevance.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 3 -->
+                                <div class="border border-gray-200 rounded-lg bg-white overflow-hidden transition-all duration-200" :class="{ 'ring-1 ring-blue-500 border-blue-200': activeFaq === 3 }">
+                                    <button @click="activeFaq = activeFaq === 3 ? null : 3" type="button" class="flex justify-between items-center w-full p-4 text-left font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="text-sm">How do I register / become a member?</span>
+                                        <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180 text-blue-500': activeFaq === 3 }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="activeFaq === 3" x-transition.duration.200ms class="border-t border-gray-200 bg-blue-50/30 p-4">
+                                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed mb-2">
+                                            To register, follow these simple steps:
+                                        </p>
+                                        <ol class="list-decimal pl-4 text-xs md:text-sm text-gray-600 space-y-1">
+                                            <li>Click the <strong>Become a Member</strong> tab on this page.</li>
+                                            <li>Fill in your Account Details (Name, Email, Organization, and Account Type).</li>
+                                            <li>Click <strong>Next</strong> to proceed to Step 2: Supporting Documents (Optional, but recommended for faster approval).</li>
+                                            <li>Submit your registration. Your credentials will be reviewed by the MOH team.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 4 -->
+                                <div class="border border-gray-200 rounded-lg bg-white overflow-hidden transition-all duration-200" :class="{ 'ring-1 ring-blue-500 border-blue-200': activeFaq === 4 }">
+                                    <button @click="activeFaq = activeFaq === 4 ? null : 4" type="button" class="flex justify-between items-center w-full p-4 text-left font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="text-sm">What supporting documents are recommended?</span>
+                                        <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180 text-blue-500': activeFaq === 4 }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="activeFaq === 4" x-transition.duration.200ms class="border-t border-gray-200 bg-blue-50/30 p-4">
+                                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                            Uploading organizational registration certificates, MOUs with the Ministry of Health, introductory letters, or recent project briefs helps verify your organization's legitimacy. Supported formats include PDF, DOC/DOCX, and XLS/XLSX, with a maximum file size of 10MB per file.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 5 -->
+                                <div class="border border-gray-200 rounded-lg bg-white overflow-hidden transition-all duration-200" :class="{ 'ring-1 ring-blue-500 border-blue-200': activeFaq === 5 }">
+                                    <button @click="activeFaq = activeFaq === 5 ? null : 5" type="button" class="flex justify-between items-center w-full p-4 text-left font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="text-sm">How long does account approval take?</span>
+                                        <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180 text-blue-500': activeFaq === 5 }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    <div x-show="activeFaq === 5" x-transition.duration.200ms class="border-t border-gray-200 bg-blue-50/30 p-4">
+                                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                            Once submitted, your account goes through a two-step validation process by the MOH reviewer and administrator. This typically takes up to 12 hours. You will receive an email confirmation once your account has been approved or if additional information is required.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex flex-col  w-full max-w-lg p-4 mx-auto items-center justify-center ">
 
@@ -354,6 +484,33 @@
 
         const randomImage = images[Math.floor(Math.random() * images.length)];
         document.getElementById('heroSection').style.backgroundImage = `url('${randomImage}')`;
+
+        // Switch tab helper function for CTA buttons and deep-linking
+        window.switchTab = function(targetId) {
+            const tabEl = document.querySelector(`[data-twe-target="${targetId}"]`);
+            if (tabEl) {
+                tabEl.click();
+                // Ensure form starts at step 1 if navigating to registration
+                if (targetId === '#tabs-profile02') {
+                    const tab1Btn = document.getElementById('tab1');
+                    if (tab1Btn) tab1Btn.click();
+                }
+            }
+        };
+
+        // Deep-linking based on URL Hash
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            if (hash) {
+                if (hash === '#register' || hash === '#tabs-profile02') {
+                    setTimeout(() => window.switchTab('#tabs-profile02'), 150);
+                } else if (hash === '#faq' || hash === '#tabs-faq') {
+                    setTimeout(() => window.switchTab('#tabs-faq'), 150);
+                } else if (hash === '#login' || hash === '#tabs-home02') {
+                    setTimeout(() => window.switchTab('#tabs-home02'), 150);
+                }
+            }
+        });
     </script>
 
 

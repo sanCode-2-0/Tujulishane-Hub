@@ -1,16 +1,24 @@
-// config.js
+// app-config.js
 // Single toggle to switch frontend API target between production and development.
 // Flip `USE_PROD` to `false` for local development (https://localhost:8080)
 // or set up a local override in `frontend/config.local.js` (this file is gitignored
 // by default if you create it — see config.local.js.example).
 
 // --- Toggle ---
-// true  => use production backend (via nginx proxy)
-// false => use local dev backend (localhost:8080)
-const USE_PROD = false; // <--- flip this boolean to switch environments
+// Automatically detect environment based on hostname
+const isLocal = typeof window !== "undefined" && 
+  (window.location.hostname === "localhost" || 
+   window.location.hostname === "127.0.0.1" || 
+   window.location.hostname === "");
+
+const USE_PROD = !isLocal;
 
 // Backend endpoints - SET THESE ONCE FOR YOUR WHOLE APP
-const PROD_URL = "/tujulishane-hub"; // Relative path - nginx proxies /tujulishane-hub/api/ to backend
+// For Render deployment, we point directly to the backend URL.
+// For EC2, we use a relative path since Nginx proxies /api/ from the root.
+const PROD_URL = typeof window !== "undefined" && window.location.hostname.endsWith(".onrender.com")
+  ? "https://tujulishane-hub-backend.onrender.com"
+  : ""; 
 const DEV_URL = "http://localhost:8080"; // Local development backend
 
 // Compute base URL from toggle. If a runtime global override is set (by a
@@ -22,7 +30,8 @@ if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
 
 // Mapbox token - loaded from gitignored config.local.js via window.__MAPBOX_TOKEN
 // Create frontend/config.local.js with: window.__MAPBOX_TOKEN = "pk.your_token_here";
-const MAPBOX_TOKEN = (typeof window !== "undefined" && window.__MAPBOX_TOKEN) || "";
+const MAPBOX_TOKEN =
+  (typeof window !== "undefined" && window.__MAPBOX_TOKEN) || "";
 
 console.log("BASE URL", BASE_URL);
 

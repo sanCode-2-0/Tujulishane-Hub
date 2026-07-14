@@ -74,7 +74,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findActiveProjects(@Param("currentDate") LocalDate currentDate);
     
     // Find projects with coordinates (for map display)
-    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE loc.latitude IS NOT NULL AND loc.longitude IS NOT NULL")
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.locations loc WHERE loc.latitude IS NOT NULL AND loc.longitude IS NOT NULL AND p.approvalWorkflowStatus = com.tujulishanehub.backend.models.ApprovalWorkflowStatus.APPROVED")
     List<Project> findProjectsWithCoordinates();
     
     // Find projects without coordinates (need geocoding)

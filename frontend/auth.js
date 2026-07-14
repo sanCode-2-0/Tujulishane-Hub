@@ -2,7 +2,7 @@
  * Authentication utilities for Tujulishane Hub frontend
  * Handles JWT token management, API calls with authentication, and user session
  *
- * BASE_URL is configured centrally in config.js - change it there to switch between PROD/DEV
+ * BASE_URL is configured centrally in app-config.js - change it there to switch between PROD/DEV
  */
 
 const AUTH_CONFIG = {
@@ -12,7 +12,7 @@ const AUTH_CONFIG = {
 
 class AuthManager {
   constructor() {
-    // Use the centralized BASE_URL from config.js (loaded via window.BASE_URL)
+    // Use the centralized BASE_URL from app-config.js (loaded via window.BASE_URL)
     this.baseUrl =
       window.BASE_URL;
     this.tokenKey = AUTH_CONFIG.TOKEN_KEY;

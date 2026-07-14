@@ -45,15 +45,15 @@
 
   <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
   <script src="./config.local.js"></script>
-  <script src="./config.js"></script>
-  <script src="./set-base-url.js"></script>
+  <script src="./app-config.js?v=3"></script>
+  <script src="./set-base-url.js?v=3"></script>
 
   <!-- Modal Utilities -->
   <script src="./modal-utils.js"></script>
 
   <!-- Authentication utilities -->
   <script type="module">
-    // Use window.BASE_URL which is already set by config.js loaded via script tag
+    // Use window.BASE_URL which is already set by app-config.js loaded via script tag
     const BASE_URL = window.BASE_URL;
     console.log(
       "[priorities.html] Using BASE_URL:",
@@ -95,38 +95,25 @@
       cursor: pointer;
     }
     .map-marker-pin {
-      width: 34px;
-      height: 34px;
-      border-radius: 50% 50% 50% 0;
       position: absolute;
-      left: -17px;
-      top: -41px;
-      transform: rotate(-45deg);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: box-shadow 0.2s ease;
+      left: -12px;
+      top: -34px;
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
     .map-marker-wrapper:hover .map-marker-pin {
-      transform: rotate(-45deg) scale(1.2);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 8px 20px rgba(0,0,0,0.45);
+      transform: scale(1.2);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45));
     }
-    .map-marker-pin .marker-icon {
-      transform: rotate(45deg);
-      color: #fff;
-      font-size: 13px;
-      line-height: 1;
-      pointer-events: none;
-    }
-    @keyframes markerPulse {
-      0%   { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 0 var(--pulse-color); }
-      70%  { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 12px transparent; }
-      100% { box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.3), 0 0 0 0 transparent; }
-    }
-    .map-marker-pin.marker-active { animation: markerPulse 2s infinite; }
     .map-marker-pin.marker-dimmed { opacity: 0.3; }
-    .map-marker-pin.marker-selected { transform: rotate(-45deg) scale(1.3) !important; }
+    .map-marker-pin.marker-selected { transform: scale(1.3) !important; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) !important; }
+    @keyframes markerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .map-marker-pin.marker-active { animation: markerPulse 1.8s ease-in-out infinite; }
 
     .fade-slide-enter {
       opacity: 0;
@@ -2071,26 +2058,14 @@
     }
 
     function createMarkerElement(status, projectNo) {
-      const iconMap = {
-        ACTIVE:    { icon: "fa-play",                  pulse: true  },
-        COMPLETED: { icon: "fa-check",                 pulse: false },
-        PENDING:   { icon: "fa-clock",                 pulse: false },
-        STALLED:   { icon: "fa-triangle-exclamation",  pulse: false },
-      };
-      const key = status?.toUpperCase();
-      const cfg = iconMap[key] || { icon: "fa-circle", pulse: false };
-      const color = getStatusColor(key);
-
+      const color = getStatusColor(status?.toUpperCase());
+      const isActive = status?.toUpperCase() === 'ACTIVE';
       const wrapper = document.createElement("div");
       wrapper.className = "map-marker-wrapper";
       if (projectNo) wrapper.title = projectNo;
-
-      const pin = document.createElement("div");
-      pin.className = "map-marker-pin" + (cfg.pulse ? " marker-active" : "");
-      pin.style.background = color;
-      pin.style.setProperty("--pulse-color", color + "66");
-      pin.innerHTML = `<i class="fas ${cfg.icon} marker-icon"></i>`;
-
+      const pin = document.createElement("i");
+      pin.className = "fas fa-map-marker-alt map-marker-pin" + (isActive ? " marker-active" : "");
+      pin.style.color = '#e53e3e';
       wrapper.appendChild(pin);
       return { el: wrapper, color };
     }
@@ -2145,16 +2120,8 @@
     }
 
     function focusMarker(index) {
-      if (mapMarkers[index] && projects[index]) {
-        const project = projects[index];
-        map.flyTo({
-          center: [project.longitude, project.latitude],
-          zoom: 12,
-        });
-        mapMarkers[index].togglePopup();
-        document
-          .getElementById("localMap")
-          .scrollIntoView({ behavior: "smooth" });
+      if (projects[index]) {
+        focusMarkerByProjectId(projects[index].id);
       }
     }
 

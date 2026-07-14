@@ -13,6 +13,12 @@ services:
         value: prod
       - key: JWT_SECRET
         generateValue: true
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
@@ -23,7 +29,11 @@ services:
     healthCheckPath: /api/projects
     previewsEnabled: false
 
-  - type: pserv
-    name: tujulishane-hub-db
-    plan: free
-    region: oregon
+  - type: static
+    name: tujulishane-hub-frontend
+    buildCommand: ""
+    staticPublishPath: ./frontend
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN

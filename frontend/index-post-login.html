@@ -41,11 +41,11 @@
 	<!-- Mapbox JS -->
 	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-	<!-- Local config override - sets window.__MAPBOX_TOKEN (gitignored, must load before config.js) -->
+	<!-- Local config override - sets window.__MAPBOX_TOKEN (gitignored, must load before app-config.js) -->
 	<script src="./config.local.js"></script>
-	<!-- Backend URL Configuration - Centralized in config.js -->
-	<script src="./config.js"></script>
-	<script src="./set-base-url.js"></script>
+	<!-- Backend URL Configuration - Centralized in app-config.js -->
+	<script src="./app-config.js?v=3"></script>
+	<script src="./set-base-url.js?v=3"></script>
 	<!-- Session Configuration -->
 	<script src="./session-config.js"></script>
 	<!-- Modal Utilities -->
@@ -109,67 +109,33 @@
 			cursor: pointer;
 		}
 
-		/* Pin shape: rotated square, tip at wrapper origin via absolute offset */
 		.map-marker-pin {
-			width: 34px;
-			height: 34px;
-			border-radius: 50% 50% 50% 0;
 			position: absolute;
-			left: -17px;
-			top: -41px;
-			transform: rotate(-45deg);
-			box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75), 0 4px 10px rgba(0, 0, 0, 0.3);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			/* transition only on inner element — Mapbox moves the wrapper, not this */
-			transition: transform 0.2s ease, box-shadow 0.2s ease;
+			left: -12px;
+			top: -34px;
+			font-size: 28px;
+			line-height: 1;
+			filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+			transition: transform 0.15s ease, filter 0.15s ease;
 		}
 
 		.map-marker-wrapper:hover .map-marker-pin {
-			transform: rotate(-45deg) scale(1.2);
-			box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 8px 20px rgba(0, 0, 0, 0.45);
+			transform: scale(1.2);
+			filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45));
 		}
 
-		/* Counter-rotate icon so it stays upright */
-		.map-marker-pin .marker-icon {
-			transform: rotate(45deg);
-			color: #fff;
-			font-size: 13px;
-			line-height: 1;
-			pointer-events: none;
-		}
+		.map-marker-pin.marker-dimmed { opacity: 0.3; }
 
-		/* Pulse ring on ACTIVE markers */
-		@keyframes markerPulse {
-			0% {
-				box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75), 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 0 var(--pulse-color);
-			}
-
-			70% {
-				box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75), 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 14px transparent;
-			}
-
-			100% {
-				box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75), 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 0 transparent;
-			}
-		}
-
-		.map-marker-pin.marker-active {
-			animation: markerPulse 2s infinite;
-		}
-
-		/* Dimmed state for filtered-out markers */
-		.map-marker-pin.marker-dimmed {
-			opacity: 0.3;
-			transition: opacity 0.2s ease;
-		}
-
-		/* Selected marker */
 		.map-marker-pin.marker-selected {
-			transform: rotate(-45deg) scale(1.3) !important;
-			box-shadow: 0 0 0 3px rgba(255, 255, 255, 1), 0 10px 24px rgba(0, 0, 0, 0.5) !important;
+			transform: scale(1.3) !important;
+			filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) !important;
 		}
+
+		@keyframes markerPulse {
+			0%, 100% { transform: scale(1); }
+			50% { transform: scale(1.1); }
+		}
+		.map-marker-pin.marker-active { animation: markerPulse 1.8s ease-in-out infinite; }
 	</style>
 </head>
 
@@ -282,9 +248,9 @@
 					Data Hub Resources
 				</h6>
 				<div class="flex justify-between lg:grid lg:grid-cols-1 gap-4 text-white">
-					<a href=""
-						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button">
-						<span class="text-sm"> FAQ Docuent </span>
+					<a href="faq.html"
+						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button hover:opacity-90 transition-opacity">
+						<span class="text-sm"> FAQ Document </span>
 						<span class="text-lg">
 							<i class="fas fa-file-pdf"></i>
 						</span>
@@ -297,13 +263,13 @@
                             <i class="fas fa-clipboard-list-check"></i>
                         </span>
                     </a> -->
-					<a href=""
-						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button_two">
+					<button type="button" onclick="openVideoModal()"
+						class="flex items-center w-1/2 lg:w-full justify-between px-4 py-2 rounded-full bg-button_two hover:opacity-90 transition-opacity text-left">
 						<span class="text-sm"> Video Tutorial </span>
 						<span class="text-lg">
 							<i class="fas fa-play-circle"></i>
 						</span>
-					</a>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -553,9 +519,10 @@
 	<!--Footer container-->
 	<footer class="flex flex-col items-center text-center bg-white text-surface">
 		<!--Copyright section-->
-		<div class="w-full p-4 text-xs text-center bg-black/5">
+		<div class="w-full p-4 text-xs text-center bg-black/5 text-gray-600">
 			© 2025 Copyright:
-			<a href=""> RMNCAH Hub </a>
+			<a href="index-post-login.html" class="hover:underline"> RMNCAH Hub </a> |
+			<a href="credits" class="hover:underline font-medium text-gray-500">Credits</a>
 		</div>
 	</footer>
 	<!-- Removed script that sets localStorage with undefined 'data' to fix ReferenceError. This should only be set after login. -->
@@ -792,6 +759,16 @@
 				.addEventListener("click", performMapSearch);
 		}
 
+		// Mapbox-geocoded county names don't always match the fixed dropdown list
+		// (e.g. "Taita-Taveta County" vs "Taita-Taveta"), so compare loosely.
+		function normalizeCounty(value) {
+			return (value || "")
+				.toLowerCase()
+				.replace(/\bcounty\b/g, "")
+				.replace(/[\s\-‐-―]+/g, "")
+				.trim();
+		}
+
 		// Perform map search and zoom
 		async function performMapSearch() {
 			console.log("performMapSearch called");
@@ -855,10 +832,10 @@
 				if (selectedSubCounty) {
 					subCountyMatch = false;
 					if (project.locations && Array.isArray(project.locations)) {
-						subCountyMatch = project.locations.some(
-							(loc) => loc.subCounty === selectedSubCounty
+						subCountyMatch = project.locations.some((loc) =>
+							normalizeCounty(loc.subCounty) === normalizeCounty(selectedSubCounty)
 						);
-					} else if (project.subCounty === selectedSubCounty) {
+					} else if (normalizeCounty(project.subCounty) === normalizeCounty(selectedSubCounty)) {
 						subCountyMatch = true;
 					}
 				}
@@ -868,10 +845,10 @@
 				if (selectedCounty) {
 					countyMatch = false;
 					if (project.locations && Array.isArray(project.locations)) {
-						countyMatch = project.locations.some(
-							(loc) => loc.county === selectedCounty
+						countyMatch = project.locations.some((loc) =>
+							normalizeCounty(loc.county) === normalizeCounty(selectedCounty)
 						);
-					} else if (project.county === selectedCounty) {
+					} else if (normalizeCounty(project.county) === normalizeCounty(selectedCounty)) {
 						countyMatch = true;
 					}
 				}
@@ -892,9 +869,9 @@
 						if (loc.latitude && loc.longitude) {
 							// Check county and sub-county filter for this specific location
 							const countyMatch =
-								!selectedCounty || loc.county === selectedCounty;
+								!selectedCounty || normalizeCounty(loc.county) === normalizeCounty(selectedCounty);
 							const subCountyMatch =
-								!selectedSubCounty || loc.subCounty === selectedSubCounty;
+								!selectedSubCounty || normalizeCounty(loc.subCounty) === normalizeCounty(selectedSubCounty);
 							if (countyMatch && subCountyMatch) {
 								matchingLocations.push({
 									lat: loc.latitude,
@@ -909,9 +886,9 @@
 				if (project.latitude && project.longitude) {
 					// For direct coordinates, check if county and sub-county matches (if filters are applied)
 					const countyMatch =
-						!selectedCounty || project.county === selectedCounty;
+						!selectedCounty || normalizeCounty(project.county) === normalizeCounty(selectedCounty);
 					const subCountyMatch =
-						!selectedSubCounty || project.subCounty === selectedSubCounty;
+						!selectedSubCounty || normalizeCounty(project.subCounty) === normalizeCounty(selectedSubCounty);
 					if (countyMatch && subCountyMatch) {
 						matchingLocations.push({
 							lat: project.latitude,
@@ -968,11 +945,10 @@
 			});
 
 			// Highlight matching markers
-			mapMarkers.forEach((marker, index) => {
+			mapMarkers.forEach((marker) => {
 				const markerElement = marker.getElement();
 				if (markerElement) {
-					const project = projects[index];
-					const isMatch = matchingProjects.includes(project);
+					const isMatch = marker.data && matchingProjects.some(p => p.id === marker.data.id);
 
 					// Change marker appearance based on match
 					const pin = markerElement.querySelector('.map-marker-pin');
@@ -985,9 +961,9 @@
 							pin.classList.remove('marker-selected');
 						}
 					} else {
-						markerElement.style.opacity = "0.3";
-						markerElement.style.transform = "scale(1)";
-						markerElement.style.zIndex = "1";
+						markerElement.style.opacity = isMatch ? "1" : "0.3";
+						markerElement.style.transform = isMatch ? "scale(1.1)" : "scale(1)";
+						markerElement.style.zIndex = isMatch ? "10" : "1";
 					}
 				}
 			});
@@ -1002,10 +978,13 @@
 					});
 
 					// Find and open the popup for this marker
-					mapMarkers.forEach((marker, index) => {
-						const project = projects[index];
-						if (project.id === loc.project.id) {
-							marker.togglePopup();
+					mapMarkers.forEach((marker) => {
+						if (marker.data && marker.data.id === loc.project.id) {
+							// Match coordinates to get the specific marker for this location
+							const coords = marker.getLngLat();
+							if (Math.abs(coords.lat - loc.lat) < 0.0001 && Math.abs(coords.lng - loc.lng) < 0.0001) {
+								marker.togglePopup();
+							}
 						}
 					});
 				}, 1000);
@@ -1015,7 +994,7 @@
 		// Load projects for map display
 		async function loadProjectsForMap() {
 			try {
-				// Use centralized BASE_URL from config.js
+				// Use centralized BASE_URL from app-config.js
 				const baseUrl = window.BASE_URL;
 				console.log("[loadProjectsForMap] Using BASE_URL:", baseUrl);
 
@@ -1404,31 +1383,15 @@
 		}
 
 		// Marker element factory — 0×0 wrapper + absolutely-positioned pin child
-		// The wrapper is what Mapbox moves; pin has its own CSS transform (no conflict)
 		function createMarkerElement(status, category, projectNo) {
 			const color = getStatusColor(status, category);
-			const iconMap = {
-				ACTIVE: { icon: 'fa-play', pulse: true },
-				COMPLETED: { icon: 'fa-check', pulse: false },
-				PENDING: { icon: 'fa-clock', pulse: false },
-				STALLED: { icon: 'fa-triangle-exclamation', pulse: false },
-			};
-			const categoryIconMap = {
-				RESEARCH: 'fa-flask',
-				PRIORITY: 'fa-star',
-				PAST_PROJECT: 'fa-clock-rotate-left',
-			};
-			const key = status?.toUpperCase();
-			const catKey = category?.toUpperCase();
-			const cfg = iconMap[key] || { icon: categoryIconMap[catKey] || 'fa-location-dot', pulse: false };
+			const isActive = status?.toUpperCase() === 'ACTIVE';
 			const wrapper = document.createElement('div');
 			wrapper.className = 'map-marker-wrapper';
 			if (projectNo) wrapper.title = projectNo;
-			const pin = document.createElement('div');
-			pin.className = 'map-marker-pin' + (cfg.pulse ? ' marker-active' : '');
-			pin.style.background = color;
-			pin.style.setProperty('--pulse-color', color + '66');
-			pin.innerHTML = `<i class="fas ${cfg.icon} marker-icon"></i>`;
+			const pin = document.createElement('i');
+			pin.className = 'fas fa-map-marker-alt map-marker-pin' + (isActive ? ' marker-active' : '');
+			pin.style.color = '#e53e3e';
 			wrapper.appendChild(pin);
 			return { el: wrapper, color };
 		}
@@ -1578,11 +1541,10 @@
 				});
 
 				// Highlight this project's markers
-				mapMarkers.forEach((marker, markerIndex) => {
+				mapMarkers.forEach((marker) => {
 					const markerElement = marker.getElement();
 					if (markerElement) {
-						const markerProject = projects[markerIndex];
-						const isMatch = markerProject && markerProject.id === project.id;
+						const isMatch = marker.data && marker.data.id === project.id;
 
 						// Change marker appearance based on match
 						if (isMatch) {
@@ -1607,9 +1569,8 @@
 						});
 
 						// Find and open the popup for this marker
-						mapMarkers.forEach((marker, markerIndex) => {
-							const markerProject = projects[markerIndex];
-							if (markerProject && markerProject.id === project.id) {
+						mapMarkers.forEach((marker) => {
+							if (marker.data && marker.data.id === project.id) {
 								marker.togglePopup();
 							}
 						});
@@ -1755,9 +1716,8 @@
 			updatePaginationControls(totalPages);
 
 			// Update marker visibility (don't recreate markers)
-			mapMarkers.forEach((marker, idx) => {
-				const project = projects[idx];
-				const isVisible = filteredProjects.includes(project);
+			mapMarkers.forEach((marker) => {
+				const isVisible = marker.data && filteredProjects.some(p => p.id === marker.data.id);
 				const pin = marker.getElement()?.querySelector('.map-marker-pin');
 				if (pin) pin.classList.toggle('marker-dimmed', !isVisible);
 			});
@@ -2486,9 +2446,11 @@
 								projectsData.data.projects
 							) {
 								const allProjects = projectsData.data.projects;
-								totalBudget = allProjects.reduce((sum, project) => {
-									return sum + (project.budget || 0);
-								}, 0);
+								totalBudget = allProjects
+									.filter(p => p.approvalWorkflowStatus === "APPROVED")
+									.reduce((sum, project) => {
+										return sum + (project.budget || 0);
+									}, 0);
 								console.log(
 									"[DEBUG] Total budget calculated from",
 									allProjects.length,
@@ -3727,7 +3689,97 @@
 		function viewProjectDetails(projectNo) {
 			window.location.href = `project-details.html?project_number=${encodeURIComponent(projectNo)}`;
 		}
+
+		// Video Modal Functions
+		function openVideoModal() {
+			const modal = document.getElementById('videoTutorialModal');
+			const playerContainer = document.getElementById('videoPlayerContainer');
+			
+			// Load tutorial video in iframe (stops autoplay block/unnecessary initial load)
+			playerContainer.innerHTML = `
+				<iframe 
+					class="w-full h-full rounded-lg" 
+					src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+					title="RMNCAH Coordination Hub Video Tutorial" 
+					frameborder="0" 
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+					allowfullscreen>
+				</iframe>
+			`;
+			
+			modal.classList.remove('hidden');
+			// trigger transitions
+			setTimeout(() => {
+				modal.classList.remove('opacity-0');
+				modal.classList.add('opacity-100');
+				const modalContent = modal.querySelector('.modal-content');
+				if (modalContent) {
+					modalContent.classList.remove('scale-95');
+					modalContent.classList.add('scale-100');
+				}
+			}, 10);
+			document.body.style.overflow = 'hidden';
+		}
+
+		function closeVideoModal() {
+			const modal = document.getElementById('videoTutorialModal');
+			const playerContainer = document.getElementById('videoPlayerContainer');
+			
+			modal.classList.remove('opacity-100');
+			modal.classList.add('opacity-0');
+			
+			const modalContent = modal.querySelector('.modal-content');
+			if (modalContent) {
+				modalContent.classList.remove('scale-100');
+				modalContent.classList.add('scale-95');
+			}
+			
+			// Clear iframe to stop playback
+			playerContainer.innerHTML = '';
+			
+			setTimeout(() => {
+				modal.classList.add('hidden');
+				document.body.style.overflow = '';
+			}, 300);
+		}
+
+		// Close modal when clicking outside content
+		window.addEventListener('click', function(event) {
+			const modal = document.getElementById('videoTutorialModal');
+			if (event.target === modal) {
+				closeVideoModal();
+			}
+		});
 	</script>
+
+	<!-- Video Tutorial Modal -->
+	<div id="videoTutorialModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+		<div class="modal-content relative w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl transform scale-95 transition-all duration-300">
+			<!-- Header -->
+			<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+				<h3 class="text-lg font-semibold text-blue-900 flex items-center gap-2">
+					<i class="fas fa-play-circle text-blue-500 text-xl animate-pulse"></i>
+					RMNCAH Coordination Hub Video Tutorial
+				</h3>
+				<button onclick="closeVideoModal()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none">
+					<i class="fas fa-times text-xl"></i>
+				</button>
+			</div>
+			<!-- Video Frame Container -->
+			<div class="relative aspect-video bg-black p-1">
+				<div id="videoPlayerContainer" class="w-full h-full flex items-center justify-center text-white">
+					<!-- Iframe loaded dynamically -->
+				</div>
+			</div>
+			<!-- Footer -->
+			<div class="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-100 text-sm text-gray-500">
+				<span>Learn how to navigate and use the platform effectively.</span>
+				<button onclick="closeVideoModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

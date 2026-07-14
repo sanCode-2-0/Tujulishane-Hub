@@ -31,8 +31,8 @@
   <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 
   <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-  <script src="./config.js"></script>
-  <script src="./set-base-url.js"></script>
+  <script src="./app-config.js?v=3"></script>
+  <script src="./set-base-url.js?v=3"></script>
 
   <!-- Modal Utilities -->
   <script src="./modal-utils.js"></script>
@@ -52,7 +52,7 @@
     })();
   </script>
   <script type="module">
-    // Use window.BASE_URL which is already set by config.js loaded via script tag
+    // Use window.BASE_URL which is already set by app-config.js loaded via script tag
     const BASE_URL = window.BASE_URL;
     console.log(
       "[general-announcements.html] Using BASE_URL:",

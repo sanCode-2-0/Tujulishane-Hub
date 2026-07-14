@@ -819,33 +819,30 @@ public class ProjectService {
             projectRepository.save(project);
             logger.info("Project {} approved by admin {}", projectId, approvedBy);
             
-            // Send notification email to project owner
-            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
-                try {
-                    String subject = "Project Approved - " + project.getTitle();
-                    String body = String.format(
-                        "Dear %s,\n\n" +
-                        "Congratulations! Your project '%s' has been approved by the MOH administrator.\n\n" +
-                        "Project Details:\n" +
-                        "- Project Number: %s\n" +
-                        "- Title: %s\n" +
-                        "- Partner: %s\n" +
-                        "- Status: Active\n\n" +
-                        "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
-                        "Best regards,\n" +
-                        "RMCAH Hub Team",
-                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
-                        project.getTitle(),
-                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
-                        project.getTitle(),
-                        project.getPartner()
-                    );
-                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
-                    logger.info("Approval notification email sent to {}", project.getContactPersonEmail());
-                } catch (Exception e) {
-                    logger.error("Failed to send approval notification email for project {}: {}", projectId, e.getMessage(), e);
-                    // Don't fail the approval if email fails
-                }
+            // Send notification email to both the contact person and the partner
+            try {
+                String subject = "Project Approved - " + project.getTitle();
+                String body = String.format(
+                    "Dear %s,\n\n" +
+                    "Congratulations! Your project '%s' has been approved by the MOH administrator.\n\n" +
+                    "Project Details:\n" +
+                    "- Project Number: %s\n" +
+                    "- Title: %s\n" +
+                    "- Partner: %s\n" +
+                    "- Status: Active\n\n" +
+                    "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
+                    "Best regards,\n" +
+                    "RMCAH Hub Team",
+                    project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                    project.getTitle(),
+                    project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                    project.getTitle(),
+                    project.getPartner()
+                );
+                sendProjectNotificationEmail(project, subject, body);
+            } catch (Exception e) {
+                logger.error("Failed to send approval notification email for project {}: {}", projectId, e.getMessage(), e);
+                // Don't fail the approval if email fails
             }
             
             return true;
@@ -867,36 +864,33 @@ public class ProjectService {
             projectRepository.save(project);
             logger.info("Project {} rejected by admin {} with reason: {}", projectId, rejectedBy, reason);
             
-            // Send notification email to project owner
-            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
-                try {
-                    String subject = "Project Rejected - " + project.getTitle();
-                    String body = String.format(
-                        "Dear %s,\n\n" +
-                        "We regret to inform you that your project '%s' has been rejected by the MOH administrator.\n\n" +
-                        "Project Details:\n" +
-                        "- Project Number: %s\n" +
-                        "- Title: %s\n" +
-                        "- Partner: %s\n\n" +
-                        "Rejection Reason:\n" +
-                        "%s\n\n" +
-                        "If you have any questions or would like to resubmit your project with corrections, " +
-                        "please contact the MOH administrator or update your project accordingly.\n\n" +
-                        "Best regards,\n" +
-                        "RMCAH Hub Team",
-                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
-                        project.getTitle(),
-                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
-                        project.getTitle(),
-                        project.getPartner(),
-                        reason != null ? reason : "No reason provided"
-                    );
-                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
-                    logger.info("Rejection notification email sent to {}", project.getContactPersonEmail());
-                } catch (Exception e) {
-                    logger.error("Failed to send rejection notification email for project {}: {}", projectId, e.getMessage(), e);
-                    // Don't fail the rejection if email fails
-                }
+            // Send notification email to both the contact person and the partner
+            try {
+                String subject = "Project Rejected - " + project.getTitle();
+                String body = String.format(
+                    "Dear %s,\n\n" +
+                    "We regret to inform you that your project '%s' has been rejected by the MOH administrator.\n\n" +
+                    "Project Details:\n" +
+                    "- Project Number: %s\n" +
+                    "- Title: %s\n" +
+                    "- Partner: %s\n\n" +
+                    "Rejection Reason:\n" +
+                    "%s\n\n" +
+                    "If you have any questions or would like to resubmit your project with corrections, " +
+                    "please contact the MOH administrator or update your project accordingly.\n\n" +
+                    "Best regards,\n" +
+                    "RMCAH Hub Team",
+                    project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                    project.getTitle(),
+                    project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                    project.getTitle(),
+                    project.getPartner(),
+                    reason != null ? reason : "No reason provided"
+                );
+                sendProjectNotificationEmail(project, subject, body);
+            } catch (Exception e) {
+                logger.error("Failed to send rejection notification email for project {}: {}", projectId, e.getMessage(), e);
+                // Don't fail the rejection if email fails
             }
             
             return true;
@@ -947,40 +941,37 @@ public class ProjectService {
             projectRepository.save(project);
             logger.info("Project {} reviewed by reviewer {} - approved: {}", projectId, reviewerId, approved);
             
-            // Send notification email to project owner
-            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
-                try {
-                    String subject = approved ? 
-                        "Project Reviewed - Awaiting Final Approval: " + project.getTitle() :
-                        "Project Review - Revisions Required: " + project.getTitle();
-                    String body = String.format(
-                        "Dear %s,\n\n" +
-                        "Your project '%s' has been reviewed by the thematic area reviewer.\n\n" +
-                        "Project Details:\n" +
-                        "- Project Number: %s\n" +
-                        "- Title: %s\n" +
-                        "- Partner: %s\n" +
-                        "- Review Status: %s\n" +
-                        "- Reviewer Comments: %s\n\n" +
-                        "%s\n\n" +
-                        "Best regards,\n" +
-                        "RMCAH Hub Team",
-                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
-                        project.getTitle(),
-                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
-                        project.getTitle(),
-                        project.getPartner(),
-                        approved ? "Approved for Final Review" : "Revisions Required",
-                        comments != null ? comments : "No comments provided",
-                        approved ? 
-                            "Your project has passed the thematic review and is now awaiting final approval from the MOH administrator." :
-                            "Please address the reviewer's comments and resubmit your project."
-                    );
-                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
-                    logger.info("Review notification email sent to {}", project.getContactPersonEmail());
-                } catch (Exception e) {
-                    logger.error("Failed to send review notification email for project {}: {}", projectId, e.getMessage(), e);
-                }
+            // Send notification email to both the contact person and the partner
+            try {
+                String subject = approved ? 
+                    "Project Reviewed - Awaiting Final Approval: " + project.getTitle() :
+                    "Project Review - Revisions Required: " + project.getTitle();
+                String body = String.format(
+                    "Dear %s,\n\n" +
+                    "Your project '%s' has been reviewed by the thematic area reviewer.\n\n" +
+                    "Project Details:\n" +
+                    "- Project Number: %s\n" +
+                    "- Title: %s\n" +
+                    "- Partner: %s\n" +
+                    "- Review Status: %s\n" +
+                    "- Reviewer Comments: %s\n\n" +
+                    "%s\n\n" +
+                    "Best regards,\n" +
+                    "RMCAH Hub Team",
+                    project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                    project.getTitle(),
+                    project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                    project.getTitle(),
+                    project.getPartner(),
+                    approved ? "Approved for Final Review" : "Revisions Required",
+                    comments != null ? comments : "No comments provided",
+                    approved ? 
+                        "Your project has passed the thematic review and is now awaiting final approval from the MOH administrator." :
+                        "Please address the reviewer's comments and resubmit your project."
+                );
+                sendProjectNotificationEmail(project, subject, body);
+            } catch (Exception e) {
+                logger.error("Failed to send review notification email for project {}: {}", projectId, e.getMessage(), e);
             }
             
             return true;
@@ -1021,32 +1012,29 @@ public class ProjectService {
             projectRepository.save(project);
             logger.info("Project {} finally approved by approver {}", projectId, approverId);
             
-            // Send notification email to project owner
-            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
-                try {
-                    String subject = "Project Approved - " + project.getTitle();
-                    String body = String.format(
-                        "Dear %s,\n\n" +
-                        "Congratulations! Your project '%s' has received final approval from the MOH administrator.\n\n" +
-                        "Project Details:\n" +
-                        "- Project Number: %s\n" +
-                        "- Title: %s\n" +
-                        "- Partner: %s\n" +
-                        "- Status: Active\n\n" +
-                        "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
-                        "Best regards,\n" +
-                        "RMCAH Hub Team",
-                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
-                        project.getTitle(),
-                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
-                        project.getTitle(),
-                        project.getPartner()
-                    );
-                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
-                    logger.info("Final approval notification email sent to {}", project.getContactPersonEmail());
-                } catch (Exception e) {
-                    logger.error("Failed to send final approval notification email for project {}: {}", projectId, e.getMessage(), e);
-                }
+            // Send notification email to both the contact person and the partner
+            try {
+                String subject = "Project Approved - " + project.getTitle();
+                String body = String.format(
+                    "Dear %s,\n\n" +
+                    "Congratulations! Your project '%s' has received final approval from the MOH administrator.\n\n" +
+                    "Project Details:\n" +
+                    "- Project Number: %s\n" +
+                    "- Title: %s\n" +
+                    "- Partner: %s\n" +
+                    "- Status: Active\n\n" +
+                    "Your project is now active and visible in the system. You can proceed with project activities and reporting.\n\n" +
+                    "Best regards,\n" +
+                    "RMCAH Hub Team",
+                    project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                    project.getTitle(),
+                    project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                    project.getTitle(),
+                    project.getPartner()
+                );
+                sendProjectNotificationEmail(project, subject, body);
+            } catch (Exception e) {
+                logger.error("Failed to send final approval notification email for project {}: {}", projectId, e.getMessage(), e);
             }
             
             return true;
@@ -1071,33 +1059,30 @@ public class ProjectService {
             projectRepository.save(project);
             logger.info("Project {} rejected at final approval by approver {} with reason: {}", projectId, approverId, reason);
             
-            // Send notification email to project owner
-            if (project.getContactPersonEmail() != null && !project.getContactPersonEmail().isEmpty()) {
-                try {
-                    String subject = "Project Rejected - " + project.getTitle();
-                    String body = String.format(
-                        "Dear %s,\n\n" +
-                        "Your project '%s' has been rejected at the final approval stage.\n\n" +
-                        "Project Details:\n" +
-                        "- Project Number: %s\n" +
-                        "- Title: %s\n" +
-                        "- Partner: %s\n" +
-                        "- Rejection Reason: %s\n\n" +
-                        "Please address the issues mentioned and resubmit your project for review.\n\n" +
-                        "Best regards,\n" +
-                        "RMCAH Hub Team",
-                        project.getContactPersonName() != null ? project.getContactPersonName() : "User",
-                        project.getTitle(),
-                        project.getProjectNo() != null ? project.getProjectNo() : "N/A",
-                        project.getTitle(),
-                        project.getPartner(),
-                        reason
-                    );
-                    emailService.sendEmail(project.getContactPersonEmail(), subject, body);
-                    logger.info("Final rejection notification email sent to {}", project.getContactPersonEmail());
-                } catch (Exception e) {
-                    logger.error("Failed to send final rejection notification email for project {}: {}", projectId, e.getMessage(), e);
-                }
+            // Send notification email to both the contact person and the partner
+            try {
+                String subject = "Project Rejected - " + project.getTitle();
+                String body = String.format(
+                    "Dear %s,\n\n" +
+                    "Your project '%s' has been rejected at the final approval stage.\n\n" +
+                    "Project Details:\n" +
+                    "- Project Number: %s\n" +
+                    "- Title: %s\n" +
+                    "- Partner: %s\n" +
+                    "- Rejection Reason: %s\n\n" +
+                    "Please address the issues mentioned and resubmit your project for review.\n\n" +
+                    "Best regards,\n" +
+                    "RMCAH Hub Team",
+                    project.getContactPersonName() != null ? project.getContactPersonName() : "User",
+                    project.getTitle(),
+                    project.getProjectNo() != null ? project.getProjectNo() : "N/A",
+                    project.getTitle(),
+                    project.getPartner(),
+                    reason
+                );
+                sendProjectNotificationEmail(project, subject, body);
+            } catch (Exception e) {
+                logger.error("Failed to send final rejection notification email for project {}: {}", projectId, e.getMessage(), e);
             }
             
             return true;
@@ -1213,7 +1198,9 @@ public class ProjectService {
      */
     public boolean isProjectOwner(Long projectId, String userEmail) {
         Optional<Project> project = projectRepository.findById(projectId);
-        return project.isPresent() && project.get().getContactPersonEmail().equals(userEmail);
+        if (!project.isPresent()) return false;
+        Project p = project.get();
+        return userEmail.equals(p.getPartner()) || userEmail.equals(p.getContactPersonEmail());
     }
     
     /**
@@ -1292,6 +1279,32 @@ public class ProjectService {
             .map(num -> String.format("P-%04d", num + 1));
 
         return maxProjectNo.orElse("P-0001");
+    }
+
+    /**
+     * Send email notifications to both the contact person and the partner
+     */
+    private void sendProjectNotificationEmail(Project project, String subject, String body) {
+        String contactEmail = project.getContactPersonEmail();
+        String partnerEmail = project.getPartner();
+        
+        if (contactEmail != null && !contactEmail.trim().isEmpty()) {
+            try {
+                emailService.sendEmail(contactEmail, subject, body);
+                logger.info("Notification email sent to contact person: {}", contactEmail);
+            } catch (Exception e) {
+                logger.error("Failed to send notification email to contact person {}: {}", contactEmail, e.getMessage(), e);
+            }
+        }
+        
+        if (partnerEmail != null && !partnerEmail.trim().isEmpty() && (contactEmail == null || !partnerEmail.equalsIgnoreCase(contactEmail))) {
+            try {
+                emailService.sendEmail(partnerEmail, subject, body);
+                logger.info("Notification email sent to partner: {}", partnerEmail);
+            } catch (Exception e) {
+                logger.error("Failed to send notification email to partner {}: {}", partnerEmail, e.getMessage(), e);
+            }
+        }
     }
 
     /**

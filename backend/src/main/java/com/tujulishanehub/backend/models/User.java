@@ -72,6 +72,18 @@ public class User {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
     
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "linkedin_url")
+    private String linkedinUrl;
+
+    @Column(name = "website_url")
+    private String websiteUrl;
+
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
     // Organization relationship - Many users can belong to one organization
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organization_id")

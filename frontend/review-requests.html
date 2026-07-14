@@ -36,9 +36,14 @@
       href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css"
     />
     <script src="styles/main.js"></script>
+    <!-- Backend URL Configuration - Centralized in app-config.js -->
+    <script src="app-config.js?v=3"></script>
+    <script src="set-base-url.js?v=3"></script>
+    <script src="session-config.js"></script>
     <!-- Modal Utilities -->
     <script src="modal-utils.js"></script>
     <script src="auth.js"></script>
+    <script src="session-manager.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
@@ -959,13 +964,13 @@
           async checkAuth() {
             // Wait for BASE_URL to be set
             let retries = 0;
-            while (!window.BASE_URL && retries < 10) {
+            while (typeof window.BASE_URL === "undefined" && retries < 10) {
               console.log("Waiting for BASE_URL to be set...");
               await new Promise((resolve) => setTimeout(resolve, 100));
               retries++;
             }
 
-            if (!window.BASE_URL) {
+            if (typeof window.BASE_URL === "undefined") {
               console.error("BASE_URL not set after waiting!");
               window.BASE_URL =
                 "http://localhost:8080"; // Fallback

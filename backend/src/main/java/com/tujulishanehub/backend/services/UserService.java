@@ -277,11 +277,9 @@ public class UserService {
             
             userRepository.save(user);
             
-            // Send notification to user
-            emailService.sendEmail(user.getEmail(), 
-                "Account Approved", 
-                "Your account has been approved by MOH and you can now access the system.");
-            
+            // Send detailed onboarding email
+            emailService.sendHtmlEmail(user.getEmail(), "Welcome to Tujulishane Hub — Your Account is Approved!", buildApprovalEmail(user));
+
             return true;
         }
         return false;
@@ -967,7 +965,78 @@ public class UserService {
         
         emailService.sendEmail(email, subject, body);
         logger.info("Reviewer created: {} with thematic areas: {}", email, areasString);
-        
+
         return savedReviewer;
+    }
+
+    private String buildApprovalEmail(User user) {
+        String name = user.getName() != null ? user.getName() : "Partner";
+        String loginUrl = "http://localhost:5500/frontend/index.html";
+        String dashboardUrl = "http://localhost:5500/frontend/dashboard.html";
+        return "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head>" +
+            "<body style='margin:0;padding:0;background:#f3f4f6;font-family:Inter,Arial,sans-serif;'>" +
+            "<table width='100%' cellpadding='0' cellspacing='0' style='background:#f3f4f6;padding:40px 0;'><tr><td align='center'>" +
+            "<table width='600' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);'>" +
+
+            // Header
+            "<tr><td style='background:linear-gradient(135deg,#0f6dc9 0%,#0a4d8f 100%);padding:40px 48px;text-align:center;'>" +
+            "<h1 style='margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.5px;'>Tujulishane Hub</h1>" +
+            "<p style='margin:6px 0 0;color:rgba(255,255,255,0.75);font-size:14px;'>Ministry of Health · Kenya</p>" +
+            "</td></tr>" +
+
+            // Welcome banner
+            "<tr><td style='background:#ecfdf5;border-bottom:2px solid #6ee7b7;padding:24px 48px;text-align:center;'>" +
+            "<p style='margin:0;font-size:28px;'>🎉</p>" +
+            "<h2 style='margin:8px 0 4px;color:#065f46;font-size:20px;font-weight:700;'>Your account has been approved!</h2>" +
+            "<p style='margin:0;color:#047857;font-size:14px;'>You now have full access to the Tujulishane Hub platform.</p>" +
+            "</td></tr>" +
+
+            // Body
+            "<tr><td style='padding:40px 48px;'>" +
+            "<p style='margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;'>Dear <strong>" + name + "</strong>,</p>" +
+            "<p style='margin:0 0 28px;color:#374151;font-size:15px;line-height:1.6;'>We're pleased to inform you that your account on the Tujulishane Hub has been reviewed and approved by the Ministry of Health. You can now log in and begin using the platform.</p>" +
+
+            // What you can do
+            "<h3 style='margin:0 0 16px;color:#111827;font-size:15px;font-weight:700;'>Here's what you can do on the platform:</h3>" +
+            "<table cellpadding='0' cellspacing='0' width='100%' style='margin-bottom:28px;'>" +
+            "<tr><td style='padding:10px 14px;background:#f0f9ff;border-radius:8px;margin-bottom:8px;display:block;'>" +
+            "<span style='font-size:16px;'>📋</span>&nbsp;&nbsp;<strong style='color:#0369a1;'>Submit Projects</strong> — Create and submit health-related projects for review and funding consideration." +
+            "</td></tr><tr><td style='height:8px;'></td></tr>" +
+            "<tr><td style='padding:10px 14px;background:#f0fdf4;border-radius:8px;'>" +
+            "<span style='font-size:16px;'>🤝</span>&nbsp;&nbsp;<strong style='color:#15803d;'>Collaborate</strong> — Work with other partners and organizations on joint projects." +
+            "</td></tr><tr><td style='height:8px;'></td></tr>" +
+            "<tr><td style='padding:10px 14px;background:#faf5ff;border-radius:8px;'>" +
+            "<span style='font-size:16px;'>📣</span>&nbsp;&nbsp;<strong style='color:#7c3aed;'>Announcements</strong> — Stay updated with MOH announcements and collaboration opportunities." +
+            "</td></tr><tr><td style='height:8px;'></td></tr>" +
+            "<tr><td style='padding:10px 14px;background:#fff7ed;border-radius:8px;'>" +
+            "<span style='font-size:16px;'>📊</span>&nbsp;&nbsp;<strong style='color:#c2410c;'>Track Progress</strong> — Monitor the status and progress of your submitted projects." +
+            "</td></tr></table>" +
+
+            // Getting started steps
+            "<h3 style='margin:0 0 12px;color:#111827;font-size:15px;font-weight:700;'>Getting started:</h3>" +
+            "<ol style='margin:0 0 28px;padding-left:20px;color:#374151;font-size:14px;line-height:2;'>" +
+            "<li>Log in using your registered email address</li>" +
+            "<li>Complete your profile — add your organization details, phone number, and LinkedIn</li>" +
+            "<li>Explore active projects or submit your first project</li>" +
+            "<li>Respond to collaboration announcements from MOH</li>" +
+            "</ol>" +
+
+            // CTA button
+            "<div style='text-align:center;margin:32px 0;'>" +
+            "<a href='" + loginUrl + "' style='display:inline-block;background:linear-gradient(135deg,#0f6dc9,#0a4d8f);color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;border-radius:8px;letter-spacing:0.2px;'>Access the Platform →</a>" +
+            "</div>" +
+
+            // Support note
+            "<p style='margin:0;color:#6b7280;font-size:13px;line-height:1.6;border-top:1px solid #e5e7eb;padding-top:20px;'>" +
+            "If you have any questions or need assistance getting started, please reach out to your MOH focal person or reply to this email. We look forward to working with you." +
+            "</p></td></tr>" +
+
+            // Footer
+            "<tr><td style='background:#f9fafb;border-top:1px solid #e5e7eb;padding:24px 48px;text-align:center;'>" +
+            "<p style='margin:0 0 4px;color:#9ca3af;font-size:12px;'>This email was sent by Tujulishane Hub, Ministry of Health, Kenya.</p>" +
+            "<p style='margin:0;color:#9ca3af;font-size:12px;'>© 2026 Tujulishane Hub. All rights reserved.</p>" +
+            "</td></tr>" +
+
+            "</table></td></tr></table></body></html>";
     }
 }

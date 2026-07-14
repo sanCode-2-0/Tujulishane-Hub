@@ -567,29 +567,18 @@ public class UserController {
      */
     @GetMapping("/partners/available")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<User>>> getAvailablePartners() {
+    public ResponseEntity<ApiResponse<List<UserProfileDTO>>> getAvailablePartners() {
         try {
-            List<User> partners = userService.getUsersByRole(User.Role.PARTNER);
-            // Filter to only return active and approved partners
-            List<User> availablePartners = partners.stream()
-                .filter(p -> "ACTIVE".equals(p.getStatus()) && 
+            List<UserProfileDTO> availablePartners = userService.getUsersByRole(User.Role.PARTNER).stream()
+                .filter(p -> "ACTIVE".equals(p.getStatus()) &&
                             ApprovalStatus.APPROVED.equals(p.getApprovalStatus()))
+                .map(UserProfileDTO::new)
                 .collect(java.util.stream.Collectors.toList());
-            
-            ApiResponse<List<User>> response = new ApiResponse<>(
-                HttpStatus.OK.value(), 
-                "Available partners retrieved successfully", 
-                availablePartners
-            );
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Available partners retrieved successfully", availablePartners));
         } catch (Exception e) {
             logger.error("Error retrieving available partners: {}", e.getMessage(), e);
-            ApiResponse<List<User>> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                "Failed to retrieve available partners", 
-                null
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to retrieve available partners", null));
         }
     }
     
@@ -630,6 +619,35 @@ public class UserController {
                 null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Update current user's own profile (name only)
+     */
+    @RequestMapping(value = {"/profile", "/profile/update"}, method = {RequestMethod.PUT, RequestMethod.POST})
+    public ResponseEntity<ApiResponse<UserProfileDTO>> updateCurrentUser(@RequestBody java.util.Map<String, String> body) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Authentication required", null));
+            }
+            User user = userService.getUserByEmail(auth.getName());
+            String newName = body.get("name");
+            if (newName != null && !newName.trim().isEmpty()) {
+                user.setName(newName.trim());
+            }
+            if (body.containsKey("phone")) user.setPhone(body.get("phone"));
+            if (body.containsKey("linkedinUrl")) user.setLinkedinUrl(body.get("linkedinUrl"));
+            if (body.containsKey("websiteUrl")) user.setWebsiteUrl(body.get("websiteUrl"));
+            if (body.containsKey("bio")) user.setBio(body.get("bio"));
+            userService.saveUser(user);
+            return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Profile updated successfully", new UserProfileDTO(user)));
+        } catch (Exception e) {
+            logger.error("Error updating user profile: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to update profile", null));
         }
     }
 

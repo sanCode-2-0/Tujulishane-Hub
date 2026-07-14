@@ -16,6 +16,7 @@ import com.tujulishanehub.backend.models.PastProject;
 import com.tujulishanehub.backend.models.ProjectLocation;
 import com.tujulishanehub.backend.models.User;
 import com.tujulishanehub.backend.models.ApprovalStatus;
+import com.tujulishanehub.backend.models.ApprovalWorkflowStatus;
 import com.tujulishanehub.backend.models.ProjectCategory;
 import com.tujulishanehub.backend.models.ProjectTheme;
 import com.tujulishanehub.backend.services.ProjectService;
@@ -95,6 +96,21 @@ public class ProjectController {
     @Autowired
     private ProjectCollaboratorService projectCollaboratorService;
     
+    @GetMapping("/partners/available")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<com.tujulishanehub.backend.payload.UserProfileDTO>>> getAvailablePartners() {
+        try {
+            List<com.tujulishanehub.backend.payload.UserProfileDTO> partners = userService.getUsersByRole(User.Role.PARTNER).stream()
+                .filter(p -> "ACTIVE".equals(p.getStatus()) && ApprovalStatus.APPROVED.equals(p.getApprovalStatus()))
+                .map(com.tujulishanehub.backend.payload.UserProfileDTO::new)
+                .collect(java.util.stream.Collectors.toList());
+            return ResponseEntity.ok(new ApiResponse<>(200, "Available partners retrieved successfully", partners));
+        } catch (Exception e) {
+            logger.error("Error retrieving available partners: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(new ApiResponse<>(500, "Failed to retrieve available partners", null));
+        }
+    }
+
     /**
      * Create a new project (Partners/Donors/Admins)
      */
@@ -387,16 +403,20 @@ public class ProjectController {
         try {
             Map<String, Object> stats = new HashMap<>();
 
-            // Get total projects count (all projects)
-            long totalProjects = projectRepository.count();
-            stats.put("totalProjects", totalProjects);
-
             // Get all projects with locations eagerly loaded
             List<Project> allProjects = projectRepository.findAllWithLocations();
 
+            // Filter to only include APPROVED projects for public statistics
+            List<Project> approvedProjects = allProjects.stream()
+                .filter(p -> p.getApprovalWorkflowStatus() == ApprovalWorkflowStatus.APPROVED)
+                .collect(Collectors.toList());
+
+            // Get total projects count (only approved projects)
+            stats.put("totalProjects", (long) approvedProjects.size());
+
             // Get unique counties count
             Set<String> uniqueCounties = new HashSet<>();
-            for (Project project : allProjects) {
+            for (Project project : approvedProjects) {
                 if (project.getLocations() != null && !project.getLocations().isEmpty()) {
                     for (ProjectLocation location : project.getLocations()) {
                         if (location.getCounty() != null && !location.getCounty().trim().isEmpty()) {
@@ -409,7 +429,7 @@ public class ProjectController {
 
             // Get unique partners/stakeholders count
             Set<String> uniquePartners = new HashSet<>();
-            for (Project project : allProjects) {
+            for (Project project : approvedProjects) {
                 if (project.getPartner() != null && !project.getPartner().trim().isEmpty()) {
                     uniquePartners.add(project.getPartner());
                 }
@@ -419,7 +439,7 @@ public class ProjectController {
             // Get counts by category
             Map<String, Long> categoryCount = new HashMap<>();
             for (ProjectCategory category : ProjectCategory.values()) {
-                long count = allProjects.stream()
+                long count = approvedProjects.stream()
                     .filter(p -> p.getProjectCategory() == category)
                     .count();
                 categoryCount.put(category.name(), count);
@@ -1393,7 +1413,7 @@ public class ProjectController {
      * Get all projects (Super-Admin only)
      */
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','SUPER_ADMIN_APPROVER','SUPER_ADMIN_REVIEWER')")
     public ResponseEntity<ApiResponse<List<Project>>> getAllProjectsAdmin() {
         try {
             List<Project> projects = projectService.getAllProjects();

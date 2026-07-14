@@ -26,15 +26,16 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
   <!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-  <script src="./config.js"></script>
-  <script src="./set-base-url.js"></script>
+  <script src="./config.local.js"></script>
+  <script src="./app-config.js?v=3"></script>
+  <script src="./set-base-url.js?v=3"></script>
 
   <!-- Modal Utilities -->
   <script src="./modal-utils.js"></script>
 
   <!-- Authentication utilities -->
   <script type="module">
-    // Use window.BASE_URL which is already set by config.js loaded via script tag
+    // Use window.BASE_URL which is already set by app-config.js loaded via script tag
     const BASE_URL = window.BASE_URL;
     console.log(
       "[faq.html] Using BASE_URL:",
@@ -1558,6 +1559,8 @@
             .setPopup(popup)
             .addTo(map);
 
+          marker.project = project;
+
           // Add click event
           el.addEventListener("click", async () => {
             map.flyTo({
@@ -1662,16 +1665,19 @@
     }
 
     function focusMarker(index) {
-      if (mapMarkers[index] && projects[index]) {
+      if (projects[index]) {
         const project = projects[index];
-        map.flyTo({
-          center: [project.longitude, project.latitude],
-          zoom: 12,
-        });
-        mapMarkers[index].togglePopup();
-        document
-          .getElementById("localMap")
-          .scrollIntoView({ behavior: "smooth" });
+        const marker = mapMarkers.find(m => m.project && m.project.id === project.id);
+        if (marker) {
+          map.flyTo({
+            center: [project.longitude, project.latitude],
+            zoom: 12,
+          });
+          marker.togglePopup();
+          document
+            .getElementById("localMap")
+            .scrollIntoView({ behavior: "smooth" });
+        }
       }
     }
 
@@ -1748,9 +1754,8 @@
       updatePaginationControls(totalPages);
 
       // Update marker visibility
-      mapMarkers.forEach((marker, idx) => {
-        const project = projects[idx];
-        const isVisible = filteredProjects.includes(project);
+      mapMarkers.forEach((marker) => {
+        const isVisible = marker.project && filteredProjects.some(p => p.id === marker.project.id);
         if (marker.getElement()) {
           marker.getElement().style.opacity = isVisible ? "1" : "0.2";
         }

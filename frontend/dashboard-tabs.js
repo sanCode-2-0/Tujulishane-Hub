@@ -55,18 +55,21 @@ function initDashboardTabs() {
     const userRole = localStorage.getItem('userRole') || 'PARTNER';
     const tabs = roleTabs[userRole] || roleTabs['PARTNER'];
     
-    // Render desktop sidebar tabs
+    // Render desktop sidebar tabs (icon rail, expands on sidebar hover)
     const sidebarTabsContainer = document.getElementById('sidebar-tabs');
     if (sidebarTabsContainer) {
         sidebarTabsContainer.innerHTML = '';
         tabs.forEach((tab, idx) => {
             const a = document.createElement('a');
-            a.className = 'sidebar-tab flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-text dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800';
+            a.className = 'sidebar-tab flex items-center gap-3 mx-2 px-2 py-2.5 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150 min-w-0';
             a.setAttribute('data-tab', tab.key);
             a.setAttribute('href', '#');
-            a.innerHTML = `<span class="material-symbols-outlined">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
+            a.innerHTML = `
+                <span class="material-symbols-outlined text-[22px] flex-shrink-0">${tab.icon}</span>
+                <span class="text-sm font-medium whitespace-nowrap overflow-hidden">${tab.label}</span>
+            `;
             if (idx === 0) {
-                a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+                a.classList.add('bg-blue-50', 'text-blue-600');
             }
             sidebarTabsContainer.appendChild(a);
         });
@@ -108,7 +111,7 @@ function initDashboardTabs() {
                     a.setAttribute('href', '#');
                     a.innerHTML = `<span class="material-symbols-outlined text-lg">${tab.icon}</span><span class="text-sm font-medium">${tab.label}</span>`;
                     if (idx === 0) {
-                        a.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white');
+                        a.classList.add('bg-primary/10', 'text-primary');
                     }
                     container.appendChild(a);
                     console.log(`Added tab: ${tab.label}`);
@@ -170,10 +173,10 @@ function initDashboardTabs() {
         
         // Update both desktop and mobile tabs
         const allTabs = document.querySelectorAll('.sidebar-tab, .mobile-sidebar-tab');
-        allTabs.forEach(btn => btn.classList.remove('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
-        
+        allTabs.forEach(btn => btn.classList.remove('bg-blue-50', 'text-blue-600', 'bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
+
         const activeTabs = Array.from(allTabs).filter(btn => btn.getAttribute('data-tab') === tab);
-        activeTabs.forEach(btn => btn.classList.add('bg-primary/10', 'text-primary', 'dark:bg-primary/20', 'dark:text-white'));
+        activeTabs.forEach(btn => btn.classList.add('bg-blue-50', 'text-blue-600'));
         
         // Notify dashboard.html to fetch data for this tab
         window.dispatchEvent(new CustomEvent('dashboardTabChange', { detail: { tab } }));

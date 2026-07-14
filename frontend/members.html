@@ -10,8 +10,8 @@
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 	<!-- Backend URL Configuration - MUST BE LOADED FIRST -->
-	<script src="./config.js"></script>
-	<script src="./set-base-url.js"></script>
+	<script src="./app-config.js?v=3"></script>
+	<script src="./set-base-url.js?v=3"></script>
 
 	<!-- Modal Utilities -->
 	<script src="./modal-utils.js"></script>
@@ -753,7 +753,7 @@
 		})();
 	</script>
 	<script type="module">
-		// Use centralized BASE_URL from config.js (already loaded via script tag)
+		// Use centralized BASE_URL from app-config.js (already loaded via script tag)
 		// Don't import - just use window.BASE_URL which is already set
 		const BASE_URL = window.BASE_URL;
 

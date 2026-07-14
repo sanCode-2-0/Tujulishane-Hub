@@ -20,6 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log("Alpine.js not found, inserting nav directly");
                 placeholder.innerHTML = data;
             }
+            // Re-execute any <script> tags injected with the nav HTML
+            placeholder.querySelectorAll("script").forEach((s) => {
+                const script = document.createElement("script");
+                script.textContent = s.textContent;
+                document.head.appendChild(script);
+                s.remove();
+            });
             console.log("Navigation inserted into DOM");
             // Trigger navigation loaded event
             window.dispatchEvent(new CustomEvent("navLoaded"));

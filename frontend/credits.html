@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credits - RMNCAH Coordination Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="./app-config.js?v=3"></script>
+    <script src="./set-base-url.js?v=3"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#272E28",
+                        secondary: "#f59e0b",
+                        accent: "#00474C",
+                        button: "#14B04C",
+                        button_two: "#3482FF",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body class="bg-[#121613] text-gray-200 font-sans min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Nav Start -->
+    <div id="nav-placeholder"></div>
+    <!-- Nav End -->
+
+    <!-- Main Container -->
+    <main class="flex-grow flex items-center justify-center pt-32 pb-16 px-4">
+        <div class="max-w-4xl w-full bg-[#1c221e] border border-[#2d3831] rounded-2xl p-8 md:p-12 shadow-2xl relative">
+            
+            <!-- Header Section -->
+            <div class="text-center mb-12">
+                <span class="text-button text-xs font-bold uppercase tracking-widest bg-button/10 px-4 py-1.5 rounded-full inline-block mb-3">
+                    System Attribution
+                </span>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
+                    RMNCAH Coordination Hub
+                </h1>
+                <p class="text-gray-300 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+                    A secure and centralized digital system built to coordinate RMNCAH activities, manage multi-role workflows, and map partner interventions.
+                </p>
+            </div>
+
+            <!-- Credits Grid -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                
+                <!-- Creator Card -->
+                <div class="bg-[#212a24] border border-[#323f37] rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="p-3 bg-button/20 text-button rounded-lg text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Lead Architect & Developer</h3>
+                            <h2 class="text-xl font-bold text-white">Braine Kapolon</h2>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                        Designed and implemented the full-stack system architecture, secure JWT multi-role access controls, PostgreSQL relational schema, real-time metrics generation, and cloud-ready Nginx proxy infrastructure.
+                    </p>
+                    <div class="pt-4 border-t border-[#2d3831] flex flex-wrap gap-4 items-center justify-between">
+                        <a href="mailto:kapolonbraine@gmail.com" class="text-gray-300 hover:text-button transition text-xs flex items-center space-x-1.5">
+                            <i class="fas fa-envelope text-sm"></i>
+                            <span>kapolonbraine@gmail.com</span>
+                        </a>
+                        <div class="flex space-x-3">
+                            <a href="https://github.com" target="_blank" class="text-gray-300 hover:text-white transition text-base" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" class="text-gray-300 hover:text-button_two transition text-base" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Stack Card -->
+                <div class="bg-[#212a24] border border-[#323f37] rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="p-3 bg-button_two/20 text-button_two rounded-lg text-lg">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Engineering Infrastructure</h3>
+                            <h2 class="text-xl font-bold text-white">Technology Stack</h2>
+                        </div>
+                    </div>
+                    <ul class="text-gray-300 text-xs space-y-2.5 leading-relaxed">
+                        <li><strong class="text-white">Backend:</strong> Java Spring Boot, Hibernate, Security (JWT)</li>
+                        <li><strong class="text-white">Database:</strong> PostgreSQL, Flyway Database Migrations</li>
+                        <li><strong class="text-white">Frontend:</strong> HTML5, AlpineJS, Tailwind CSS, Flowbite</li>
+                        <li><strong class="text-white">Geospatial:</strong> Mapbox GL API Interactive Mapping</li>
+                        <li><strong class="text-white">Gateway:</strong> Nginx Reverse Proxy, Cloudflare Network CDN</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Project Meta Section -->
+            <div class="border-t border-[#2d3831] pt-8 flex flex-wrap justify-between items-center text-xs text-gray-400 gap-4">
+                <div>
+                    <strong>Version:</strong> 2.0.0 (Production Stable)
+                </div>
+                <div>
+                    <strong>Authorized:</strong> Ministry of Health (MoH, Kenya)
+                </div>
+                <div>
+                    <a href="index.html" class="inline-flex items-center text-button hover:underline font-semibold transition">
+                        <i class="fas fa-arrow-left mr-1.5"></i> Back to Homepage
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer container -->
+    <footer class="w-full py-6 text-center text-xs text-gray-400 border-t border-[#1c221e] bg-[#0d100e]">
+        <div class="mb-2">
+            © 2026 Copyright: <strong>RMNCAH Hub</strong>. Developed by Braine Kapolon.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/js/tw-elements.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="styles/loadNavg.js"></script>
+    <script src="styles/authnav.js"></script>
+
+</body>
+
+</html>

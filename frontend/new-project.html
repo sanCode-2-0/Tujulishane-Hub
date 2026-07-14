@@ -1278,10 +1278,10 @@
 	<script src="styles/authnav.js"></script>
 	<script src="styles/projectSteps.js"></script>
 	<script src="config.local.js"></script>
-	<script src="config.js"></script>
+	<script src="app-config.js?v=3"></script>
 	<script src="auth.js"></script>
 	<script src="kenya-locations.js"></script>
-	<script src="set-base-url.js"></script>
+	<script src="set-base-url.js?v=3"></script>
 	<script>
 		// Define showAlert function globally before it's used
 		window.showAlert = function (message, title = "Alert", type = "info") {
@@ -2277,7 +2277,7 @@
 
 				// Fetch available partners
 				const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-				const response = await fetch(`${window.BASE_URL}/api/auth/partners/available`, {
+				const response = await fetch(`${window.BASE_URL}/api/projects/partners/available`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}

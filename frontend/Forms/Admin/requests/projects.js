@@ -1,6 +1,6 @@
 // Super Admin Project Approval/Reject Logic
 
-// Use BASE_URL from config.js
+// Use BASE_URL from app-config.js
 const API_BASE = window.BASE_URL || "";
 
 document.addEventListener("DOMContentLoaded", () => {

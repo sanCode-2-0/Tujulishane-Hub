@@ -39,8 +39,8 @@
 			},
 		}
 	</script>
-	<script src="config.js"></script>
-	<script src="set-base-url.js"></script>
+	<script src="app-config.js?v=3"></script>
+	<script src="set-base-url.js?v=3"></script>
 	<script src="session-config.js"></script>
 	<script src="auth.js"></script>
 	<script src="session-manager.js"></script>
@@ -203,24 +203,16 @@
 		</div>
 	</div>
 
-	<div class="relative flex h-auto min-h-screen w-full group/design-root mt-24">
-		<div class="md:flex md:min-h-screen">
+	<!-- Sidebar: fixed, expands on hover, overlays content -->
+	<div class="hidden md:flex md:flex-col fixed left-0 top-20 lg:top-24 h-[calc(100vh-5rem)] lg:h-[calc(100vh-6rem)] w-14 hover:w-56 bg-white border-r z-40 overflow-hidden transition-all duration-200 ease-in-out group/sidebar py-3 gap-1 shadow-sm" id="sidebar-tabs">
+		<!-- JS injects tabs here -->
+	</div>
 
-			<!-- SIDEBAR -->
-			<div class="hidden md:block md:w-64 bg-white flex-shrink-0 sticky top-0 md:h-screen border-r">
-				<!-- Desktop MENU -->
-				<div class="px-4 py-4 overflow-y-auto">
-					<div class="grid gap-2" id="sidebar-tabs">
-						<!-- JS injects tabs here -->
-					</div>
-				</div>
-			</div>
-
-		</div>
+	<div class="relative flex h-auto min-h-screen w-full group/design-root mt-20 lg:mt-24">
 
 		<div class="layout-container flex h-full grow flex-col w-full">
 
-			<main class="flex-1 px-6 md:px-10 py-8">
+			<main class="flex-1 md:pl-14 px-4 md:px-10 py-8">
 				<div class="layout-content-container flex flex-col mx-auto w-full">
 						<div class="layout-content-container flex flex-col mx-auto w-full" id="tab-content-container">
 						<!-- Tab content will be injected by JS -->
@@ -228,312 +220,275 @@
 
 					<div id="tab-dashboard" class="tab-section" style="display:none;">
 
-						<!-- Banner -->
-						<div
-							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
-							<div class="p-10">
-								<h3 class="text-3xl font-semibold  mb-3 tracking-tight">
-									Welcome to RMNCAH Dashboard
-								</h3>
-								<p class="text-gray-600 text-base leading-relaxed max-w-2xl">
-									Manage all RMNCAH projects, partners, and users in a unified, streamlined workspace.
-								</p>
+						<!-- Welcome Banner -->
+						<div class="bg-white rounded-2xl border border-gray-200 p-8 mb-8 shadow-sm">
+							<h2 class="text-2xl font-bold text-gray-900 tracking-tight mb-1">
+								Welcome back, <span id="welcome-user-role" class="text-blue-600 font-semibold">User</span>
+							</h2>
+							<p class="text-gray-500 text-sm max-w-2xl leading-relaxed">
+								Overview and analytics for RMNCAH projects, partners, and users. Use the sidebar tabs to manage records.
+							</p>
+							<div class="text-[11px] text-gray-400 mt-4" id="dashboard-last-updated">Updating...</div>
+						</div>
+
+						<!-- KPI Card Grid -->
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+							<!-- Active Projects -->
+							<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+								<div class="flex justify-between items-start">
+									<div>
+										<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Projects</span>
+										<div class="flex items-baseline gap-2 mt-2">
+											<span id="active-projects-main" class="text-3xl font-bold text-gray-900">0</span>
+											<span class="text-xs text-gray-400">/ <span id="total-projects-sub">0</span> total</span>
+										</div>
+										<p class="text-[11px] text-gray-500 mt-2">
+											<span id="pending-projects-sub" class="font-semibold text-amber-600">0</span> pending review
+										</p>
+									</div>
+									<div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+										<span class="material-symbols-outlined text-2xl">folder</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Total Investment -->
+							<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+								<div class="flex justify-between items-start">
+									<div>
+										<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Investment</span>
+										<div id="total-budget-main" class="text-2xl font-bold text-gray-900 mt-2 flex items-baseline gap-1">
+											<span class="text-xs text-gray-400 font-normal">KES</span> 0
+										</div>
+										<p class="text-[11px] text-gray-500 mt-2">
+											Across programmatic activities
+										</p>
+									</div>
+									<div class="p-3 bg-green-50 text-green-600 rounded-xl">
+										<span class="material-symbols-outlined text-2xl">payments</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- County Coverage -->
+							<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+								<div class="flex justify-between items-start">
+									<div>
+										<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">County Coverage</span>
+										<div class="text-3xl font-bold text-gray-900 mt-2">
+											<span id="county-coverage-main">0</span>
+										</div>
+										<p class="text-[11px] text-gray-500 mt-2">
+											Unique regional reaches
+										</p>
+									</div>
+									<div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+										<span class="material-symbols-outlined text-2xl">location_on</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Registered Partners -->
+							<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+								<div class="flex justify-between items-start">
+									<div>
+										<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Partners & Users</span>
+										<div class="flex items-baseline gap-2 mt-2">
+											<span id="partners-count-main" class="text-3xl font-bold text-gray-900">0</span>
+											<span class="text-xs text-gray-400">/ <span id="total-users-sub">0</span> users</span>
+										</div>
+										<p class="text-[11px] text-gray-500 mt-2">
+											Collaborating organizations
+										</p>
+									</div>
+									<div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+										<span class="material-symbols-outlined text-2xl">group</span>
+									</div>
+								</div>
 							</div>
 						</div>
 
-						<!-- Counters -->
-						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+						<!-- Charts & Side Panels Grid -->
+						<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+							<!-- Charts Area (Left 2 cols) -->
+							<div class="lg:col-span-2 space-y-8">
+								<!-- Chart 1: Project Status by Theme -->
+								<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-150">
+									<div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+										<div>
+											<h3 class="text-base font-bold text-gray-900">Project Status by Focus Area</h3>
+											<p class="text-xs text-gray-500">Distribution of active, pending, completed, and stalled projects</p>
+										</div>
+										<div class="p-1.5 bg-gray-50 rounded-lg text-gray-500">
+											<span class="material-symbols-outlined text-xl">bar_chart</span>
+										</div>
+									</div>
+									<div id="barChart" class="w-full min-h-[350px]"></div>
+								</div>
 
-							<!-- Info Banner -->
-							<div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-								<div class="flex items-center gap-2 text-sm text-blue-700">
-									<span class="material-symbols-outlined text-base">info</span>
-									<span>Dashboard counters update automatically based on filters applied in Projects,
-										Users, and Past Projects tabs</span>
+								<!-- Chart 2: Resource Allocation Donut -->
+								<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-150">
+									<div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+										<div>
+											<h3 class="text-base font-bold text-gray-900">Resource Allocation (%)</h3>
+											<p class="text-xs text-gray-500">Percentage share of total funding across thematic areas</p>
+										</div>
+										<div class="p-1.5 bg-gray-50 rounded-lg text-gray-500">
+											<span class="material-symbols-outlined text-xl">donut_large</span>
+										</div>
+									</div>
+									<div id="teamChart" class="w-full min-h-[300px] flex justify-center"></div>
 								</div>
 							</div>
 
-							<!-- Total Projects Counter -->
-							<div
-								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
-								<span
-									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-purple-100 text-[100px] pointer-events-none">folder</span>
-								<div class="relative z-10">
-									<p class="text-sm text-gray-600 tracking-wide">Total Projects</p>
-									<p id="total-projects-count" class="text-3xl font-semibold text-gray-900 mt-2">
-										<span class="inline-block animate-pulse">...</span>
-									</p>
-									<p class="text-xs text-purple-600 mt-3">
-										<span id="active-projects-count">0</span> Active
-									</p>
+							<!-- Side Panel (Right 1 col) -->
+							<div class="space-y-8">
+								<!-- Top Counties Coverage -->
+								<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-150 flex flex-col h-[400px]">
+									<div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3 flex-shrink-0">
+										<div>
+											<h3 class="text-base font-bold text-gray-900">Regional Reach Density</h3>
+											<p class="text-xs text-gray-500">Top counties by project activity count</p>
+										</div>
+										<div class="p-1.5 bg-gray-50 rounded-lg text-gray-500">
+											<span class="material-symbols-outlined text-xl">map</span>
+										</div>
+									</div>
+									<div id="county-density-list" class="space-y-4 overflow-y-auto flex-1 pr-1 custom-scrollbar">
+										<!-- Injected dynamically by JS -->
+										<div class="text-center py-8 text-gray-400 text-sm">Loading coverage...</div>
+									</div>
 								</div>
-							</div>
 
-							<!-- Partners Counter -->
-							<div
-								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
-								<span
-									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-blue-100 text-[100px] pointer-events-none">group</span>
-
-								<div class="relative z-10">
-									<p class="text-sm text-gray-600 tracking-wide">Partners</p>
-									<p id="partners-count" class="text-3xl font-semibold text-gray-900 mt-2">
-										<span class="inline-block animate-pulse">...</span>
-									</p>
-									<p class="text-xs text-blue-600 mt-3">
-										<span id="total-users-count">0</span> Total Users
-									</p>
-								</div>
-							</div>
-
-							<!-- Thematic Areas Counter -->
-							<div
-								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
-								<span
-									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-indigo-100 text-[100px] pointer-events-none">category</span>
-								<div class="relative z-10">
-									<p class="text-sm text-gray-600 tracking-wide">Thematic Areas</p>
-									<p id="thematic-areas-count" class="text-3xl font-semibold text-gray-900 mt-2">
-										<span class="inline-block animate-pulse">...</span>
-									</p>
-									<p class="text-xs text-indigo-600 mt-3">Stable</p>
-								</div>
-							</div>
-
-							<!-- Counties Counter -->
-							<div
-								class="relative bg-white rounded-xl overflow-hidden p-6 shadow-xl hover:shadow-2xl hover:translate-y-[-2px] transition duration-300">
-								<span
-									class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-red-100 text-[100px] pointer-events-none">location_on</span>
-								<div class="relative z-10">
-									<p class="text-sm text-gray-600 tracking-wide">Counties</p>
-									<p id="counties-count" class="text-3xl font-semibold text-gray-900 mt-2">
-										<span class="inline-block animate-pulse">...</span>
-									</p>
-									<p class="text-xs text-red-600 mt-3">
-										<span id="pending-approvals-count">0</span> Pending Approvals
-									</p>
+								<!-- Quick Actions Control Center -->
+								<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-150">
+									<div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+										<div>
+											<h3 class="text-base font-bold text-gray-900">Control Center</h3>
+											<p class="text-xs text-gray-500">Quick action shortcuts based on your role</p>
+										</div>
+										<div class="p-1.5 bg-gray-50 rounded-lg text-gray-500">
+											<span class="material-symbols-outlined text-xl">bolt</span>
+										</div>
+									</div>
+									<div id="quick-actions-container" class="flex flex-col gap-2">
+										<!-- Injected dynamically by JS based on role -->
+									</div>
 								</div>
 							</div>
 						</div>
-						<!-- <div class="min-h-screen py-10">
-							<div class="max-w-7xl mx-auto ">
 
-								<div id="kpi-container"
-									class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+						<!-- Recent Projects Updates -->
+						<div class="bg-white rounded-2xl shadow-sm border border-gray-150 overflow-hidden mb-8">
+							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
+								<div>
+									<h3 class="text-base font-bold text-gray-900">Recent Project Updates</h3>
+									<p class="text-xs text-gray-500">Latest projects registered or updated in the system</p>
 								</div>
-
-								<div class="mb-10 flex justify-between items-center">
-									<span class="text-sm text-gray-500">
-										Last Updated: <span id="lastUpdated"></span>
-									</span>
-								</div>
-
-								<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-
-									<div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-										<h2 class="text-xl font-semibold mb-4 text-gray-900">
-											Project Status by Theme</h2>
-										<div id="barChart"></div>
-									</div>
-
-									<div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
-										<h2 class="text-xl font-semibold mb-4 text-gray-900">
-											Resource Distribution (%)</h2>
-										<div id="teamChart"></div>
-									</div>
-								</div>
-
-								<h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
-									Performance by Thematic Area
-								</h2>
-
-								<div id="detail-card-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-								</div>
-
+								<button id="dash-btn-view-projects"
+									class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition">
+									View All Projects
+									<span class="material-symbols-outlined text-sm">arrow_forward</span>
+								</button>
 							</div>
-						</div> -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-left text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-b border-gray-100">
+										<tr>
+											<th class="px-6 py-3 font-semibold">Project Title</th>
+											<th class="px-6 py-3 font-semibold">Partner</th>
+											<th class="px-6 py-3 font-semibold text-right">Budget</th>
+											<th class="px-6 py-3 font-semibold">Status</th>
+											<th class="px-6 py-3 font-semibold text-right">Actions</th>
+										</tr>
+									</thead>
+									<tbody id="recent-projects-tbody" class="divide-y divide-gray-100">
+										<!-- Injected dynamically by JS -->
+										<tr>
+											<td colspan="5" class="text-center py-6 text-gray-400">Loading recent updates...</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
 
 					</div>
 
 					<div id="tab-projects" class="tab-section" style="display:none;">
 
-						<!-- Individual Tab Counters -->
-						<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-md shadow-gray-100">
-							<div class="flex items-center justify-between">
-								<div>
-									<p class="text-sm text-gray-500">Filtered Projects</p>
-									<p id="tab-projects-count" class="text-3xl font-semibold text-gray-900 mt-1">0</p>
-								</div>
-								<span class="material-symbols-outlined text-blue-600 text-4xl">folder</span>
+						<!-- Page header row -->
+						<div class="flex items-center justify-between mb-6">
+							<div>
+								<h2 class="text-xl font-bold text-gray-900">Projects</h2>
+								<p class="text-sm text-gray-500 mt-0.5"><span id="tab-projects-count" class="font-semibold text-gray-800">0</span> projects found</p>
 							</div>
+							<button onclick="exportToExcel('tab-projects','Projects')"
+								class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:shadow-sm transition shadow-sm">
+								<span class="material-symbols-outlined text-base">file_download</span>
+								Export
+							</button>
 						</div>
 
-						<!-- Thematic Area Filter Section -->
-						<div class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-6">
-							<div class="p-6">
-								<div class="flex flex-wrap items-center gap-4">
-									<div class="flex items-center gap-2">
-										<span class="material-symbols-outlined text-gray-600">category</span>
-										<label class="text-sm font-semibold text-gray-700">Filter by Thematic Area:</label>
-									</div>
-									
-									<div class="flex-1 min-w-[300px]">
-										<style>
-											#thematic-area-filter {
-												min-height: 180px !important;
-												max-height: 300px !important;
-											}
-											#thematic-area-filter option {
-												padding: 10px 12px;
-												border-bottom: 1px solid #e5e7eb;
-												cursor: pointer;
-												transition: all 0.2s;
-											}
-											#thematic-area-filter option:hover {
-												background-color: #dbeafe;
-												color: #1e40af;
-											}
-											#thematic-area-filter option:checked {
-												background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-												color: white;
-												font-weight: 500;
-											}
-											#thematic-area-filter option:last-child {
-												border-bottom: none;
-											}
-										</style>
-										<select id="thematic-area-filter" multiple 
-											class="w-full px-3 py-2 text-sm border-2 border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition cursor-pointer shadow-sm hover:shadow-md">
-											<option value="" disabled>Loading thematic areas...</option>
-										</select>
-										<p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
-											<span class="material-symbols-outlined text-sm">info</span>
-											<span>Click to select/deselect thematic areas (multiple selection supported)</span>
-										</p>
-									</div>
-									
-									<button id="clear-theme-filter" 
-										class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
-										<span class="material-symbols-outlined text-base">clear_all</span>
-										Clear Filter
-									</button>
-								</div>
-								
-								<!-- Selected Themes Display -->
-								<div id="selected-themes-container" class="mt-4 flex flex-wrap gap-2" style="display: none;">
-									<!-- Selected theme chips will be added here -->
-								</div>
-							</div>
+						<!-- Filter bar -->
+						<div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-4 px-4 py-3 flex flex-wrap gap-2 items-center">
+							<span class="material-symbols-outlined text-gray-400 text-sm">search</span>
+							<input type="text" data-column="0" placeholder="Title…" class="filter-input px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-1 focus:ring-blue-300 outline-none transition w-36">
+							<input type="text" data-column="1" placeholder="Partner…" class="filter-input px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-1 focus:ring-blue-300 outline-none transition w-32">
+							<select data-column="2" class="filter-input px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 outline-none transition">
+								<option value="">All Categories</option>
+								<option value="Implementing">Implementing</option>
+								<option value="Funding">Funding</option>
+								<option value="Research">Research</option>
+							</select>
+							<select id="thematic-area-filter" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 outline-none transition max-w-[180px]">
+								<option value="">All Themes</option>
+							</select>
+							<select data-column="5" class="filter-input px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-400 outline-none transition">
+								<option value="">All Statuses</option>
+								<option value="Active">Active</option>
+								<option value="Pending">Pending</option>
+								<option value="Stalled">Stalled</option>
+								<option value="Completed">Completed</option>
+							</select>
+							<button id="clear-theme-filter" class="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition font-medium">
+								<span class="material-symbols-outlined text-sm">close</span>
+								Clear
+							</button>
+
+							<!-- Active theme chips -->
+							<div id="selected-themes-container" class="w-full flex flex-wrap gap-2 mt-1" style="display:none;"></div>
 						</div>
 
-						<div
-							class="bg-white rounded-2xl border border-gray-200 shadow-md shadow-gray-100 overflow-hidden mb-10">
-
-							<!-- Header -->
-							<div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
-								<h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Projects</h3>
-
-								<button
-									class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 hover:shadow transition">
-									<span class="material-symbols-outlined text-base">file_download</span>
-									Export Excel
-								</button>
-							</div>
-
-							<!-- Table -->
+						<!-- Table card -->
+						<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-10">
 							<div class="overflow-x-auto">
 								<table class="w-full text-sm text-gray-700">
-
-									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-500 border-b border-gray-200">
 										<tr>
-											<th class="px-6 py-3" style="min-width: 220px;">Title</th>
-											<th class="px-6 py-3" style="min-width: 170px;">Partner Name</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Project No</th>
-											<th class="px-6 py-3" style="min-width: 140px;">Category</th>
-											<th class="px-6 py-3" style="min-width: 200px;">Themes</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
-											<th class="px-6 py-3" style="min-width: 140px;">Start Date</th>
-											<th class="px-6 py-3" style="min-width: 140px;">End Date</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Budget</th>
-											<th class="px-6 py-3" style="min-width: 170px;">Locations</th>
-											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
-											<th class="px-6 py-3" style="min-width: 100px;"></th>
-										</tr>
-
-										<!-- Filter Row (Pastel inputs) -->
-										<tr class="bg-blue-50/50 border-t border-gray-200">
-											<th class="px-6 py-2" style="min-width: 220px;"><input type="text"
-													data-column="0" placeholder="Filter Title"
-													class="filter-input w-full px-3 py-2 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
-											</th>
-											<th class="px-6 py-2" style="min-width: 170px;"><input type="text"
-													data-column="1" placeholder="Filter Partner"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
-											</th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
-													data-column="2" placeholder="Filter Project No"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400 focus:ring-blue-300 focus:ring">
-											</th>
-											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
-													data-column="3" placeholder="Filter Category"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
-											</th>
-											<th class="px-6 py-2" style="min-width: 200px;"><input type="text"
-													data-column="4" placeholder="Filter Themes"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
-											</th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
-													data-column="5" placeholder="Filter Status"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white focus:border-blue-400">
-											</th>
-											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
-													data-column="6" placeholder="Filter Start"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 140px;"><input type="text"
-													data-column="7" placeholder="Filter End"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input type="text"
-													data-column="8" placeholder="Filter Budget"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 170px;"><input type="text"
-													data-column="9" placeholder="Filter Locations"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 160px;"><input type="text"
-													data-column="10" placeholder="Filter Created At"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th style="min-width: 100px;"></th>
+											<th class="px-5 py-3 text-left font-semibold tracking-wide">Project</th>
+											<th class="px-5 py-3 text-left font-semibold tracking-wide">Partner</th>
+											<th class="px-5 py-3 text-left font-semibold tracking-wide">Category</th>
+											<th class="px-5 py-3 text-left font-semibold tracking-wide">Themes</th>
+											<th class="px-5 py-3 text-right font-semibold tracking-wide">Budget</th>
+											<th class="px-5 py-3 text-center font-semibold tracking-wide">Status</th>
+											<th class="px-5 py-3"></th>
 										</tr>
 									</thead>
-
 									<tbody></tbody>
 								</table>
 							</div>
 
 							<!-- Pagination -->
-							<nav aria-label="Table navigation" class="flex items-center justify-between p-5 bg-gray-50">
-								<span class="text-sm text-gray-600">
-									Showing <span class="font-semibold text-gray-900">1–1</span> of <span
-										class="font-semibold text-gray-900">1</span>
+							<div class="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
+								<span class="text-xs text-gray-500">
+									Showing <span class="font-semibold text-gray-700">1–1</span> of <span class="font-semibold text-gray-700">1</span>
 								</span>
-
-								<ul class="inline-flex -space-x-px text-sm">
-									<li><a href="#"
-											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-l-lg hover:bg-gray-100 transition">Previous</a>
-									</li>
-									<li><a href="#"
-											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition">1</a>
-									</li>
-									<li><a href="#"
-											class="px-4 h-9 flex items-center justify-center border border-gray-300 bg-white rounded-r-lg hover:bg-gray-100 transition">Next</a>
-									</li>
-								</ul>
-							</nav>
+								<div class="flex items-center gap-1">
+									<a href="#" class="px-3 h-8 flex items-center text-xs border border-gray-200 bg-white rounded-lg hover:bg-gray-100 transition text-gray-600">Previous</a>
+									<a href="#" class="px-3 h-8 flex items-center text-xs border border-gray-200 bg-white rounded-lg hover:bg-gray-100 transition text-gray-600">1</a>
+									<a href="#" class="px-3 h-8 flex items-center text-xs border border-gray-200 bg-white rounded-lg hover:bg-gray-100 transition text-gray-600">Next</a>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -565,44 +520,45 @@
 							</div>
 
 							<!-- Table -->
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Name / Email" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<select data-column="1" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Roles</option>
+										<option value="SUPER_ADMIN">Super Admin</option>
+										<option value="PARTNER">Partner</option>
+										<option value="DONOR">Donor</option>
+									</select>
+
+									<input type="text" data-column="2" placeholder="Filter Organization" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[125px] max-w-[160px]">
+
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Active">Active</option>
+										<option value="Pending">Pending</option>
+										<option value="Inactive">Inactive</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Table -->
 							<div class="overflow-x-auto">
 								<table class="w-full text-sm text-gray-700">
 									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
-
 										<tr>
-											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
-											<th class="px-6 py-3" style="min-width: 220px;">Email</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Role</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
-											<th class="px-6 py-3" style="min-width: 170px;">Organization</th>
-											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
-											<th class="px-6 py-3" style="min-width: 100px;"></th>
+											<th class="px-6 py-3 text-left">User Info</th>
+											<th class="px-6 py-3 text-left">Role</th>
+											<th class="px-6 py-3 text-left">Organization</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
-
-										<tr class="bg-blue-50/50 border-t border-gray-200">
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
-													placeholder="Filter Name"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="1"
-													placeholder="Filter Email"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="2"
-													placeholder="Filter Role"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="3"
-													placeholder="Filter Status"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="4"
-													placeholder="Filter Organization"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="5"
-													placeholder="Filter Created At"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th style="min-width: 100px;"></th>
-										</tr>
-
 									</thead>
-
 									<tbody></tbody>
 								</table>
 							</div>
@@ -657,48 +613,43 @@
 								</button>
 							</div>
 
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Name / Email" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<select data-column="1" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Types</option>
+										<option value="IMPLEMENTER">Implementer</option>
+										<option value="DONOR">Donor</option>
+									</select>
+
+									<input type="text" data-column="2" placeholder="Filter Location" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
+
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Approved">Approved</option>
+										<option value="Pending">Pending</option>
+										<option value="Rejected">Rejected</option>
+									</select>
+								</div>
+							</div>
+
 							<!-- Table -->
 							<div class="overflow-x-auto">
 								<table class="w-full text-sm text-gray-700">
 
 									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
 										<tr>
-											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
-											<th class="px-6 py-3" style="min-width: 140px;">Type</th>
-											<th class="px-6 py-3" style="min-width: 220px;">Email</th>
-											<th class="px-6 py-3" style="min-width: 170px;">Location</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
-											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
-											<th class="px-6 py-3" style="min-width: 100px;"></th>
-										</tr>
-
-										<!-- Filter Row -->
-										<tr class="bg-blue-50/50 border-t border-gray-200">
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
-													placeholder="Filter Name"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 140px;"><input data-column="1"
-													placeholder="Filter Type"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="2"
-													placeholder="Filter Email"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="3"
-													placeholder="Filter Location"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="4"
-													placeholder="Filter Status"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="5"
-													placeholder="Filter Created At"
-													class="filter-input w-full px-3 py-2 text-xs border rounded-lg bg-white">
-											</th>
-											<th style="min-width: 100px;"></th>
+											<th class="px-6 py-3 text-left">Organization Info</th>
+											<th class="px-6 py-3 text-left">Type</th>
+											<th class="px-6 py-3 text-left">Location</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 
@@ -986,50 +937,46 @@
 								</button>
 							</div>
 
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Title / Description" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<input type="text" data-column="1" placeholder="Filter Partner" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
+
+									<select data-column="2" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Categories</option>
+										<option value="Implementing">Implementing</option>
+										<option value="Funding">Funding</option>
+										<option value="Research">Research</option>
+									</select>
+
+									<select data-column="4" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Active">Active</option>
+										<option value="Pending">Pending</option>
+										<option value="Stalled">Stalled</option>
+										<option value="Completed">Completed</option>
+									</select>
+								</div>
+							</div>
+
 							<!-- Table -->
 							<div class="overflow-x-auto">
 								<table class="w-full text-sm text-gray-700">
 
 									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
 										<tr>
-											<th class="px-6 py-3" style="min-width: 170px;">Name</th>
-											<th class="px-6 py-3" style="min-width: 220px;">Description</th>
-											<th class="px-6 py-3" style="min-width: 170px;">Organization</th>
-											<th class="px-6 py-3" style="min-width: 140px;">Category</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Status</th>
-											<th class="px-6 py-3" style="min-width: 120px;">Budget</th>
-											<th class="px-6 py-3" style="min-width: 160px;">Completion Date</th>
-											<th class="px-6 py-3" style="min-width: 160px;">Created At</th>
-											<th class="px-6 py-3" style="min-width: 100px;"></th>
-										</tr>
-
-										<!-- Filters -->
-										<tr class="bg-blue-50/50 border-t border-gray-200">
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="0"
-													placeholder="Filter Name"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 220px;"><input data-column="1"
-													placeholder="Filter Description"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 170px;"><input data-column="2"
-													placeholder="Filter Organization"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 140px;"><input data-column="3"
-													placeholder="Filter Category"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="4"
-													placeholder="Filter Status"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 120px;"><input data-column="5"
-													placeholder="Filter Budget"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="6"
-													placeholder="Filter Completion Date"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th class="px-6 py-2" style="min-width: 160px;"><input data-column="7"
-													placeholder="Filter Created At"
-													class="w-full px-3 py-2 text-xs border rounded-lg bg-white"></th>
-											<th style="min-width: 100px;"></th>
+											<th class="px-6 py-3 text-left">Project Info</th>
+											<th class="px-6 py-3 text-left">Partner</th>
+											<th class="px-6 py-3 text-left">Category</th>
+											<th class="px-6 py-3 text-right">Budget</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 
@@ -1070,48 +1017,36 @@
 								</button>
 							</div>
 
-							<div class="overflow-x-auto">
-								<table class="w-full text-sm text-left text-gray-600">
-									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
-										<tr>
-											<th class="px-6 py-3">File Name</th>
-											<th class="px-6 py-3">Project</th>
-											<th class="px-6 py-3">Uploaded By</th>
-											<th class="px-6 py-3">Type</th>
-											<th class="px-6 py-3">Size</th>
-											<th class="px-6 py-3">Status</th>
-											<th class="px-6 py-3">Date</th>
-											<th class="px-6 py-3">Created At</th>
-											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
-										</tr>
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-150 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Name / Project" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<input type="text" data-column="1" placeholder="Filter Uploaded By" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
 
-										<!-- Filters -->
-										<tr class="filter-row bg-gray-100">
-											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="0"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="1"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="2"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="3"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="4"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="5"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="6"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="7"></th>
-											<th></th>
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Approved">Approved</option>
+										<option value="Pending">Pending</option>
+										<option value="Rejected">Rejected</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3 text-left">File Info</th>
+											<th class="px-6 py-3 text-left">Uploaded By</th>
+											<th class="px-6 py-3 text-left">Size</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 
@@ -1147,44 +1082,43 @@
 									<span>Export Excel</span>
 								</button>
 							</div>
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-150 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Title / Project" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<input type="text" data-column="1" placeholder="Filter Submitted By" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
 
+									<select data-column="2" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Types</option>
+										<option value="PROGRESS">Progress</option>
+										<option value="ANNUAL">Annual</option>
+										<option value="FINAL">Final</option>
+									</select>
+
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Approved">Approved</option>
+										<option value="Pending">Pending</option>
+										<option value="Rejected">Rejected</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Table -->
 							<div class="overflow-x-auto">
-								<table class="w-full text-sm text-left text-gray-600">
-									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+								<table class="w-full text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
 										<tr>
-											<th class="px-6 py-3">Report Title</th>
-											<th class="px-6 py-3">Project</th>
-											<th class="px-6 py-3">Created By</th>
-											<th class="px-6 py-3">Type</th>
-											<th class="px-6 py-3">Status</th>
-											<th class="px-6 py-3">Date</th>
-											<th class="px-6 py-3">Created At</th>
-											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
-										</tr>
-
-										<tr class="filter-row bg-gray-100">
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Report Title"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="0"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="1"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created By"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="2"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="3"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="4"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="5"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="6"></th>
-											<th></th>
+											<th class="px-6 py-3 text-left">Report Info</th>
+											<th class="px-6 py-3 text-left">Submitted By</th>
+											<th class="px-6 py-3 text-left">Type</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 
@@ -1209,71 +1143,7 @@
 					</div>
 
 
-					<div id="tab-userdocs" class="tab-section" style="display:none;">
-						<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
-							<div class="p-4 flex flex-wrap justify-between items-center gap-4">
-								<h3 class="text-lg font-bold text-neutral-text">User Documents</h3>
-								<button
-									class="flex h-9 items-center gap-x-2 rounded-lg bg-gray-100 pl-3 pr-2 text-sm font-medium text-neutral-text hover:bg-gray-200">
-									<span class="material-symbols-outlined text-base">file_download</span>
-									<span>Export Excel</span>
-								</button>
-							</div>
 
-							<div class="overflow-x-auto">
-								<table class="w-full text-sm text-left text-gray-600">
-									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
-										<tr>
-											<th class="px-6 py-3">File Name</th>
-											<th class="px-6 py-3">User</th>
-											<th class="px-6 py-3">Uploaded By</th>
-											<th class="px-6 py-3">Type</th>
-											<th class="px-6 py-3">Size</th>
-											<th class="px-6 py-3">Status</th>
-											<th class="px-6 py-3">Date</th>
-											<th class="px-6 py-3">Created At</th>
-											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
-										</tr>
-
-										<tr class="filter-row bg-gray-100">
-											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter User"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-
-							<nav class="flex items-center justify-between p-4">
-								<span class="text-sm text-gray-500">Showing <span
-										class="font-semibold text-gray-900">1-1</span> of <span
-										class="font-semibold text-gray-900">1</span></span>
-								<ul class="inline-flex -space-x-px text-sm h-8">
-									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100"
-											href="#">Previous</a></li>
-									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100"
-											href="#">1</a></li>
-									<li><a class="px-3 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100"
-											href="#">Next</a></li>
-								</ul>
-							</nav>
-						</div>
-					</div>
 
 
 					<div id="tab-userdocs" class="tab-section" style="display:none;">
@@ -1287,39 +1157,36 @@
 								</button>
 							</div>
 
-							<div class="overflow-x-auto">
-								<table class="w-full text-sm text-left text-gray-600">
-									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
-										<tr>
-											<th class="px-6 py-3">File Name</th>
-											<th class="px-6 py-3">User</th>
-											<th class="px-6 py-3">Uploaded By</th>
-											<th class="px-6 py-3">Type</th>
-											<th class="px-6 py-3">Size</th>
-											<th class="px-6 py-3">Status</th>
-											<th class="px-6 py-3">Date</th>
-											<th class="px-6 py-3">Created At</th>
-											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
-										</tr>
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-150 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter Name / User" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<input type="text" data-column="1" placeholder="Filter Uploaded By" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
 
-										<tr class="filter-row bg-gray-100">
-											<th class="px-6 py-2"><input type="text" placeholder="Filter File Name"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter User"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Uploaded By"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Type"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Size"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Created At"
-													class="w-full px-2 py-1 text-xs border rounded"></th>
-											<th></th>
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Approved">Approved</option>
+										<option value="Pending">Pending</option>
+										<option value="Rejected">Rejected</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3 text-left">File Info</th>
+											<th class="px-6 py-3 text-left">Uploaded By</th>
+											<th class="px-6 py-3 text-left">Size</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -1365,47 +1232,49 @@
 								</button>
 							</div>
 
-							<div class="overflow-x-auto">
-								<table class="w-full text-sm text-left text-gray-600">
-									<thead class="text-xs text-gray-700 uppercase bg-gray-50">
-										<tr>
-											<th class="px-6 py-3">User Name</th>
-											<th class="px-6 py-3">Project Title</th>
-											<th class="px-6 py-3">Organization</th>
-											<th class="px-6 py-3">Role</th>
-											<th class="px-6 py-3">Status</th>
-											<th class="px-6 py-3">Added At</th>
-											<th class="px-6 py-3"><span class="sr-only">Actions</span></th>
-										</tr>
+							<!-- Filter Toolbar -->
+							<div class="px-6 py-4 bg-gray-50 border-b border-gray-150 flex flex-wrap gap-3 items-center">
+								<div class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mr-2 uppercase tracking-wider">
+									<span class="material-symbols-outlined text-sm">filter_alt</span>
+									<span>Filter:</span>
+								</div>
+								<div class="flex flex-wrap gap-2.5 flex-1 items-center">
+									<input type="text" data-column="0" placeholder="Filter User / Email" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[150px] max-w-[200px]">
+									
+									<input type="text" data-column="1" placeholder="Filter Project" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 min-w-[120px] max-w-[160px]">
 
-										<!-- Filters -->
-										<tr class="filter-row bg-gray-100">
-											<th class="px-6 py-2"><input type="text" placeholder="Filter User Name"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="0"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Project"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="1"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Organization"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="2"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Role"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="3"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Status"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="4"></th>
-											<th class="px-6 py-2"><input type="text" placeholder="Filter Date"
-													class="filter-input w-full px-2 py-1 text-xs border rounded"
-													data-column="5"></th>
-											<th></th>
+									<select data-column="2" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Roles</option>
+										<option value="VIEWER">Viewer</option>
+										<option value="EDITOR">Editor</option>
+										<option value="CO_OWNER">Co-Owner</option>
+									</select>
+
+									<select data-column="3" class="filter-input px-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+										<option value="">All Statuses</option>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Table -->
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm text-gray-700">
+									<thead class="text-xs uppercase bg-gray-50 text-gray-600 border-y border-gray-200">
+										<tr>
+											<th class="px-6 py-3 text-left">Collaborator Info</th>
+											<th class="px-6 py-3 text-left">Project Title</th>
+											<th class="px-6 py-3 text-left">Role</th>
+											<th class="px-6 py-3 text-center">Status</th>
+											<th class="px-6 py-3"></th>
 										</tr>
 									</thead>
 
 									<tbody>
 										<!-- Empty state will be shown when no data -->
 										<tr id="collaborators-empty-state" style="display:none;">
-											<td colspan="7" class="px-6 py-12 text-center">
+											<td colspan="5" class="px-6 py-12 text-center">
 												<div class="flex flex-col items-center justify-center">
 													<span class="material-symbols-outlined text-gray-300 text-6xl mb-4">group_off</span>
 													<p class="text-gray-500 text-lg font-medium">No Collaborators Found</p>
@@ -1437,211 +1306,509 @@
 				</div>
 			</main>
 		</div>
-	</div>
+	</div><!-- end group/design-root -->
 	<script>
-		// --- 1. Utility Functions ---
-		const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-		const formatNumber = (num) => num.toLocaleString();
-		const formatCurrency = (num) => '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		// --- 1. Global Chart Instances ---
+		let dashboardBarChart = null;
+		let dashboardDonutChart = null;
 
-		// --- 2. Analytic Metric Generator for Detail Cards ---
-		function generateCategoryAnalytics() {
-			const totalProjects = rand(40, 150);
-			const active = rand(Math.floor(totalProjects * 0.3), Math.floor(totalProjects * 0.7));
-			const pending = rand(Math.floor(totalProjects * 0.1), Math.floor(totalProjects * 0.3));
-			const stalled = rand(Math.floor(totalProjects * 0.05), Math.floor(totalProjects * 0.2));
-			const completed = Math.max(0, totalProjects - active - pending - stalled); // Ensure non-negative
+		// --- 2. Programmatic Focus Themes Metadata ---
+		const themeMeta = {
+			'GBV': { name: 'Gender-Based Violence', color: '#6366f1' }, // Indigo
+			'AYPSRH': { name: 'Adolescent & Youth SRH', color: '#3b82f6' }, // Blue
+			'MWH': { name: 'Maternal & Women\'s Health', color: '#ec4899' }, // Pink
+			'FP': { name: 'Family Planning', color: '#8b5cf6' }, // Violet
+			'CH': { name: 'Child Health', color: '#10b981' }, // Emerald
+			'A': { name: 'AIDS/HIV', color: '#f43f5e' }, // Rose
+			'AS': { name: 'Adolescent Sexuality', color: '#d946ef' }, // Fuchsia
+			'MONITORING_EVALUATION': { name: 'Monitoring & Evaluation', color: '#14b8a6' }, // Teal
+			'RESEARCH_LEARNING': { name: 'Research & Learning', color: '#06b6d4' } // Cyan
+		};
 
-			return {
-				totalCost: rand(5, 50), // Millions
-				totalProjects: totalProjects,
-				active: active,
-				pending: pending,
-				stalled: stalled,
-				completed: completed,
-				avgDurationMonths: rand(12, 48),
-				expectedCompletion: `Q${rand(1, 4)} ${new Date().getFullYear() + rand(0, 2)}`
+		// --- 3. Formatting Utilities ---
+		function formatBudgetKES(amount) {
+			if (amount === undefined || amount === null || isNaN(amount)) return 'KES 0';
+			const num = Number(amount);
+			if (num >= 1e9) {
+				return 'KES ' + (num / 1e9).toFixed(2) + ' Bn';
+			} else if (num >= 1e6) {
+				return 'KES ' + (num / 1e6).toFixed(2) + ' Mn';
+			} else if (num >= 1e3) {
+				return 'KES ' + (num / 1e3).toFixed(0) + 'k';
+			}
+			return 'KES ' + num.toLocaleString();
+		}
+
+		// --- 4. Render Enhanced Dashboard Control Center ---
+		function renderEnhancedDashboard() {
+			console.log('Rendering enhanced dashboard with live data...');
+			
+			// A. Get live and past projects data
+			let projects = originalData.projects || [];
+			let pastProjects = originalData.pastProjects || [];
+			let users = originalData.users || [];
+
+			// B. Get active dashboard filters
+			const selectedTheme = document.getElementById('dash-category-filter')?.value;
+			const selectedStatus = document.getElementById('dash-status-filter')?.value;
+
+			// C. Apply live filters
+			if (selectedTheme) {
+				projects = projects.filter(p => p.themes?.some(t => t.code === selectedTheme));
+				pastProjects = pastProjects.filter(p => p.themes?.some(t => t.code === selectedTheme));
+			}
+			if (selectedStatus) {
+				projects = projects.filter(p => p.status === selectedStatus);
+				pastProjects = pastProjects.filter(p => p.status === selectedStatus);
+			}
+
+			// D. Calculate metrics
+			const totalProjectsCount = projects.length + pastProjects.length;
+			const activeProjectsCount = projects.filter(p => p.status === 'ACTIVE').length;
+			const pendingProjectsCount = projects.filter(p => p.status === 'PENDING').length;
+			const stalledProjectsCount = projects.filter(p => p.status === 'STALLED').length;
+
+			// Calculate Total Budget
+			let totalBudget = 0;
+			[...projects, ...pastProjects].forEach(p => {
+				if (p.budget) {
+					totalBudget += parseFloat(p.budget) || 0;
+				}
+			});
+
+			// Calculate Unique Counties Reach
+			const countiesSet = new Set();
+			[...projects, ...pastProjects].forEach(p => {
+				if (p.locations && Array.isArray(p.locations)) {
+					p.locations.forEach(loc => {
+						if (loc.county) countiesSet.add(loc.county.trim());
+					});
+				}
+			});
+			const uniqueCountiesCount = countiesSet.size;
+
+			// Calculate Partner Counts
+			const partnersSet = new Set();
+			projects.forEach(p => {
+				if (p.partnerName) partnersSet.add(p.partnerName.trim());
+			});
+			const partnersCount = partnersSet.size || users.filter(u => u.role === 'PARTNER').length;
+
+			// E. Update KPI Card DOM elements
+			const userRole = localStorage.getItem('userRole') || 'PARTNER';
+			const formattedRole = userRole.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+			
+			const roleEl = document.getElementById('welcome-user-role');
+			if (roleEl) roleEl.textContent = formattedRole;
+
+			const lastUpdatedEl = document.getElementById('dashboard-last-updated');
+			if (lastUpdatedEl) lastUpdatedEl.textContent = 'Last updated: ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+			// Counters Animation updates
+			updateValueWithAnimation('active-projects-main', activeProjectsCount);
+			updateValueWithAnimation('total-projects-sub', totalProjectsCount);
+			updateValueWithAnimation('pending-projects-sub', pendingProjectsCount);
+			
+			const budgetEl = document.getElementById('total-budget-main');
+			if (budgetEl) budgetEl.innerHTML = `<span class="text-xs text-gray-400 font-normal">KES</span> ${formatBudgetKES(totalBudget).replace('KES ', '')}`;
+
+			updateValueWithAnimation('county-coverage-main', uniqueCountiesCount);
+			updateValueWithAnimation('partners-count-main', partnersCount);
+			updateValueWithAnimation('total-users-sub', users.length || 0);
+
+			// F. Render ApexCharts
+			renderThematicBarChart(projects, pastProjects);
+			renderResourceDonutChart(projects, pastProjects);
+
+			// G. Render County Reach Density list
+			renderCountyReachDensity(projects, pastProjects);
+
+			// H. Render Recent Updates Table
+			renderRecentProjectsTable(projects, pastProjects);
+
+			// I. Render Quick Actions
+			renderQuickActions(userRole);
+		}
+
+		// Helper to animate counter updates
+		function updateValueWithAnimation(elementId, newValue) {
+			const element = document.getElementById(elementId);
+			if (!element) return;
+			const currentValue = parseInt(element.textContent) || 0;
+			if (currentValue === newValue) return;
+
+			element.style.transition = 'transform 0.2s ease, color 0.2s ease';
+			element.style.transform = 'scale(1.1)';
+			element.style.color = '#3b82f6';
+
+			setTimeout(() => {
+				element.textContent = newValue;
+				element.style.transform = 'scale(1)';
+				element.style.color = '';
+			}, 150);
+		}
+
+		// --- 5. Render Project Status by Focus Area Column Chart ---
+		function renderThematicBarChart(projects, pastProjects) {
+			const themeCodes = Object.keys(themeMeta);
+			const allProjects = [...projects, ...pastProjects];
+
+			const activeCounts = [];
+			const pendingCounts = [];
+			const stalledCounts = [];
+			const completedCounts = [];
+
+			themeCodes.forEach(code => {
+				let active = 0, pending = 0, stalled = 0, completed = 0;
+				allProjects.forEach(p => {
+					const hasTheme = p.themes?.some(t => t.code === code);
+					if (hasTheme) {
+						if (p.status === 'ACTIVE') active++;
+						else if (p.status === 'PENDING') pending++;
+						else if (p.status === 'STALLED') stalled++;
+						else if (p.status === 'COMPLETED') completed++;
+					}
+				});
+				activeCounts.push(active);
+				pendingCounts.push(pending);
+				stalledCounts.push(stalled);
+				completedCounts.push(completed);
+			});
+
+			const barCategories = themeCodes.map(code => themeMeta[code].name.replace(' & ', ' & \n').split('\n'));
+
+			const barOptions = {
+				chart: {
+					type: 'bar',
+					height: 350,
+					stacked: true,
+					toolbar: { show: false },
+					fontFamily: 'Montserrat, sans-serif'
+				},
+				plotOptions: {
+					bar: {
+						horizontal: false,
+						columnWidth: '45%',
+						borderRadius: 4
+					}
+				},
+				dataLabels: { enabled: false },
+				series: [
+					{ name: 'Active', data: activeCounts },
+					{ name: 'Pending', data: pendingCounts },
+					{ name: 'Stalled', data: stalledCounts },
+					{ name: 'Completed', data: completedCounts }
+				],
+				xaxis: {
+					categories: barCategories,
+					labels: {
+						style: { fontSize: '10px', fontWeight: 500 }
+					}
+				},
+				yaxis: {
+					title: { text: 'Number of Projects' },
+					labels: {
+						formatter: (val) => Math.round(val)
+					}
+				},
+				legend: { position: 'top', horizontalAlign: 'left' },
+				colors: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981'], // blue, amber, red, emerald
+				tooltip: {
+					y: { formatter: (val) => val + ' Projects' }
+				},
+				grid: {
+					borderColor: '#f1f5f9'
+				}
 			};
-		}
-
-		// --- 3. Program Data Structure ---
-		const categories = [
-			{ code: 'GBV', name: 'Gender-Based Violence', icon: 'fas fa-hand-rock', color: 'red' },
-			{ code: 'AYPSRH', name: 'Adolescent & Youth SRH', icon: 'fas fa-baby', color: 'blue' },
-			{ code: 'MWH', name: 'Maternal & Women\'s Health', icon: 'fas fa-heartbeat', color: 'pink' },
-			{ code: 'FP', name: 'Family Planning', icon: 'fas fa-users', color: 'indigo' },
-			{ code: 'CH', name: 'Child Health', icon: 'fas fa-child', color: 'green' },
-			{ code: 'A', name: 'AIDS/HIV', icon: 'fas fa-ribbon', color: 'gray' },
-			{ code: 'AS', name: 'Adolescent Sexuality', icon: 'fas fa-venus-mars', color: 'purple' },
-			{ code: 'MONITORING_EVALUATION', name: 'Monitoring & Evaluation', icon: 'fas fa-chart-line', color: 'teal' },
-			{ code: 'RESEARCH_LEARNING', name: 'Research & Learning', icon: 'fas fa-search', color: 'cyan' },
-		];
-
-		// --- 4. KPI Definitions ---
-		const kpis = [
-			{ title: "Total Projects", value: rand(100, 500), unit: "", color: "indigo", change: rand(5, 15), isPositive: true },
-			{ title: "Investment (USD)", value: rand(10, 50), unit: "M", color: "green", change: rand(1, 5), isPositive: false, formatter: (val) => formatCurrency(val) },
-			{ title: "Beneficiaries Reached", value: rand(50000, 200000), unit: "", color: "yellow", change: rand(15, 30), isPositive: true, formatter: (val) => formatNumber(val) },
-			{ title: "Average Completion Rate", value: rand(60, 95), unit: "%", color: "red", change: 0, isPositive: false, formatter: (val) => val },
-		];
-
-
-		// --- 5. Main Rendering Logic ---
-		function renderDashboard() {
-			const lastUpdatedEl = document.getElementById('lastUpdated');
-			if (lastUpdatedEl) {
-				lastUpdatedEl.textContent = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' });
-			}
-
-			// A. Render KPI Cards
-			const kpiHTML = kpis.map(kpi => {
-				const changeColor = kpi.isPositive ? 'text-green-500' : 'text-red-500';
-				const changeIcon = kpi.isPositive ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
-				const formattedValue = (kpi.formatter || formatNumber)(kpi.value);
-
-				return `
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-${kpi.color}-500">
-                        <p class="text-sm font-medium text-gray-500">${kpi.title}</p>
-                        <p class="mt-1 text-3xl font-semibold text-gray-900">
-                            ${formattedValue}${kpi.unit}
-                        </p>
-                        <div class="text-sm ${changeColor} mt-2">
-                            ${kpi.change > 0 ? `<i class="${changeIcon}"></i> ${kpi.change}% Change` : `<i class="fas fa-equals"></i> Steady Performance`}
-                        </div>
-                    </div>
-                `;
-			}).join('');
-			document.getElementById('kpi-container').innerHTML = kpiHTML;
-
-
-			// B. Render Detail Cards
-			const detailCardHTML = categories.map(cat => {
-				const data = generateCategoryAnalytics();
-
-				const completedPercent = ((data.completed / data.totalProjects) * 100).toFixed(0);
-
-				return `
-                    <div class="bg-white p-6 rounded-xl shadow-md transition duration-300 hover:shadow-xl border-t-4 border-${cat.color}-500">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <span class="text-xs font-medium text-gray-500">${cat.name}</span>
-                                <h3 class="text-xl font-bold text-gray-900">
-                                    <i class="${cat.icon} mr-2 text-${cat.color}-600"></i> ${cat.code}
-                                </h3>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-sm text-gray-400">Total Cost</span>
-                                <p class="text-2xl font-extrabold text-green-600">
-                                    ${formatCurrency(data.totalCost)}M
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <hr class="my-4">
-
-                        <div class="mb-4">
-                            <p class="text-sm font-semibold text-gray-700 mb-2">
-                                Status Breakdown (${data.totalProjects} Projects Total)
-                            </p>
-                            <div class="flex h-3 rounded overflow-hidden">
-                                <div style="width: ${((data.active / data.totalProjects) * 100).toFixed(0)}%" 
-                                     class="bg-blue-500" title="${data.active} Active"></div>
-                                <div style="width: ${((data.pending / data.totalProjects) * 100).toFixed(0)}%" 
-                                     class="bg-yellow-500" title="${data.pending} Pending"></div>
-                                <div style="width: ${((data.stalled / data.totalProjects) * 100).toFixed(0)}%" 
-                                     class="bg-red-500" title="${data.stalled} Stalled"></div>
-                                <div style="width: ${((data.completed / data.totalProjects) * 100).toFixed(0)}%" 
-                                     class="bg-green-500" title="${data.completed} Completed"></div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-3 text-sm text-gray-700">
-                             <p class="flex justify-between items-center">
-                                <span class="font-medium flex items-center"><i class="fas fa-check-double mr-2 text-green-500"></i> Completed Rate:</span> 
-                                <span class="font-bold text-lg text-green-500">${completedPercent}%</span>
-                            </p>
-                            <p class="flex justify-between items-center">
-                                <span class="font-medium flex items-center"><i class="fas fa-clock mr-2 text-gray-500"></i> Avg Duration:</span> 
-                                <span class="font-bold">${data.avgDurationMonths} months</span>
-                            </p>
-                            <p class="flex justify-between items-center">
-                                <span class="font-medium flex items-center"><i class="fas fa-calendar-alt mr-2 text-indigo-500"></i> Next Milestone:</span> 
-                                <span class="font-bold">${data.expectedCompletion}</span>
-                            </p>
-                        </div>
-                    </div>
-                `;
-			}).join('');
-			document.getElementById('detail-card-container').innerHTML = detailCardHTML;
-		}
-
-
-		// --- 6. ApexCharts Initialization ---
-
-		// Bar Chart Data (Project Status by Area)
-		var barCategories = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
-		var activeData = [15, 20, 18, 12, 5, 25, 9, 7, 6];
-		var pendingData = [8, 10, 7, 5, 3, 15, 4, 3, 2];
-		var stalledData = [3, 4, 2, 1, 1, 5, 2, 1, 1];
-		var completedData = [30, 45, 35, 25, 10, 50, 20, 15, 10];
-
-		var barOptions = {
-			chart: {
-				type: "bar", height: 400, stacked: false, id: 'projectStatusChart'
-			},
-			plotOptions: { bar: { horizontal: false, columnWidth: "70%" } },
-			dataLabels: { enabled: false },
-			series: [
-				{ name: "Active", data: activeData },
-				{ name: "Pending", data: pendingData },
-				{ name: "Stalled", data: stalledData },
-				{ name: "Completed", data: completedData },
-			],
-			xaxis: {
-				categories: barCategories,
-				title: { text: "Programmatic Area" },
-				labels: { rotate: -45 }
-			},
-			yaxis: { title: { text: "Number of Projects/Interventions" } },
-			legend: { position: "top" },
-			colors: ['#3B82F6', '#F59E0B', '#EF4444', '#10B981'], // blue, yellow, red, green
-			tooltip: { y: { formatter: function (val) { return val.toFixed(0) + " Projects"; } } }
-		};
-
-		// Donut Chart Data (Resource Distribution)
-		var donutSeriesData = [8, 14, 27, 21, 3, 2, 17, 8, 5];
-		var donutLabels = ["GBV", "AYPSRH", "MWH", "FP", "CH", "A", "AS", "MONITORING_EVALUATION", "RESEARCH_LEARNING"];
-		var donutColors = ["#EF4444", "#3B82F6", "#EC4899", "#6366F1", "#10B981", "#6B7280", "#9333ea", "#14B8A6", "#06B6D4"];
-
-		var donutOptions = {
-			chart: { type: "donut", height: 350 },
-			series: donutSeriesData,
-			labels: donutLabels,
-			colors: donutColors,
-			legend: { position: "bottom" },
-			dataLabels: { enabled: true, formatter: function (val) { return val.toFixed(0) + "%"; } },
-			tooltip: { y: { formatter: function (val, opts) { return opts.w.config.series[opts.seriesIndex] + "% of Focus"; } } },
-		};
-
-		// --- 7. Initialization on Load ---
-		document.addEventListener('DOMContentLoaded', () => {
-			// Only render analytics if the elements exist (not commented out)
-			if (document.getElementById('kpi-container')) {
-				renderDashboard();
-			}
 
 			const barEl = document.querySelector("#barChart");
-			if (barEl) {
-				var barChart = new ApexCharts(barEl, barOptions);
-				barChart.render();
+			if (!barEl) return;
+
+			if (dashboardBarChart) {
+				dashboardBarChart.updateSeries([
+					{ name: 'Active', data: activeCounts },
+					{ name: 'Pending', data: pendingCounts },
+					{ name: 'Stalled', data: stalledCounts },
+					{ name: 'Completed', data: completedCounts }
+				]);
+			} else {
+				dashboardBarChart = new ApexCharts(barEl, barOptions);
+				dashboardBarChart.render();
 			}
+		}
+
+		// --- 6. Render Resource Distribution Donut Chart ---
+		function renderResourceDonutChart(projects, pastProjects) {
+			const themeCodes = Object.keys(themeMeta);
+			const allProjects = [...projects, ...pastProjects];
+
+			let totalInvestments = 0;
+			const themeBudgets = themeCodes.map(code => {
+				let sum = 0;
+				allProjects.forEach(p => {
+					if (p.themes?.some(t => t.code === code) && p.budget) {
+						sum += parseFloat(p.budget) || 0;
+					}
+				});
+				totalInvestments += sum;
+				return sum;
+			});
+
+			// If total investment is zero, provide equal dummy percentages just for visual state
+			const seriesData = totalInvestments > 0 
+				? themeBudgets.map(b => parseFloat(((b / totalInvestments) * 100).toFixed(1)))
+				: themeBudgets.map(() => 0);
+
+			const donutLabels = themeCodes.map(code => themeMeta[code].name);
+			const donutColors = themeCodes.map(code => themeMeta[code].color);
+
+			const donutOptions = {
+				chart: {
+					type: 'donut',
+					height: 320,
+					fontFamily: 'Montserrat, sans-serif'
+				},
+				series: seriesData,
+				labels: donutLabels,
+				colors: donutColors,
+				legend: {
+					position: 'bottom',
+					fontSize: '11px'
+				},
+				dataLabels: {
+					enabled: true,
+					formatter: (val) => val > 0 ? val.toFixed(0) + '%' : ''
+				},
+				tooltip: {
+					y: {
+						formatter: (val, opts) => {
+							const budgetAmount = themeBudgets[opts.seriesIndex];
+							return val + '% (' + formatBudgetKES(budgetAmount) + ')';
+						}
+					}
+				},
+				plotOptions: {
+					pie: {
+						donut: {
+							size: '65%',
+							labels: {
+								show: true,
+								total: {
+									show: true,
+									label: 'Total Funding',
+									fontSize: '12px',
+									formatter: () => formatBudgetKES(totalInvestments)
+								}
+							}
+						}
+					}
+				}
+			};
 
 			const donutEl = document.querySelector("#teamChart");
-			if (donutEl) {
-				var donutChart = new ApexCharts(donutEl, donutOptions);
-				donutChart.render();
+			if (!donutEl) return;
+
+			if (dashboardDonutChart) {
+				dashboardDonutChart.updateSeries(seriesData);
+				dashboardDonutChart.updateOptions({
+					plotOptions: {
+						pie: {
+							donut: {
+								labels: {
+									total: {
+										formatter: () => formatBudgetKES(totalInvestments)
+									}
+								}
+							}
+						}
+					}
+				});
+			} else {
+				dashboardDonutChart = new ApexCharts(donutEl, donutOptions);
+				dashboardDonutChart.render();
+			}
+		}
+
+		// --- 7. Render County Reach Density list ---
+		function renderCountyReachDensity(projects, pastProjects) {
+			const container = document.getElementById('county-density-list');
+			if (!container) return;
+
+			const countyCounts = {};
+			[...projects, ...pastProjects].forEach(p => {
+				if (p.locations && Array.isArray(p.locations)) {
+					p.locations.forEach(loc => {
+						if (loc.county) {
+							const name = loc.county.trim();
+							countyCounts[name] = (countyCounts[name] || 0) + 1;
+						}
+					});
+				}
+			});
+
+			const sortedCounties = Object.entries(countyCounts)
+				.sort((a, b) => b[1] - a[1]);
+
+			if (sortedCounties.length === 0) {
+				container.innerHTML = `<div class="text-center py-12 text-gray-400 text-sm">No county reach recorded</div>`;
+				return;
+			}
+
+			const maxCount = sortedCounties[0][1];
+
+			container.innerHTML = sortedCounties.map(([name, count]) => {
+				const percentage = ((count / maxCount) * 100).toFixed(0);
+				return `
+					<div class="space-y-1.5">
+						<div class="flex justify-between text-xs font-semibold text-gray-700">
+							<span>${name}</span>
+							<span class="text-blue-600">${count} ${count === 1 ? 'Project' : 'Projects'}</span>
+						</div>
+						<div class="w-full bg-gray-100 rounded-full h-2">
+							<div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+						</div>
+					</div>
+				`;
+			}).join('');
+		}
+
+		// --- 8. Render Recent Updates Table ---
+		function renderRecentProjectsTable(projects, pastProjects) {
+			const tbody = document.getElementById('recent-projects-tbody');
+			if (!tbody) return;
+
+			// Combine and sort projects by start date or fallback
+			const allProjects = [...projects, ...pastProjects]
+				.sort((a, b) => {
+					const dateA = new Date(a.createdAt || a.startDate || 0);
+					const dateB = new Date(b.createdAt || b.startDate || 0);
+					return dateB - dateA;
+				})
+				.slice(0, 5); // Take top 5
+
+			if (allProjects.length === 0) {
+				tbody.innerHTML = `
+					<tr>
+						<td colspan="5" class="text-center py-8 text-gray-400 text-sm">No recent project updates available</td>
+					</tr>
+				`;
+				return;
+			}
+
+			const statusColors = {
+				'ACTIVE': 'bg-green-50 text-green-700 border-green-200',
+				'PENDING': 'bg-amber-50 text-amber-700 border-amber-200',
+				'COMPLETED': 'bg-blue-50 text-blue-700 border-blue-200',
+				'STALLED': 'bg-red-50 text-red-700 border-red-200',
+				'ABANDONED': 'bg-gray-50 text-gray-600 border-gray-200'
+			};
+
+			tbody.innerHTML = allProjects.map(p => {
+				const initials = String(p.partnerName || 'NA').split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+				const statusBadge = statusColors[String(p.status).toUpperCase()] || 'bg-gray-100 text-gray-700 border-gray-200';
+				const statusLabel = String(p.status || 'Unknown').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+				const formattedBudget = p.budget ? formatBudgetKES(p.budget) : 'N/A';
+
+				return `
+					<tr class="hover:bg-gray-50/50 transition">
+						<td class="px-6 py-4">
+							<div class="font-semibold text-gray-900 line-clamp-1">${p.title || 'Untitled Project'}</div>
+							<div class="text-[10px] text-gray-400 font-mono mt-0.5">${p.projectNo || 'No Number'}</div>
+						</td>
+						<td class="px-6 py-4">
+							<div class="flex items-center gap-2">
+								<div class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">${initials}</div>
+								<span class="text-xs text-gray-600 font-medium">${p.partnerName || 'Unknown Partner'}</span>
+							</div>
+						</td>
+						<td class="px-6 py-4 text-right font-mono text-xs font-semibold text-gray-800">
+							${formattedBudget}
+						</td>
+						<td class="px-6 py-4">
+							<span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${statusBadge}">${statusLabel}</span>
+						</td>
+						<td class="px-6 py-4 text-right">
+							<a href="project-details.html?project_number=${encodeURIComponent(p.projectNo || '')}"
+								class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-gray-50 text-gray-700 border hover:bg-gray-100 transition">
+								<span class="material-symbols-outlined text-xs">visibility</span>
+								View
+							</a>
+						</td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		// --- 9. Render Quick Actions Panel ---
+		function renderQuickActions(role) {
+			const container = document.getElementById('quick-actions-container');
+			if (!container) return;
+
+			let actions = [];
+			if (['SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER'].includes(role)) {
+				actions = [
+					{ label: 'Review Requests', icon: 'gavel', url: 'review-requests.html', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+					{ label: 'Manage Users', icon: 'manage_accounts', action: "document.querySelector('[data-tab=users]').click()" },
+					{ label: 'Add Past Project', icon: 'history', url: 'new-past-project.html', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+					{ label: 'Broadcast Announcement', icon: 'campaign', action: "document.querySelector('[data-tab=announcements]').click()" }
+				];
+			} else if (role === 'DONOR') {
+				actions = [
+					{ label: 'Browse Projects', icon: 'folder_open', action: "document.querySelector('[data-tab=projects]').click()" },
+					{ label: 'Project Documents', icon: 'description', action: "document.querySelector('[data-tab=projectdocs]').click()" },
+					{ label: 'Project Reports', icon: 'assessment', action: "document.querySelector('[data-tab=projectreports]').click()" }
+				];
+			} else { // PARTNER or default
+				actions = [
+					{ label: 'Propose New Project', icon: 'add_circle', url: 'new-project.html', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+					{ label: 'Upload Documents', icon: 'upload_file', action: "document.querySelector('[data-tab=projectdocs]').click()" },
+					{ label: 'Submit Reports', icon: 'assessment', action: "document.querySelector('[data-tab=projectreports]').click()" }
+				];
+			}
+
+			container.innerHTML = actions.map(act => {
+				const linkAttr = act.url ? `href="${act.url}"` : `href="#" onclick="event.preventDefault(); ${act.action};"`;
+				const actionColor = act.color || 'bg-blue-50 text-blue-700 border-blue-200';
+				return `
+					<a ${linkAttr} class="flex items-center justify-between p-3 rounded-xl border ${actionColor} hover:shadow-sm hover:scale-[1.01] transition duration-150 font-semibold text-xs">
+						<div class="flex items-center gap-2.5">
+							<span class="material-symbols-outlined text-base">${act.icon}</span>
+							<span>${act.label}</span>
+						</div>
+						<span class="material-symbols-outlined text-sm">chevron_right</span>
+					</a>
+				`;
+			}).join('');
+		}
+
+		// --- 10. Initialization on Load & Bind Events ---
+		document.addEventListener('DOMContentLoaded', () => {
+			// Bind Dashboard Live Filter Events
+			const categoryFilter = document.getElementById('dash-category-filter');
+			const statusFilter = document.getElementById('dash-status-filter');
+			const clearBtn = document.getElementById('dash-clear-filters');
+			const viewProjectsBtn = document.getElementById('dash-btn-view-projects');
+
+			if (categoryFilter) categoryFilter.addEventListener('change', renderEnhancedDashboard);
+			if (statusFilter) statusFilter.addEventListener('change', renderEnhancedDashboard);
+			
+			if (clearBtn) {
+				clearBtn.addEventListener('click', () => {
+					if (categoryFilter) categoryFilter.value = '';
+					if (statusFilter) statusFilter.value = '';
+					renderEnhancedDashboard();
+				});
+			}
+
+			if (viewProjectsBtn) {
+				viewProjectsBtn.addEventListener('click', () => {
+					const projTab = document.querySelector('[data-tab=projects]');
+					if (projTab) projTab.click();
+				});
 			}
 		});
+
+	</script>
 
 	</script>
 	<script>
@@ -1700,58 +1867,112 @@
 				columns.forEach((col, colIdx) => {
 					const td = document.createElement('td');
 					td.className = 'px-6 py-4 text-sm';
+					
+					const columnLabels = {
+						'title': 'Title',
+						'partnerName': 'Partner Name',
+						'projectNo': 'Project No',
+						'projectCategory': 'Category',
+						'themes': 'Themes',
+						'status': 'Status',
+						'startDate': 'Start Date',
+						'endDate': 'End Date',
+						'budget': 'Budget',
+						'locations': 'Locations',
+						'createdAt': 'Created At',
+						'name': 'Name',
+						'email': 'Email',
+						'role': 'Role',
+						'organization.name': 'Organization Name',
+						'fileName': 'File Name',
+						'project': 'Project',
+						'uploadedBy': 'Uploaded By',
+						'type': 'Type',
+						'size': 'Size',
+						'date': 'Date',
+						'user.name': 'User Name',
+						'project.title': 'Project Title',
+						'isActive': 'Active Status'
+					};
+					td.setAttribute('data-label', columnLabels[col] || col);
+					
 					let value = getNestedValue(item, col) || '';
 
 					// Projects table: rich formatting for key columns
 					if (tabId === 'tab-projects' || tabId === 'tab-pastprojects') {
 						if (col === 'title') {
-							td.innerHTML = `<span class="font-semibold text-gray-900">${value || 'Untitled'}</span>`;
-							row.appendChild(td);
-							return;
-						}
-						if (col === 'projectNo' && value) {
-							td.innerHTML = `<span class="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">${value}</span>`;
+							const projNo = getNestedValue(item, 'projectNo') || '';
+							const objectives = tabId === 'tab-pastprojects' ? (getNestedValue(item, 'objectives') || '') : '';
+							const subtitle = tabId === 'tab-pastprojects' 
+								? (objectives ? `<div class="text-[11px] text-gray-500 mt-0.5 truncate max-w-[260px]" title="${objectives}">${objectives}</div>` : '')
+								: (projNo ? `<div class="text-[11px] text-gray-400 font-mono mt-0.5">${projNo}</div>` : '');
+							td.innerHTML = `
+								<div class="font-semibold text-gray-900 leading-snug max-w-[280px] truncate" title="${value}">${value || 'Untitled'}</div>
+								${subtitle}
+							`;
 							row.appendChild(td);
 							return;
 						}
 						if (col === 'projectCategory' && value) {
 							const catColors = {
-								'IMPLEMENTING': 'bg-indigo-50 text-indigo-700',
-								'FUNDING': 'bg-emerald-50 text-emerald-700',
-								'RESEARCH': 'bg-violet-50 text-violet-700',
+								'IMPLEMENTING': 'bg-indigo-50 text-indigo-700 border border-indigo-100',
+								'FUNDING': 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+								'RESEARCH': 'bg-violet-50 text-violet-700 border border-violet-100',
 							};
-							const catClass = catColors[String(value).toUpperCase()] || 'bg-gray-100 text-gray-700';
+							const catClass = catColors[String(value).toUpperCase()] || 'bg-gray-50 text-gray-700 border border-gray-200';
 							const label = String(value).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-							td.innerHTML = `<span class="px-2.5 py-1 rounded-md text-xs font-medium ${catClass}">${label}</span>`;
+							td.innerHTML = `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold tracking-wide ${catClass}">${label}</span>`;
 							row.appendChild(td);
 							return;
 						}
-						if (col === 'partnerName' && value) {
-							const initials = String(value).split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+						if (col === 'partnerName' || col === 'partner') {
+							const initials = String(value || 'N/A').split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
 							td.innerHTML = `
-								<div class="flex items-center gap-2.5">
-									<div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold flex-shrink-0">${initials}</div>
-									<span class="text-gray-700">${value}</span>
+								<div class="flex items-center gap-2">
+									<div class="w-6 h-6 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold flex-shrink-0">${initials}</div>
+									<span class="text-gray-700 text-xs font-medium max-w-[150px] truncate" title="${value || 'N/A'}">${value || 'N/A'}</span>
 								</div>`;
 							row.appendChild(td);
 							return;
 						}
 						if (col === 'themes' && Array.isArray(value)) {
-							td.innerHTML = value.map(t => {
-								const name = t.name || t.code || '';
-								return `<span class="inline-block px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600 mr-1 mb-1">${name}</span>`;
-							}).join('');
+							const names = value.map(t => t.displayName || t.name || t.code || '').join(', ');
+							td.innerHTML = `<span class="block truncate max-w-[200px] text-gray-600 text-xs font-medium" title="${names}">${names || 'N/A'}</span>`;
 							row.appendChild(td);
 							return;
 						}
-						if (col === 'locations' && Array.isArray(value)) {
-							td.innerHTML = value.map(loc => {
-								const name = loc.county || loc.subCounty || '';
-								return name ? `<span class="inline-flex items-center gap-1 text-xs text-gray-600"><i class="fas fa-map-pin text-gray-300 text-[10px]"></i>${name}</span>` : '';
-							}).filter(Boolean).join('<br>');
-							row.appendChild(td);
-							return;
-						}
+					}
+
+					// Stacking names/emails in other tables
+					if (col === 'name' || col === 'user.name') {
+						const email = getNestedValue(item, 'email') || getNestedValue(item, 'user.email') || getNestedValue(item, 'contactEmail') || '';
+						const emailDiv = email ? `<div class="text-[11px] text-gray-400 mt-0.5">${email}</div>` : '';
+						const orgName = tabId === 'tab-collaborators' ? (getNestedValue(item, 'organization.name') || '') : '';
+						const orgDiv = orgName ? ` • <span class="text-gray-500">${orgName}</span>` : '';
+						
+						td.innerHTML = `
+							<div class="font-semibold text-gray-900 leading-snug">${value || 'N/A'}</div>
+							<div class="text-[11px] text-gray-400 mt-0.5">${email}${orgDiv}</div>
+						`;
+						row.appendChild(td);
+						return;
+					}
+
+					// Stacking file name + project/user name
+					if (col === 'fileName') {
+						const projectOrUser = getNestedValue(item, 'project.title') || getNestedValue(item, 'project') || getNestedValue(item, 'user.name') || getNestedValue(item, 'user') || '';
+						const projectOrUserDiv = projectOrUser ? `<div class="text-[11px] text-gray-400 mt-0.5 truncate max-w-[180px]" title="${projectOrUser}">${projectOrUser}</div>` : '';
+						const type = getNestedValue(item, 'type') || '';
+						const typeBadge = type ? `<span class="text-[9px] bg-gray-100 text-gray-500 px-1 py-0.5 rounded font-mono font-semibold uppercase">${type}</span>` : '';
+						td.innerHTML = `
+							<div class="flex items-center gap-1.5">
+								<span class="font-semibold text-gray-900 truncate max-w-[180px]" title="${value}">${value || 'Untitled'}</span>
+								${typeBadge}
+							</div>
+							${projectOrUserDiv}
+						`;
+						row.appendChild(td);
+						return;
 					}
 
 					// Special handling for collaborators table
@@ -1922,38 +2143,7 @@
 
 		// Function to calculate dashboard stats from filtered data
 		function calculateDashboardStatsFromFilteredData() {
-			// Get filtered data from each tab
-			const filteredProjects = getFilteredData('tab-projects', originalData.projects);
-			const filteredUsers = getFilteredData('tab-users', originalData.users);
-			const filteredPastProjects = getFilteredData('tab-pastprojects', originalData.pastProjects);
-
-			// Calculate stats from filtered data
-			const partnersCount = filteredUsers.filter(user => user.role === 'PARTNER').length;
-
-			const thematicAreas = new Set();
-			const counties = new Set();
-			let totalBudget = 0;
-
-			// Include both current and past projects for thematic areas, counties, and budget
-			const allProjects = [...filteredProjects, ...filteredPastProjects];
-
-			allProjects.forEach(project => {
-				if (project.themes) {
-					project.themes.forEach(theme => thematicAreas.add(theme.code));
-				}
-				if (project.locations) {
-					project.locations.forEach(location => counties.add(location.county));
-				}
-				if (project.budget) {
-					totalBudget += parseFloat(project.budget) || 0;
-				}
-			});
-
-			// Update counters with animation
-			updateCounterWithAnimation('partners-count', partnersCount);
-			updateCounterWithAnimation('thematic-areas-count', thematicAreas.size);
-			updateCounterWithAnimation('counties-count', counties.size);
-			updateBudgetCounter(totalBudget);
+			renderEnhancedDashboard();
 		}
 
 		// Function to update counter with animation
@@ -2120,7 +2310,7 @@
 				// Use appropriate endpoint based on user role
 				let endpoint;
 				if (['SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER'].includes(userRole)) {
-					endpoint = '/api/auth/admin/projects';
+					endpoint = '/api/projects/admin/all';
 				} else {
 					endpoint = '/api/projects/my-projects';
 				}
@@ -2137,7 +2327,7 @@
 				// Store original data for filtering
 				originalData.projects = [...projects];
 				console.log('Calling renderTable for projects with data:', projects);
-				renderTable('tab-projects', projects, ['title', 'partnerName', 'projectNo', 'projectCategory', 'themes', 'status', 'startDate', 'endDate', 'budget', 'locations', 'createdAt']);
+				renderTable('tab-projects', projects, ['title', 'partnerName', 'projectCategory', 'themes', 'budget', 'status']);
 				
 				// Debug: Check if tab is actually visible
 				setTimeout(() => {
@@ -2279,22 +2469,23 @@
 		function applyAllFilters() {
 			const rows = document.querySelectorAll('#tab-projects tbody tr');
 			const filterInputs = document.querySelectorAll('#tab-projects .filter-input');
-			const columnFilters = Array.from(filterInputs).map(input => input.value.toLowerCase());
 			
 			rows.forEach(row => {
 				const cells = row.querySelectorAll('td');
 				let show = true;
 				
-				// Apply column filters
-				columnFilters.forEach((filter, index) => {
-					if (filter && cells[index] && !cells[index].textContent.toLowerCase().includes(filter)) {
+				// Apply column filters using data-column mapping
+				filterInputs.forEach(input => {
+					const colIndex = parseInt(input.getAttribute('data-column'));
+					const filter = input.value.toLowerCase();
+					if (filter && cells[colIndex] && !cells[colIndex].textContent.toLowerCase().includes(filter)) {
 						show = false;
 					}
 				});
 				
 				// Apply thematic area filter
 				if (show && selectedThemes.length > 0) {
-					const themesCell = cells[4]; // Themes column is index 4
+					const themesCell = cells[3]; // Themes column is index 3 in new layout
 					if (themesCell) {
 						const projectThemes = themesCell.textContent.toLowerCase();
 						const hasMatchingTheme = selectedThemes.some(themeCode => {
@@ -2371,13 +2562,14 @@
 				}
 				// Store original data for filtering
 				originalData.users = [...users];
-				renderTable('tab-users', users, ['name', 'email', 'role', 'status', 'organization.name', 'createdAt']);
+				renderTable('tab-users', users, ['name', 'role', 'organization.name', 'status']);
 				// Update individual tab counters after loading
 				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-users .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', function () {
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, function () {
 						filterTable();
 						// Update dashboard counters when filters change
 						setTimeout(calculateDashboardStatsFromFilteredData, 100);
@@ -2440,13 +2632,14 @@
 				}
 				// Store original data for filtering
 				originalData.organizations = [...orgs];
-				renderTable('tab-organizations', orgs, ['name', 'organizationType', 'contactEmail', 'address', 'approvalStatus', 'createdAt']);
+				renderTable('tab-organizations', orgs, ['name', 'organizationType', 'address', 'approvalStatus']);
 				// Update individual tab counters after loading
 				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-organizations .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, filterTable);
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-organizations tbody tr');
@@ -2623,13 +2816,14 @@
 				}
 				// Store original data for filtering
 				originalData.pastProjects = [...projects];
-				renderTable('tab-pastprojects', projects, ['title', 'objectives', 'partner', 'projectCategory', 'finalStatus', 'budget', 'endDate', 'createdAt']);
+				renderTable('tab-pastprojects', projects, ['title', 'partner', 'projectCategory', 'budget', 'finalStatus']);
 				// Update individual tab counters after loading
 				setTimeout(updateTabCounters, 100);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-pastprojects .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', function () {
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, function () {
 						filterTable();
 						// Update dashboard counters when filters change
 						setTimeout(calculateDashboardStatsFromFilteredData, 100);
@@ -2692,11 +2886,12 @@
 				}
 				// Store original data for filtering
 				originalData.projectReports = [...reports];
-				renderTable('tab-projectreports', reports, ['title', 'project', 'submittedBy', 'reportType', 'reportStatus', 'submittedAt', 'createdAt']);
+				renderTable('tab-projectreports', reports, ['title', 'submittedBy', 'reportType', 'reportStatus']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projectreports .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, filterTable);
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-projectreports tbody tr');
@@ -2773,12 +2968,13 @@
 					
 					// Store original data for filtering
 					originalData.collaborators = [...collaborators];
-					renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'organization.name', 'role', 'isActive', 'addedAt']);
+					renderTable('tab-collaborators', collaborators, ['user.name', 'project.title', 'role', 'isActive']);
 					
 					// Add column-wise search functionality
 					const filterInputs = document.querySelectorAll('#tab-collaborators .filter-input');
 					filterInputs.forEach(input => {
-						input.addEventListener('input', filterTable);
+						const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+						input.addEventListener(eventType, filterTable);
 					});
 					
 					function filterTable() {
@@ -2847,65 +3043,62 @@
 		async function fetchDashboardStats() {
 			try {
 				// Fetch project counts from new endpoint
-				const projectCounts = await fetchProjectCounts();
-				
-				// Update total projects counter
-				const totalProjectsEl = document.getElementById('total-projects-count');
-				if (totalProjectsEl) {
-					totalProjectsEl.textContent = formatCount(projectCounts.total || 0);
+				let projectCounts = {};
+				try {
+					projectCounts = await fetchProjectCounts();
+				} catch (e) {
+					console.warn('Failed to fetch project counts', e);
 				}
-				
-				// Update active projects counter
-				const activeProjectsEl = document.getElementById('active-projects-count');
-				if (activeProjectsEl) {
-					activeProjectsEl.textContent = formatCount(projectCounts.active || 0);
-				}
-				
+
 				// Fetch user counts from new endpoint
-				const userCounts = await fetchUserCounts();
-				
-				// Update total users counter
-				const totalUsersEl = document.getElementById('total-users-count');
-				if (totalUsersEl) {
-					totalUsersEl.textContent = formatCount(userCounts.total || 0);
+				let userCounts = {};
+				try {
+					userCounts = await fetchUserCounts();
+				} catch (e) {
+					console.warn('Failed to fetch user counts', e);
 				}
-				
-				// Update pending approvals counter
-				const pendingApprovalsEl = document.getElementById('pending-approvals-count');
-				if (pendingApprovalsEl) {
-					const totalPending = (projectCounts.pending || 0) + (userCounts.pending || 0);
-					pendingApprovalsEl.textContent = formatCount(totalPending);
-				}
-				
+
 				// Fetch projects for thematic areas, counties, budget
-				const projectsResponse = await apiFetch('/api/projects');
-				const projectsData = await projectsResponse.json();
-				const projects = projectsData.data?.projects || projectsData.data?.content || projectsData.data || [];
-				originalData.projects = [...projects];
+				try {
+					const projectsResponse = await apiFetch('/api/projects');
+					if (projectsResponse.ok) {
+						const projectsData = await projectsResponse.json();
+						originalData.projects = projectsData.data?.projects || projectsData.data?.content || projectsData.data || [];
+					}
+				} catch (e) {
+					console.warn('Failed to fetch projects', e);
+				}
 
 				// Fetch past projects
-				const pastProjectsResponse = await apiFetch('/api/past-projects');
-				const pastProjectsData = await pastProjectsResponse.json();
-				const pastProjects = pastProjectsData.data?.pastProjects || pastProjectsData.data?.content || pastProjectsData.data || [];
-				originalData.pastProjects = [...pastProjects];
+				try {
+					const pastProjectsResponse = await apiFetch('/api/past-projects');
+					if (pastProjectsResponse.ok) {
+						const pastProjectsData = await pastProjectsResponse.json();
+						originalData.pastProjects = pastProjectsData.data?.pastProjects || pastProjectsData.data?.content || pastProjectsData.data || [];
+					}
+				} catch (e) {
+					console.warn('Failed to fetch past projects', e);
+				}
 
-				// Fetch users for partners count
-				const usersResponse = await apiFetch('/api/auth/admin/users');
-				const usersData = await usersResponse.json();
-				const users = usersData.data?.users || usersData.data?.content || usersData.data || [];
-				originalData.users = [...users];
+				// Fetch users for partners count (only for admins)
+				const userRole = localStorage.getItem('userRole') || 'PARTNER';
+				if (['SUPER_ADMIN', 'SUPER_ADMIN_APPROVER', 'SUPER_ADMIN_REVIEWER'].includes(userRole)) {
+					try {
+						const usersResponse = await apiFetch('/api/auth/admin/users');
+						if (usersResponse.ok) {
+							const usersData = await usersResponse.json();
+							originalData.users = usersData.data?.users || usersData.data?.content || usersData.data || [];
+						}
+					} catch (e) {
+						console.warn('Failed to fetch users', e);
+					}
+				}
 
 				// Calculate and update stats
 				calculateDashboardStatsFromFilteredData();
 
 			} catch (error) {
-				console.error('Error fetching dashboard stats:', error);
-				// Set default values on error
-				const totalProjectsEl = document.getElementById('total-projects-count');
-				if (totalProjectsEl) totalProjectsEl.textContent = '0';
-				
-				const partnersEl = document.getElementById('partners-count');
-				if (partnersEl) partnersEl.textContent = '0';
+				console.error('Critical error in fetchDashboardStats:', error);
 			}
 		}
 
@@ -2921,11 +3114,12 @@
 				}
 				// Store original data for filtering
 				originalData.projectDocuments = [...documents];
-				renderTable('tab-projectdocs', documents, ['fileName', 'project', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				renderTable('tab-projectdocs', documents, ['fileName', 'uploadedBy', 'size', 'status']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-projectdocs .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, filterTable);
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-projectdocs tbody tr');
@@ -2982,11 +3176,12 @@
 				}
 				// Store original data for filtering
 				originalData.userDocuments = [...documents];
-				renderTable('tab-userdocs', documents, ['fileName', 'user', 'uploadedBy', 'type', 'size', 'status', 'date', 'createdAt']);
+				renderTable('tab-userdocs', documents, ['fileName', 'uploadedBy', 'size', 'status']);
 				// Add column-wise search functionality
 				const filterInputs = document.querySelectorAll('#tab-userdocs .filter-input');
 				filterInputs.forEach(input => {
-					input.addEventListener('input', filterTable);
+					const eventType = input.tagName === 'SELECT' ? 'change' : 'input';
+					input.addEventListener(eventType, filterTable);
 				});
 				function filterTable() {
 					const rows = document.querySelectorAll('#tab-userdocs tbody tr');

@@ -53,7 +53,7 @@
       } catch (e) { }
     })();
 
-    // Use window.BASE_URL which is already set by config.js loaded via script tag
+    // Use window.BASE_URL which is already set by app-config.js loaded via script tag
     const BASE_URL = window.BASE_URL;
     console.log(
       "[donor-management.html] Using BASE_URL:",
@@ -63,8 +63,8 @@
     );
   </script>
   <!-- Backend URL Configuration -->
-  <script src="./config.js"></script>
-  <script src="./set-base-url.js"></script>
+  <script src="./app-config.js?v=3"></script>
+  <script src="./set-base-url.js?v=3"></script>
   <!-- Modal Utilities -->
   <script src="./modal-utils.js"></script>
   <script src="auth.js"></script>
