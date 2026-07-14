@@ -29,8 +29,9 @@ services:
     healthCheckPath: /api/projects
     previewsEnabled: false
 
-  - type: static
+  - type: web
     name: tujulishane-hub-frontend
+    runtime: static
     buildCommand: ""
     staticPublishPath: ./frontend
     headers:
