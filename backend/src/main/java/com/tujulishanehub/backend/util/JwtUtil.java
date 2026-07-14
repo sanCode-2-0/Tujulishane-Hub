@@ -36,7 +36,18 @@ public class JwtUtil {
     @PostConstruct
     public void init() {
         try {
-            signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+            if (keyBytes.length < 64) {
+                try {
+                    java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-512");
+                    keyBytes = digest.digest(keyBytes);
+                } catch (java.security.NoSuchAlgorithmException ex) {
+                    byte[] paddedBytes = new byte[64];
+                    System.arraycopy(keyBytes, 0, paddedBytes, 0, Math.min(keyBytes.length, 64));
+                    keyBytes = paddedBytes;
+                }
+            }
+            signingKey = Keys.hmacShaKeyFor(keyBytes);
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException("JWT secret is too short for HS512. Provide a 512-bit (64+ byte) secret or a base64-encoded key. See https://tools.ietf.org/html/rfc7518#section-3.2", e);
         }
