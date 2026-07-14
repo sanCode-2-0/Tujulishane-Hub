@@ -1,13 +1,11 @@
 services:
   - type: web
     name: tujulishane-hub-backend
-    runtime: java
-    buildCommand: cd backend && ./gradlew clean bootJar -x test
-    startCommand: cd backend && java -Dserver.port=$PORT -jar build/libs/*.jar
+    runtime: docker
     plan: free
     region: oregon
     branch: main
-    rootDir: /
+    rootDir: backend
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -25,7 +23,6 @@ services:
         sync: false
       - key: GEOCODING_API_KEY
         sync: false
-        value: ""
     healthCheckPath: /api/projects
 
   - type: web

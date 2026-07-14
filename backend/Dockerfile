@@ -1,21 +1,13 @@
-# Use a lightweight base image for the runtime
-FROM openjdk:21-slim
-
-# Working directory
+# Stage 1: Build the application JAR using Gradle wrapper
+FROM eclipse-temurin:21-jdk-jammy AS builder
 WORKDIR /app
+COPY . .
+RUN chmod +x gradlew
+RUN ./gradlew bootJar -x test
 
-# Add metadata
-LABEL maintainer="Briane Lomoni <kapolonbraine@gmail.com>"
-LABEL version="1.0.0"
-LABEL description="Backend for Tujulishane-Hub (Spring Boot)"
-
-# Copy the built jar into the container (expect build/libs/*.jar to exist)
-# Build the jar locally first: gradlew bootJar -x test
-COPY build/libs/*.jar app.jar
-
-# Expose port and use Render's provided PORT at runtime
+# Stage 2: Create the runtime image with JRE
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 EXPOSE 8080
-
-# Run the application binding to the provided PORT (Render sets $PORT)
-# Use production profile by default in Docker (can be overridden with SPRING_PROFILES_ACTIVE env var)
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod} -jar /app/app.jar"]
