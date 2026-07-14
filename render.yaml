@@ -27,7 +27,6 @@ services:
         sync: false
         value: ""
     healthCheckPath: /api/projects
-    previewsEnabled: false
 
   - type: web
     name: tujulishane-hub-frontend
