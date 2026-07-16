@@ -60,12 +60,14 @@
 	<script type="module">
 		// Try to load a local config override (frontend/config.local.js) if present.
 		(function () {
-			try {
-				var s = document.createElement("script");
-				s.src = "./config.local.js";
-				s.async = false;
-				document.head.appendChild(s);
-			} catch (e) { }
+			if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+				try {
+					var s = document.createElement("script");
+					s.src = "./config.local.js";
+					s.async = false;
+					document.head.appendChild(s);
+				} catch (e) { }
+			}
 		})();
 
 		// Use window.BASE_URL which is already set by app-config.js loaded via script tag

@@ -37,7 +37,11 @@
 	<!-- Mapbox -->
 	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
 	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
-	<script src="./config.local.js"></script>
+	<script>
+		if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+			document.write('<script src="./config.local.js"><\/script>');
+		}
+	</script>
 	<script src="./app-config.js?v=3"></script>
 	<script src="./set-base-url.js?v=3"></script>
 	<script src="./session-config.js"></script>

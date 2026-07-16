@@ -29,7 +29,6 @@
   <link rel="stylesheet" href="styles/main.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-  <script src="styles/main.js"></script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
@@ -45,12 +44,14 @@
   <script type="module">
     // Try to load a local config override (frontend/config.local.js) if present.
     (function () {
-      try {
-        var s = document.createElement("script");
-        s.src = "./config.local.js";
-        s.async = false;
-        document.head.appendChild(s);
-      } catch (e) { }
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+        try {
+          var s = document.createElement("script");
+          s.src = "./config.local.js";
+          s.async = false;
+          document.head.appendChild(s);
+        } catch (e) { }
+      }
     })();
 
     // Use window.BASE_URL which is already set by app-config.js loaded via script tag

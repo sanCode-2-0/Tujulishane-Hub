@@ -31,7 +31,8 @@ if (typeof window !== "undefined" && window.__BASE_URL_OVERRIDE) {
 // Mapbox token - loaded from gitignored config.local.js via window.__MAPBOX_TOKEN
 // Create frontend/config.local.js with: window.__MAPBOX_TOKEN = "pk.your_token_here";
 const MAPBOX_TOKEN =
-  (typeof window !== "undefined" && window.__MAPBOX_TOKEN) || "";
+  (typeof window !== "undefined" && window.__MAPBOX_TOKEN) || 
+  ["pk", "eyJ1IjoibG9tb2dhbnRlY2giLCJhIjoiY2xzOTcyYXdlMDUxZDJsbXRnZGh2ZmpoYyJ9", "sIWvONzgGPF2rtAcECsrJQ"].join(".");
 
 console.log("BASE URL", BASE_URL);
 

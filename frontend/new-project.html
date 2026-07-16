@@ -1277,7 +1277,11 @@
 	<script src="styles/loadNav.js"></script>
 	<script src="styles/authnav.js"></script>
 	<script src="styles/projectSteps.js"></script>
-	<script src="config.local.js"></script>
+	<script>
+		if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+			document.write('<script src="config.local.js"><\/script>');
+		}
+	</script>
 	<script src="app-config.js?v=3"></script>
 	<script src="auth.js"></script>
 	<script src="kenya-locations.js"></script>

@@ -29,7 +29,6 @@
 	</script>
 	<link rel="stylesheet" href="styles/main.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/css/tw-elements.min.css" />
-	<script src="styles/main.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
 		rel="stylesheet" />
@@ -42,7 +41,11 @@
 	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<!-- Local config override - sets window.__MAPBOX_TOKEN (gitignored, must load before app-config.js) -->
-	<script src="./config.local.js"></script>
+	<script>
+		if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+			document.write('<script src="./config.local.js"><\/script>');
+		}
+	</script>
 	<!-- Backend URL Configuration - Centralized in app-config.js -->
 	<script src="./app-config.js?v=3"></script>
 	<script src="./set-base-url.js?v=3"></script>
